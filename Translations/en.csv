@@ -1,0 +1,40 @@
+﻿CODE,en
+NAME,English
+TFC_NAM,Transfer Controller
+TFC_DESC,Enables control of goods transfer and service vehicle coverage.
+TFC_GEN_BUY,Buying restrictions
+TFC_GEN_SEL,Selling restrictions
+TFC_GEN_SER,Service restrictions
+TFC_BLD_ENA,Enable restrictions
+TFC_BLD_ENA_TIP,Select this to enable restrictions for this building.  If this is not selected, no other settings will take effect.
+TFC_BLD_SDO,Always service same district
+TFC_BLD_SDO_TIP,Enable to ensure that the building can always service the same district and/or area that it's in, even if the district or area later changes
+TFC_BLD_IMP,Allow imports
+TFC_BLD_IMP_TIP,Permit this building to import from outside connections.
+TFC_BLD_EXP,Allow exports
+TFC_BLD_EXP_TIP,Permit this building to export to outside connections.
+TFC_BLD_NOD,No local district
+TFC_MAI_IML,Local mail collection
+TFC_MAI_OSD,Local mail delivery
+TFC_MAI_OUN,Outgoing unsorted mail
+TFC_MAI_IST,Incoming sorted mail
+TFC_MAI_IUN,Unsorted mail from post offices
+TFC_MAI_OST,Sorted mail to post offices
+TFC_GAR_ICO,Garbage collection
+TFC_GAR_ITF,Garbage transfer from collection
+TFC_GAR_OTF,Garbage transfer to processing
+TFC_GAR_ORR,Recovered resources for sale
+TFC_POL_CMO,Criminal transfer to prison
+TFC_OPT_DIS,Distance multiplier
+TRN_CHOICE,Set language
+TRN_SYS,Use game language
+TFC_ERR_FAT,This means that the mod is not able to operate, and has shut down.
+TFC_ERR_HAR,Transfer Controller was unable to complete its required Harmony patches.
+ERR_HAR0,Harmony patching error
+ERR_HAR1,Possible causes of this problem include:
+ERR_HAR2,The required Harmony 2 mod dependency was not installed
+ERR_HAR3,An old and/or broken mod is preventing Harmony 2 from operating properly
+ERR_CON0,Mod conflict detected!
+ERR_CON1,The conflicting mods are:
+TFC_ERR_CON0,Transfer Controller detected a conflict with at least one other mod.
+TFC_ERR_CON1,These mods must be removed before Transfer Controller can operate.
