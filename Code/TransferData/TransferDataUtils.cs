@@ -55,33 +55,102 @@ namespace TransferController
                     return 1;
 
                 case ItemClass.Service.PoliceDepartment:
-                    // TODO: Prison Helicopter Mod transfers go here.
-                    /*if ((Singleton<BuildingManager>.instance.m_buildings.m_buffer[currentBuilding].m_flags & Building.Flags.Downgrading) != 0)
-                    {
-                        transfers[2].panelTitle = "?Collect from police stations?";
-                        transfers[2].outsideText = null;
-                        transfers[2].recordNumber = ServiceLimits.IncomingMask + 1;
-                        transfers[2].reason = (TransferManager.TransferReason)125;
-                        transfers[0].nextRecord = ServiceLimits.IncomingMask + 1;
-                        transfers[2].nextRecord = 0;
-                    }
+                    var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID];
 
-                    else*/
+                    // Police helicopter depot
+                    if(buildingInfo.GetAI() is HelicopterDepotAI)
                     {
-                        // Normal police stations.
                         transfers[0].panelTitle = Translations.Translate("TFC_GEN_SER");
                         transfers[0].outsideText = null;
                         transfers[0].recordNumber = ServiceLimits.IncomingMask;
                         transfers[0].reason = TransferManager.TransferReason.Crime;
                         transfers[0].nextRecord = 0;
-                        transfers[1].panelTitle = Translations.Translate("TFC_POL_CMO");
-                        transfers[1].outsideText = null;
-                        transfers[1].recordNumber = ServiceLimits.OutgoingMask;
-                        transfers[1].reason = TransferManager.TransferReason.CriminalMove;
-                        transfers[1].nextRecord = 0;
-                    }
-                    return 2;
 
+                        // Prison Helicopter Mod
+                        if ((building.m_flags & Building.Flags.Downgrading) == 0)
+                        {
+                            transfers[1].panelTitle = "Prison Helicopters restrictions";
+                            transfers[1].outsideText = null;
+                            transfers[1].recordNumber = ServiceLimits.IncomingMask + 1;
+                            transfers[1].reason = (TransferManager.TransferReason)126;
+                            transfers[1].nextRecord = 0;
+
+                             return 2;
+                        }
+
+                        return 1;
+                    }
+                    else 
+                    {
+                        // Prison
+                        if(buildingInfo.m_class.m_level >= ItemClass.Level.Level4)
+                        {
+                            transfers[0].panelTitle = Translations.Translate("TFC_GEN_SER");
+                            transfers[0].outsideText = null;
+                            transfers[0].recordNumber = ServiceLimits.IncomingMask;
+                            transfers[0].reason = TransferManager.TransferReason.CriminalMove;
+                            transfers[0].nextRecord = 0;
+
+                            // Prison Helicopter Mod
+                            if (buildingInfo.m_buildingAI.GetType().Name.Equals("PrisonCopterPoliceStationAI"))
+                            {
+                                transfers[1].panelTitle = "Prisoners transfer via helicopters";
+                                transfers[1].outsideText = null;
+                                transfers[1].recordNumber = ServiceLimits.OutgoingMask;
+                                transfers[1].reason = (TransferManager.TransferReason)126;
+                                transfers[1].nextRecord = 0;
+                                return 2;
+                            }
+
+                            return 1;
+                        }
+                        else
+                        {
+                            // Normal police station
+                            transfers[0].panelTitle = Translations.Translate("TFC_GEN_SER");
+                            transfers[0].outsideText = null;
+                            transfers[0].recordNumber = ServiceLimits.IncomingMask;
+                            transfers[0].reason = TransferManager.TransferReason.Crime;
+                            transfers[0].nextRecord = 0;
+                            transfers[1].panelTitle = Translations.Translate("TFC_POL_CMO");
+                            transfers[1].outsideText = null;
+                            transfers[1].recordNumber = ServiceLimits.OutgoingMask;
+                            transfers[1].reason = TransferManager.TransferReason.CriminalMove;
+                            transfers[1].nextRecord = 0;
+
+                            // Prison Helicopter Mod
+                            if (buildingInfo.m_buildingAI.GetType().Name.Equals("PrisonCopterPoliceStationAI"))
+                            {
+                                // Small police station
+                                if ((building.m_flags & Building.Flags.Downgrading) != 0)
+                                {
+                                    transfers[2].panelTitle = "Criminal transfer to a central police station";
+                                    transfers[2].outsideText = null;
+                                    transfers[2].recordNumber = ServiceLimits.OutgoingMask + 1;
+                                    transfers[2].reason = (TransferManager.TransferReason)125;
+                                    transfers[2].nextRecord = 0;
+                                    return 3;
+                                }
+                                // Big police station
+                                else
+                                {
+                                    transfers[2].panelTitle = "Criminal air transfer to prison";
+                                    transfers[2].outsideText = null;
+                                    transfers[2].recordNumber = ServiceLimits.OutgoingMask + 1;
+                                    transfers[2].reason = (TransferManager.TransferReason)126;
+                                    transfers[2].nextRecord = 0;
+                                    transfers[3].panelTitle = "Criminal transfer from a local police stations";
+                                    transfers[3].outsideText = null;
+                                    transfers[3].recordNumber = ServiceLimits.IncomingMask + 1;
+                                    transfers[3].reason = (TransferManager.TransferReason)125;
+                                    transfers[3].nextRecord = 0;
+                                    return 4;
+                                }
+                            }
+
+                            return 2;
+                        }
+                    }
                 case ItemClass.Service.Industrial:
                 case ItemClass.Service.PlayerIndustry:
                     // Industrial buildings get both incoming and outgoing restrictions (buy/sell).
