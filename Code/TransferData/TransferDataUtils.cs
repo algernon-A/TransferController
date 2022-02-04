@@ -270,21 +270,7 @@ namespace TransferController
                         transfers[1].reason = TransferManager.TransferReason.SortedMail;
                         transfers[1].nextRecord = 0;
 
-                        transfers[2].panelTitle = "Export Mail";
-                        transfers[2].outsideText = Translations.Translate("TFC_BLD_IMP");
-                        transfers[2].outsideTip = Translations.Translate("TFC_BLD_IMP_TIP");
-                        transfers[2].recordNumber = ServiceLimits.IncomingMask;
-                        transfers[2].reason = TransferManager.TransferReason.IncomingMail;
-                        transfers[2].nextRecord = 0;
-
-                        transfers[3].panelTitle = "Import Mail";
-                        transfers[3].outsideText = Translations.Translate("TFC_BLD_EXP");
-                        transfers[3].outsideTip = Translations.Translate("TFC_BLD_EXP_TIP");
-                        transfers[3].recordNumber = ServiceLimits.OutgoingMask;
-                        transfers[3].reason = TransferManager.TransferReason.OutgoingMail;
-                        transfers[3].nextRecord = 0;
-
-                        return 4;
+                        return 2;
                     }
                     Logging.Message("undefined public transport service");
                     return 0;
