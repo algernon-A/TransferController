@@ -45,7 +45,6 @@ namespace TransferController
                 case ItemClass.Service.FireDepartment:
                 case ItemClass.Service.HealthCare:
                 case ItemClass.Service.PlayerEducation:
-                case ItemClass.Service.Disaster:
                     // Basic service offering; incoming restrictions only, generic title, no specific reason.
                     transfers[0].panelTitle = Translations.Translate("TFC_GEN_SER");
                     transfers[0].outsideText = null;
@@ -53,7 +52,30 @@ namespace TransferController
                     transfers[0].reason = TransferManager.TransferReason.None;
                     transfers[0].nextRecord = 0;
                     return 1;
-
+                case ItemClass.Service.Water:
+                    // Basic service offering; incoming restrictions only, generic title, no specific reason.
+                    if(buildingInfo.m_class.m_level == ItemClass.Level.Level1)
+                    {
+                        transfers[0].panelTitle = Translations.Translate("TFC_GEN_SER");
+                        transfers[0].outsideText = null;
+                        transfers[0].recordNumber = ServiceLimits.IncomingMask;
+                        transfers[0].reason = TransferManager.TransferReason.FloodWater;
+                        transfers[0].nextRecord = 0;
+                        return 1;
+                    }
+                    return 0;
+                case ItemClass.Service.Disaster:
+                    transfers[0].panelTitle = "Disastor response vehicle restrictions";
+                    transfers[0].outsideText = null;
+                    transfers[0].recordNumber = ServiceLimits.IncomingMask;
+                    transfers[0].reason = TransferManager.TransferReason.Collapsed;
+                    transfers[0].nextRecord = 0;
+                    transfers[1].panelTitle = "Disastor response helicopter restrictions";
+                    transfers[1].outsideText = null;
+                    transfers[1].recordNumber = ServiceLimits.IncomingMask + 1;
+                    transfers[1].reason = TransferManager.TransferReason.Collapsed2;
+                    transfers[1].nextRecord = 0;
+                    return 2;
                 case ItemClass.Service.PoliceDepartment:
                     var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID];
 
