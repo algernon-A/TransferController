@@ -63,7 +63,7 @@ namespace TransferController
                     {
                         transfers[1].panelTitle = "Forest fire restrictions";
                         transfers[1].outsideText = null;
-                        transfers[1].recordNumber = ServiceLimits.IncomingMask +1;
+                        transfers[1].recordNumber = ServiceLimits.IncomingMask + 1;
                         transfers[1].reason = TransferManager.TransferReason.Fire2;
                         transfers[1].nextRecord = 0;
                         return 2;
@@ -211,7 +211,7 @@ namespace TransferController
                 case ItemClass.Service.Road:
                 case ItemClass.Service.Beautification:
                     // Maintenance depots only, and only incoming.
-                    if (buildingInfo.GetAI() is MaintenanceDepotAI)
+                    if (buildingInfo.GetAI() is MaintenanceDepotAI || buildingInfo.GetAI() is SnowDumpAI)
                     {
                         transfers[0].panelTitle = Translations.Translate("TFC_GEN_SER");
                         transfers[0].outsideText = null;
