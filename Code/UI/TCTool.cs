@@ -23,7 +23,6 @@ namespace TransferController
 		/// </summary>
 		public static TCTool Instance => ToolsModifierControl.toolController?.gameObject?.GetComponent<TCTool>();
 
-
 		/// <summary>
 		/// Returns true if the zoning tool is currently active, false otherwise.
 		/// </summary>
@@ -228,6 +227,67 @@ namespace TransferController
 					BuildingPanelManager.SetTarget(building);
 				}
 			}
+
+			if (ModSettings.keyCopy.IsPressed(e))
+            {
+				var transfers = new TransferStruct[4]; 
+                if (building == 0 || 
+                    BuildingManager.instance.m_buildings.m_buffer[building].Info.GetAI() is DummyBuildingAI ||
+                    !TransferDataUtils.BuildingEligibility(building, transfers))
+                {
+                    ModUtils.DisplayMessage(
+                        str1: "Transfer Controller",
+                        str2: $"Cannot copy policy from this building!",
+                        str3: "IconMessage");
+                    return;
+                }
+
+                CopyPaste.BuildingTemplate = building;
+				CopyPaste.Transfers = transfers;
+            }
+
+			if (ModSettings.keyPaste.IsPressed(e))
+            {
+				var transfers = new TransferStruct[4]; 
+                if (CopyPaste.BuildingTemplate == 0)
+                {
+                    ModUtils.DisplayMessage(
+                        str1: "Transfer Controller",
+                        str2: $"Please hover over a valid building and press Ctrl-C to copy its policy first!",
+                        str3: "IconMessage");
+                    return;
+                }
+
+                if (building == 0 ||
+                    BuildingManager.instance.m_buildings.m_buffer[building].Info.GetAI() is DummyBuildingAI ||
+                    !TransferDataUtils.BuildingEligibility(building, transfers))
+                {
+                    ModUtils.DisplayMessage(
+                        str1: "Transfer Controller",
+                        str2: $"Cannot copy policy to this unsupported building!",
+                        str3: "IconMessage");
+                    return;
+                }
+
+                if (!CopyPaste.CanCopy(CopyPaste.BuildingTemplate, building))
+                {
+                    ModUtils.DisplayMessage(
+                        str1: "Transfer Controller",
+                        str2: $"Can only copy-paste policy between buildings of the same policy type!",
+                        str3: "IconMessage");
+                    return;
+                }
+
+                if (!CopyPaste.CopyPolicyTo(building, transfers))
+                {
+                    ModUtils.DisplayMessage(
+                        str1: "Transfer Controller",
+                        str2: $"Could not copy certain supply chain restrictions. Please check results of copy operation!",
+                        str3: "IconMessage");
+                    return;
+                }
+
+            }
 		}
 	}
 }

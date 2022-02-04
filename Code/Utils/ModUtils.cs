@@ -4,7 +4,10 @@ using System.Reflection;
 using System.Collections.Generic;
 using ICities;
 using ColossalFramework.Plugins;
-
+using ColossalFramework.UI;
+using UnityEngine;
+using ColossalFramework.DataBinding;
+using System;
 
 namespace TransferController
 {
@@ -99,6 +102,31 @@ namespace TransferController
             // If we got here, then we didn't find the assembly.
             Logging.Error("assembly path not found");
             throw new FileNotFoundException(TransferControllerMod.ModName + ": assembly path not found!");
+        }
+
+        /// <summary>
+        /// Display message to the user.
+        /// </summary>
+        internal static void DisplayMessage(string str1, string str2, string str3)
+        {
+            try
+            {
+                var uiComponent = UIView.library.ShowModal("ExceptionPanel");
+                if (uiComponent != null)
+                {
+                    Cursor.lockState = CursorLockMode.None;
+                    Cursor.visible = true;
+                    var component = uiComponent.GetComponent<BindPropertyByKey>();
+                    if (component != null)
+                    {
+                        component.SetProperties(TooltipHelper.Format("title", str1, "message", str2, "img", str3));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.Error(ex);
+            }
         }
     }
 }

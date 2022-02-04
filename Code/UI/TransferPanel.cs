@@ -1,7 +1,9 @@
 ﻿using System;
 using UnityEngine;
 using ColossalFramework.UI;
-
+using ColossalFramework;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace TransferController
 {
@@ -37,7 +39,6 @@ namespace TransferController
         // Current selections.
         private ushort currentBuilding;
         private byte recordNumber;
-
 
         // Event status.
         private bool disableEvents = false;

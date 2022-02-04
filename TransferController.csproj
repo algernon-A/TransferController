@@ -75,6 +75,7 @@
     <Compile Include="Code\TransferData\TransferDataUtils.cs" />
     <Compile Include="Code\TranslationFramework\TranslationFramework.cs" />
     <Compile Include="Code\TranslationFramework\TranslationXML.cs" />
+    <Compile Include="Code\UI\CopyPaste.cs" />
     <Compile Include="Code\UI\DistrictSelectionPanel\BuildingDistrictSelectionPanel.cs" />
     <Compile Include="Code\UI\TCTool.cs" />
     <Compile Include="Code\UI\TransferPanel.cs" />
