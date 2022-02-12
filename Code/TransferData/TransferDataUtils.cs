@@ -32,6 +32,7 @@ namespace TransferController
 
         /// <summary>
         /// Determines the eligible transfers (if any) for the given building.
+        /// Thanks to t1a2l for doing a bunch of these.
         /// </summary>
         /// <param name="buildingID">ID of building to check</param>
         /// <param name="buildingInfo">BuildingInfo record of building</param>
@@ -51,17 +52,19 @@ namespace TransferController
                     transfers[0].reason = TransferManager.TransferReason.None;
                     transfers[0].nextRecord = 0;
                     return 1;
+
                 case ItemClass.Service.FireDepartment:
-                    // Basic service offering; incoming restrictions only, generic title, no specific reason.
-                    transfers[0].panelTitle = Translations.Translate("TFC_GEN_SER");
+                    // Fire departments have one basic entry.
+                    transfers[0].panelTitle = Translations.Translate("TFC_FIR_BUI");
                     transfers[0].outsideText = null;
                     transfers[0].recordNumber = ServiceLimits.IncomingMask;
                     transfers[0].reason = TransferManager.TransferReason.Fire;
                     transfers[0].nextRecord = 0;
 
+                    // Second service for fire helicopters.
                     if (buildingInfo.GetAI() is HelicopterDepotAI)
                     {
-                        transfers[1].panelTitle = "Forest fire restrictions";
+                        transfers[1].panelTitle = Translations.Translate("TFC_FIR_FOR");
                         transfers[1].outsideText = null;
                         transfers[1].recordNumber = ServiceLimits.IncomingMask + 1;
                         transfers[1].reason = TransferManager.TransferReason.Fire2;
@@ -70,9 +73,10 @@ namespace TransferController
                     }
 
                     return 1;
+
                 case ItemClass.Service.Water:
-                    // Basic service offering; incoming restrictions only, generic title, no specific reason.
-                    if(buildingInfo.GetAI() is WaterFacilityAI)
+                    // Water pumping only.
+                    if (buildingInfo.GetAI() is WaterFacilityAI && buildingInfo.m_class.m_level == ItemClass.Level.Level1)
                     {
                         transfers[0].panelTitle = Translations.Translate("TFC_GEN_SER");
                         transfers[0].outsideText = null;
@@ -82,23 +86,26 @@ namespace TransferController
                         return 1;
                     }
                     return 0;
+
                 case ItemClass.Service.Disaster:
-                    transfers[0].panelTitle = "Disastor response vehicle restrictions";
+                    // Disaster response - trucks and helicopters.
+                    transfers[0].panelTitle = Translations.Translate("TFC_DIS_TRU");
                     transfers[0].outsideText = null;
                     transfers[0].recordNumber = ServiceLimits.IncomingMask;
                     transfers[0].reason = TransferManager.TransferReason.Collapsed;
                     transfers[0].nextRecord = 0;
-                    transfers[1].panelTitle = "Disastor response helicopter restrictions";
+                    transfers[1].panelTitle = Translations.Translate("TFC_DIS_HEL");
                     transfers[1].outsideText = null;
                     transfers[1].recordNumber = ServiceLimits.IncomingMask + 1;
                     transfers[1].reason = TransferManager.TransferReason.Collapsed2;
                     transfers[1].nextRecord = 0;
                     return 2;
-                case ItemClass.Service.PoliceDepartment:
-                    var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID];
 
-                    // Police helicopter depot
-                    if(buildingInfo.GetAI() is HelicopterDepotAI)
+                case ItemClass.Service.PoliceDepartment:
+                    Building.Flags buildingFlags = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID].m_flags;
+
+                    // Police helicopter depot.
+                    if (buildingInfo.GetAI() is HelicopterDepotAI)
                     {
                         transfers[0].panelTitle = Translations.Translate("TFC_GEN_SER");
                         transfers[0].outsideText = null;
@@ -106,47 +113,34 @@ namespace TransferController
                         transfers[0].reason = TransferManager.TransferReason.Crime;
                         transfers[0].nextRecord = 0;
 
-                        // Prison Helicopter Mod
-                        if ((building.m_flags & Building.Flags.Downgrading) == 0)
+                        // Prison Helicopter Mod.
+                        if ((buildingFlags & Building.Flags.Downgrading) == Building.Flags.None)
                         {
-                            transfers[1].panelTitle = "Prison Helicopters restrictions";
+                            transfers[1].panelTitle = Translations.Translate("TFC_POL_PHI");
                             transfers[1].outsideText = null;
                             transfers[1].recordNumber = ServiceLimits.IncomingMask + 1;
                             transfers[1].reason = (TransferManager.TransferReason)126;
                             transfers[1].nextRecord = 0;
-
-                             return 2;
+                            return 2;
                         }
 
                         return 1;
                     }
-                    else 
+                    else
                     {
-                        // Prison
-                        if(buildingInfo.m_class.m_level >= ItemClass.Level.Level4)
+                        // Prisons.
+                        if (buildingInfo.m_class.m_level >= ItemClass.Level.Level4)
                         {
                             transfers[0].panelTitle = Translations.Translate("TFC_GEN_SER");
                             transfers[0].outsideText = null;
                             transfers[0].recordNumber = ServiceLimits.IncomingMask;
                             transfers[0].reason = TransferManager.TransferReason.CriminalMove;
                             transfers[0].nextRecord = 0;
-
-                            // Prison Helicopter Mod
-                            if (buildingInfo.m_buildingAI.GetType().Name.Equals("PrisonCopterPoliceStationAI"))
-                            {
-                                transfers[1].panelTitle = "Prisoners transfer via helicopters";
-                                transfers[1].outsideText = null;
-                                transfers[1].recordNumber = ServiceLimits.OutgoingMask;
-                                transfers[1].reason = (TransferManager.TransferReason)126;
-                                transfers[1].nextRecord = 0;
-                                return 2;
-                            }
-
                             return 1;
                         }
                         else
                         {
-                            // Normal police station
+                            // Normal police station.
                             transfers[0].panelTitle = Translations.Translate("TFC_GEN_SER");
                             transfers[0].outsideText = null;
                             transfers[0].recordNumber = ServiceLimits.IncomingMask;
@@ -158,28 +152,28 @@ namespace TransferController
                             transfers[1].reason = TransferManager.TransferReason.CriminalMove;
                             transfers[1].nextRecord = 0;
 
-                            // Prison Helicopter Mod
+                            // Prison Helicopter Mod.
                             if (buildingInfo.m_buildingAI.GetType().Name.Equals("PrisonCopterPoliceStationAI"))
                             {
-                                // Small police station
-                                if ((building.m_flags & Building.Flags.Downgrading) != 0)
+                                // Small (local) police station - send prisoners to central station.
+                                if ((buildingFlags & Building.Flags.Downgrading) != Building.Flags.None)
                                 {
-                                    transfers[2].panelTitle = "Criminal transfer to a central police station";
+                                    transfers[2].panelTitle = Translations.Translate("TFC_POL_PTO");
                                     transfers[2].outsideText = null;
                                     transfers[2].recordNumber = ServiceLimits.OutgoingMask + 1;
                                     transfers[2].reason = (TransferManager.TransferReason)125;
                                     transfers[2].nextRecord = 0;
                                     return 3;
                                 }
-                                // Big police station
+                                // Big police station - collect prisoners from local stations, and transfer prisoners by helicopter to prison.
                                 else
                                 {
-                                    transfers[2].panelTitle = "Criminal air transfer to prison";
+                                    transfers[2].panelTitle = Translations.Translate("TFC_POL_PHO");
                                     transfers[2].outsideText = null;
                                     transfers[2].recordNumber = ServiceLimits.OutgoingMask + 1;
                                     transfers[2].reason = (TransferManager.TransferReason)126;
                                     transfers[2].nextRecord = 0;
-                                    transfers[3].panelTitle = "Criminal transfer from a local police stations";
+                                    transfers[3].panelTitle = Translations.Translate("TFC_POL_PTI");
                                     transfers[3].outsideText = null;
                                     transfers[3].recordNumber = ServiceLimits.IncomingMask + 1;
                                     transfers[3].reason = (TransferManager.TransferReason)125;
@@ -191,8 +185,8 @@ namespace TransferController
                             return 2;
                         }
                     }
+
                 case ItemClass.Service.Industrial:
-                case ItemClass.Service.PlayerIndustry:
                     // Industrial buildings get both incoming and outgoing restrictions (buy/sell).
                     transfers[0].panelTitle = Translations.Translate("TFC_GEN_BUY");
                     transfers[0].outsideText = Translations.Translate("TFC_BLD_IMP");
@@ -208,10 +202,52 @@ namespace TransferController
                     transfers[1].nextRecord = 0;
                     return 2;
 
+                case ItemClass.Service.PlayerIndustry:
+                    if (buildingInfo.m_buildingAI is IndustrialExtractorAI)
+                    {
+                        transfers[0].panelTitle = Translations.Translate("TFC_GEN_SEL");
+                        transfers[0].outsideText = null;
+                        transfers[0].recordNumber = ServiceLimits.OutgoingMask;
+                        transfers[0].reason = TransferManager.TransferReason.None;
+                        transfers[0].nextRecord = 0;
+                        return 1;
+                    }
+                    else if (buildingInfo.m_buildingAI is ProcessingFacilityAI)
+                    {
+                        transfers[0].panelTitle = Translations.Translate("TFC_GEN_BUY");
+                        transfers[0].outsideText = Translations.Translate("TFC_BLD_IMP");
+                        transfers[0].outsideTip = Translations.Translate("TFC_BLD_IMP_TIP");
+                        transfers[0].recordNumber = ServiceLimits.IncomingMask;
+                        transfers[0].reason = TransferManager.TransferReason.None;
+                        transfers[0].nextRecord = 0;
+                        transfers[1].panelTitle = Translations.Translate("TFC_GEN_SEL");
+                        transfers[1].outsideText = null;
+                        transfers[1].recordNumber = ServiceLimits.OutgoingMask;
+                        transfers[1].reason = TransferManager.TransferReason.None;
+                        transfers[1].nextRecord = 0;
+                        return 2;
+                    }
+                    else if (buildingInfo.m_buildingAI is UniqueFactoryAI)
+                    {
+                        transfers[0].panelTitle = Translations.Translate("TFC_GEN_BUY");
+                        transfers[0].outsideText = null;
+                        transfers[0].recordNumber = ServiceLimits.IncomingMask;
+                        transfers[0].reason = TransferManager.TransferReason.None;
+                        transfers[0].nextRecord = 0;
+                        transfers[1].panelTitle = Translations.Translate("TFC_GEN_SEL");
+                        transfers[1].outsideText = Translations.Translate("TFC_BLD_EXP");
+                        transfers[1].outsideTip = Translations.Translate("TFC_BLD_EXP_TIP");
+                        transfers[1].recordNumber = ServiceLimits.OutgoingMask;
+                        transfers[1].reason = TransferManager.TransferReason.None;
+                        transfers[1].nextRecord = 0;
+                        return 2;
+                    }
+                    return 0;
+
                 case ItemClass.Service.Road:
                 case ItemClass.Service.Beautification:
-                    // Maintenance depots only, and only incoming.
-                    if (buildingInfo.GetAI() is MaintenanceDepotAI || buildingInfo.GetAI() is SnowDumpAI)
+                    // Maintenance depots and snow dumps only, and only incoming.
+                    if (buildingInfo.m_buildingAI is MaintenanceDepotAI || buildingInfo.m_buildingAI is SnowDumpAI)
                     {
                         transfers[0].panelTitle = Translations.Translate("TFC_GEN_SER");
                         transfers[0].outsideText = null;
@@ -270,7 +306,21 @@ namespace TransferController
                         transfers[1].reason = TransferManager.TransferReason.SortedMail;
                         transfers[1].nextRecord = 0;
 
-                        return 2;
+                        transfers[2].panelTitle = Translations.Translate("TFC_MAI_OGM");
+                        transfers[2].outsideText = Translations.Translate("TFC_BLD_EXP");
+                        transfers[2].outsideTip = Translations.Translate("TFC_BLD_EXP_TIP");
+                        transfers[2].recordNumber = ServiceLimits.OutgoingMask + 1;
+                        transfers[2].reason = TransferManager.TransferReason.OutgoingMail;
+                        transfers[2].nextRecord = 0;
+
+                        transfers[3].panelTitle = Translations.Translate("TFC_MAI_ICM");
+                        transfers[3].outsideText = Translations.Translate("TFC_BLD_IMP");
+                        transfers[3].outsideTip = Translations.Translate("TFC_BLD_IMP_TIP");
+                        transfers[3].recordNumber = ServiceLimits.IncomingMask + 1;
+                        transfers[3].reason = TransferManager.TransferReason.IncomingMail;
+                        transfers[3].nextRecord = 0;
+
+                        return 4;
                     }
                     Logging.Message("undefined public transport service");
                     return 0;
@@ -324,32 +374,32 @@ namespace TransferController
                     return 0;
 
                 case ItemClass.Service.Fishing:
-                    if(buildingInfo.GetAI() is FishFarmAI || buildingInfo.GetAI() is FishingHarborAI)
+                    if (buildingInfo.m_buildingAI is FishFarmAI || buildingInfo.m_buildingAI is FishingHarborAI)
                     {
-                        transfers[0].panelTitle = "Deliver fish";
+                        transfers[0].panelTitle = Translations.Translate("TFC_FIS_MKO");
                         transfers[0].outsideText = null;
                         transfers[0].recordNumber = ServiceLimits.OutgoingMask;
                         transfers[0].reason = TransferManager.TransferReason.Fish;
                         transfers[0].nextRecord = 0;
                         return 1;
                     }
-                    else if(buildingInfo.GetAI() is MarketAI)
+                    else if (buildingInfo.m_buildingAI is MarketAI)
                     {
-                        transfers[0].panelTitle = "Fish delivery from harbor";
+                        transfers[0].panelTitle = Translations.Translate("TFC_FIS_MKI");
                         transfers[0].outsideText = null;
                         transfers[0].recordNumber = ServiceLimits.IncomingMask;
                         transfers[0].reason = TransferManager.TransferReason.Fish;
                         transfers[0].nextRecord = 0;
                         return 1;
                     }
-                    else if(buildingInfo.GetAI() is ProcessingFacilityAI)
+                    else if (buildingInfo.m_buildingAI is ProcessingFacilityAI)
                     {
-                        transfers[0].panelTitle = "Fish Delivery from harbor";
+                        transfers[0].panelTitle = Translations.Translate("TFC_FIS_MKI");
                         transfers[0].outsideText = null;
                         transfers[0].recordNumber = ServiceLimits.IncomingMask;
                         transfers[0].reason = TransferManager.TransferReason.Fish;
                         transfers[0].nextRecord = 0;
-                        transfers[1].panelTitle = "Canned fish for sale";
+                        transfers[1].panelTitle = Translations.Translate("TFC_FIS_CFO");
                         transfers[1].outsideText = null;
                         transfers[1].recordNumber = ServiceLimits.OutgoingMask;
                         transfers[1].reason = TransferManager.TransferReason.Goods;
