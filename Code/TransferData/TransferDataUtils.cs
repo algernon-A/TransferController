@@ -206,7 +206,8 @@ namespace TransferController
                     if (buildingInfo.m_buildingAI is IndustrialExtractorAI)
                     {
                         transfers[0].panelTitle = Translations.Translate("TFC_GEN_SEL");
-                        transfers[0].outsideText = null;
+                        transfers[0].outsideText = Translations.Translate("TFC_BLD_EXP");
+                        transfers[0].outsideTip = Translations.Translate("TFC_BLD_EXP_TIP");
                         transfers[0].recordNumber = ServiceLimits.OutgoingMask;
                         transfers[0].reason = TransferManager.TransferReason.None;
                         transfers[0].nextRecord = 0;
