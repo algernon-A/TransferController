@@ -75,8 +75,8 @@ namespace TransferController
                     return 1;
 
                 case ItemClass.Service.Water:
-                    // Water pumping only.
-                    if (buildingInfo.GetAI() is WaterFacilityAI && buildingInfo.m_class.m_level == ItemClass.Level.Level1)
+                    // Water pumping
+                    if (buildingInfo.GetAI() is WaterFacilityAI waterFacilityAI && buildingInfo.m_class.m_level == ItemClass.Level.Level1 && waterFacilityAI.m_pumpingVehicles > 0)
                     {
                         transfers[0].panelTitle = Translations.Translate("TFC_GEN_SER");
                         transfers[0].outsideText = null;
@@ -85,21 +85,59 @@ namespace TransferController
                         transfers[0].nextRecord = 0;
                         return 1;
                     }
+                    // Boiler station
+                    else if (buildingInfo.GetAI() is HeatingPlantAI heatingPlantAI && buildingInfo.m_class.m_level == ItemClass.Level.Level2 && heatingPlantAI.m_resourceType != TransferManager.TransferReason.None)
+                    {
+                        transfers[0].panelTitle = "boiler station import oil";
+                        transfers[0].outsideText = null;
+                        transfers[0].recordNumber = ServiceLimits.IncomingMask;
+                        transfers[0].reason = TransferManager.TransferReason.Oil;
+                        transfers[0].nextRecord = 0;
+                        return 1;
+                    }
                     return 0;
 
                 case ItemClass.Service.Disaster:
                     // Disaster response - trucks and helicopters.
-                    transfers[0].panelTitle = Translations.Translate("TFC_DIS_TRU");
-                    transfers[0].outsideText = null;
-                    transfers[0].recordNumber = ServiceLimits.IncomingMask;
-                    transfers[0].reason = TransferManager.TransferReason.Collapsed;
-                    transfers[0].nextRecord = 0;
-                    transfers[1].panelTitle = Translations.Translate("TFC_DIS_HEL");
-                    transfers[1].outsideText = null;
-                    transfers[1].recordNumber = ServiceLimits.IncomingMask + 1;
-                    transfers[1].reason = TransferManager.TransferReason.Collapsed2;
-                    transfers[1].nextRecord = 0;
-                    return 2;
+                    if(buildingInfo.GetAI() is DisasterResponseBuildingAI)
+                    {
+                        transfers[0].panelTitle = Translations.Translate("TFC_DIS_TRU");
+                        transfers[0].outsideText = null;
+                        transfers[0].recordNumber = ServiceLimits.IncomingMask;
+                        transfers[0].reason = TransferManager.TransferReason.Collapsed;
+                        transfers[0].nextRecord = 0;
+                        transfers[1].panelTitle = Translations.Translate("TFC_DIS_HEL");
+                        transfers[1].outsideText = null;
+                        transfers[1].recordNumber = ServiceLimits.IncomingMask + 1;
+                        transfers[1].reason = TransferManager.TransferReason.Collapsed2;
+                        transfers[1].nextRecord = 0;
+                        return 2;
+                    }
+                    // shelters import goods
+                    else if (buildingInfo.GetAI() is ShelterAI)
+                    {
+                        transfers[0].panelTitle = "import food to shelter";
+                        transfers[0].outsideText = Translations.Translate("TFC_BLD_IMP");
+                        transfers[0].outsideTip = Translations.Translate("TFC_BLD_IMP_TIP");
+                        transfers[0].recordNumber = ServiceLimits.IncomingMask;
+                        transfers[0].reason = TransferManager.TransferReason.None;
+                        transfers[0].nextRecord = 0;
+                        return 1;
+                    }
+                    return 0;
+
+                case ItemClass.Service.Electricity:
+                    // import oil and coal for power plants
+                    if(buildingInfo.GetAI() is PowerPlantAI powerPlantAI && powerPlantAI.m_resourceType != TransferManager.TransferReason.None)
+                    {
+                        transfers[0].panelTitle = "import " + powerPlantAI.m_resourceType.ToString();
+                        transfers[0].outsideText = null;
+                        transfers[0].recordNumber = ServiceLimits.IncomingMask;
+                        transfers[0].reason = TransferManager.TransferReason.None;
+                        transfers[0].nextRecord = 0;
+                        return 1;
+                    }
+                    return 0;
 
                 case ItemClass.Service.PoliceDepartment:
                     Building.Flags buildingFlags = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID].m_flags;
@@ -203,7 +241,7 @@ namespace TransferController
                     return 2;
 
                 case ItemClass.Service.PlayerIndustry:
-                    if (buildingInfo.m_buildingAI is IndustrialExtractorAI)
+                    if (buildingInfo.m_buildingAI is ExtractingFacilityAI)
                     {
                         transfers[0].panelTitle = Translations.Translate("TFC_GEN_SEL");
                         transfers[0].outsideText = Translations.Translate("TFC_BLD_EXP");
@@ -232,6 +270,22 @@ namespace TransferController
                     {
                         transfers[0].panelTitle = Translations.Translate("TFC_GEN_BUY");
                         transfers[0].outsideText = null;
+                        transfers[0].recordNumber = ServiceLimits.IncomingMask;
+                        transfers[0].reason = TransferManager.TransferReason.None;
+                        transfers[0].nextRecord = 0;
+                        transfers[1].panelTitle = Translations.Translate("TFC_GEN_SEL");
+                        transfers[1].outsideText = Translations.Translate("TFC_BLD_EXP");
+                        transfers[1].outsideTip = Translations.Translate("TFC_BLD_EXP_TIP");
+                        transfers[1].recordNumber = ServiceLimits.OutgoingMask;
+                        transfers[1].reason = TransferManager.TransferReason.LuxuryProducts;
+                        transfers[1].nextRecord = 0;
+                        return 2;
+                    }
+                    else if (buildingInfo.m_buildingAI is WarehouseAI)
+                    {
+                        transfers[0].panelTitle = Translations.Translate("TFC_GEN_BUY");
+                        transfers[0].outsideText = Translations.Translate("TFC_BLD_EXP");
+                        transfers[0].outsideTip = Translations.Translate("TFC_BLD_EXP_TIP");
                         transfers[0].recordNumber = ServiceLimits.IncomingMask;
                         transfers[0].reason = TransferManager.TransferReason.None;
                         transfers[0].nextRecord = 0;
@@ -376,7 +430,8 @@ namespace TransferController
                     if (buildingInfo.m_buildingAI is FishFarmAI || buildingInfo.m_buildingAI is FishingHarborAI)
                     {
                         transfers[0].panelTitle = Translations.Translate("TFC_FIS_MKO");
-                        transfers[0].outsideText = null;
+                        transfers[0].outsideText = Translations.Translate("TFC_BLD_EXP");
+                        transfers[0].outsideTip = Translations.Translate("TFC_BLD_EXP_TIP");
                         transfers[0].recordNumber = ServiceLimits.OutgoingMask;
                         transfers[0].reason = TransferManager.TransferReason.Fish;
                         transfers[0].nextRecord = 0;
@@ -399,7 +454,8 @@ namespace TransferController
                         transfers[0].reason = TransferManager.TransferReason.Fish;
                         transfers[0].nextRecord = 0;
                         transfers[1].panelTitle = Translations.Translate("TFC_FIS_CFO");
-                        transfers[1].outsideText = null;
+                        transfers[1].outsideText = Translations.Translate("TFC_BLD_EXP");
+                        transfers[1].outsideTip = Translations.Translate("TFC_BLD_EXP_TIP");
                         transfers[1].recordNumber = ServiceLimits.OutgoingMask;
                         transfers[1].reason = TransferManager.TransferReason.Goods;
                         transfers[1].nextRecord = 0;
