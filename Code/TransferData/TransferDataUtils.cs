@@ -307,15 +307,13 @@ namespace TransferController
                         transfers[1].nextRecord = 0;
 
                         transfers[2].panelTitle = Translations.Translate("TFC_MAI_OGM");
-                        transfers[2].outsideText = Translations.Translate("TFC_BLD_EXP");
-                        transfers[2].outsideTip = Translations.Translate("TFC_BLD_EXP_TIP");
+                        transfers[2].outsideText = null;
                         transfers[2].recordNumber = ServiceLimits.OutgoingMask + 1;
                         transfers[2].reason = TransferManager.TransferReason.OutgoingMail;
                         transfers[2].nextRecord = 0;
 
                         transfers[3].panelTitle = Translations.Translate("TFC_MAI_ICM");
-                        transfers[3].outsideText = Translations.Translate("TFC_BLD_IMP");
-                        transfers[3].outsideTip = Translations.Translate("TFC_BLD_IMP_TIP");
+                        transfers[3].outsideText = null;
                         transfers[3].recordNumber = ServiceLimits.IncomingMask + 1;
                         transfers[3].reason = TransferManager.TransferReason.IncomingMail;
                         transfers[3].nextRecord = 0;
