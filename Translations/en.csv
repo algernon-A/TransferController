@@ -14,6 +14,7 @@ TFC_BLD_IMP_TIP,Permit this building to import from outside connections.
 TFC_BLD_EXP,Allow exports
 TFC_BLD_EXP_TIP,Permit this building to export to outside connections.
 TFC_BLD_NOD,No local district
+TFC_FIR_BUI,Building fire fighting
 TFC_FIR_FOR,Forest fire fighting
 TFC_DIS_TRU,Disaster response trucks
 TFC_DIS_HEL,Disaster response helicopters

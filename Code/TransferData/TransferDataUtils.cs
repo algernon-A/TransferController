@@ -55,7 +55,7 @@ namespace TransferController
 
                 case ItemClass.Service.FireDepartment:
                     // Fire departments have one basic entry.
-                    transfers[0].panelTitle = Translations.Translate("TFC_GEN_SER");
+                    transfers[0].panelTitle = Translations.Translate("TFC_FIR_BUI");
                     transfers[0].outsideText = null;
                     transfers[0].recordNumber = ServiceLimits.IncomingMask;
                     transfers[0].reason = TransferManager.TransferReason.Fire;
@@ -136,18 +136,6 @@ namespace TransferController
                             transfers[0].recordNumber = ServiceLimits.IncomingMask;
                             transfers[0].reason = TransferManager.TransferReason.CriminalMove;
                             transfers[0].nextRecord = 0;
-
-                            // Prison Helicopter Mod.
-                            if (buildingInfo.m_buildingAI.GetType().Name.Equals("PrisonCopterPoliceStationAI"))
-                            {
-                                transfers[1].panelTitle = Translations.Translate("TFC_POL_PHI");
-                                transfers[1].outsideText = null;
-                                transfers[1].recordNumber = ServiceLimits.IncomingMask + 1;
-                                transfers[1].reason = (TransferManager.TransferReason)126;
-                                transfers[1].nextRecord = 0;
-                                return 2;
-                            }
-
                             return 1;
                         }
                         else
