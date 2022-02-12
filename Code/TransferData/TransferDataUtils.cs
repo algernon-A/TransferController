@@ -251,7 +251,7 @@ namespace TransferController
                         transfers[0].nextRecord = 0;
                         return 1;
                     }
-                    else if (buildingInfo.m_buildingAI is ProcessingFacilityAI)
+                    else if (buildingInfo.m_buildingAI is ProcessingFacilityAI && buildingInfo.m_class.m_level < ItemClass.Level.Level5)
                     {
                         transfers[0].panelTitle = Translations.Translate("TFC_GEN_BUY");
                         transfers[0].outsideText = Translations.Translate("TFC_BLD_IMP");
@@ -284,8 +284,8 @@ namespace TransferController
                     else if (buildingInfo.m_buildingAI is WarehouseAI)
                     {
                         transfers[0].panelTitle = Translations.Translate("TFC_GEN_BUY");
-                        transfers[0].outsideText = Translations.Translate("TFC_BLD_EXP");
-                        transfers[0].outsideTip = Translations.Translate("TFC_BLD_EXP_TIP");
+                        transfers[0].outsideText = Translations.Translate("TFC_BLD_IMP");
+                        transfers[0].outsideTip = Translations.Translate("TFC_BLD_IMP_TIP");
                         transfers[0].recordNumber = ServiceLimits.IncomingMask;
                         transfers[0].reason = TransferManager.TransferReason.None;
                         transfers[0].nextRecord = 0;

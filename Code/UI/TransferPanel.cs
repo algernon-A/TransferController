@@ -168,7 +168,7 @@ namespace TransferController
         private bool OutsideConnection
         {
             get => ServiceLimits.GetOutsideConnection(currentBuilding, recordNumber);
-            set => ServiceLimits.SetOutsideConnection(currentBuilding, recordNumber, !value, TransferReason, NextRecord);
+            set => ServiceLimits.SetOutsideConnection(currentBuilding, recordNumber, value, TransferReason, NextRecord);
         }
 
 
