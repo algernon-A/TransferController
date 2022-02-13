@@ -76,6 +76,7 @@
     <Compile Include="Code\TranslationFramework\TranslationFramework.cs" />
     <Compile Include="Code\TranslationFramework\TranslationXML.cs" />
     <Compile Include="Code\UI\DistrictSelectionPanel\BuildingDistrictSelectionPanel.cs" />
+    <Compile Include="Code\UI\OffersPanel.cs" />
     <Compile Include="Code\UI\TCTool.cs" />
     <Compile Include="Code\UI\TransferPanel.cs" />
     <Compile Include="Code\UI\BuildingInfoPanel.cs" />
@@ -84,6 +85,7 @@
     <Compile Include="Code\UI\UIFastList\BasicRow.cs" />
     <Compile Include="Code\UI\UIFastList\DistrictFastList.cs" />
     <Compile Include="Code\UI\UIFastList\DistrictRow.cs" />
+    <Compile Include="Code\UI\UIFastList\OfferRow.cs" />
     <Compile Include="Code\UI\UIFastList\UIFastList.cs" />
     <Compile Include="Code\Utils\FontUtils.cs" />
     <Compile Include="Code\Utils\Logging.cs" />
