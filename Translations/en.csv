@@ -38,6 +38,7 @@ TFC_FIS_MKI,Fish delivery from harbor
 TFC_FIS_CFO,Canned fish for sale
 TFC_OPT_DIS,Distance multiplier
 TFC_OFF_TIT,Open offers
+TFC_OFF_LOG,Transfer log
 TRN_CHOICE,Set language
 TRN_SYS,Use game language
 TFC_ERR_FAT,This means that the mod is not able to operate, and has shut down.

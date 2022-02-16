@@ -25,6 +25,7 @@ namespace TransferController
         private const float Panel1Y = PanelHeight + Margin;
         private const float PanelXOffset = -(TransferPanel.PanelWidth + Margin);
         private const float PanelYOffset = TransferPanel.PanelHeight + Margin;
+        private const float ButtonWidth = 120f;
 
 
         // Panel components.
@@ -37,6 +38,7 @@ namespace TransferController
         // Sub-panels.
         private readonly TransferStruct[] transfers = new TransferStruct[4];
         private OffersPanel offersPanel;
+        private LogPanel logPanel;
 
 
         // Dictionary getter.
@@ -90,8 +92,12 @@ namespace TransferController
                 };
 
                 // Offers button.
-                UIButton offersButton = UIControls.AddSmallerButton(this, Margin, ButtonY, Translations.Translate("TFC_OFF_TIT"), 120f);
+                UIButton offersButton = UIControls.AddSmallerButton(this, Margin, ButtonY, Translations.Translate("TFC_OFF_TIT"), ButtonWidth);
                 offersButton.eventClicked += ShowOffers;
+
+                // Log button.
+                UIButton logButton = UIControls.AddSmallerButton(this, Margin + ButtonWidth + Margin, ButtonY, Translations.Translate("TFC_OFF_LOG"), ButtonWidth);
+                logButton.eventClicked += ShowLog;
 
                 // District label.
                 districtLabel = UIControls.AddLabel(this, 0f, DistrictLabelY, String.Empty, PanelWidth, 0.9f);
@@ -225,6 +231,25 @@ namespace TransferController
 
             // Ensure offers panel is visible.
             offersPanel.Show();
+        }
+
+
+        /// <summary>
+        /// Event handler for show log button.
+        /// </summary>
+        /// <param name="component">Calling component (unused)</param>
+        /// <param name="clickEvent">Click event (unused)</param>
+        private void ShowLog(UIComponent component, UIMouseEventParameter clickEvent)
+        {
+            // Create log panel if it isn't already created.
+            if (logPanel == null)
+            {
+                logPanel = this.AddUIComponent<LogPanel>();
+                logPanel.relativePosition = new Vector2(PanelWidth + Margin, 0f);
+            }
+
+            // Ensure offers panel is visible.
+            logPanel.Show();
         }
     }
 }

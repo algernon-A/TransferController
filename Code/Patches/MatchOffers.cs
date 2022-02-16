@@ -195,7 +195,7 @@ namespace TransferController
 
 									// ---- Start code insert
 									// Apply custom districts filter - if failed, skip this candidate and cotinue to next candidate.
-									if (!DistrictChecksPassed(incomingOfferToMatch.Building, outgoingOfferCandidate.Building, incomingDistrict, districtManager.GetDistrict(outgoingOfferCandidate.Position), incomingPark, districtManager.GetPark(outgoingOfferCandidate.Position), material))
+									if (!DistrictChecksPassed(true, incomingOfferToMatch.Building, outgoingOfferCandidate.Building, incomingDistrict, districtManager.GetDistrict(outgoingOfferCandidate.Position), incomingPark, districtManager.GetPark(outgoingOfferCandidate.Position), material))
 									{
 										continue;
 									}
@@ -347,7 +347,7 @@ namespace TransferController
 
 								// ---- Start code insert
 								// Apply custom districts filter - if failed, skip this candidate and cotinue to next candidate.
-								if (!DistrictChecksPassed(incomingOfferCandidate.Building, outgoingOfferToMatch.Building, districtManager.GetDistrict(incomingOfferCandidate.Position), outgoingDistrict, districtManager.GetPark(incomingOfferCandidate.Position), outgoingPark, material))
+								if (!DistrictChecksPassed(false, incomingOfferCandidate.Building, outgoingOfferToMatch.Building, districtManager.GetDistrict(incomingOfferCandidate.Position), outgoingDistrict, districtManager.GetPark(incomingOfferCandidate.Position), outgoingPark, material))
 								{
 									continue;
 								}
@@ -483,6 +483,7 @@ namespace TransferController
 		/// <summary>
 		/// Applies district fileters, both incoming and outgoing.
 		/// </summary>
+		/// <param name="incoming">True if this is an incoming offer, false otherwise</param
 		/// <param name="incomingBuildingID">Building ID to check</param
 		/// <param name="outgoingBuildingID">Building ID to check</param>
 		/// <param name="incomingDistrict">District of incoming offer</param>
@@ -491,16 +492,19 @@ namespace TransferController
 		/// <param name="outgoingPark">Park area of outgoing offer</param>
 		/// <param name="reason">Transfer reason</param>
 		/// <returns>True if the transfer is permitted, false if prohibited</returns>
-		private static bool DistrictChecksPassed(uint incomingBuildingID, uint outgoingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason reason)
+		private static bool DistrictChecksPassed(bool incoming, uint incomingBuildingID, uint outgoingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason reason)
 		{
 			// First, check for incoming district restrictions.
 			if (IncomingDistrictChecksPassed(incomingBuildingID, outgoingBuildingID, incomingDistrict, outgoingDistrict, incomingPark, outgoingPark, reason))
 			{
 				// Then, outgoing.
-				return OutgoingDistrictChecksPassed(outgoingBuildingID, incomingBuildingID, incomingDistrict, outgoingDistrict, incomingPark, outgoingDistrict, reason);
+				bool result = OutgoingDistrictChecksPassed(outgoingBuildingID, incomingBuildingID, incomingDistrict, outgoingDistrict, incomingPark, outgoingDistrict, reason);
+				TransferLogging.AddEntry(reason, incoming, incomingBuildingID, outgoingBuildingID, result, result ? LogEntry.BlockReason.None : LogEntry.BlockReason.OutgoingDistrict);
+				return result;
 			}
 
 			// Failed incoming district restrictions - return false.
+			TransferLogging.AddEntry(reason, incoming, incomingBuildingID, outgoingBuildingID, false, LogEntry.BlockReason.IncomingDistrict);
 			return false;
         }
 
