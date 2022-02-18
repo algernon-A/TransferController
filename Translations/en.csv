@@ -39,6 +39,11 @@ TFC_FIS_CFO,Canned fish for sale
 TFC_OPT_DIS,Distance multiplier
 TFC_OFF_TIT,Open offers
 TFC_OFF_LOG,Transfer log
+TFC_LOG_BLD,This building only
+TFC_LOG_ALW,Allowed
+TFC_LOG_BLK,Blocked
+TFC_LOG_INC,Incoming
+TFC_LOG_OUT,Outgoing
 TRN_CHOICE,Set language
 TRN_SYS,Use game language
 TFC_ERR_FAT,This means that the mod is not able to operate, and has shut down.

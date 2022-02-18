@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using ColossalFramework;
 using ColossalFramework.UI;
 
-
-using System.Reflection;
 
 namespace TransferController
 {
@@ -18,16 +15,25 @@ namespace TransferController
         private const float Margin = 5f;
         private const float PanelWidth = TransferPanel.PanelWidth;
         private const float TitleHeight = 50f;
-        private const float ListY = TitleHeight + Margin;
+        private const float FilterY = TitleHeight + Margin;
+        private const float FilterRowHeight = 20f;
+        private const float FilterRow1 = FilterY;
+        private const float FilterRow2 = FilterRow1 + FilterRowHeight;
+        private const float FilterRow3 = FilterRow2 + FilterRowHeight;
+        private const float ListY = FilterRow3 + FilterRowHeight + Margin;
         private const float ListHeight = DistrictRow.RowHeight * 20f;
         private const float PanelHeight = ListY + ListHeight + Margin;
+        private const float FilterColumn1 = Margin;
+        private const float FilterColumn2 = 200f;
 
-
-        // Log list.
-        private readonly UIFastList logList;
 
         // Timer.
         private float ticks;
+
+        // Panel components.
+        private readonly UICheckBox thisBuildingCheck, blockedCheck, allowedCheck, inCheck, outCheck;
+        private readonly UIFastList logList;
+
 
 
         /// <summary>
@@ -63,6 +69,23 @@ namespace TransferController
                     Hide();
                 };
 
+                // Filter checkboxes.
+                thisBuildingCheck = UIControls.LabelledCheckBox(this, FilterColumn1, FilterRow1, Translations.Translate("TFC_LOG_BLD"));
+                thisBuildingCheck.isChecked = true;
+                thisBuildingCheck.eventCheckChanged += (control, isChecked) => PopulateList();
+                blockedCheck = UIControls.LabelledCheckBox(this, FilterColumn1, FilterRow2, Translations.Translate("TFC_LOG_BLK"));
+                blockedCheck.isChecked = true;
+                blockedCheck.eventCheckChanged += (control, isChecked) => PopulateList();
+                allowedCheck = UIControls.LabelledCheckBox(this, FilterColumn1, FilterRow3, Translations.Translate("TFC_LOG_ALW"));
+                allowedCheck.isChecked = true;
+                allowedCheck.eventCheckChanged += (control, isChecked) => PopulateList();
+                inCheck = UIControls.LabelledCheckBox(this, FilterColumn2, FilterRow2, Translations.Translate("TFC_LOG_INC"));
+                inCheck.isChecked = true;
+                inCheck.eventCheckChanged += (control, isChecked) => PopulateList();
+                outCheck = UIControls.LabelledCheckBox(this, FilterColumn2, FilterRow3, Translations.Translate("TFC_LOG_OUT"));
+                outCheck.isChecked = true;
+                outCheck.eventCheckChanged += (control, isChecked) => PopulateList();
+
                 // Log list.
                 logList = UIFastList.Create<OfferRow>(this);
                 logList.backgroundSprite = "UnlockingPanel";
@@ -94,7 +117,7 @@ namespace TransferController
             ticks += Time.deltaTime;
 
             // Refresh every second - maybe too much?
-            if (ticks > 1)
+            if (ticks > 1f)
             {
                 PopulateList();
                 ticks = 0f;
@@ -103,11 +126,12 @@ namespace TransferController
 
 
         /// <summary>
-        /// Populates the panel with a list of current transfers.
+        /// Populates the panel with a list of current transfers according to current filter settings.
         /// </summary>
         private void PopulateList()
         {
-            List<string> displayList = TransferLogging.EntryList();
+            // Get filtered log list.
+            List<string> displayList = TransferLogging.EntryList(thisBuildingCheck.isChecked ? BuildingPanelManager.Panel.CurrentBuilding : (ushort)0, blockedCheck.isChecked, allowedCheck.isChecked, inCheck.isChecked, outCheck.isChecked);
 
             // Set fastlist items.
             logList.rowsData = new FastList<object>

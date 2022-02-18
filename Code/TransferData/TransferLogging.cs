@@ -63,17 +63,28 @@ namespace TransferController
 
 
         /// <summary>
-        /// Returns a list of strings representing the current log.
+        /// Returns a list of strings representing the current log, applying specified filters.
         /// </summary>
-        /// <returns></returns>
-        internal static List<string> EntryList()
+        /// </summary>
+        /// <param name="buildingID">Building ID to match (0 for none)</param>
+        /// <param name="showBlocked">True to show blocked transfers</param>
+        /// <param name="showAllowed">True to show allowed transfers</param>
+        /// <param name="showIn">True to show incoming transfers</param>
+        /// <param name="showOut">True to show outgoing transfers</param>
+        /// <returns>List of strings representing the current log, filtered by parameters</returns>
+        internal static List<string> EntryList(ushort buildingID, bool showBlocked, bool showAllowed, bool showIn, bool showOut)
         {
             List<string> returnList = new List<string>(log.Length);
 
+            // Iterate through log starting at current position and wrapping around.
             for (ushort i = (ushort)(logIndex + 1); i != logIndex; ++i)
             {
+                // Apply filters.
                 LogEntry thisEntry = log[i];
-                if (thisEntry.inBuilding != 0)
+                if ((thisEntry.inBuilding != 0 || thisEntry.outBuilding != 0)
+                    && (buildingID == 0 | thisEntry.inBuilding == buildingID | thisEntry.outBuilding == buildingID)
+                    && ((showBlocked && !thisEntry.allowed) | (showAllowed && thisEntry.allowed))
+                    && ((showIn && thisEntry.incoming) | (showOut && !thisEntry.incoming)))
                 {
                     returnList.Add(String.Format("{0} {1}: {2}-{3}: {4} {5}", thisEntry.reason, thisEntry.incoming ? "In" : "Out", thisEntry.inBuilding, thisEntry.outBuilding, thisEntry.allowed ? "Allow" : "Block", thisEntry.blockedReason));
                 }
