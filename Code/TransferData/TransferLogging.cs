@@ -21,8 +21,8 @@ namespace TransferController
 
         public TransferManager.TransferReason reason;
         public bool incoming;
-        public uint inBuilding;
-        public uint outBuilding;
+        public ushort inBuilding;
+        public ushort outBuilding;
         public bool allowed;
         public BlockReason blockedReason;
     }
@@ -47,7 +47,7 @@ namespace TransferController
         /// <param name="outBuilding">Outgoing building ID</param>
         /// <param name="allowed">True if the transfer was allowed, false if blocked</param>
         /// <param name="blockedReason">Reason for transfer being blocked</param>
-        internal static void AddEntry(TransferManager.TransferReason reason, bool incoming, uint inBuilding, uint outBuilding, bool allowed, LogEntry.BlockReason blockedReason)
+        internal static void AddEntry(TransferManager.TransferReason reason, bool incoming, ushort inBuilding, ushort outBuilding, bool allowed, LogEntry.BlockReason blockedReason)
         {
             // Add new log entry with provided data and increment log index pointer.
             log[logIndex++] = new LogEntry
@@ -63,7 +63,7 @@ namespace TransferController
 
 
         /// <summary>
-        /// Returns a list of strings representing the current log, applying specified filters.
+        /// Returns a list of OfferData instances representing the current log, applying specified filters.
         /// </summary>
         /// </summary>
         /// <param name="buildingID">Building ID to match (0 for none)</param>
@@ -71,10 +71,10 @@ namespace TransferController
         /// <param name="showAllowed">True to show allowed transfers</param>
         /// <param name="showIn">True to show incoming transfers</param>
         /// <param name="showOut">True to show outgoing transfers</param>
-        /// <returns>List of strings representing the current log, filtered by parameters</returns>
-        internal static List<string> EntryList(ushort buildingID, bool showBlocked, bool showAllowed, bool showIn, bool showOut)
+        /// <returns>List of OfferData instances representing the current log, filtered by parameters</returns>
+        internal static List<OfferData> EntryList(ushort buildingID, bool showBlocked, bool showAllowed, bool showIn, bool showOut)
         {
-            List<string> returnList = new List<string>(log.Length);
+            List<OfferData> returnList = new List<OfferData>(log.Length);
 
             // Iterate through log starting at current position and wrapping around.
             for (ushort i = (ushort)(logIndex + 1); i != logIndex; ++i)
@@ -86,7 +86,7 @@ namespace TransferController
                     && ((showBlocked && !thisEntry.allowed) | (showAllowed && thisEntry.allowed))
                     && ((showIn && thisEntry.incoming) | (showOut && !thisEntry.incoming)))
                 {
-                    returnList.Add(String.Format("{0} {1}: {2}-{3}: {4} {5}", thisEntry.reason, thisEntry.incoming ? "In" : "Out", thisEntry.inBuilding, thisEntry.outBuilding, thisEntry.allowed ? "Allow" : "Block", thisEntry.blockedReason));
+                    returnList.Add(new OfferData(String.Format("{0} {1}: {2}-{3}: {4} {5}", thisEntry.reason, thisEntry.incoming ? "In" : "Out", thisEntry.inBuilding, thisEntry.outBuilding, thisEntry.allowed ? "Allow" : "Block", thisEntry.blockedReason), thisEntry.inBuilding == buildingID ? thisEntry.outBuilding : thisEntry.inBuilding));
                 }
             }
 

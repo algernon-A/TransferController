@@ -122,7 +122,7 @@ namespace TransferController
         /// </summary>
         private void PopulateList()
         {
-            List<string> offerList = new List<string>();
+            List<OfferData> offerList = new List<OfferData>();
 
             TransferManager tManager = Singleton<TransferManager>.instance;
 
@@ -145,14 +145,14 @@ namespace TransferController
                 if (incomingOffers[i].Building == currentBuilding)
                 {
                     Logging.Message(incomingOffers[i].ToString());
-                    offerList.Add(String.Format("Incoming {0} priority {1}", thisReason, priority));
+                    offerList.Add(new OfferData(String.Format("Incoming {0} priority {1}", thisReason, priority), 0));
                 }
 
                 // Outgoing offers.
                 if (outgoingOffers[i].Building == currentBuilding)
                 {
                     Logging.Message(incomingOffers[i].ToString());
-                    offerList.Add(String.Format("Outgoing {0} priority {1}", thisReason, priority));
+                    offerList.Add(new OfferData(String.Format("Outgoing {0} priority {1}", thisReason, priority), 0));
                 }
             }
 

@@ -499,7 +499,7 @@ namespace TransferController
 		/// <param name="outgoingPark">Park area of outgoing offer</param>
 		/// <param name="reason">Transfer reason</param>
 		/// <returns>True if the transfer is permitted, false if prohibited</returns>
-		private static bool DistrictChecksPassed(bool incoming, uint incomingBuildingID, uint outgoingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason reason)
+		private static bool DistrictChecksPassed(bool incoming, ushort incomingBuildingID, ushort outgoingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason reason)
 		{
 			// First, check for incoming district restrictions.
 			if (IncomingDistrictChecksPassed(incomingBuildingID, outgoingBuildingID, incomingDistrict, outgoingDistrict, incomingPark, outgoingPark, reason))
@@ -527,7 +527,7 @@ namespace TransferController
 		/// <param name="outgoingPark">Park area of outgoing offer</param>
 		/// <param name="transferReason">Transfer reason</param>
 		/// <returns>True if the transfer is permitted, false if prohibited</returns>
-		private static bool IncomingDistrictChecksPassed(uint buildingID, uint outgoingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason transferReason)
+		private static bool IncomingDistrictChecksPassed(ushort buildingID, ushort outgoingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason transferReason)
 		{
 			// Calculate building record ID.
 			uint mask = ServiceLimits.IncomingMask << 24;
@@ -605,7 +605,7 @@ namespace TransferController
 		/// <param name="outgoingDistrict">District of outgoing offer</param>
 		/// <param name="transferReason">Transfer reason</param>
 		/// <returns>True if the transfer is permitted, false if prohibited</returns>
-		private static bool OutgoingDistrictChecksPassed(uint buildingID, uint incomingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason transferReason)
+		private static bool OutgoingDistrictChecksPassed(ushort buildingID, ushort incomingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason transferReason)
 		{
 			// Calculate building record ID.
 			uint mask = (uint)ServiceLimits.OutgoingMask << 24;

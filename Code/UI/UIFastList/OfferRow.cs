@@ -1,9 +1,32 @@
 ﻿using UnityEngine;
+using ColossalFramework;
 using ColossalFramework.UI;
 
 
 namespace TransferController
 {
+	/// <summary>
+	/// Class to hold offer data for logging offers.
+	/// </summary>
+	public class OfferData
+    {
+		public string text;
+		public ushort buildingID;
+
+
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		/// <param name="displayText">Text to display</param>
+		/// <param name="building">Target building ID (0 for none)</param>
+		public OfferData(string displayText, ushort building)
+        {
+			text = displayText;
+			buildingID = building;
+        }
+    }
+
+
 	/// <summary>
 	/// UI fastlist item for districts.
 	/// </summary>
@@ -17,8 +40,8 @@ namespace TransferController
 		// District name label.
 		private UILabel logLine;
 
-		// District ID.
-		protected int districtID;
+		// Building ID.
+		private ushort buildingID;
 
 		/// <summary>
 		/// Generates and displays a list row.
@@ -43,8 +66,18 @@ namespace TransferController
 				logLine.font = FontUtils.Regular;
 			}
 
-			// Display logging line.
-			logLine.text = data as string;
+			// Update text and building ID.
+			if (data is OfferData offerData)
+			{
+				logLine.text = offerData.text;
+				buildingID = offerData.buildingID;
+			}
+			else
+            {
+				// Clear building ID and text if no valid data.
+				logLine.text = string.Empty;
+				buildingID = 0;
+            }
 
 			// Call OnSizeChanged to set label position.
 			OnSizeChanged();
@@ -72,7 +105,15 @@ namespace TransferController
 		/// </summary>
 		protected override void UpdateSelection()
 		{
-			// No selection action.
+			Logging.Message("updateselection");
+
+			// Got to target building.
+			if (buildingID != 0)
+            {
+				InstanceID instance = default;
+				instance.Building = buildingID;
+				ToolsModifierControl.cameraController.SetTarget(instance, Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID].m_position, zoomIn: true);
+			}
 		}
 	}
 }
