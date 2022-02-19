@@ -94,14 +94,21 @@ namespace TransferController
 
 			// --- Setup for code inserts.
 			DistrictManager districtManager = Singleton<DistrictManager>.instance;
+			bool supportedReason = SupportedTransfer(material);
+
 			// --- End setup for code inserts.
 
 			// Distance multiplier for this transfer.
-			// Replacing original code: float distanceMultiplier = GetDistanceMultiplier(material);
-			float distanceMultiplier = (GetDistanceMultiplier(material) * distancePercentage) / 100;
+			float distanceMultiplier = GetDistanceMultiplier(material);
 
 			// num = optimalDistanceSquared (offers within this distance are automatically accepted first go, with no further candidates examined).
 			float optimalDistanceSquared = ((distanceMultiplier == 0f) ? 0f : (0.01f / distanceMultiplier));
+			// ---- Start code insert
+			if (supportedReason)
+			{
+				optimalDistanceSquared *= distancePercentage / 100f;
+			}
+			// ---- End code insert
 
 			// num2 = thisPriority
 			for (int thisPriority = 7; thisPriority >= 0; thisPriority--)
@@ -195,7 +202,7 @@ namespace TransferController
 
 									// ---- Start code insert
 									// Apply custom districts filter - if failed, skip this candidate and cotinue to next candidate.
-									if (!DistrictChecksPassed(incomingOfferToMatch.Building, outgoingOfferCandidate.Building, incomingDistrict, districtManager.GetDistrict(outgoingOfferCandidate.Position), incomingPark, districtManager.GetPark(outgoingOfferCandidate.Position), material))
+									if (supportedReason && !DistrictChecksPassed(true, incomingOfferToMatch.Building, outgoingOfferCandidate.Building, incomingDistrict, districtManager.GetDistrict(outgoingOfferCandidate.Position), incomingPark, districtManager.GetPark(outgoingOfferCandidate.Position), material))
 									{
 										continue;
 									}
@@ -347,7 +354,7 @@ namespace TransferController
 
 								// ---- Start code insert
 								// Apply custom districts filter - if failed, skip this candidate and cotinue to next candidate.
-								if (!DistrictChecksPassed(incomingOfferCandidate.Building, outgoingOfferToMatch.Building, districtManager.GetDistrict(incomingOfferCandidate.Position), outgoingDistrict, districtManager.GetPark(incomingOfferCandidate.Position), outgoingPark, material))
+								if (supportedReason && !DistrictChecksPassed(false, incomingOfferCandidate.Building, outgoingOfferToMatch.Building, districtManager.GetDistrict(incomingOfferCandidate.Position), outgoingDistrict, districtManager.GetPark(incomingOfferCandidate.Position), outgoingPark, material))
 								{
 									continue;
 								}
@@ -483,6 +490,7 @@ namespace TransferController
 		/// <summary>
 		/// Applies district fileters, both incoming and outgoing.
 		/// </summary>
+		/// <param name="incoming">True if this is an incoming offer, false otherwise</param
 		/// <param name="incomingBuildingID">Building ID to check</param
 		/// <param name="outgoingBuildingID">Building ID to check</param>
 		/// <param name="incomingDistrict">District of incoming offer</param>
@@ -491,16 +499,19 @@ namespace TransferController
 		/// <param name="outgoingPark">Park area of outgoing offer</param>
 		/// <param name="reason">Transfer reason</param>
 		/// <returns>True if the transfer is permitted, false if prohibited</returns>
-		private static bool DistrictChecksPassed(uint incomingBuildingID, uint outgoingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason reason)
+		private static bool DistrictChecksPassed(bool incoming, ushort incomingBuildingID, ushort outgoingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason reason)
 		{
 			// First, check for incoming district restrictions.
 			if (IncomingDistrictChecksPassed(incomingBuildingID, outgoingBuildingID, incomingDistrict, outgoingDistrict, incomingPark, outgoingPark, reason))
 			{
 				// Then, outgoing.
-				return OutgoingDistrictChecksPassed(outgoingBuildingID, incomingBuildingID, incomingDistrict, outgoingDistrict, incomingPark, outgoingDistrict, reason);
+				bool result = OutgoingDistrictChecksPassed(outgoingBuildingID, incomingBuildingID, incomingDistrict, outgoingDistrict, incomingPark, outgoingDistrict, reason);
+				TransferLogging.AddEntry(reason, incoming, incomingBuildingID, outgoingBuildingID, result, result ? LogEntry.BlockReason.None : LogEntry.BlockReason.OutgoingDistrict);
+				return result;
 			}
 
 			// Failed incoming district restrictions - return false.
+			TransferLogging.AddEntry(reason, incoming, incomingBuildingID, outgoingBuildingID, false, LogEntry.BlockReason.IncomingDistrict);
 			return false;
         }
 
@@ -516,7 +527,7 @@ namespace TransferController
 		/// <param name="outgoingPark">Park area of outgoing offer</param>
 		/// <param name="transferReason">Transfer reason</param>
 		/// <returns>True if the transfer is permitted, false if prohibited</returns>
-		private static bool IncomingDistrictChecksPassed(uint buildingID, uint outgoingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason transferReason)
+		private static bool IncomingDistrictChecksPassed(ushort buildingID, ushort outgoingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason transferReason)
 		{
 			// Calculate building record ID.
 			uint mask = ServiceLimits.IncomingMask << 24;
@@ -594,7 +605,7 @@ namespace TransferController
 		/// <param name="outgoingDistrict">District of outgoing offer</param>
 		/// <param name="transferReason">Transfer reason</param>
 		/// <returns>True if the transfer is permitted, false if prohibited</returns>
-		private static bool OutgoingDistrictChecksPassed(uint buildingID, uint incomingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason transferReason)
+		private static bool OutgoingDistrictChecksPassed(ushort buildingID, ushort incomingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason transferReason)
 		{
 			// Calculate building record ID.
 			uint mask = (uint)ServiceLimits.OutgoingMask << 24;
@@ -642,7 +653,7 @@ namespace TransferController
 					return true;
 				}
 
-				// Only block specified transfers, industrial transfers, and taxis.
+				// Only block specified transfers.
 				if (buildingRecord.reason == TransferManager.TransferReason.None)
                 {
 					switch (transferReason)
@@ -665,6 +676,8 @@ namespace TransferController
 						case TransferManager.TransferReason.Metals:
 						case TransferManager.TransferReason.LuxuryProducts:
 						case TransferManager.TransferReason.Taxi:
+						case TransferManager.TransferReason.AnimalProducts:
+						case TransferManager.TransferReason.Fish:
 							// Legitimate transfer reason; resume normal outgoing district check.
 							break;
 
@@ -689,5 +702,68 @@ namespace TransferController
 			// If we got here, we didn't get a record.
 			return false;
 		}
+
+
+		/// <summary>
+		/// Dertermines whether or not this transfer reason is supported.
+		/// </summary>
+		/// <param name="reason">Transfer reason to check</param>
+		/// <returns>True if this is a supported reason, false otherwise</returns>
+		private static bool SupportedTransfer(TransferManager.TransferReason reason)
+        {
+			switch (reason)
+            {
+				// Supported reasons.
+				case TransferManager.TransferReason.Oil:
+				case TransferManager.TransferReason.Ore:
+				case TransferManager.TransferReason.Logs:
+				case TransferManager.TransferReason.Grain:
+				case TransferManager.TransferReason.Goods:
+				case TransferManager.TransferReason.Coal:
+				case TransferManager.TransferReason.Food:
+				case TransferManager.TransferReason.Lumber:
+				case TransferManager.TransferReason.Flours:
+				case TransferManager.TransferReason.Paper:
+				case TransferManager.TransferReason.PlanedTimber:
+				case TransferManager.TransferReason.Petrol:
+				case TransferManager.TransferReason.Petroleum:
+				case TransferManager.TransferReason.Plastics:
+				case TransferManager.TransferReason.Glass:
+				case TransferManager.TransferReason.Metals:
+				case TransferManager.TransferReason.LuxuryProducts:
+				case TransferManager.TransferReason.AnimalProducts:
+				case TransferManager.TransferReason.Fish:
+				case TransferManager.TransferReason.ChildCare:
+				case TransferManager.TransferReason.ElderCare:
+				case TransferManager.TransferReason.Crime:
+				case TransferManager.TransferReason.CriminalMove:
+				case TransferManager.TransferReason.Fire:
+				case TransferManager.TransferReason.Fire2:
+				case TransferManager.TransferReason.ForestFire:
+				case TransferManager.TransferReason.Sick:
+				case TransferManager.TransferReason.Sick2:
+				case TransferManager.TransferReason.SickMove:
+				case TransferManager.TransferReason.Garbage:
+				case TransferManager.TransferReason.GarbageMove:
+				case TransferManager.TransferReason.GarbageTransfer:
+				case TransferManager.TransferReason.Mail:
+				case TransferManager.TransferReason.UnsortedMail:
+				case TransferManager.TransferReason.SortedMail:
+				case TransferManager.TransferReason.IncomingMail:
+				case TransferManager.TransferReason.OutgoingMail:
+				case TransferManager.TransferReason.ParkMaintenance:
+				case TransferManager.TransferReason.RoadMaintenance:
+				case TransferManager.TransferReason.Snow:
+				case TransferManager.TransferReason.SnowMove:
+				case TransferManager.TransferReason.FloodWater:
+				case (TransferManager.TransferReason)125:
+				case (TransferManager.TransferReason)126:
+					return true;
+
+				default:
+					// If not explicitly supported, it isn't.
+					return false;
+            }
+        }
 	}
 }
