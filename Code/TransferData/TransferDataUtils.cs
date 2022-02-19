@@ -86,10 +86,11 @@ namespace TransferController
                         return 1;
                     }
                     // Boiler station
-                    else if (buildingInfo.GetAI() is HeatingPlantAI heatingPlantAI && buildingInfo.m_class.m_level == ItemClass.Level.Level2 && heatingPlantAI.m_resourceType != TransferManager.TransferReason.None)
+                    else if (buildingInfo.GetAI() is HeatingPlantAI heatingPlantAI && buildingInfo.m_class.m_level == ItemClass.Level.Level2 && heatingPlantAI.m_resourceType == TransferManager.TransferReason.Oil)
                     {
-                        transfers[0].panelTitle = "boiler station import oil";
-                        transfers[0].outsideText = null;
+                        transfers[0].panelTitle = "Boiler Station import oil";
+                        transfers[0].outsideText = Translations.Translate("TFC_BLD_IMP");
+                        transfers[0].outsideTip = Translations.Translate("TFC_BLD_IMP_TIP");
                         transfers[0].recordNumber = ServiceLimits.IncomingMask;
                         transfers[0].reason = TransferManager.TransferReason.Oil;
                         transfers[0].nextRecord = 0;
@@ -116,7 +117,7 @@ namespace TransferController
                     // shelters import goods
                     else if (buildingInfo.GetAI() is ShelterAI)
                     {
-                        transfers[0].panelTitle = "import food to shelter";
+                        transfers[0].panelTitle = "Import Goods to Shelter";
                         transfers[0].outsideText = Translations.Translate("TFC_BLD_IMP");
                         transfers[0].outsideTip = Translations.Translate("TFC_BLD_IMP_TIP");
                         transfers[0].recordNumber = ServiceLimits.IncomingMask;
@@ -131,9 +132,10 @@ namespace TransferController
                     if(buildingInfo.GetAI() is PowerPlantAI powerPlantAI && powerPlantAI.m_resourceType != TransferManager.TransferReason.None)
                     {
                         transfers[0].panelTitle = "import " + powerPlantAI.m_resourceType.ToString();
-                        transfers[0].outsideText = null;
+                        transfers[0].outsideText = Translations.Translate("TFC_BLD_IMP");
+                        transfers[0].outsideTip = Translations.Translate("TFC_BLD_IMP_TIP");
                         transfers[0].recordNumber = ServiceLimits.IncomingMask;
-                        transfers[0].reason = TransferManager.TransferReason.None;
+                        transfers[0].reason = powerPlantAI.m_resourceType;
                         transfers[0].nextRecord = 0;
                         return 1;
                     }
