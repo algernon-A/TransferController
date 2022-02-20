@@ -29,6 +29,8 @@ TFC_MAI_OUN,Outgoing unsorted mail
 TFC_MAI_IST,Incoming sorted mail
 TFC_MAI_IUN,Unsorted mail from post offices
 TFC_MAI_OST,Sorted mail to post offices
+TFC_MAI_OGM,Outgoing mail
+TFC_MAI_ICM,Incoming mail
 TFC_GAR_ICO,Garbage collection
 TFC_GAR_ITF,Garbage transfer from collection
 TFC_GAR_OTF,Garbage transfer to processing

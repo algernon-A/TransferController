@@ -1,7 +1,9 @@
 ﻿using System;
 using UnityEngine;
 using ColossalFramework.UI;
-
+using ColossalFramework;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace TransferController
 {
@@ -37,7 +39,6 @@ namespace TransferController
         // Current selections.
         private ushort currentBuilding;
         private byte recordNumber;
-
 
         // Event status.
         private bool disableEvents = false;
@@ -167,7 +168,7 @@ namespace TransferController
         private bool OutsideConnection
         {
             get => ServiceLimits.GetOutsideConnection(currentBuilding, recordNumber);
-            set => ServiceLimits.SetOutsideConnection(currentBuilding, recordNumber, !value, TransferReason, NextRecord);
+            set => ServiceLimits.SetOutsideConnection(currentBuilding, recordNumber, value, TransferReason, NextRecord);
         }
 
 

@@ -22,6 +22,13 @@ namespace TransferController
         private static readonly SavedInputKey uuiSavedKey = new SavedInputKey("Transfer Controller hotkey", "Transfer Controller hotkey", key: KeyCode.T, control: true, shift: false, alt: true, false);
 
 
+        [XmlIgnore]
+        public static readonly SavedInputKey keyCopy = new SavedInputKey(nameof(keyCopy), SettingsFileName, SavedInputKey.Encode(KeyCode.C, true, false, false), true);
+
+        [XmlIgnore]
+        public static readonly SavedInputKey keyPaste = new SavedInputKey(nameof(keyPaste), SettingsFileName, SavedInputKey.Encode(KeyCode.V, true, false, false), true);
+
+
         /// <summary>
         /// Panel hotkey as ColossalFramework SavedInputKey.
         /// </summary>
