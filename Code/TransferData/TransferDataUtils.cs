@@ -75,7 +75,7 @@ namespace TransferController
                     return 1;
 
                 case ItemClass.Service.Water:
-                    // Water pumping
+                    // Water pumping.
                     if (buildingInfo.GetAI() is WaterFacilityAI waterFacilityAI && buildingInfo.m_class.m_level == ItemClass.Level.Level1 && waterFacilityAI.m_pumpingVehicles > 0)
                     {
                         transfers[0].panelTitle = Translations.Translate("TFC_GEN_SER");
@@ -85,10 +85,10 @@ namespace TransferController
                         transfers[0].nextRecord = 0;
                         return 1;
                     }
-                    // Boiler station
+                    // Boiler station - imports oil.
                     else if (buildingInfo.GetAI() is HeatingPlantAI heatingPlantAI && buildingInfo.m_class.m_level == ItemClass.Level.Level2 && heatingPlantAI.m_resourceType == TransferManager.TransferReason.Oil)
                     {
-                        transfers[0].panelTitle = "Boiler Station import oil";
+                        transfers[0].panelTitle = Translations.Translate("TFC_OIL_INC");
                         transfers[0].outsideText = Translations.Translate("TFC_BLD_IMP");
                         transfers[0].outsideTip = Translations.Translate("TFC_BLD_IMP_TIP");
                         transfers[0].recordNumber = ServiceLimits.IncomingMask;
@@ -114,10 +114,10 @@ namespace TransferController
                         transfers[1].nextRecord = 0;
                         return 2;
                     }
-                    // shelters import goods
+                    // Sheters import goods (supplies).
                     else if (buildingInfo.GetAI() is ShelterAI)
                     {
-                        transfers[0].panelTitle = "Import Goods to Shelter";
+                        transfers[0].panelTitle = Translations.Translate("TFC_SHT_INC");
                         transfers[0].outsideText = Translations.Translate("TFC_BLD_IMP");
                         transfers[0].outsideTip = Translations.Translate("TFC_BLD_IMP_TIP");
                         transfers[0].recordNumber = ServiceLimits.IncomingMask;
@@ -131,7 +131,7 @@ namespace TransferController
                     // import oil and coal for power plants
                     if(buildingInfo.GetAI() is PowerPlantAI powerPlantAI && powerPlantAI.m_resourceType != TransferManager.TransferReason.None)
                     {
-                        transfers[0].panelTitle = "import " + powerPlantAI.m_resourceType.ToString();
+                        transfers[0].panelTitle = Translations.Translate("TFC_PWR_IMP") + powerPlantAI.m_resourceType.ToString();
                         transfers[0].outsideText = Translations.Translate("TFC_BLD_IMP");
                         transfers[0].outsideTip = Translations.Translate("TFC_BLD_IMP_TIP");
                         transfers[0].recordNumber = ServiceLimits.IncomingMask;
