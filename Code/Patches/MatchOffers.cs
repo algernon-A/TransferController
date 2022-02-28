@@ -94,6 +94,9 @@ namespace TransferController
 
 			// --- Setup for code inserts.
 			DistrictManager districtManager = Singleton<DistrictManager>.instance;
+			Vehicle[] vehicleBuffer = Singleton<VehicleManager>.instance.m_vehicles.m_buffer;
+			Building[] buildingBuffer = Singleton<BuildingManager>.instance.m_buildings.m_buffer;
+
 			bool supportedReason = SupportedTransfer(material);
 
 			// --- End setup for code inserts.
@@ -141,8 +144,40 @@ namespace TransferController
 						Vector3 incomingPosition = incomingOfferToMatch.Position;
 
 						// ---- Start code insert
-						byte incomingDistrict = districtManager.GetDistrict(incomingPosition);
-						byte incomingPark = districtManager.GetPark(incomingPosition);
+
+
+						// If this is a supported transfer, try to get ulitmate building source (leaving as zero by default).
+						ushort incomingBuilding = 0;
+						byte incomingDistrict = 0;
+						byte incomingPark = 0;
+
+						// Set up for exclusion checking if this is a supported reason.
+						if (supportedReason)
+						{
+							// Get incoming building and vehicle IDs.
+							incomingBuilding = incomingOfferToMatch.Building;
+
+							// If no building, use vehicle source building, if any.
+							if (incomingBuilding == 0)
+							{
+								ushort incomingVehicle = incomingOfferToMatch.Vehicle;
+								if (incomingVehicle != 0)
+								{
+									incomingBuilding = vehicleBuffer[incomingVehicle].m_sourceBuilding;
+								}
+							}
+
+							// Position of incoming building (source building or vehicle source building), if any.
+							if (incomingBuilding != 0)
+                            {
+								incomingPosition = buildingBuffer[incomingBuilding].m_position;
+
+								// Incoming district.
+								incomingDistrict = districtManager.GetDistrict(incomingPosition);
+								incomingPark = districtManager.GetPark(incomingPosition);
+							}
+						}
+
 						// ---- End code insert
 
 						// num8 = incoming offer amount
@@ -201,10 +236,34 @@ namespace TransferController
 									}
 
 									// ---- Start code insert
+
 									// Apply custom districts filter - if failed, skip this candidate and cotinue to next candidate.
-									if (supportedReason && !DistrictChecksPassed(true, incomingOfferToMatch.Building, outgoingOfferCandidate.Building, incomingDistrict, districtManager.GetDistrict(outgoingOfferCandidate.Position), incomingPark, districtManager.GetPark(outgoingOfferCandidate.Position), material))
+									if (supportedReason)
 									{
-										continue;
+										// Get outgoing building and vehicle IDs.
+										ushort outCandidateBuilding = outgoingOfferCandidate.Building;
+
+										// If no building, use vehicle source building, if any.
+										if (outCandidateBuilding == 0)
+										{
+											ushort outCandidateVehicle = outgoingOfferCandidate.Vehicle;
+											if (outCandidateVehicle != 0)
+											{
+												outCandidateBuilding = vehicleBuffer[outCandidateVehicle].m_sourceBuilding;
+											}
+										}
+
+										// Ensure we've got at least one valid building in the match before going further.
+										if (incomingBuilding + outCandidateBuilding != 0)
+										{
+											// Position of incoming building (source building or vehicle source building)
+											Vector3 outCandidatePosition = outCandidateBuilding == 0 ? outgoingOfferCandidate.Position : buildingBuffer[outCandidateBuilding].m_position;
+
+											if (!DistrictChecksPassed(true, incomingBuilding, outgoingOfferCandidate.Building, incomingDistrict, districtManager.GetDistrict(outCandidatePosition), incomingPark, districtManager.GetPark(outCandidatePosition), material))
+											{
+												continue;
+											}
+										}
 									}
 									// ---- End code insert
 
@@ -300,8 +359,36 @@ namespace TransferController
 					Vector3 outgoingPosition = outgoingOfferToMatch.Position;
 
 					// ---- Start code insert
-					byte outgoingDistrict = districtManager.GetDistrict(outgoingPosition);
-					byte outgoingPark = districtManager.GetPark(outgoingPosition);
+
+					// If this is a supported transfer, try to get ulitmate building source (leaving as zero by default).
+					ushort outgoingBuilding = 0;
+					byte outgoingDistrict = 0;
+					byte outgoingPark = 0;
+
+					// Set up for exclusion checking if this is a supported reason.
+					if (supportedReason)
+					{
+						// Get incoming building and vehicle IDs.
+						outgoingBuilding = outgoingOfferToMatch.Building;
+						ushort outgoingVehicle = outgoingOfferToMatch.Vehicle;
+
+						// If no building, use vehicle source building, if any.
+						if (outgoingBuilding == 0 & outgoingVehicle != 0)
+						{
+							outgoingBuilding = vehicleBuffer[outgoingVehicle].m_sourceBuilding;
+						}
+
+						// Position of incoming building (source building or vehicle source building), if any.
+						if (outgoingBuilding != 0)
+						{
+							outgoingPosition = buildingBuffer[outgoingBuilding].m_position;
+
+							// Outgoing district.
+							outgoingDistrict = districtManager.GetDistrict(outgoingPosition);
+							outgoingPark = districtManager.GetPark(outgoingPosition);
+						}
+					}
+
 					// ---- End code insert
 
 					// num24 = outgoingAmount
@@ -354,9 +441,32 @@ namespace TransferController
 
 								// ---- Start code insert
 								// Apply custom districts filter - if failed, skip this candidate and cotinue to next candidate.
-								if (supportedReason && !DistrictChecksPassed(false, incomingOfferCandidate.Building, outgoingOfferToMatch.Building, districtManager.GetDistrict(incomingOfferCandidate.Position), outgoingDistrict, districtManager.GetPark(incomingOfferCandidate.Position), outgoingPark, material))
+								if (supportedReason)
 								{
-									continue;
+									// Get incoming building and vehicle IDs.
+									ushort inCandidateBuilding = incomingOfferCandidate.Building;
+
+									// If no building, use vehicle source building, if any.
+									if (inCandidateBuilding == 0)
+									{
+										ushort inCandidateVehicle = incomingOfferCandidate.Vehicle;
+										if (inCandidateVehicle != 0)
+										{
+											inCandidateBuilding = vehicleBuffer[inCandidateVehicle].m_sourceBuilding;
+										}
+									}
+
+									// Ensure we've got at least one valid building in the match before going further.
+									if (outgoingBuilding + inCandidateBuilding != 0)
+									{
+										// Position of incoming building (source building or vehicle source building)
+										Vector3 inCandidatePosition = inCandidateBuilding == 0 ? incomingOfferCandidate.Position : buildingBuffer[inCandidateBuilding].m_position;
+
+										if (!DistrictChecksPassed(false, incomingOfferCandidate.Building, outgoingOfferToMatch.Building, districtManager.GetDistrict(inCandidatePosition), outgoingDistrict, districtManager.GetPark(inCandidatePosition), outgoingPark, material))
+										{
+											continue;
+										}
+									}
 								}
 								// ---- End code insert
 
