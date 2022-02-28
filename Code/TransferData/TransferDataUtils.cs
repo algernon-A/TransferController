@@ -131,7 +131,7 @@ namespace TransferController
                     // import oil and coal for power plants
                     if(buildingInfo.GetAI() is PowerPlantAI powerPlantAI && powerPlantAI.m_resourceType != TransferManager.TransferReason.None)
                     {
-                        transfers[0].panelTitle = Translations.Translate("TFC_PWR_IMP") + powerPlantAI.m_resourceType.ToString();
+                        transfers[0].panelTitle = Translations.Translate("TFC_PWR_INC") + powerPlantAI.m_resourceType.ToString();
                         transfers[0].outsideText = Translations.Translate("TFC_BLD_IMP");
                         transfers[0].outsideTip = Translations.Translate("TFC_BLD_IMP_TIP");
                         transfers[0].recordNumber = ServiceLimits.IncomingMask;
