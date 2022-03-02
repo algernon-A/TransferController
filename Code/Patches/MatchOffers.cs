@@ -853,6 +853,8 @@ namespace TransferController
 				case TransferManager.TransferReason.Sick:
 				case TransferManager.TransferReason.Sick2:
 				case TransferManager.TransferReason.SickMove:
+				case TransferManager.TransferReason.Dead:
+				case TransferManager.TransferReason.DeadMove:
 				case TransferManager.TransferReason.Garbage:
 				case TransferManager.TransferReason.GarbageMove:
 				case TransferManager.TransferReason.GarbageTransfer:
