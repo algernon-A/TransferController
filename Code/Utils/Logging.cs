@@ -3,7 +3,7 @@ using System.Text;
 using UnityEngine;
 
 
-namespace TransferController
+namespace Arson
 {
     /// <summary>
     /// Logging utility class.
@@ -11,7 +11,11 @@ namespace TransferController
     internal static class Logging
     {
         // Logging detail flag.
-        internal static bool detailLogging = true;
+        internal static bool detailLogging = false;
+
+        // Stringbuilder for messaging.
+        private static StringBuilder message = new StringBuilder(128);
+
 
         /// <summary>
         /// Prints a single-line debugging message to the Unity output log with an "ERROR: " prefix, regardless of the 'detailed logging' setting.
@@ -24,7 +28,7 @@ namespace TransferController
         /// Prints a single-line debugging message to the Unity output log, regardless of the 'detailed logging' setting.
         /// </summary>
         /// <param name="messages">Message to log (individual strings will be concatenated)</param>
-        internal static void KeyMessage(params string[] messages) => WriteMessage(String.Empty, messages);
+        internal static void KeyMessage(params object[] messages) => WriteMessage(String.Empty, messages);
 
 
         /// <summary>
@@ -49,7 +53,8 @@ namespace TransferController
         {
             // Use StringBuilder for efficiency since we're doing a lot of manipulation here.
             // Start with mod name (to easily identify relevant messages), followed by colon to indicate start of actual message.
-            StringBuilder message = new StringBuilder(TransferControllerMod.ModName);
+            message.Length = 0;
+            message.Append(ArsonMod.ModName);
             message.Append(": ");
 
             // Add each message parameter.
@@ -88,7 +93,8 @@ namespace TransferController
         {
             // Use StringBuilder for efficiency since we're doing a lot of manipulation here.
             // Start with mod name (to easily identify relevant messages), followed by colon to indicate start of actual message.
-            StringBuilder message = new StringBuilder(TransferControllerMod.ModName);
+            message.Length = 0;
+            message.Append(ArsonMod.ModName);
             message.Append(": ");
 
             // Append prefix.
