@@ -3,7 +3,7 @@ using System.Text;
 using UnityEngine;
 
 
-namespace Arson
+namespace TransferController
 {
     /// <summary>
     /// Logging utility class.
@@ -54,7 +54,7 @@ namespace Arson
             // Use StringBuilder for efficiency since we're doing a lot of manipulation here.
             // Start with mod name (to easily identify relevant messages), followed by colon to indicate start of actual message.
             message.Length = 0;
-            message.Append(ArsonMod.ModName);
+            message.Append(TransferControllerMod.ModName);
             message.Append(": ");
 
             // Add each message parameter.
@@ -94,7 +94,7 @@ namespace Arson
             // Use StringBuilder for efficiency since we're doing a lot of manipulation here.
             // Start with mod name (to easily identify relevant messages), followed by colon to indicate start of actual message.
             message.Length = 0;
-            message.Append(ArsonMod.ModName);
+            message.Append(TransferControllerMod.ModName);
             message.Append(": ");
 
             // Append prefix.
