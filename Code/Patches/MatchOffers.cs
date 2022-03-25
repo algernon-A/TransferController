@@ -219,7 +219,8 @@ namespace TransferController
 								// num18 = otherPriorityPlus
 								float otherPriorityPlus = (float)otherPriority + 0.1f;
 
-								// This check is to give higher value priorities a greater range of candidates.
+								// Breaks when distanceValue (see below) is greater than the other priority.
+								// This means that a lower-level priority will be matched as 'good enough', but higher-level priorities will be more aggressively matched.
 								if (bestDistanceValue >= otherPriorityPlus)
 								{
 									break;
@@ -271,12 +272,23 @@ namespace TransferController
 									float squaredDistance = Vector3.SqrMagnitude(outgoingOfferCandidate.Position - incomingPosition);
 
 									// num20 = distanceValue
+									// E.g. distanceMultiplier for Fire is 1E-0.5f.
+									// For other priority 5 and distance 1,000: 5.1 - 5.1 / (1f - 1,000^2 * 0.00001) = 0.4636364
+									// For other priority 5 and distance 400: 5.1 - 5.1 / (1f - 400^2 * 0.00001) = 1.961539
+									// For other priority 5 and distance 100: 5.1 - 5.1 / (1f - 100^2 * 0.00001) = 4.636364
+									// For other priority 2 and distance 1,000: 2.1 - 2.1 / (1f - 1,000^2 * 0.00001) = 0.1909091
+									// For other priority 2 and distance 400: 2.1 - 2.1 / (1f - 400^2 * 0.00001) = 0.8076923
+									// For other priority 2 and distance 100: 2.1 - 2.1 / (1f - 100^2 * 0.00001) = 1.909091
+									// This means that distance is more important for higher-level transfers.
+									// A lower-priority transfer will take priority only if it's much closer, or conversely, a higher-priority offer will take precedence over a greater radius.
 									float distanceValue = ((!(distanceMultiplier < 0f)) ? (otherPriorityPlus / (1f + squaredDistance * distanceMultiplier)) : (otherPriorityPlus - otherPriorityPlus / (1f - squaredDistance * distanceMultiplier)));
 									if (distanceValue > bestDistanceValue)
 									{
 										matchedPriority = otherPriority;
 										matchedIndex = candidateIndex;
 										bestDistanceValue = distanceValue;
+
+										// Automatically accept offers within the optimal distance.
 										if (squaredDistance < optimalDistanceSquared)
 										{
 											break;
@@ -423,7 +435,8 @@ namespace TransferController
 							// num34 - otherPriorityPlus
 							float otherPriorityPlus = (float)otherPriority + 0.1f;
 
-							// This check is to give higher value priorities a greater range of candidates.
+							// Breaks when distanceValue (see below) is greater than the other priority.
+							// This means that a lower-level priority will be matched as 'good enough', but higher-level priorities will be more aggressively matched.
 							if (bestDistanceValue >= otherPriorityPlus)
 							{
 								break;
@@ -475,12 +488,15 @@ namespace TransferController
 								float squaredDistance = Vector3.SqrMagnitude(incomingOfferCandidate.Position - outgoingPosition);
 
 								// num36 = distanceValue
+								// See above re num20 for details.
 								float distanceValue = ((!(distanceMultiplier < 0f)) ? (otherPriorityPlus / (1f + squaredDistance * distanceMultiplier)) : (otherPriorityPlus - otherPriorityPlus / (1f - squaredDistance * distanceMultiplier)));
 								if (distanceValue > bestDistanceValue)
 								{
 									matchedPriority = otherPriority;
 									matchedIndex = candidateIndex;
 									bestDistanceValue = distanceValue;
+
+									// Automatically accept offers within the optimal distance.
 									if (squaredDistance < optimalDistanceSquared)
 									{
 										break;

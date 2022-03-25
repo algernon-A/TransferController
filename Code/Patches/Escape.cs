@@ -15,7 +15,7 @@ namespace TransferController
         /// <returns>True (continue on to game method) if the zoning tool isn't already active, false (pre-empt game method) otherwise</returns>
         public static bool Prefix()
         {
-            // Is the zoning tool active?
+            // Is the TC tool tool active?
             if (TCTool.IsActiveTool)
             {
                 // Yes; toggle tool status and return false (pre-empt original method).
