@@ -11,7 +11,7 @@ namespace TransferController
     internal static class Logging
     {
         // Logging detail flag.
-        internal static bool detailLogging = false;
+        internal static bool detailLogging = true;
 
         // Stringbuilder for messaging.
         private static StringBuilder message = new StringBuilder(128);
