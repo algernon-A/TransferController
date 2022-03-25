@@ -843,8 +843,6 @@ namespace TransferController
 				case TransferManager.TransferReason.LuxuryProducts:
 				case TransferManager.TransferReason.AnimalProducts:
 				case TransferManager.TransferReason.Fish:
-				case TransferManager.TransferReason.ChildCare:
-				case TransferManager.TransferReason.ElderCare:
 				case TransferManager.TransferReason.Crime:
 				case TransferManager.TransferReason.CriminalMove:
 				case TransferManager.TransferReason.Fire:
