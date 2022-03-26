@@ -21,8 +21,8 @@ namespace TransferController
 
         public TransferManager.TransferReason reason;
         public bool incoming;
-        public ushort inBuilding;
-        public ushort outBuilding;
+        public byte priorityIn, priorityOut;
+        public ushort inBuilding, outBuilding;
         public bool allowed;
         public BlockReason blockedReason;
     }
@@ -43,17 +43,21 @@ namespace TransferController
         /// </summary>
         /// <param name="reason">Transfer reason</param>
         /// <param name="incoming">True if the offer is incoming, false otherwise</param>
+		/// <param name="priorityIn">Incoming offer priority</param
+		/// <param name="priorityOut">Outgoing offer priority</param
         /// <param name="inBuilding">Incoming building ID</param>
         /// <param name="outBuilding">Outgoing building ID</param>
         /// <param name="allowed">True if the transfer was allowed, false if blocked</param>
         /// <param name="blockedReason">Reason for transfer being blocked</param>
-        internal static void AddEntry(TransferManager.TransferReason reason, bool incoming, ushort inBuilding, ushort outBuilding, bool allowed, LogEntry.BlockReason blockedReason)
+        internal static void AddEntry(TransferManager.TransferReason reason, bool incoming, byte priorityIn, byte priorityOut, ushort inBuilding, ushort outBuilding, bool allowed, LogEntry.BlockReason blockedReason)
         {
             // Add new log entry with provided data and increment log index pointer.
             log[logIndex++] = new LogEntry
             {
                 reason = reason,
                 incoming = incoming,
+                priorityIn = priorityIn,
+                priorityOut = priorityOut,
                 inBuilding = inBuilding,
                 outBuilding = outBuilding,
                 allowed = allowed,
@@ -86,7 +90,7 @@ namespace TransferController
                     && ((showBlocked && !thisEntry.allowed) | (showAllowed && thisEntry.allowed))
                     && ((showIn && thisEntry.incoming) | (showOut && !thisEntry.incoming)))
                 {
-                    returnList.Add(new OfferData(String.Format("{0} {1}: {2}-{3}: {4} {5}", thisEntry.reason, thisEntry.incoming ? "In" : "Out", thisEntry.inBuilding, thisEntry.outBuilding, thisEntry.allowed ? "Allow" : "Block", thisEntry.blockedReason), thisEntry.inBuilding == buildingID ? thisEntry.outBuilding : thisEntry.inBuilding));
+                    returnList.Add(new OfferData(String.Format("{0} {1} {2}-{3}: {4}-{5}: {6} {7}", thisEntry.reason, thisEntry.incoming ? "In" : "Out", thisEntry.priorityIn, thisEntry.priorityOut, thisEntry.inBuilding, thisEntry.outBuilding, thisEntry.allowed ? "Allow" : "Block", thisEntry.blockedReason), thisEntry.inBuilding == buildingID ? thisEntry.outBuilding : thisEntry.inBuilding));
                 }
             }
 

@@ -265,7 +265,7 @@ namespace TransferController
 											// Position of incoming building (source building or vehicle source building)
 											Vector3 outCandidatePosition = outCandidateBuilding == 0 ? outgoingOfferCandidate.Position : buildingBuffer[outCandidateBuilding].m_position;
 
-											if (!DistrictChecksPassed(true, incomingBuilding, outgoingOfferCandidate.Building, incomingDistrict, districtManager.GetDistrict(outCandidatePosition), incomingPark, districtManager.GetPark(outCandidatePosition), material))
+											if (!DistrictChecksPassed(true, (byte)thisPriority, (byte)otherPriority, incomingBuilding, outgoingOfferCandidate.Building, incomingDistrict, districtManager.GetDistrict(outCandidatePosition), incomingPark, districtManager.GetPark(outCandidatePosition), material))
 											{
 												continue;
 											}
@@ -490,7 +490,7 @@ namespace TransferController
 										// Position of incoming building (source building or vehicle source building)
 										Vector3 inCandidatePosition = inCandidateBuilding == 0 ? incomingOfferCandidate.Position : buildingBuffer[inCandidateBuilding].m_position;
 
-										if (!DistrictChecksPassed(false, incomingOfferCandidate.Building, outgoingOfferToMatch.Building, districtManager.GetDistrict(inCandidatePosition), outgoingDistrict, districtManager.GetPark(inCandidatePosition), outgoingPark, material))
+										if (!DistrictChecksPassed(false, (byte)otherPriority, (byte)thisPriority, incomingOfferCandidate.Building, outgoingOfferToMatch.Building, districtManager.GetDistrict(inCandidatePosition), outgoingDistrict, districtManager.GetPark(inCandidatePosition), outgoingPark, material))
 										{
 											continue;
 										}
@@ -638,6 +638,8 @@ namespace TransferController
 		/// Applies district fileters, both incoming and outgoing.
 		/// </summary>
 		/// <param name="incoming">True if this is an incoming offer, false otherwise</param
+		/// <param name="priorityIn">Incoming offer priority</param
+		/// <param name="priorityOut">Outgoing offer priority</param
 		/// <param name="incomingBuildingID">Building ID to check</param
 		/// <param name="outgoingBuildingID">Building ID to check</param>
 		/// <param name="incomingDistrict">District of incoming offer</param>
@@ -646,19 +648,19 @@ namespace TransferController
 		/// <param name="outgoingPark">Park area of outgoing offer</param>
 		/// <param name="reason">Transfer reason</param>
 		/// <returns>True if the transfer is permitted, false if prohibited</returns>
-		private static bool DistrictChecksPassed(bool incoming, ushort incomingBuildingID, ushort outgoingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason reason)
+		private static bool DistrictChecksPassed(bool incoming, byte priorityIn, byte priorityOut, ushort incomingBuildingID, ushort outgoingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason reason)
 		{
 			// First, check for incoming district restrictions.
 			if (IncomingDistrictChecksPassed(incomingBuildingID, outgoingBuildingID, incomingDistrict, outgoingDistrict, incomingPark, outgoingPark, reason))
 			{
 				// Then, outgoing.
 				bool result = OutgoingDistrictChecksPassed(outgoingBuildingID, incomingBuildingID, incomingDistrict, outgoingDistrict, incomingPark, outgoingDistrict, reason);
-				TransferLogging.AddEntry(reason, incoming, incomingBuildingID, outgoingBuildingID, result, result ? LogEntry.BlockReason.None : LogEntry.BlockReason.OutgoingDistrict);
+				TransferLogging.AddEntry(reason, incoming, priorityIn, priorityOut, incomingBuildingID, outgoingBuildingID, result, result ? LogEntry.BlockReason.None : LogEntry.BlockReason.OutgoingDistrict);
 				return result;
 			}
 
 			// Failed incoming district restrictions - return false.
-			TransferLogging.AddEntry(reason, incoming, incomingBuildingID, outgoingBuildingID, false, LogEntry.BlockReason.IncomingDistrict);
+			TransferLogging.AddEntry(reason, incoming, priorityIn, priorityOut, incomingBuildingID, outgoingBuildingID, false, LogEntry.BlockReason.IncomingDistrict);
 			return false;
         }
 
@@ -667,6 +669,7 @@ namespace TransferController
 		///  Applies incoming district filters.
 		/// </summary>
 		/// <param name="buildingID">Building ID to check</param>
+		/// <param name="priority">Offer priority</param
 		/// <param name="outgoingBuildingID">Building ID of outgoing building</param>
 		/// <param name="incomingDistrict">District of incoming offer</param>
 		/// <param name="outgoingDistrict">District of outgoing offer</param>

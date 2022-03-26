@@ -13,7 +13,6 @@ namespace TransferController
 		public string text;
 		public ushort buildingID;
 
-
 		/// <summary>
 		/// Constructor
 		/// </summary>
