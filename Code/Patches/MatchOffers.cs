@@ -17,6 +17,9 @@ namespace TransferController
 		// Matching distance multiplier.
 		internal static int distancePercentage = 100;
 
+		// Warehouse priority flag.
+		internal static int warehousePriority = 0;
+
 		// Reflection info for private TransferManager fields.
 		private static FieldInfo m_incomingCountField;
 		private static FieldInfo m_outgoingCountField;
@@ -145,7 +148,6 @@ namespace TransferController
 
 						// ---- Start code insert
 
-
 						// If this is a supported transfer, try to get ulitmate building source (leaving as zero by default).
 						ushort incomingBuilding = 0;
 						byte incomingDistrict = 0;
@@ -238,6 +240,9 @@ namespace TransferController
 
 									// ---- Start code insert
 
+									// Record default otherPriorityPlus.
+									otherPriorityPlus = (float)otherPriority + 0.1f;
+
 									// Apply custom districts filter - if failed, skip this candidate and cotinue to next candidate.
 									if (supportedReason)
 									{
@@ -265,6 +270,12 @@ namespace TransferController
 												continue;
 											}
 										}
+
+										// Modify otherPriorityPlus for warehouse transfers.
+										if (buildingBuffer[outCandidateBuilding].Info.m_buildingAI is WarehouseAI)
+                                        {
+											otherPriorityPlus += warehousePriority;
+                                        }
 									}
 									// ---- End code insert
 
@@ -453,6 +464,10 @@ namespace TransferController
 								}
 
 								// ---- Start code insert
+
+								// Record default otherPriorityPlus.
+								otherPriorityPlus = (float)otherPriority + 0.1f;
+
 								// Apply custom districts filter - if failed, skip this candidate and cotinue to next candidate.
 								if (supportedReason)
 								{
@@ -479,6 +494,12 @@ namespace TransferController
 										{
 											continue;
 										}
+									}
+
+									// Modify otherPriorityPlus for warehouse transfers.
+									if (buildingBuffer[inCandidateBuilding].Info.m_buildingAI is WarehouseAI)
+									{
+										otherPriorityPlus += warehousePriority;
 									}
 								}
 								// ---- End code insert

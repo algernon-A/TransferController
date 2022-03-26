@@ -75,6 +75,11 @@ namespace TransferController
         public int XMLDistanceMultiplier { get => TransferManagerPatches.distancePercentage; set => TransferManagerPatches.distancePercentage = value; }
 
 
+        // Warehouse priority boost.
+        [XmlElement("WarehousePriority")]
+        public int XMLWarehousePriority { get => TransferManagerPatches.warehousePriority; set => TransferManagerPatches.warehousePriority = value; }
+
+
         /// <summary>
         /// Load settings from XML file.
         /// </summary>

@@ -42,6 +42,7 @@ TFC_PWR_INC,Purchasing fuel
 TFC_OIL_INC,Oil supply
 TFC_SHT_INC,Purchasing supplies
 TFC_OPT_DIS,Distance multiplier
+TFC_OPT_WAR,Warehouse priority boost
 TFC_OFF_TIT,Open offers
 TFC_OFF_LOG,Transfer log
 TFC_LOG_BLD,This building only
