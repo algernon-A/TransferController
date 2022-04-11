@@ -510,7 +510,7 @@ namespace TransferController
 
 								// num36 = distanceValue
 								// See above re num20 for details.
-								float distanceValue = ((!(distanceMultiplier < 0f)) ? (otherPriorityPlus / (1f + squaredDistance * distanceMultiplier)) : (otherPriorityPlus - otherPriorityPlus / (1f - squaredDistance * distanceMultiplier)));
+								float distanceValue = (!(distanceMultiplier < 0f)) ? (otherPriorityPlus / (1f + squaredDistance * distanceMultiplier)) : (otherPriorityPlus - otherPriorityPlus / (1f - squaredDistance * distanceMultiplier));
 								if (distanceValue > bestDistanceValue)
 								{
 									matchedPriority = otherPriority;
@@ -607,7 +607,7 @@ namespace TransferController
 		/// </summary>
 		/// <param name="instance">TransferManager instance</param>
 		/// <param name="material">Transfer material</param>
-		/// <returns></returns>
+		/// <returns>Distance multiplier</returns>
 		[HarmonyReversePatch]
 		[HarmonyPatch((typeof(TransferManager)), "GetDistanceMultiplier")]
 		[MethodImpl(MethodImplOptions.NoInlining)]
@@ -623,7 +623,6 @@ namespace TransferController
 		/// </summary>
 		/// <param name="instance">TransferManager instance</param>
 		/// <param name="material">Transfer material</param>
-		/// <returns></returns>
 		[HarmonyReversePatch]
 		[HarmonyPatch((typeof(TransferManager)), "StartTransfer")]
 		[MethodImpl(MethodImplOptions.NoInlining)]
@@ -654,7 +653,7 @@ namespace TransferController
 			if (IncomingDistrictChecksPassed(incomingBuildingID, outgoingBuildingID, incomingDistrict, outgoingDistrict, incomingPark, outgoingPark, reason))
 			{
 				// Then, outgoing.
-				bool result = OutgoingDistrictChecksPassed(outgoingBuildingID, incomingBuildingID, incomingDistrict, outgoingDistrict, incomingPark, outgoingDistrict, reason);
+				bool result = OutgoingDistrictChecksPassed(outgoingBuildingID, incomingBuildingID, incomingDistrict, outgoingDistrict, incomingPark, outgoingPark, reason);
 				TransferLogging.AddEntry(reason, incoming, priorityIn, priorityOut, incomingBuildingID, outgoingBuildingID, result, result ? LogEntry.BlockReason.None : LogEntry.BlockReason.OutgoingDistrict);
 				return result;
 			}
