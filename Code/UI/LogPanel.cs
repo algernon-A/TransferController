@@ -133,12 +133,10 @@ namespace TransferController
             // Get filtered log list.
             List<OfferData> displayList = TransferLogging.EntryList(thisBuildingCheck.isChecked ? BuildingPanelManager.Panel.CurrentBuilding : (ushort)0, blockedCheck.isChecked, allowedCheck.isChecked, inCheck.isChecked, outCheck.isChecked);
 
-            // Set fastlist items.
-            logList.rowsData = new FastList<object>
-            {
-                m_buffer = displayList.ToArray(),
-                m_size = displayList.Count
-            };
+            // Set fastlist items, without changing the display.
+            logList.rowsData.m_buffer = displayList.ToArray();
+            logList.rowsData.m_size = displayList.Count;
+            logList.Refresh();
         }
     }
 }
