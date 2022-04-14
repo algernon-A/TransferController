@@ -100,6 +100,7 @@ namespace TransferController
 		}
 
 
+		/// <summary>
 		/// Updates current replacement selection when this item is selected.
 		/// </summary>
 		protected override void UpdateSelection()
