@@ -728,7 +728,7 @@ namespace TransferController
 				// No same-district setting: return value is if the transfer reason is a match and if outgoing district is in the allowed districts for this building.
 				if ((buildingRecord.reason == TransferManager.TransferReason.None || buildingRecord.reason == transferReason) && buildingRecord.districts != null)
 				{
-					return buildingRecord.districts.Contains(outgoingDistrict) || buildingRecord.districts.Contains(~outgoingPark);
+					return buildingRecord.districts.Contains(outgoingDistrict) || buildingRecord.districts.Contains(-outgoingPark);
 				}
 			}
 			else
@@ -839,7 +839,7 @@ namespace TransferController
 				// No same-district setting: return value is if the transfer reason is a match and if outgoing district is in the allowed districts for this building.
 				if ((buildingRecord.reason == TransferManager.TransferReason.None || buildingRecord.reason == transferReason) && buildingRecord.districts != null)
 				{
-					return buildingRecord.districts.Contains(incomingDistrict) || buildingRecord.districts.Contains(~incomingPark);
+					return buildingRecord.districts.Contains(incomingDistrict) || buildingRecord.districts.Contains(-incomingPark);
 				}
 			}
 			else
