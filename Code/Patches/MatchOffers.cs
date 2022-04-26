@@ -711,11 +711,9 @@ namespace TransferController
 					}
 				}
 
-				// Check outside connection.
-				if (((buildingRecord.flags & ServiceLimits.RestrictionFlags.BlockOutsideConnection) != ServiceLimits.RestrictionFlags.None) && Singleton<BuildingManager>.instance.m_buildings.m_buffer[outgoingBuildingID].Info.m_buildingAI is OutsideConnectionAI)
+				if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[outgoingBuildingID].Info.m_buildingAI is OutsideConnectionAI)
 				{
-					// This is an outside connection and it's not permitted; return false.
-					return false;
+					return (buildingRecord.flags & ServiceLimits.RestrictionFlags.BlockOutsideConnection) == ServiceLimits.RestrictionFlags.None;
 				}
 
 				// Check same-district setting.
@@ -789,11 +787,10 @@ namespace TransferController
 				}
 
 				// Check outside connection.
-				if (((buildingRecord.flags & ServiceLimits.RestrictionFlags.BlockOutsideConnection) != ServiceLimits.RestrictionFlags.None) && Singleton<BuildingManager>.instance.m_buildings.m_buffer[incomingBuildingID].Info.m_buildingAI is OutsideConnectionAI)
+				if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[incomingBuildingID].Info.m_buildingAI is OutsideConnectionAI)
                 {
-					// This is an outside connection and it's not permitted; return false.
-					return false;
-                }
+					return (buildingRecord.flags & ServiceLimits.RestrictionFlags.BlockOutsideConnection) == ServiceLimits.RestrictionFlags.None;
+				}
 
 				// Check same-district setting.
 				if ((buildingRecord.flags & ServiceLimits.RestrictionFlags.BlockSameDistrict) == ServiceLimits.RestrictionFlags.None && (incomingDistrict != 0 && incomingDistrict == outgoingDistrict || (incomingPark != 0 && incomingPark == outgoingPark)))

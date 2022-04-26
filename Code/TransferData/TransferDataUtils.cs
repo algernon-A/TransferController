@@ -262,7 +262,8 @@ namespace TransferController
                         transfers[0].reason = TransferManager.TransferReason.None;
                         transfers[0].nextRecord = 0;
                         transfers[1].panelTitle = Translations.Translate("TFC_GEN_SEL");
-                        transfers[1].outsideText = null;
+                        transfers[1].outsideText = Translations.Translate("TFC_BLD_EXP");
+                        transfers[1].outsideTip = Translations.Translate("TFC_BLD_EXP_TIP");
                         transfers[1].recordNumber = ServiceLimits.OutgoingMask;
                         transfers[1].reason = TransferManager.TransferReason.None;
                         transfers[1].nextRecord = 0;
