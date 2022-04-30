@@ -265,7 +265,7 @@ namespace TransferController
 											// Position of incoming building (source building or vehicle source building)
 											Vector3 outCandidatePosition = outCandidateBuilding == 0 ? outgoingOfferCandidate.Position : buildingBuffer[outCandidateBuilding].m_position;
 
-											if (!DistrictChecksPassed(true, (byte)thisPriority, (byte)otherPriority, incomingBuilding, outgoingOfferCandidate.Building, incomingDistrict, districtManager.GetDistrict(outCandidatePosition), incomingPark, districtManager.GetPark(outCandidatePosition), material))
+											if (!DistrictChecksPassed(true, (byte)thisPriority, (byte)otherPriority, incomingBuilding, outCandidateBuilding, incomingDistrict, districtManager.GetDistrict(outCandidatePosition), incomingPark, districtManager.GetPark(outCandidatePosition), material))
 											{
 												continue;
 											}
@@ -490,7 +490,7 @@ namespace TransferController
 										// Position of incoming building (source building or vehicle source building)
 										Vector3 inCandidatePosition = inCandidateBuilding == 0 ? incomingOfferCandidate.Position : buildingBuffer[inCandidateBuilding].m_position;
 
-										if (!DistrictChecksPassed(false, (byte)otherPriority, (byte)thisPriority, incomingOfferCandidate.Building, outgoingOfferToMatch.Building, districtManager.GetDistrict(inCandidatePosition), outgoingDistrict, districtManager.GetPark(inCandidatePosition), outgoingPark, material))
+										if (!DistrictChecksPassed(false, (byte)otherPriority, (byte)thisPriority, inCandidateBuilding, outgoingBuilding, districtManager.GetDistrict(inCandidatePosition), outgoingDistrict, districtManager.GetPark(inCandidatePosition), outgoingPark, material))
 										{
 											continue;
 										}
