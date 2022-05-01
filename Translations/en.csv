@@ -18,11 +18,11 @@ TFC_FIR_BUI,Building fire fighting
 TFC_FIR_FOR,Forest fire fighting
 TFC_DIS_TRU,Disaster response trucks
 TFC_DIS_HEL,Disaster response helicopters
-TFC_POL_CMO,Criminal transfer to prison
-TFC_POL_PHO,Prisoner transfer by helicopter
+TFC_POL_PMO,Prisoner transfer by van to prison
+TFC_POL_PHO,Prisoner transfer by helicopter to prison
 TFC_POL_PHI,Prisoner collection by helicopter
-TFC_POL_PTO,Prisoner transfer to central station
-TFC_POL_PTI,Prisoner transfer from local station
+TFC_POL_PTO,Prisoner transfer to a central police station
+TFC_POL_PTI,Prisoner transfer from local stations
 TFC_MAI_IML,Local mail collection
 TFC_MAI_OSD,Local mail delivery
 TFC_MAI_OUN,Outgoing unsorted mail
