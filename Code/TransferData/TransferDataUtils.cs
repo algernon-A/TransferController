@@ -181,12 +181,12 @@ namespace TransferController
                         else
                         {
                             // Normal police station.
-                            transfers[0].panelTitle = Translations.Translate("TFC_GEN_SER");
+                            transfers[0].panelTitle = Translations.Translate("TFC_GEN_SER"); // police service restrictions
                             transfers[0].outsideText = null;
                             transfers[0].recordNumber = ServiceLimits.IncomingMask;
                             transfers[0].reason = TransferManager.TransferReason.Crime;
                             transfers[0].nextRecord = 0;
-                            transfers[1].panelTitle = Translations.Translate("TFC_POL_CMO");
+                            transfers[1].panelTitle = Translations.Translate("TFC_POL_PMO"); // Prisoner transfer by van to prison
                             transfers[1].outsideText = null;
                             transfers[1].recordNumber = ServiceLimits.OutgoingMask;
                             transfers[1].reason = TransferManager.TransferReason.CriminalMove;
@@ -195,25 +195,25 @@ namespace TransferController
                             // Prison Helicopter Mod.
                             if (buildingInfo.m_buildingAI.GetType().Name.Equals("PrisonCopterPoliceStationAI"))
                             {
-                                // Small (local) police station - send prisoners to central station.
+                                // Small (local) police station
                                 if ((buildingFlags & Building.Flags.Downgrading) != Building.Flags.None)
                                 {
-                                    transfers[2].panelTitle = Translations.Translate("TFC_POL_PTO");
+                                    transfers[2].panelTitle = Translations.Translate("TFC_POL_PTO"); // send prisoners to a central station
                                     transfers[2].outsideText = null;
                                     transfers[2].recordNumber = ServiceLimits.OutgoingMask + 1;
                                     transfers[2].reason = (TransferManager.TransferReason)125;
                                     transfers[2].nextRecord = 0;
                                     return 3;
                                 }
-                                // Big police station - collect prisoners from local stations, and transfer prisoners by helicopter to prison.
+                                // Big (central) police station
                                 else
                                 {
-                                    transfers[2].panelTitle = Translations.Translate("TFC_POL_PHO");
+                                    transfers[2].panelTitle = Translations.Translate("TFC_POL_PHO"); // transfer prisoners by helicopter to prison
                                     transfers[2].outsideText = null;
                                     transfers[2].recordNumber = ServiceLimits.OutgoingMask + 1;
                                     transfers[2].reason = (TransferManager.TransferReason)126;
                                     transfers[2].nextRecord = 0;
-                                    transfers[3].panelTitle = Translations.Translate("TFC_POL_PTI");
+                                    transfers[3].panelTitle = Translations.Translate("TFC_POL_PTI"); // transfer prisoners from local stations
                                     transfers[3].outsideText = null;
                                     transfers[3].recordNumber = ServiceLimits.IncomingMask + 1;
                                     transfers[3].reason = (TransferManager.TransferReason)125;
@@ -242,7 +242,7 @@ namespace TransferController
                     transfers[1].nextRecord = 0;
                     return 2;
 
-                case ItemClass.Service.PlayerIndustry:
+                case ItemClass.Service.PlayerIndustry: // industries dlc
                     if (buildingInfo.m_buildingAI is ExtractingFacilityAI)
                     {
                         transfers[0].panelTitle = Translations.Translate("TFC_GEN_SEL");
@@ -382,47 +382,80 @@ namespace TransferController
                     return 0;
 
                 case ItemClass.Service.Garbage:
-                    int numTransfers = 0;
-                    byte incomingIndex = 0, outgoingIndex = 0;
                     if (buildingInfo.GetAI() is LandfillSiteAI landfillAI)
                     {
-                        if (buildingInfo.GetClassLevel() == ItemClass.Level.Level4)
+                        // Incineration Plant
+                        if (buildingInfo.GetClassLevel() == ItemClass.Level.Level1 && landfillAI.m_electricityProduction != 0)
                         {
-                            // Waste transfer facility (level 4).
-                            transfers[numTransfers].panelTitle = Translations.Translate("TFC_GAR_ITF");
-                            transfers[numTransfers].outsideText = null;
-                            transfers[numTransfers].recordNumber = (byte)(ServiceLimits.IncomingMask + incomingIndex++);
-                            transfers[numTransfers].reason = TransferManager.TransferReason.GarbageTransfer;
-                            transfers[numTransfers++].nextRecord = 0;
+                            // Garbage Collection
+                            transfers[0].panelTitle = Translations.Translate("TFC_GAR_ICO");
+                            transfers[0].outsideText = null;
+                            transfers[0].recordNumber = ServiceLimits.IncomingMask;
+                            transfers[0].reason = TransferManager.TransferReason.Garbage;
+                            transfers[0].nextRecord = 0;
+
+                            return 1;
                         }
-                        else
+                        // Recycling Center	
+                        else if (buildingInfo.GetClassLevel() == ItemClass.Level.Level2 && landfillAI.m_materialProduction != 0)
                         {
-                            // Basic garbage collection (waste transfer facility is level 4).
-                            transfers[numTransfers].panelTitle = Translations.Translate("TFC_GAR_ICO");
-                            transfers[numTransfers].outsideText = null;
-                            transfers[numTransfers].recordNumber = (byte)(ServiceLimits.IncomingMask + incomingIndex++);
-                            transfers[numTransfers].reason = TransferManager.TransferReason.Garbage;
-                            transfers[numTransfers++].nextRecord = 0;
+                            // Garbage Collection
+                            transfers[0].panelTitle = Translations.Translate("TFC_GAR_ICO");
+                            transfers[0].outsideText = null;
+                            transfers[0].recordNumber = ServiceLimits.IncomingMask;
+                            transfers[0].reason = TransferManager.TransferReason.Garbage;
+                            transfers[0].nextRecord = 0;
 
-                            // Waste transfer to facility.
-                            transfers[numTransfers].panelTitle = Translations.Translate("TFC_GAR_OTF");
-                            transfers[numTransfers].outsideText = null;
-                            transfers[numTransfers].recordNumber = (byte)(ServiceLimits.OutgoingMask + outgoingIndex++);
-                            transfers[numTransfers].reason = TransferManager.TransferReason.GarbageTransfer;
-                            transfers[numTransfers++].nextRecord = 0;
+                            // Recovered resources for sale
+                            transfers[1].panelTitle = Translations.Translate("TFC_GAR_ORR");
+                            transfers[1].outsideText = Translations.Translate("TFC_BLD_EXP");
+                            transfers[1].outsideTip = Translations.Translate("TFC_BLD_EXP_TIP");
+                            transfers[1].recordNumber = ServiceLimits.OutgoingMask;
+                            transfers[1].reason = TransferManager.TransferReason.None;
+                            transfers[1].nextRecord = 0;
+
+                            return 2;
                         }
-
-                        if (landfillAI.m_materialProduction != 0)
+                        // Waste Transfer Facility and Landfill Site
+                        else if (buildingInfo.GetClassLevel() == ItemClass.Level.Level3 || buildingInfo.GetClassLevel() == ItemClass.Level.Level1 && landfillAI.m_electricityProduction == 0)
                         {
-                            // Recycling centre - add material delivery.
-                            transfers[numTransfers].panelTitle = Translations.Translate("TFC_GAR_ORR");
-                            transfers[numTransfers].outsideText = null;
-                            transfers[numTransfers].recordNumber = (byte)(ServiceLimits.OutgoingMask + outgoingIndex++);
-                            transfers[numTransfers].reason = TransferManager.TransferReason.None;
-                            transfers[numTransfers++].nextRecord = 0;
+                            // Garbage Collection
+                            transfers[0].panelTitle = Translations.Translate("TFC_GAR_ICO");
+                            transfers[0].outsideText = null;
+                            transfers[0].recordNumber = ServiceLimits.IncomingMask;
+                            transfers[0].reason = TransferManager.TransferReason.Garbage;
+                            transfers[0].nextRecord = 0;
+
+                            // Garbage Transfer for proccessing in a Waste Processing Complex
+                            transfers[1].panelTitle = Translations.Translate("TFC_GAR_OTF");
+                            transfers[1].outsideText = null;
+                            transfers[1].recordNumber = ServiceLimits.OutgoingMask;
+                            transfers[1].reason = TransferManager.TransferReason.GarbageTransfer;
+                            transfers[1].nextRecord = 0;
+
+                            return 2;
+                        }
+                        // Waste Processing Complex
+                        else if (buildingInfo.GetClassLevel() == ItemClass.Level.Level4)
+                        {
+                            // Garbage Transfer for proccessing from Waste Transfer Facility and Landfill Site
+                            transfers[0].panelTitle = Translations.Translate("TFC_GAR_ITF");
+                            transfers[0].outsideText = null;
+                            transfers[0].recordNumber = ServiceLimits.IncomingMask;
+                            transfers[0].reason = TransferManager.TransferReason.GarbageTransfer;
+                            transfers[0].nextRecord = 0;
+
+                            // Recovered resources for sale
+                            transfers[1].panelTitle = Translations.Translate("TFC_GAR_ORR");
+                            transfers[1].outsideText = Translations.Translate("TFC_BLD_EXP");
+                            transfers[1].outsideTip = Translations.Translate("TFC_BLD_EXP_TIP");
+                            transfers[1].recordNumber = ServiceLimits.OutgoingMask;
+                            transfers[1].reason = TransferManager.TransferReason.None;
+                            transfers[1].nextRecord = 0;
+
+                            return 2;
                         }
 
-                        return numTransfers;
                     }
 
                     // Undefined service.
