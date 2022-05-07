@@ -331,19 +331,19 @@ namespace TransferController
                             transfers[0].nextRecord = ServiceLimits.IncomingMask + 1;
 
                             transfers[1].panelTitle = Translations.Translate("TFC_MAI_OSD");
-                            transfers[1].outsideText = null;
+                            transfers[1].outsideText =  null;
                             transfers[1].recordNumber = ServiceLimits.OutgoingMask;
                             transfers[1].reason = TransferManager.TransferReason.SortedMail;
                             transfers[1].nextRecord = ServiceLimits.OutgoingMask + 1;
 
                             transfers[2].panelTitle = Translations.Translate("TFC_MAI_OUN");
-                            transfers[2].outsideText = null;
+                            transfers[2].outsideText = Translations.Translate("TFC_BLD_EXP");
                             transfers[2].recordNumber = ServiceLimits.OutgoingMask + 1;
                             transfers[2].reason = TransferManager.TransferReason.UnsortedMail;
                             transfers[2].nextRecord = 0;
 
                             transfers[3].panelTitle = Translations.Translate("TFC_MAI_IST");
-                            transfers[3].outsideText = null;
+                            transfers[3].outsideText = Translations.Translate("TFC_BLD_IMP");
                             transfers[3].recordNumber = ServiceLimits.IncomingMask + 1;
                             transfers[3].reason = TransferManager.TransferReason.SortedMail;
                             transfers[3].nextRecord = 0;
@@ -353,7 +353,7 @@ namespace TransferController
 
                         // Mail sorting facility.
                         transfers[0].panelTitle = Translations.Translate("TFC_MAI_IUN");
-                        transfers[0].outsideText = null;
+                        transfers[0].outsideText = Translations.Translate("TFC_BLD_EXP");
                         transfers[0].recordNumber = ServiceLimits.IncomingMask;
                         transfers[0].reason = TransferManager.TransferReason.UnsortedMail;
                         transfers[0].nextRecord = 0;
@@ -365,13 +365,13 @@ namespace TransferController
                         transfers[1].nextRecord = 0;
 
                         transfers[2].panelTitle = Translations.Translate("TFC_MAI_OGM");
-                        transfers[2].outsideText = null;
+                        transfers[2].outsideText = Translations.Translate("TFC_BLD_EXP");
                         transfers[2].recordNumber = ServiceLimits.OutgoingMask + 1;
                         transfers[2].reason = TransferManager.TransferReason.OutgoingMail;
                         transfers[2].nextRecord = 0;
 
                         transfers[3].panelTitle = Translations.Translate("TFC_MAI_ICM");
-                        transfers[3].outsideText = null;
+                        transfers[3].outsideText = Translations.Translate("TFC_BLD_IMP");
                         transfers[3].recordNumber = ServiceLimits.IncomingMask + 1;
                         transfers[3].reason = TransferManager.TransferReason.IncomingMail;
                         transfers[3].nextRecord = 0;
