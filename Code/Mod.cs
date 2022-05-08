@@ -60,6 +60,8 @@ namespace TransferController
             UILabel distanceLabel = distanceSlider.parent.AddUIComponent<UILabel>();
             distanceLabel.text = TransferManagerPatches.distancePercentage.ToString() + "%";
             distanceSlider.eventValueChanged += (control,value) => { distanceLabel.text = TransferManagerPatches.distancePercentage.ToString() + "%"; ModSettings.Save(); };
+            distanceSlider.parent.height += 20f;
+            distanceSlider.parent.width += 100f;
 
             // Warehouse priority slider.
             UISlider warehouseSlider = helper.AddSlider(Translations.Translate("TFC_OPT_WAR"), 0f, 4f, 1f, TransferManagerPatches.warehousePriority, (value) => { TransferManagerPatches.warehousePriority = (int)value.RoundToNearest(1f); }) as UISlider;
@@ -68,6 +70,7 @@ namespace TransferController
             warehouseLabel.wordWrap = false;
             warehouseLabel.text = TransferManagerPatches.warehousePriority.ToString(); ;
             warehouseSlider.eventValueChanged += (control, value) => { warehouseLabel.text = TransferManagerPatches.warehousePriority.ToString(); ModSettings.Save(); };
+            warehouseSlider.parent.width += 100f;
         }
     }
 }
