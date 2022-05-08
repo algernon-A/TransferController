@@ -40,7 +40,7 @@ TFC_FIS_MKI,Fish delivery from harbor
 TFC_FIS_CFO,Canned fish for sale
 TFC_PWR_INC,Purchasing fuel
 TFC_OIL_INC,Oil supply
-TFC_SHT_INC,Purchasing supplies
+TFC_SHT_INC,Buying goods
 TFC_OPT_DIS,Distance multiplier
 TFC_OPT_WAR,Warehouse priority boost
 TFC_OFF_TIT,Open offers
