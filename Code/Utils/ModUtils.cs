@@ -50,6 +50,19 @@ namespace TransferController
                                 conflictingModNames.Add("Painter");
                             }
                             break;
+                        case "EnhancedDistrictServices":
+                            conflictDetected = true;
+                            conflictingModNames.Add("Enhanced District Services");
+                            break;
+                        case "MoreEffectiveTransfer":
+                            conflictDetected = true;
+                            conflictingModNames.Add("More Effective Transfer Manager");
+                            break;
+                        case "TransferManagerCE":
+                            conflictDetected = true;
+                            conflictingModNames.Add("Transfer Manager Community Edition");
+                            break;
+
                     }
                 }
             }

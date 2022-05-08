@@ -54,6 +54,7 @@ TRN_CHOICE,Set language
 TRN_SYS,Use game language
 TFC_ERR_FAT,This means that the mod is not able to operate, and has shut down.
 TFC_ERR_HAR,Transfer Controller was unable to complete its required Harmony patches.
+MES_CLS,Close
 ERR_HAR0,Harmony patching error
 ERR_HAR1,Possible causes of this problem include:
 ERR_HAR2,The required Harmony 2 mod dependency was not installed
