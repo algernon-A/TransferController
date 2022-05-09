@@ -51,16 +51,28 @@ namespace TransferController
                             }
                             break;
                         case "EnhancedDistrictServices":
-                            conflictDetected = true;
-                            conflictingModNames.Add("Enhanced District Services");
+                            // EDS only conflicts if enabled.
+                            if (plugin.isEnabled)
+                            {
+                                conflictDetected = true;
+                                conflictingModNames.Add("Enhanced District Services");
+                            }
                             break;
                         case "MoreEffectiveTransfer":
-                            conflictDetected = true;
-                            conflictingModNames.Add("More Effective Transfer Manager");
+                            // METM only conflicts if enabled.
+                            if (plugin.isEnabled)
+                            {
+                                conflictDetected = true;
+                                conflictingModNames.Add("More Effective Transfer Manager");
+                            }
                             break;
                         case "TransferManagerCE":
-                            conflictDetected = true;
-                            conflictingModNames.Add("Transfer Manager Community Edition");
+                            // TMCE only conflicts if enabled.
+                            if (plugin.isEnabled)
+                            {
+                                conflictDetected = true;
+                                conflictingModNames.Add("Transfer Manager Community Edition");
+                            }
                             break;
 
                     }
