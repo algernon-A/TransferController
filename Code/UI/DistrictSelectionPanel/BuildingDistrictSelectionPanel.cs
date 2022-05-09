@@ -20,7 +20,6 @@ namespace TransferController
         /// </summary>
         protected override void PopulateList()
         {
-
             // Get district hashset for this building.
             HashSet<int> hashSet = DistrictSettingsList;
 
@@ -31,7 +30,7 @@ namespace TransferController
 
                 districtList.rowsData = new FastList<object>
                 {
-                    m_buffer = new object[0],
+                    m_buffer = new DistrictItem[0],
                     m_size = 0
                 };
                 districtList.selectedIndex = -1;
@@ -39,9 +38,16 @@ namespace TransferController
             }
 
             // Recreate UI district list from hashset.
+            DistrictItem[] items = new DistrictItem[hashSet.Count];
+            int i = 0;
+            foreach (int id in hashSet)
+            {
+                items[i++] = new DistrictItem(id);
+            }
+
             districtList.rowsData = new FastList<object>
             {
-                m_buffer = hashSet.Select(x => (object)x).ToArray(),
+                m_buffer = items.OrderBy(x => x.name).ToArray(),
                 m_size = hashSet.Count
             };
         }

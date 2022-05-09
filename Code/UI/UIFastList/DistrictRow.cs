@@ -6,6 +6,40 @@ using ColossalFramework.UI;
 namespace TransferController
 {
 	/// <summary>
+	/// District list item record.
+	/// </summary>
+	public class DistrictItem
+    {
+		private int id;
+		public string name;
+
+
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="id">District ID for this item</param>
+		public DistrictItem(int id)
+        {
+			ID = id;
+        }
+
+
+		/// <summary>
+		/// District ID for this record.  Negative values represent park districts.
+		/// </summary>
+		public int ID
+        {
+			get => id;
+
+			set
+            {
+				id = value;
+				name = value < 0 ? Singleton<DistrictManager>.instance.GetParkName(-value) : Singleton<DistrictManager>.instance.GetDistrictName(value);
+			}
+        }
+    }
+
+	/// <summary>
 	/// UI fastlist item for districts.
 	/// </summary>
 	public class DistrictRow : UIBasicRow
@@ -45,20 +79,28 @@ namespace TransferController
 			}
 
 			// Get district ID and set name label according to district type.
-			districtID = (int)data;
-			if (districtID < 0)
+			if (data is DistrictItem thisItem)
 			{
-				// Park area is negative district ID.
-				districtNameLabel.text = "[p] " + Singleton<DistrictManager>.instance.GetParkName(-districtID);
+
+				if (thisItem.ID < 0)
+				{
+					// Park area is negative district ID.
+					districtNameLabel.text = "[p] " + thisItem.name;
+				}
+				else
+				{
+					// Generic district is positive district ID.
+					districtNameLabel.text = thisItem.name;
+				}
+
+				// Call OnSizeChanged to set label position.
+				OnSizeChanged();
 			}
 			else
-			{
-				// Generic district is positive district ID.
-				districtNameLabel.text = Singleton<DistrictManager>.instance.GetDistrictName(districtID);
-			}
-
-			// Call OnSizeChanged to set label position.
-			OnSizeChanged();
+            {
+				// Just in case (no valid district record).
+				districtNameLabel.text = string.Empty;
+            }
 
 			// Set initial background as deselected state.
 			Deselect(isRowOdd);

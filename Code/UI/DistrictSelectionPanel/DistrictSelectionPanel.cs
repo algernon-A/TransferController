@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using ColossalFramework;
@@ -74,7 +75,7 @@ namespace TransferController
         protected virtual void PopulateList()
         {
             // Local references.
-            List<object> districtRecords = new List<object>();
+            List<DistrictItem> districtRecords = new List<DistrictItem>();
             DistrictManager districtManager = Singleton<DistrictManager>.instance;
 
             // Generic districts.
@@ -83,7 +84,7 @@ namespace TransferController
             {
                 if ((districtBuffer[i].m_flags & District.Flags.Created) != District.Flags.None)
                 {
-                    districtRecords.Add(i);
+                    districtRecords.Add(new DistrictItem(i));
                 }
             }
 
@@ -93,14 +94,14 @@ namespace TransferController
             {
                 if ((parkBuffer[i].m_flags & DistrictPark.Flags.Created) != DistrictPark.Flags.None)
                 {
-                    districtRecords.Add(-i);
+                    districtRecords.Add(new DistrictItem(-i));
                 }
             }
 
             // Set fastlist items.
             districtList.rowsData = new FastList<object>
             {
-                m_buffer = districtRecords.ToArray(),
+                m_buffer = districtRecords.OrderBy(x => x.name).ToArray(),
                 m_size = districtRecords.Count
             };
         }
