@@ -1,4 +1,6 @@
-﻿- Building panel is now draggable
+﻿Version 0.1.1 -
+
+- Building panel is now draggable
 - District lists are now sorted alphabetically
 - TransferManager conflict detection now only triggers if the conflicting mod is active
 - Adjust button sizes to fit longer translation strings
