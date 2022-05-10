@@ -1,0 +1,3 @@
+﻿- Building panel is now draggable
+- District lists are now sorted alphabetically
+- TransferManager conflict detection now only triggers if the conflicting mod is active

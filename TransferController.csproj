@@ -102,6 +102,7 @@
     <None Include="Translations\en.csv" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Changelog.txt" />
     <Content Include="License.txt" />
     <Content Include="Resources\TC-UUI.png" />
     <Content Include="Images\PreviewImage.png" />
