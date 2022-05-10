@@ -78,9 +78,15 @@ namespace TransferController
                 buildingLabel = UIControls.AddLabel(this, 0f, TitleHeight, String.Empty, PanelWidth);
                 buildingLabel.textAlignment = UIHorizontalAlignment.Center;
 
+                // Drag handle.
+                UIDragHandle dragHandle = this.AddUIComponent<UIDragHandle>();
+                dragHandle.relativePosition = Vector3.zero;
+                dragHandle.width = PanelWidth - 35f;
+                dragHandle.height = TitleHeight;
+
                 // Close button.
                 UIButton closeButton = AddUIComponent<UIButton>();
-                closeButton.relativePosition = new Vector2(width - 35, 2);
+                closeButton.relativePosition = new Vector2(width - 35f, 2f);
                 closeButton.normalBgSprite = "buttonclose";
                 closeButton.hoveredBgSprite = "buttonclosehover";
                 closeButton.pressedBgSprite = "buttonclosepressed";
