@@ -25,7 +25,7 @@ namespace TransferController
         private const float Panel1Y = PanelHeight + Margin;
         private const float PanelXOffset = -(TransferPanel.PanelWidth + Margin);
         private const float PanelYOffset = TransferPanel.PanelHeight + Margin;
-        private const float ButtonWidth = 120f;
+        private const float ButtonWidth = 150f;
 
 
         // Panel components.
