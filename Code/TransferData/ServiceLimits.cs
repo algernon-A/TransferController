@@ -94,7 +94,7 @@ namespace TransferController
         /// <param name="districtID">District ID to remove</param>
         internal static void RemoveBuildingDistrict(uint buildingID, byte recordID, int districtID)
         {
-            Logging.Message("attemptint to remove district ", districtID, " from ", buildingID);
+            Logging.Message("attempting to remove district ", districtID, " from ", buildingID);
 
             // Calculate building record ID.
             uint mask = (uint)recordID << 24;
