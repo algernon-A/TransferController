@@ -81,6 +81,7 @@ namespace TransferController
 			// Get district ID and set name label according to district type.
 			if (data is DistrictItem thisItem)
 			{
+				districtID = thisItem.ID;
 
 				if (thisItem.ID < 0)
 				{
