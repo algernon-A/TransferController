@@ -1,4 +1,7 @@
-﻿Version 0.1.2 -
+﻿- Add import restrictions to unique factories
+
+
+Version 0.1.2 -
 
 - Fix bug with district ID in ordered lists
 

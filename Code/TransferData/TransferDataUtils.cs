@@ -272,7 +272,7 @@ namespace TransferController
                     else if (buildingInfo.m_buildingAI is UniqueFactoryAI)
                     {
                         transfers[0].panelTitle = Translations.Translate("TFC_GEN_BUY");
-                        transfers[0].outsideText = null;
+                        transfers[0].outsideText = Translations.Translate("TFC_BLD_IMP");
                         transfers[0].recordNumber = ServiceLimits.IncomingMask;
                         transfers[0].reason = TransferManager.TransferReason.None;
                         transfers[0].nextRecord = 0;
