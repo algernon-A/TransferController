@@ -132,8 +132,6 @@ namespace TransferController
             TransferManager.TransferOffer[] incomingOffers = incomingOfferField.GetValue(tManager) as TransferManager.TransferOffer[];
             TransferManager.TransferOffer[] outgoingOffers = outgoingOfferField.GetValue(tManager) as TransferManager.TransferOffer[];
 
-            Logging.Message("reflection complete");
-
             // Find offers to this building.
             for (int i = 0; i < incomingOffers.Length; ++i)
             {
