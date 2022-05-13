@@ -1,5 +1,6 @@
 ﻿- Add import restrictions to unique factories
 - Escape button now deactivates tool on first press, closes panel on second press
+- Right-click disables tool
 
 
 Version 0.1.2 -

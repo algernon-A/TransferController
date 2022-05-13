@@ -250,6 +250,13 @@ namespace TransferController
                     }
                 }
             }
+
+			// Right-click disables tool.
+			if (e.type == EventType.MouseDown && e.button == 1)
+			{
+				// Cancel tool on right-click.
+				ToggleTool();
+			}
 		}
 	}
 }
