@@ -22,6 +22,13 @@ namespace TransferController
                 TCTool.ToggleTool();
                 return false;
             }
+            else if (BuildingPanelManager.Panel != null)
+            {
+                // If tool isn't already active, close the panel and return false (pre-empt original method).
+                BuildingPanelManager.Close();
+                return false;
+            }
+
 
             // Tool not active - don't do anything, just go on to game code.
             return true;
