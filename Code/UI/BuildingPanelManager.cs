@@ -27,8 +27,6 @@ namespace TransferController
                 // If no instance already set, create one.
                 if (uiGameObject == null)
                 {
-                    Logging.Message("creating building panel");
-
                     // Give it a unique name for easy finding with ModTools.
                     uiGameObject = new GameObject("TCBuildingInfoPanel");
                     uiGameObject.transform.parent = UIView.GetAView().transform;

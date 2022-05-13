@@ -314,7 +314,6 @@ namespace TransferController
                         transfers[0].nextRecord = 0;
                         return 1;
                     }
-                    Logging.Message("undefined road or beautification service");
                     return 0;
 
                 case ItemClass.Service.PublicTransport:
@@ -378,7 +377,6 @@ namespace TransferController
 
                         return 4;
                     }
-                    Logging.Message("undefined public transport service");
                     return 0;
 
                 case ItemClass.Service.Garbage:
@@ -459,7 +457,6 @@ namespace TransferController
                     }
 
                     // Undefined service.
-                    Logging.Message("undefined garbage service");
                     return 0;
 
                 case ItemClass.Service.Fishing:
@@ -498,7 +495,6 @@ namespace TransferController
                         return 2;
                     }
                     // Undefined service.
-                    Logging.Message("undefined fish service");
                     return 0;
 
                 default:

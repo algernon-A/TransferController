@@ -128,13 +128,10 @@ namespace TransferController
 
             // Update selected building ID.
             currentBuilding = buildingID;
-            Logging.Message("selected building ", currentBuilding);
             thisBuildingInfo = Singleton<BuildingManager>.instance.m_buildings.m_buffer[currentBuilding].Info;
 
             // Maximum number of panels.
             int numPanels = TransferDataUtils.BuildingEligibility(buildingID, thisBuildingInfo, transfers);
-
-            Logging.Message("numPanels ", numPanels);
 
             // Set up used panels.
             for (int i = 0; i < numPanels; ++i)

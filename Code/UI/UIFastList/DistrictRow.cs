@@ -163,7 +163,6 @@ namespace TransferController
 
 			if (parentSelectionPanel != null)
 			{
-				Logging.Message("found parent selection panel");
 				parentSelectionPanel.selectedDistrict = districtID;
 			}
 			else

@@ -105,8 +105,6 @@ namespace TransferController
 		/// </summary>
 		protected override void UpdateSelection()
 		{
-			Logging.Message("updateselection");
-
 			// Got to target building.
 			if (buildingID != 0)
             {

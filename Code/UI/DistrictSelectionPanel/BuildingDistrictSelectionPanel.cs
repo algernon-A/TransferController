@@ -26,8 +26,6 @@ namespace TransferController
             // If no district hashset was recovered, clear list and selection and exit.
             if (hashSet == null)
             {
-                Logging.Message("no district settings retrieved");
-
                 districtList.rowsData = new FastList<object>
                 {
                     m_buffer = new DistrictItem[0],
