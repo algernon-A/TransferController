@@ -2,6 +2,7 @@
 - Add color-coding for park and industry areas in selection lists
 - Escape button now deactivates tool on first press, closes panel on second press
 - Right-click disables tool
+- Adjust transfer logging text display
 
 
 Version 0.1.2 -

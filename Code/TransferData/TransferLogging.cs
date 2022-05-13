@@ -90,7 +90,27 @@ namespace TransferController
                     && ((showBlocked && !thisEntry.allowed) | (showAllowed && thisEntry.allowed))
                     && ((showIn && thisEntry.incoming) | (showOut && !thisEntry.incoming)))
                 {
-                    returnList.Add(new OfferData(String.Format("{0} {1} {2}-{3}: {4}-{5}: {6} {7}", thisEntry.reason, thisEntry.incoming ? "In" : "Out", thisEntry.priorityIn, thisEntry.priorityOut, thisEntry.inBuilding, thisEntry.outBuilding, thisEntry.allowed ? "Allow" : "Block", thisEntry.blockedReason), thisEntry.inBuilding == buildingID ? thisEntry.outBuilding : thisEntry.inBuilding));
+                    bool thisBuildingIn = thisEntry.inBuilding == buildingID;
+                    string inString = "In";
+                    string outString = "Out";
+                    if (thisEntry.incoming)
+                    {
+                        inString += "*";
+                    }
+                    else
+                    {
+                        outString += "*";
+                    }
+
+                    returnList.Add(new OfferData(String.Format("{0} {1} {2}-{3}: {4}-{5}: {6}",
+                        thisEntry.reason,
+                        thisBuildingIn ? inString : outString,
+                        thisEntry.priorityIn,
+                        thisEntry.priorityOut,
+                        thisEntry.inBuilding,
+                        thisEntry.outBuilding,
+                        thisEntry.allowed ? "Allowed" : "Blocked - " + thisEntry.blockedReason),
+                        thisBuildingIn ? thisEntry.outBuilding : thisEntry.inBuilding));
                 }
             }
 
