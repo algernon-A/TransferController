@@ -4,10 +4,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using ICities;
 using ColossalFramework.Plugins;
-using ColossalFramework.UI;
-using UnityEngine;
-using ColossalFramework.DataBinding;
-using System;
+
 
 namespace TransferController
 {

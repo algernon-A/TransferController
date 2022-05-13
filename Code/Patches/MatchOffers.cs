@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using ColossalFramework;
@@ -53,8 +55,35 @@ namespace TransferController
 
 			// Patch method with new pre-emptive prefix.
 			MethodBase targetMethod = typeof(TransferManager).GetMethod("MatchOffers", BindingFlags.Instance | BindingFlags.NonPublic);
-			harmonyInstance.Patch(targetMethod, prefix: new HarmonyMethod(typeof(TransferManagerPatches), nameof(TransferManagerPatches.MatchOffers)));
+			harmonyInstance.Patch(targetMethod, transpiler: new HarmonyMethod(typeof(TransferManagerPatches), nameof(TransferManagerPatches.MatchOffersTranspiler)));
 			Logging.Message("MatchOffers patched");
+		}
+
+
+		/// <summary>
+		/// Harmony transpiler for TransferManager.MatchOffers, calling 
+		/// </summary>
+		/// <param name="instructions">Original ILCode</param>
+		public static IEnumerable<CodeInstruction> MatchOffersTranspiler(IEnumerable<CodeInstruction> instructions)
+		{
+			// Replace original ILCode with a call to our custom method.
+			
+			yield return new CodeInstruction(OpCodes.Ldarg_0);
+			yield return new CodeInstruction(OpCodes.Ldarg_1);
+			yield return new CodeInstruction(OpCodes.Ldarg_0);
+			yield return new CodeInstruction(OpCodes.Ldfld, m_incomingCountField);
+			yield return new CodeInstruction(OpCodes.Ldarg_0);
+			yield return new CodeInstruction(OpCodes.Ldfld, m_outgoingCountField);
+			yield return new CodeInstruction(OpCodes.Ldarg_0);
+			yield return new CodeInstruction(OpCodes.Ldfld, m_incomingOffersField);
+			yield return new CodeInstruction(OpCodes.Ldarg_0);
+			yield return new CodeInstruction(OpCodes.Ldfld, m_outgoingOffersField);
+			yield return new CodeInstruction(OpCodes.Ldarg_0);
+			yield return new CodeInstruction(OpCodes.Ldfld, m_incomingAmountField);
+			yield return new CodeInstruction(OpCodes.Ldarg_0);
+			yield return new CodeInstruction(OpCodes.Ldfld, m_outgoingAmountField);
+			yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(TransferManagerPatches), nameof(TransferManagerPatches.MatchOffers)));
+			yield return new CodeInstruction(OpCodes.Ret);
 		}
 
 
@@ -67,13 +96,18 @@ namespace TransferController
 		 */
 
 		/// <summary>
-		/// Harmony pre-emptive Prefix patch for TransferManager.MatchOffers.
-		/// Implements the district limitation system.
+		/// Replacemnet method for TransferManager.MatchOffers.
 		/// </summary>
 		/// <param name="__instance">TransferManager instance</param>
 		/// <param name="material">Material to match</param>
-		/// <returns>Always false (never execute original method)</returns>
-		public static bool MatchOffers(TransferManager __instance, TransferManager.TransferReason material)
+		public static void MatchOffers(TransferManager __instance,
+			TransferManager.TransferReason material,
+			ushort[] m_incomingCount,
+			ushort[] m_outgoingCount,
+			TransferManager.TransferOffer[] m_incomingOffers,
+			TransferManager.TransferOffer[] m_outgoingOffers,
+			int[] m_incomingAmount,
+			int[] m_outgoingAmount)
 		{
 			/*
 			 * Offers are matched in blocks, from highest priority to lowest.
@@ -82,18 +116,8 @@ namespace TransferController
 			// Don't do anything if no material to match.
 			if (material == TransferManager.TransferReason.None)
 			{
-				return false;
+				return;
 			}
-
-			// --- Reflection to access private members.
-			ushort[] m_incomingCount = m_incomingCountField.GetValue(__instance) as ushort[];
-			ushort[] m_outgoingCount = m_outgoingCountField.GetValue(__instance) as ushort[];
-			TransferManager.TransferOffer[] m_incomingOffers = m_incomingOffersField.GetValue(__instance) as TransferManager.TransferOffer[];
-			TransferManager.TransferOffer[] m_outgoingOffers = m_outgoingOffersField.GetValue(__instance) as TransferManager.TransferOffer[];
-			int[] m_incomingAmount = m_incomingAmountField.GetValue(__instance) as int[];
-			int[] m_outgoingAmount = m_outgoingAmountField.GetValue(__instance) as int[];
-
-			// --- End reflection.
 
 			// --- Setup for code inserts.
 			DistrictManager districtManager = Singleton<DistrictManager>.instance;
@@ -596,9 +620,6 @@ namespace TransferController
 			}
 			m_incomingAmount[(int)material] = 0;
 			m_outgoingAmount[(int)material] = 0;
-
-			// Don't execute game method.
-			return false;
 		}
 
 
