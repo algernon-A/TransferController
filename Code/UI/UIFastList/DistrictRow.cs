@@ -11,6 +11,7 @@ namespace TransferController
 	public class DistrictItem
     {
 		private int id;
+		public Color32 displayColor;
 		public string name;
 
 
@@ -32,9 +33,36 @@ namespace TransferController
 			get => id;
 
 			set
-            {
+			{
 				id = value;
-				name = value < 0 ? Singleton<DistrictManager>.instance.GetParkName(-value) : Singleton<DistrictManager>.instance.GetDistrictName(value);
+
+				// Local reference.
+				DistrictManager districtManager = Singleton<DistrictManager>.instance;
+
+				// Default color is white.
+				displayColor = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
+
+				if (value < 0)
+				{
+					// Park area.
+					name = districtManager.GetParkName(-value);
+
+					// Set park display color if applicable.
+					ref DistrictPark park = ref districtManager.m_parks.m_buffer[-value];
+					if (park.IsIndustry)
+					{
+						displayColor = new Color32(255, 230, 160, 255);
+					}
+					else if (park.IsPark)
+                    {
+						displayColor = new Color32(140, 255, 200, 255);
+					}
+				}
+				else
+                {
+					// District.
+					name = districtManager.GetDistrictName(value);
+				}
 			}
         }
     }
@@ -93,6 +121,9 @@ namespace TransferController
 					// Generic district is positive district ID.
 					districtNameLabel.text = thisItem.name;
 				}
+				
+				// Set label color.
+				districtNameLabel.textColor = thisItem.displayColor;
 
 				// Call OnSizeChanged to set label position.
 				OnSizeChanged();

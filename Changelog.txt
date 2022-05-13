@@ -1,4 +1,5 @@
 ﻿- Add import restrictions to unique factories
+- Add color-coding for park and industry areas in selection lists
 - Escape button now deactivates tool on first press, closes panel on second press
 - Right-click disables tool
 
