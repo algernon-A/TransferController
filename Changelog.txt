@@ -1,4 +1,5 @@
-﻿- Improve detection of deleted districts
+﻿- Adjust distance weighting for prioritized warehouse transfers
+- Improve detection of deleted districts
 
 
 Version 0.1.3 -

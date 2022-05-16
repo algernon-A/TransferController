@@ -264,6 +264,9 @@ namespace TransferController
 
 									// ---- Start code insert
 
+									// Additional distance modifier for specific transactions.
+									float distanceModifier = 1f;
+
 									// Record default otherPriorityPlus.
 									otherPriorityPlus = (float)otherPriority + 0.1f;
 
@@ -295,10 +298,11 @@ namespace TransferController
 											}
 										}
 
-										// Modify otherPriorityPlus for warehouse transfers.
+										// Modify otherPriorityPlus and distance modifer for warehouse transfers.
 										if (buildingBuffer[outCandidateBuilding].Info.m_buildingAI is WarehouseAI)
                                         {
 											otherPriorityPlus += warehousePriority;
+											distanceModifier /= (warehousePriority + 1);
                                         }
 									}
 									// ---- End code insert
@@ -316,7 +320,7 @@ namespace TransferController
 									// For other priority 2 and distance 100: 2.1 - 2.1 / (1f - 100^2 * 0.00001) = 1.909091
 									// This means that distance is more important for higher-level transfers.
 									// A lower-priority transfer will take priority only if it's much closer, or conversely, a higher-priority offer will take precedence over a greater radius.
-									float distanceValue = ((!(distanceMultiplier < 0f)) ? (otherPriorityPlus / (1f + squaredDistance * distanceMultiplier)) : (otherPriorityPlus - otherPriorityPlus / (1f - squaredDistance * distanceMultiplier)));
+									float distanceValue = ((!(distanceMultiplier < 0f)) ? (otherPriorityPlus / (1f + squaredDistance * distanceMultiplier)) : (otherPriorityPlus - otherPriorityPlus / (1f - squaredDistance * distanceMultiplier))) * distanceModifier;
 									if (distanceValue > bestDistanceValue)
 									{
 										matchedPriority = otherPriority;
@@ -489,6 +493,9 @@ namespace TransferController
 
 								// ---- Start code insert
 
+								// Additional distance modifier for specific transactions.
+								float distanceModifier = 1f;
+
 								// Record default otherPriorityPlus.
 								otherPriorityPlus = (float)otherPriority + 0.1f;
 
@@ -520,10 +527,11 @@ namespace TransferController
 										}
 									}
 
-									// Modify otherPriorityPlus for warehouse transfers.
+									// Modify otherPriorityPlus and distance modifer for warehouse transfers.
 									if (buildingBuffer[inCandidateBuilding].Info.m_buildingAI is WarehouseAI)
 									{
 										otherPriorityPlus += warehousePriority;
+										distanceModifier /= (warehousePriority + 1);
 									}
 								}
 								// ---- End code insert
@@ -534,7 +542,7 @@ namespace TransferController
 
 								// num36 = distanceValue
 								// See above re num20 for details.
-								float distanceValue = (!(distanceMultiplier < 0f)) ? (otherPriorityPlus / (1f + squaredDistance * distanceMultiplier)) : (otherPriorityPlus - otherPriorityPlus / (1f - squaredDistance * distanceMultiplier));
+								float distanceValue = (!(distanceMultiplier < 0f)) ? (otherPriorityPlus / (1f + squaredDistance * distanceMultiplier)) : (otherPriorityPlus - otherPriorityPlus / (1f - squaredDistance * distanceMultiplier)) * distanceModifier;
 								if (distanceValue > bestDistanceValue)
 								{
 									matchedPriority = otherPriority;
