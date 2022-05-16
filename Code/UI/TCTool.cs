@@ -49,7 +49,7 @@ namespace TransferController
 				tooltip: Translations.Translate("TFC_NAM"),
 				tool: this,
 				icon: UUIHelpers.LoadTexture(UUIHelpers.GetFullPath<TransferControllerMod>("Resources", "TC-UUI.png")),
-				hotkeys: new UUIHotKeys { ActivationKey = ModSettings.ToolSavedKey });
+				hotkeys: new UUIHotKeys { ActivationKey = ModSettings.UUIKey });
 		}
 
 
