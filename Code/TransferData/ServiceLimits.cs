@@ -130,7 +130,6 @@ namespace TransferController
             // Calculate building record ID.
             uint mask = (uint)recordID << 24;
             uint buildingRecordID = (uint)(buildingID | mask);
-            Logging.Message("getting building districts for record ", buildingRecordID);
 
             // See if we've got an entry for this building.
             if (buildingRecords.TryGetValue(buildingRecordID, out BuildingRecord buildingRecord))
@@ -406,6 +405,9 @@ namespace TransferController
                     {
                         buildingRecord.districts.Add(reader.ReadInt32());
                     }
+
+                    // Validate district list before continuing.
+                    TransferDataUtils.ValidateDistricts(buildingRecord.districts);
                 }
 
                 // Deserialize building entries for this building.

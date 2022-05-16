@@ -35,6 +35,9 @@ namespace TransferController
                 return;
             }
 
+            // Validate hashset before continuting.
+            TransferDataUtils.ValidateDistricts(hashSet);
+
             // Recreate UI district list from hashset.
             DistrictItem[] items = new DistrictItem[hashSet.Count];
             int i = 0;

@@ -1,4 +1,5 @@
-﻿using ColossalFramework;
+﻿using System.Collections.Generic;
+using ColossalFramework;
 
 
 namespace TransferController
@@ -500,6 +501,55 @@ namespace TransferController
                 default:
                     // If not explicitly supported, then it's not supported.
                     return 0;
+            }
+        }
+
+
+        /// <summary>
+        /// Validates the districts in the provided district list.
+        /// </summary>
+        /// <param name="districtList">District list to validate</param>
+        internal static void ValidateDistricts(HashSet<int> districtList)
+        {
+            // Local references.
+            DistrictManager districtManager = Singleton<DistrictManager>.instance;
+            District[] districtBuffer = districtManager.m_districts.m_buffer;
+            DistrictPark[] parkBuffer = districtManager.m_parks.m_buffer;
+
+            // Check any district records for validity.
+            if (districtList != null && districtList.Count > 0)
+            {
+                List<int> invalidDistricts = new List<int>();
+
+                // Iterate through each district record and check validity.
+                foreach (int districtID in districtList)
+                {
+                    if (districtID > 0)
+                    {
+                        // Districts.
+                        if ((districtBuffer[districtID].m_flags & District.Flags.Created) != 0)
+                        {
+                            continue;
+                        }
+                    }
+                    else if (districtID < 0)
+                    {
+                        // Parks.
+                        if ((parkBuffer[-districtID].m_flags & DistrictPark.Flags.Created) != 0)
+                        {
+                            continue;
+                        }
+                    }
+
+                    // If we got here (district ID is zero, or district created flag isn't set) this is an invalid district; add to list to remove.
+                    invalidDistricts.Add(districtID);
+                }
+
+                // Iterate through removal list and remove all invalid districts.
+                foreach (int districtID in invalidDistricts)
+                {
+                    districtList.Remove(districtID);
+                }
             }
         }
     }
