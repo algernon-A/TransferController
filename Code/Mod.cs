@@ -64,12 +64,12 @@ namespace TransferController
             distanceSlider.parent.width += 100f;
 
             // Warehouse priority slider.
-            UISlider warehouseSlider = helper.AddSlider(Translations.Translate("TFC_OPT_WAR"), 0f, 4f, 1f, TransferManagerPatches.warehousePriority, (value) => { TransferManagerPatches.warehousePriority = (int)value.RoundToNearest(1f); }) as UISlider;
+            UISlider warehouseSlider = helper.AddSlider(Translations.Translate("TFC_OPT_WAR"), 0f, 4f, 1f, AddOffers.warehousePriority, (value) => { AddOffers.warehousePriority = (int)value.RoundToNearest(1f); }) as UISlider;
             UILabel warehouseLabel = warehouseSlider.parent.AddUIComponent<UILabel>();
             warehouseLabel.autoSize = true;
             warehouseLabel.wordWrap = false;
-            warehouseLabel.text = TransferManagerPatches.warehousePriority.ToString(); ;
-            warehouseSlider.eventValueChanged += (control, value) => { warehouseLabel.text = TransferManagerPatches.warehousePriority.ToString(); ModSettings.Save(); };
+            warehouseLabel.text = AddOffers.warehousePriority.ToString(); ;
+            warehouseSlider.eventValueChanged += (control, value) => { warehouseLabel.text = AddOffers.warehousePriority.ToString(); ModSettings.Save(); };
             warehouseSlider.parent.width += 100f;
         }
     }

@@ -19,9 +19,6 @@ namespace TransferController
 		// Matching distance multiplier.
 		internal static int distancePercentage = 100;
 
-		// Warehouse priority flag.
-		internal static int warehousePriority = 0;
-
 		// Reflection info for private TransferManager fields.
 		private static FieldInfo m_incomingCountField;
 		private static FieldInfo m_outgoingCountField;
@@ -924,36 +921,6 @@ namespace TransferController
 				default:
 					// If not explicitly supported, it isn't.
 					return false;
-			}
-		}
-
-
-		/// <summary>
-		/// Harmony Prefix to manipulate priorities of outgoing offers.
-		/// </summary>
-		/// <param name="material">Transfer material</param>
-		/// <param name="offer">Outgoing offer</param>
-		/// <returns></returns>
-		[HarmonyPatch(typeof(TransferManager), nameof(TransferManager.AddOutgoingOffer))]
-		[HarmonyPrefix]
-		public static void AddOutgoingOffer(TransferManager.TransferReason material, ref TransferManager.TransferOffer offer)
-		{
-			// Check for valid building.
-			if (offer.Building != 0)
-			{
-				// Local reference.
-				ref Building building = ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[offer.Building];
-
-				// Check for warehouse.
-				if (building.Info.m_buildingAI is WarehouseAI warehouseAI)
-				{
-					// This is a warehouse - boost priority according to current global setting.
-					if (material == warehouseAI.m_storageType || material == (TransferManager.TransferReason)building.m_adults || material == (TransferManager.TransferReason)building.m_seniors)
-					{
-						Logging.Message("boosting priority for ", warehouseAI.name);
-						offer.Priority += Mathf.Min(7, warehousePriority * 2);
-					}
-				}
 			}
 		}
 	}

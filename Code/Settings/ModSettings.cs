@@ -63,7 +63,7 @@ namespace TransferController
 
         // Warehouse priority boost.
         [XmlElement("WarehousePriority")]
-        public int XMLWarehousePriority { get => TransferManagerPatches.warehousePriority; set => TransferManagerPatches.warehousePriority = value; }
+        public int XMLWarehousePriority { get => AddOffers.warehousePriority; set => AddOffers.warehousePriority = value; }
 
 
         /// <summary>
