@@ -67,7 +67,7 @@ namespace TransferController
 		public static IEnumerable<CodeInstruction> MatchOffersTranspiler(IEnumerable<CodeInstruction> instructions)
 		{
 			// Replace original ILCode with a call to our custom method.
-			
+
 			yield return new CodeInstruction(OpCodes.Ldarg_0);
 			yield return new CodeInstruction(OpCodes.Ldarg_1);
 			yield return new CodeInstruction(OpCodes.Ldarg_0);
@@ -195,7 +195,7 @@ namespace TransferController
 
 							// Position of incoming building (source building or vehicle source building), if any.
 							if (incomingBuilding != 0)
-                            {
+							{
 								incomingPosition = buildingBuffer[incomingBuilding].m_position;
 
 								// Incoming district.
@@ -297,13 +297,6 @@ namespace TransferController
 												continue;
 											}
 										}
-
-										// Modify otherPriorityPlus and distance modifer for warehouse transfers.
-										if (buildingBuffer[outCandidateBuilding].Info.m_buildingAI is WarehouseAI)
-                                        {
-											otherPriorityPlus += warehousePriority;
-											distanceModifier /= (warehousePriority + 1);
-                                        }
 									}
 									// ---- End code insert
 
@@ -526,13 +519,6 @@ namespace TransferController
 											continue;
 										}
 									}
-
-									// Modify otherPriorityPlus and distance modifer for warehouse transfers.
-									if (buildingBuffer[inCandidateBuilding].Info.m_buildingAI is WarehouseAI)
-									{
-										otherPriorityPlus += warehousePriority;
-										distanceModifier /= (warehousePriority + 1);
-									}
 								}
 								// ---- End code insert
 
@@ -690,7 +676,7 @@ namespace TransferController
 			// Failed incoming district restrictions - return false.
 			TransferLogging.AddEntry(reason, incoming, priorityIn, priorityOut, incomingBuildingID, outgoingBuildingID, false, LogEntry.BlockReason.IncomingDistrict);
 			return false;
-        }
+		}
 
 
 		/// <summary>
@@ -714,23 +700,23 @@ namespace TransferController
 
 			// Get building record.
 			if (ServiceLimits.buildingRecords.TryGetValue(buildingRecordID, out ServiceLimits.BuildingRecord buildingRecord))
-            {
+			{
 				// Check for transfer reason match.
 				if (buildingRecord.reason != TransferManager.TransferReason.None && buildingRecord.reason != transferReason)
 				{
 					// Transfer reason didn't match; try secondary record
 					if (buildingRecord.nextRecord == 0)
-                    {
+					{
 						// No secondary record; no relevant restrictions.
 						return true;
-                    }
+					}
 
 					// Get secondary record. 
 					if (!ServiceLimits.buildingRecords.TryGetValue(buildingID | (uint)(buildingRecord.nextRecord << 24), out buildingRecord))
-                    {
+					{
 						// No secondary record in dictionary; no relevant restrictions.
 						return true;
-                    }
+					}
 
 					// Check secondary transfer reason match.
 					if (buildingRecord.reason != TransferManager.TransferReason.None && buildingRecord.reason != transferReason)
@@ -759,10 +745,10 @@ namespace TransferController
 				}
 			}
 			else
-            {
+			{
 				// No record means no restrictions.
 				return true;
-            }
+			}
 
 			// If we got here, we didn't get a record.
 			return false;
@@ -809,15 +795,15 @@ namespace TransferController
 
 					// Check secondary transfer reason match.
 					if (buildingRecord.reason != TransferManager.TransferReason.None && buildingRecord.reason != transferReason)
-                    {
+					{
 						// No secondary transfer reason match; no relevant restrictions.
 						return true;
-                    }
+					}
 				}
 
 				// Check outside connection.
 				if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[incomingBuildingID].Info.m_buildingAI is OutsideConnectionAI)
-                {
+				{
 					return (buildingRecord.flags & ServiceLimits.RestrictionFlags.BlockOutsideConnection) == ServiceLimits.RestrictionFlags.None;
 				}
 
@@ -830,7 +816,7 @@ namespace TransferController
 
 				// Only block specified transfers.
 				if (buildingRecord.reason == TransferManager.TransferReason.None)
-                {
+				{
 					switch (transferReason)
 					{
 						case TransferManager.TransferReason.Oil:
@@ -860,7 +846,7 @@ namespace TransferController
 							// Not a recognised ougoing transfer; automatically permit the transfer.
 							return true;
 					}
-                }
+				}
 
 				// No same-district setting: return value is if the transfer reason is a match and if outgoing district is in the allowed districts for this building.
 				if ((buildingRecord.reason == TransferManager.TransferReason.None || buildingRecord.reason == transferReason) && buildingRecord.districts != null)
@@ -885,9 +871,9 @@ namespace TransferController
 		/// <param name="reason">Transfer reason to check</param>
 		/// <returns>True if this is a supported reason, false otherwise</returns>
 		private static bool SupportedTransfer(TransferManager.TransferReason reason)
-        {
+		{
 			switch (reason)
-            {
+			{
 				// Supported reasons.
 				case TransferManager.TransferReason.Oil:
 				case TransferManager.TransferReason.Ore:
@@ -938,7 +924,37 @@ namespace TransferController
 				default:
 					// If not explicitly supported, it isn't.
 					return false;
-            }
-        }
+			}
+		}
+
+
+		/// <summary>
+		/// Harmony Prefix to manipulate priorities of outgoing offers.
+		/// </summary>
+		/// <param name="material">Transfer material</param>
+		/// <param name="offer">Outgoing offer</param>
+		/// <returns></returns>
+		[HarmonyPatch(typeof(TransferManager), nameof(TransferManager.AddOutgoingOffer))]
+		[HarmonyPrefix]
+		public static void AddOutgoingOffer(TransferManager.TransferReason material, ref TransferManager.TransferOffer offer)
+		{
+			// Check for valid building.
+			if (offer.Building != 0)
+			{
+				// Local reference.
+				ref Building building = ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[offer.Building];
+
+				// Check for warehouse.
+				if (building.Info.m_buildingAI is WarehouseAI warehouseAI)
+				{
+					// This is a warehouse - boost priority according to current global setting.
+					if (material == warehouseAI.m_storageType || material == (TransferManager.TransferReason)building.m_adults || material == (TransferManager.TransferReason)building.m_seniors)
+					{
+						Logging.Message("boosting priority for ", warehouseAI.name);
+						offer.Priority += Mathf.Min(7, warehousePriority * 2);
+					}
+				}
+			}
+		}
 	}
 }
