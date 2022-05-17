@@ -142,14 +142,12 @@ namespace TransferController
                 // Incoming offers.
                 if (incomingOffers[i].Building == currentBuilding)
                 {
-                    Logging.Message(incomingOffers[i].ToString());
                     offerList.Add(new OfferData(String.Format("Incoming {0} priority {1}", thisReason, priority), 0));
                 }
 
                 // Outgoing offers.
                 if (outgoingOffers[i].Building == currentBuilding)
                 {
-                    Logging.Message(incomingOffers[i].ToString());
                     offerList.Add(new OfferData(String.Format("Outgoing {0} priority {1}", thisReason, priority), 0));
                 }
             }
