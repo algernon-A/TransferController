@@ -6,9 +6,9 @@ TFC_GEN_BUY,Buying restrictions
 TFC_GEN_SEL,Selling restrictions
 TFC_GEN_SER,Service restrictions
 TFC_BLD_ENA,Enable restrictions
-TFC_BLD_ENA_TIP,Select this to enable restrictions for this building.  If this is not selected, no other settings will take effect.
+TFC_BLD_ENA_TIP,"Select this to enable restrictions for this building.  If this is not selected, no other settings will take effect."
 TFC_BLD_SDO,Always service same district
-TFC_BLD_SDO_TIP,Enable to ensure that the building can always service the same district and/or area that it's in, even if the district or area later changes
+TFC_BLD_SDO_TIP,"Enable to ensure that the building can always service the same district and/or area that it's in, even if the district or area later changes."
 TFC_BLD_IMP,Allow imports
 TFC_BLD_IMP_TIP,Permit this building to import from outside connections.
 TFC_BLD_EXP,Allow exports
