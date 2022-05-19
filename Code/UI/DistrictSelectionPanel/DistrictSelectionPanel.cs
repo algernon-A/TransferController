@@ -17,7 +17,27 @@ namespace TransferController
         protected readonly UIDistrictFastList districtList;
 
         // Current selection.
-        internal int selectedDistrict;
+        private int selectedDistrict;
+
+
+        /// <summary>
+        /// Currently selected district.
+        /// </summary>
+        internal int SelectedDistrict
+        {
+            get => selectedDistrict;
+
+            set
+            {
+                selectedDistrict = value;
+
+                // Refresh parent panel button states.
+                if (parent is TransferPanel transferPanel)
+                {
+                    transferPanel.SelectionUpdated();
+                }
+            }
+        }
 
 
         /// <summary>

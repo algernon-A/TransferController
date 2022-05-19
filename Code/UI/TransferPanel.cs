@@ -1,9 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using ColossalFramework.UI;
-using ColossalFramework;
-using System.Collections.Generic;
-using System.Linq;
+
 
 namespace TransferController
 {
@@ -22,17 +20,19 @@ namespace TransferController
         protected const float EnabledCheckY = HeadingY + HeadingHeight;
         protected const float SameDistrictCheckY = EnabledCheckY + CheckHeight;
         protected const float OutsideCheckY = SameDistrictCheckY + CheckHeight;
-        protected const float ButtonY = OutsideCheckY + CheckHeight;
-        protected const float DistrictListY = ButtonY + ButtonHeight + Margin;
+        protected const float DistrictListY = OutsideCheckY + CheckHeight;
         internal const float ListHeight = 8f * DistrictRow.RowHeight;
         internal const float ColumnWidth = 210f;
-        protected const float RightColumnX = ColumnWidth + (Margin * 2f);
-        internal const float PanelWidth = (ColumnWidth * 2f) + (Margin * 3f);
+        private const float ArrowSize = 32f;
+        private const float MidControlX = Margin + ColumnWidth + Margin;
+        protected const float RightColumnX = MidControlX + ArrowSize + Margin;
+        internal const float PanelWidth = RightColumnX + ColumnWidth + Margin;
         internal const float PanelHeight = DistrictListY + ListHeight + Margin;
 
         // Panel components.
         private readonly UICheckBox enabledCheck, sameDistrictCheck, outsideCheck;
         private readonly UILabel directionLabel;
+        private readonly UIButton addDistrictButton, removeDistrictButton;
         internal DistrictSelectionPanel districtSelectionPanel;
         internal BuildingDistrictSelectionPanel buildingDistrictSelectionPanel;
 
@@ -229,11 +229,13 @@ namespace TransferController
                 directionLabel.textAlignment = UIHorizontalAlignment.Center;
 
                 // 'Add district' button.
-                UIButton addDistrictButton = UIControls.AddSmallerButton(this, Margin, ButtonY, "Add >", ColumnWidth);
-                addDistrictButton.eventClicked += (control, clickEvent) => AddDistrict(districtSelectionPanel.selectedDistrict);
+                addDistrictButton = AddIconButton(this, MidControlX, DistrictListY, ArrowSize, "TFC_DIS_ADD", TextureUtils.LoadSpriteAtlas("TC-ArrowPlus"));
+                addDistrictButton.isEnabled = false;
+                addDistrictButton.eventClicked += (control, clickEvent) => AddDistrict(districtSelectionPanel.SelectedDistrict);
 
                 // Remove district button.
-                UIButton removeDistrictButton = UIControls.AddSmallerButton(this, RightColumnX, ButtonY, "< Remove", ColumnWidth);
+                removeDistrictButton = AddIconButton(this, MidControlX, DistrictListY + ArrowSize, ArrowSize, "TFC_DIS_SUB", TextureUtils.LoadSpriteAtlas("TC-ArrowMinus"));
+                removeDistrictButton.isEnabled = false;
                 removeDistrictButton.eventClicked += (control, clickEvent) => RemoveDistrict();
 
                 // District selection panels.
@@ -253,6 +255,16 @@ namespace TransferController
 
 
         /// <summary>
+        /// Update button states when district selections are updated.
+        /// </summary>
+        internal void SelectionUpdated()
+        {
+            addDistrictButton.isEnabled = districtSelectionPanel.SelectedDistrict != 0;
+            removeDistrictButton.isEnabled = buildingDistrictSelectionPanel.SelectedDistrict != 0;
+        }
+
+
+        /// <summary>
         /// Adds a district to the list for this building.
         /// Should be called as base after district has been updated by child class.
         /// </summary>
@@ -263,7 +275,7 @@ namespace TransferController
             BuildingControl.AddBuildingDistrict(currentBuilding, recordNumber, districtID, TransferReason, NextRecord);
 
             // Add district to building and update current selection.
-            buildingDistrictSelectionPanel.selectedDistrict = districtID;
+            buildingDistrictSelectionPanel.SelectedDistrict = districtID;
 
             // Update district list.
             buildingDistrictSelectionPanel.RefreshList();
@@ -277,13 +289,48 @@ namespace TransferController
         private void RemoveDistrict()
         {
             // Remove selected district from building.
-            BuildingControl.RemoveBuildingDistrict(currentBuilding, recordNumber, buildingDistrictSelectionPanel.selectedDistrict);
+            BuildingControl.RemoveBuildingDistrict(currentBuilding, recordNumber, buildingDistrictSelectionPanel.SelectedDistrict);
 
             // Remove selected district from building and clear current selection.
-            buildingDistrictSelectionPanel.selectedDistrict = 0;
+            buildingDistrictSelectionPanel.SelectedDistrict = 0;
 
             // Update district list.
             buildingDistrictSelectionPanel.RefreshList();
+        }
+
+
+        /// <summary>
+        /// Adds an icon-style button to the specified component at the specified coordinates.
+        /// </summary>
+        /// <param name="parent">Parent UIComponent</param>
+        /// <param name="xPos">Relative X position</param>
+        /// <param name="yPos">Relative Y position</param>
+        /// <param name="size">Button size (square)</param>
+        /// <param name="tooltipKey">Tooltip translation key</param>
+        /// <param name="atlas">Icon atlas</param>
+        /// <returns>New UIButton</returns>
+        private UIButton AddIconButton(UIComponent parent, float xPos, float yPos, float size, string tooltipKey, UITextureAtlas atlas)
+        {
+            UIButton newButton = parent.AddUIComponent<UIButton>();
+
+            // Size and position.
+            newButton.relativePosition = new Vector2(xPos, yPos);
+            newButton.height = size;
+            newButton.width = size;
+
+            // Appearance.
+            newButton.atlas = atlas;
+
+            newButton.normalFgSprite = "normal";
+            newButton.focusedFgSprite = "normal";
+            newButton.hoveredFgSprite = "hovered";
+            newButton.disabledFgSprite = "disabled";
+            newButton.pressedFgSprite = "pressed";
+
+            // Tooltip.
+            newButton.tooltip = Translations.Translate(tooltipKey);
+
+            return newButton;
         }
     }
 }

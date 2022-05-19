@@ -112,6 +112,8 @@
   <ItemGroup>
     <Content Include="Changelog.txt" />
     <Content Include="License.txt" />
+    <Content Include="Resources\TC-ArrowMinus.png" />
+    <Content Include="Resources\TC-ArrowPlus.png" />
     <Content Include="Resources\TC-UUI.png" />
     <Content Include="Images\PreviewImage.png" />
     <Content Include="Resources\TC-CursorOn.png" />

@@ -163,7 +163,7 @@ namespace TransferController
 
 			if (parentSelectionPanel != null)
 			{
-				parentSelectionPanel.selectedDistrict = districtID;
+				parentSelectionPanel.SelectedDistrict = districtID;
 			}
 			else
             {
