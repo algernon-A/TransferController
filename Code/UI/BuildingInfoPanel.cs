@@ -45,7 +45,7 @@ namespace TransferController
 
 
         // Dictionary getter.
-        public static Dictionary<uint, ServiceLimits.BuildingRecord> BuildingRecords => ServiceLimits.buildingRecords;
+        public static Dictionary<uint, BuildingControl.BuildingRecord> BuildingRecords => BuildingControl.buildingRecords;
 
 
         /// <summary>

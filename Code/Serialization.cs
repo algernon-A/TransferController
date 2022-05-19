@@ -31,7 +31,7 @@ namespace TransferController
                     writer.Write(DataVersion);
 
                     // Serialize building data.
-                    ServiceLimits.Serialize(writer);
+                    BuildingControl.Serialize(writer);
 
                     // Serialize warehouse data.
                     WarehouseControl.Serialize(writer);
@@ -68,7 +68,7 @@ namespace TransferController
                         int version = reader.ReadInt32();
 
                         // Deserialise building settings.
-                        ServiceLimits.Deserialize(reader);
+                        BuildingControl.Deserialize(reader);
 
                         // Deserialize warehouse settings.
                         if (version > 0)

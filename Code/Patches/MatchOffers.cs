@@ -753,12 +753,12 @@ namespace TransferController
 		private static bool IncomingDistrictChecksPassed(ushort buildingID, ushort outgoingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason transferReason)
 		{
 			// Calculate building record ID.
-			uint mask = ServiceLimits.IncomingMask << 24;
+			uint mask = BuildingControl.IncomingMask << 24;
 			uint buildingRecordID = (uint)(buildingID + mask);
 
 
 			// Get building record.
-			if (ServiceLimits.buildingRecords.TryGetValue(buildingRecordID, out ServiceLimits.BuildingRecord buildingRecord))
+			if (BuildingControl.buildingRecords.TryGetValue(buildingRecordID, out BuildingControl.BuildingRecord buildingRecord))
 			{
 				// Check for transfer reason match.
 				if (buildingRecord.reason != TransferManager.TransferReason.None && buildingRecord.reason != transferReason)
@@ -771,7 +771,7 @@ namespace TransferController
 					}
 
 					// Get secondary record. 
-					if (!ServiceLimits.buildingRecords.TryGetValue(buildingID | (uint)(buildingRecord.nextRecord << 24), out buildingRecord))
+					if (!BuildingControl.buildingRecords.TryGetValue(buildingID | (uint)(buildingRecord.nextRecord << 24), out buildingRecord))
 					{
 						// No secondary record in dictionary; no relevant restrictions.
 						return true;
@@ -787,11 +787,11 @@ namespace TransferController
 
 				if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[outgoingBuildingID].Info.m_buildingAI is OutsideConnectionAI)
 				{
-					return (buildingRecord.flags & ServiceLimits.RestrictionFlags.BlockOutsideConnection) == ServiceLimits.RestrictionFlags.None;
+					return (buildingRecord.flags & BuildingControl.RestrictionFlags.BlockOutsideConnection) == BuildingControl.RestrictionFlags.None;
 				}
 
 				// Check same-district setting.
-				if ((buildingRecord.flags & ServiceLimits.RestrictionFlags.BlockSameDistrict) == ServiceLimits.RestrictionFlags.None && (incomingDistrict != 0 && incomingDistrict == outgoingDistrict || (incomingPark != 0 && incomingPark == outgoingPark)))
+				if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BlockSameDistrict) == BuildingControl.RestrictionFlags.None && (incomingDistrict != 0 && incomingDistrict == outgoingDistrict || (incomingPark != 0 && incomingPark == outgoingPark)))
 				{
 					// Same district match - permitted.
 					return true;
@@ -829,11 +829,11 @@ namespace TransferController
 		private static bool OutgoingDistrictChecksPassed(ushort buildingID, ushort incomingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason transferReason)
 		{
 			// Calculate building record ID.
-			uint mask = (uint)ServiceLimits.OutgoingMask << 24;
+			uint mask = (uint)BuildingControl.OutgoingMask << 24;
 			uint buildingRecordID = (uint)(buildingID + mask);
 
 			// Get building record.
-			if (ServiceLimits.buildingRecords.TryGetValue(buildingRecordID, out ServiceLimits.BuildingRecord buildingRecord))
+			if (BuildingControl.buildingRecords.TryGetValue(buildingRecordID, out BuildingControl.BuildingRecord buildingRecord))
 			{
 				// Check for transfer reason match.
 				if (buildingRecord.reason != TransferManager.TransferReason.None && buildingRecord.reason != transferReason)
@@ -846,7 +846,7 @@ namespace TransferController
 					}
 
 					// Get secondary record. 
-					if (!ServiceLimits.buildingRecords.TryGetValue(buildingID | (uint)(buildingRecord.nextRecord << 24), out buildingRecord))
+					if (!BuildingControl.buildingRecords.TryGetValue(buildingID | (uint)(buildingRecord.nextRecord << 24), out buildingRecord))
 					{
 						// No secondary record in dictionary; no relevant restrictions.
 						return true;
@@ -863,11 +863,11 @@ namespace TransferController
 				// Check outside connection.
 				if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[incomingBuildingID].Info.m_buildingAI is OutsideConnectionAI)
 				{
-					return (buildingRecord.flags & ServiceLimits.RestrictionFlags.BlockOutsideConnection) == ServiceLimits.RestrictionFlags.None;
+					return (buildingRecord.flags & BuildingControl.RestrictionFlags.BlockOutsideConnection) == BuildingControl.RestrictionFlags.None;
 				}
 
 				// Check same-district setting.
-				if ((buildingRecord.flags & ServiceLimits.RestrictionFlags.BlockSameDistrict) == ServiceLimits.RestrictionFlags.None && (incomingDistrict != 0 && incomingDistrict == outgoingDistrict || (incomingPark != 0 && incomingPark == outgoingPark)))
+				if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BlockSameDistrict) == BuildingControl.RestrictionFlags.None && (incomingDistrict != 0 && incomingDistrict == outgoingDistrict || (incomingPark != 0 && incomingPark == outgoingPark)))
 				{
 					// Same district match - permitted.
 					return true;

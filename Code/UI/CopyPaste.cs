@@ -56,22 +56,22 @@ namespace TransferController
         {
             try
             {
-                ServiceLimits.DeleteEntry(building);
+                BuildingControl.DeleteEntry(building);
 
                 for (int i = 0; i < transfers.Length; ++i)
                 {
-                    ServiceLimits.SetEnabled(building, transfers[i].recordNumber, ServiceLimits.GetEnabled(BuildingTemplate, Transfers[i].recordNumber), transfers[i].reason, transfers[i].nextRecord);
+                    BuildingControl.SetEnabled(building, transfers[i].recordNumber, BuildingControl.GetEnabled(BuildingTemplate, Transfers[i].recordNumber), transfers[i].reason, transfers[i].nextRecord);
 
-                    ServiceLimits.SetSameDistrict(building, transfers[i].recordNumber, ServiceLimits.GetSameDistrict(BuildingTemplate, Transfers[i].recordNumber), transfers[i].reason, transfers[i].nextRecord);
- 
-                    ServiceLimits.SetOutsideConnection(building, transfers[i].recordNumber, ServiceLimits.GetOutsideConnection(BuildingTemplate, Transfers[i].recordNumber), transfers[i].reason, transfers[i].nextRecord);
+                    BuildingControl.SetSameDistrict(building, transfers[i].recordNumber, BuildingControl.GetSameDistrict(BuildingTemplate, Transfers[i].recordNumber), transfers[i].reason, transfers[i].nextRecord);
 
-                    var DistrictsServed = ServiceLimits.GetBuildingDistricts(BuildingTemplate, transfers[i].recordNumber);
+                    BuildingControl.SetOutsideConnection(building, transfers[i].recordNumber, BuildingControl.GetOutsideConnection(BuildingTemplate, Transfers[i].recordNumber), transfers[i].reason, transfers[i].nextRecord);
+
+                    var DistrictsServed = BuildingControl.GetBuildingDistricts(BuildingTemplate, transfers[i].recordNumber);
                     if (DistrictsServed != null)
                     {
                         foreach (var districtPark in DistrictsServed)
                         {
-                            ServiceLimits.AddBuildingDistrict(building, transfers[i].recordNumber, districtPark, transfers[i].reason, transfers[i].nextRecord);
+                            BuildingControl.AddBuildingDistrict(building, transfers[i].recordNumber, districtPark, transfers[i].reason, transfers[i].nextRecord);
                         }
                     }
                 }

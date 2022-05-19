@@ -70,7 +70,7 @@
     <Compile Include="Code\Patches\Patcher.cs" />
     <Compile Include="Code\Serialization.cs" />
     <Compile Include="Code\TransferData\BuildingExtension.cs" />
-    <Compile Include="Code\TransferData\ServiceLimits.cs" />
+    <Compile Include="Code\TransferData\BuildingControl.cs" />
     <Compile Include="Code\Settings\ModSettings.cs" />
     <Compile Include="Code\TransferData\TransferDataUtils.cs" />
     <Compile Include="Code\TransferData\TransferLogging.cs" />

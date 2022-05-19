@@ -5,9 +5,9 @@ using System.Collections.Generic;
 namespace TransferController
 {
     /// <summary>
-    /// Static class to manage records of building service limits.
+    /// Static class to control building service limits.
     /// </summary>
-    internal static class ServiceLimits
+    internal static class BuildingControl
     {
         /// <summary>
         /// Building restriction flags.

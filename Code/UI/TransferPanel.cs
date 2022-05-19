@@ -147,8 +147,8 @@ namespace TransferController
         /// </summary>
         private bool Enabled
         {
-            get => ServiceLimits.GetEnabled(currentBuilding, recordNumber);
-            set => ServiceLimits.SetEnabled(currentBuilding, recordNumber, value, TransferReason, NextRecord);
+            get => BuildingControl.GetEnabled(currentBuilding, recordNumber);
+            set => BuildingControl.SetEnabled(currentBuilding, recordNumber, value, TransferReason, NextRecord);
         }
 
 
@@ -157,8 +157,8 @@ namespace TransferController
         /// </summary>
         private bool SameDistrict
         {
-            get => ServiceLimits.GetSameDistrict(currentBuilding, recordNumber);
-            set => ServiceLimits.SetSameDistrict(currentBuilding, recordNumber, value, TransferReason, NextRecord);
+            get => BuildingControl.GetSameDistrict(currentBuilding, recordNumber);
+            set => BuildingControl.SetSameDistrict(currentBuilding, recordNumber, value, TransferReason, NextRecord);
         }
 
 
@@ -167,8 +167,8 @@ namespace TransferController
         /// </summary>
         private bool OutsideConnection
         {
-            get => ServiceLimits.GetOutsideConnection(currentBuilding, recordNumber);
-            set => ServiceLimits.SetOutsideConnection(currentBuilding, recordNumber, value, TransferReason, NextRecord);
+            get => BuildingControl.GetOutsideConnection(currentBuilding, recordNumber);
+            set => BuildingControl.SetOutsideConnection(currentBuilding, recordNumber, value, TransferReason, NextRecord);
         }
 
 
@@ -260,7 +260,7 @@ namespace TransferController
         private void AddDistrict(int districtID)
         {
             // Add district to building.
-            ServiceLimits.AddBuildingDistrict(currentBuilding, recordNumber, districtID, TransferReason, NextRecord);
+            BuildingControl.AddBuildingDistrict(currentBuilding, recordNumber, districtID, TransferReason, NextRecord);
 
             // Add district to building and update current selection.
             buildingDistrictSelectionPanel.selectedDistrict = districtID;
@@ -277,7 +277,7 @@ namespace TransferController
         private void RemoveDistrict()
         {
             // Remove selected district from building.
-            ServiceLimits.RemoveBuildingDistrict(currentBuilding, recordNumber, buildingDistrictSelectionPanel.selectedDistrict);
+            BuildingControl.RemoveBuildingDistrict(currentBuilding, recordNumber, buildingDistrictSelectionPanel.selectedDistrict);
 
             // Remove selected district from building and clear current selection.
             buildingDistrictSelectionPanel.selectedDistrict = 0;

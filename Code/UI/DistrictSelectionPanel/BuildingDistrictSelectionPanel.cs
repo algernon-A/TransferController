@@ -12,7 +12,7 @@ namespace TransferController
         /// <summary>
         /// HashSet of relevant district settings for this panel type.
         /// </summary>
-        private HashSet<int> DistrictSettingsList => ServiceLimits.GetBuildingDistricts((parent as TransferPanel).CurrentBuilding, (parent as TransferPanel).RecordNumber);
+        private HashSet<int> DistrictSettingsList => BuildingControl.GetBuildingDistricts((parent as TransferPanel).CurrentBuilding, (parent as TransferPanel).RecordNumber);
 
 
         /// <summary>
