@@ -300,15 +300,21 @@ namespace TransferController
 												if(!WarehouseControl.CheckVehicleQuota(incomingWarehouseAI, incomingBuilding, ref buildingBuffer[incomingBuilding], material, candidateAI))
                                                 {
 													continue;
-                                                }												
-                                            }
+                                                }
+
+												// Adjust distane modifier for warehouse priority.
+												distanceModifier /= (1 + AddOffers.warehousePriority);
+											}
 											else if (candidateAI is WarehouseAI outgoingWarehouseAI)
                                             {
 												// Outgoing candidate is warehouse.
 												if(!WarehouseControl.CheckVehicleQuota(outgoingWarehouseAI, outCandidateBuilding, ref buildingBuffer[outCandidateBuilding], material, incomingAI))
                                                 {
 													continue;
-                                                }
+												}
+
+												// Adjust distane modifier for warehouse priority.
+												distanceModifier /= (1 + AddOffers.warehousePriority);
 											}
 
 											// Position of incoming building (source building or vehicle source building)
@@ -548,6 +554,9 @@ namespace TransferController
 											{
 												continue;
 											}
+
+											// Adjust distane modifier for warehouse priority.
+											distanceModifier /= (1 + AddOffers.warehousePriority);
 										}
 										else if (candidateAI is WarehouseAI incomingWarehouseAI)
 										{
@@ -556,6 +565,9 @@ namespace TransferController
 											{
 												continue;
 											}
+
+											// Adjust distane modifier for warehouse priority.
+											distanceModifier /= (1 + AddOffers.warehousePriority);
 										}
 
 										// Position of incoming building (source building or vehicle source building)
