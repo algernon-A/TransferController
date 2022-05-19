@@ -120,6 +120,9 @@ namespace TransferController
                 // Initialise select tool.
                 ToolsModifierControl.toolController.gameObject.AddComponent<TCTool>();
 
+                // Add building info panel buttons.
+                BuildingPanelManager.AddInfoPanelButtons();
+
                 // Set loaded status flag.
                 isLoaded = true;
 

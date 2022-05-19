@@ -65,6 +65,7 @@
     <Compile Include="Code\MessageBox\MessageBoxBase.cs" />
     <Compile Include="Code\Mod.cs" />
     <Compile Include="Code\Patches\AddOffers.cs" />
+    <Compile Include="Code\Patches\BuildingWorldInfoPanel.cs" />
     <Compile Include="Code\Patches\Escape.cs" />
     <Compile Include="Code\Patches\MatchOffers.cs" />
     <Compile Include="Code\Patches\Patcher.cs" />

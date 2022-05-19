@@ -33,6 +33,43 @@ namespace TransferController
 
 
 		/// <summary>
+		/// Loads a one-sprite texture from a given .png file.
+		/// </summary>
+		/// <param name="fileName">Atlas file name (".png" will be appended fto make the filename)</param>
+		/// <returns>New texture atlas</returns>
+		internal static UITextureAtlas LoadSprite(string fileName)
+		{
+			// Check if we've already cached this file.
+			if (fileCache.ContainsKey(fileName))
+			{
+				// Cached - return cached result.
+				return fileCache[fileName];
+			}
+
+			// Create new texture atlas for button.
+			UITextureAtlas newAtlas = ScriptableObject.CreateInstance<UITextureAtlas>();
+			newAtlas.name = fileName;
+			newAtlas.material = Object.Instantiate(UIView.GetAView().defaultAtlas.material);
+
+			// Load texture from file.
+			Texture2D newTexture = LoadTexture(fileName + ".png");
+			newAtlas.material.mainTexture = newTexture;
+
+			// Setup sprite.
+			newAtlas.AddSprite(new UITextureAtlas.SpriteInfo
+			{
+				name = "normal",
+				texture = newTexture,
+				region = new Rect(0f, 0f, 1f, 1f)
+			});
+
+			// Add atlas to cache and return.
+			fileCache.Add(fileName, newAtlas);
+			return newAtlas;
+		}
+
+
+		/// <summary>
 		/// Loads a four-sprite texture atlas from a given .png file.
 		/// </summary>
 		/// <param name="fileName">Atlas file name (".png" will be appended fto make the filename)</param>
