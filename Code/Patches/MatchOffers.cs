@@ -174,6 +174,9 @@ namespace TransferController
 						byte incomingDistrict = 0;
 						byte incomingPark = 0;
 
+						// AI reference.
+						BuildingAI incomingAI = null;
+
 						// Set up for exclusion checking if this is a supported reason.
 						if (supportedReason)
 						{
@@ -198,6 +201,9 @@ namespace TransferController
 								// Incoming district.
 								incomingDistrict = districtManager.GetDistrict(incomingPosition);
 								incomingPark = districtManager.GetPark(incomingPosition);
+
+								// Get AI reference.
+								incomingAI = buildingBuffer[incomingBuilding].Info.m_buildingAI;
 							}
 						}
 
@@ -286,6 +292,25 @@ namespace TransferController
 										// Ensure we've got at least one valid building in the match before going further.
 										if (incomingBuilding + outCandidateBuilding != 0)
 										{
+											// Check vehicle quota for warehouses.
+											BuildingAI candidateAI = buildingBuffer[outCandidateBuilding].Info.m_buildingAI;
+											if (incomingAI is WarehouseAI incomingWarehouseAI)
+                                            {
+												// Incoming building is warehouse.
+												if(!WarehouseControl.CheckVehicleQuota(incomingWarehouseAI, incomingBuilding, ref buildingBuffer[incomingBuilding], material, candidateAI))
+                                                {
+													continue;
+                                                }												
+                                            }
+											else if (candidateAI is WarehouseAI outgoingWarehouseAI)
+                                            {
+												// Outgoing candidate is warehouse.
+												if(!WarehouseControl.CheckVehicleQuota(outgoingWarehouseAI, outCandidateBuilding, ref buildingBuffer[outCandidateBuilding], material, incomingAI))
+                                                {
+													continue;
+                                                }
+											}
+
 											// Position of incoming building (source building or vehicle source building)
 											Vector3 outCandidatePosition = outCandidateBuilding == 0 ? outgoingOfferCandidate.Position : buildingBuffer[outCandidateBuilding].m_position;
 
@@ -406,6 +431,9 @@ namespace TransferController
 					byte outgoingDistrict = 0;
 					byte outgoingPark = 0;
 
+					// AI reference.
+					BuildingAI outgoingAI = null;
+
 					// Set up for exclusion checking if this is a supported reason.
 					if (supportedReason)
 					{
@@ -427,6 +455,9 @@ namespace TransferController
 							// Outgoing district.
 							outgoingDistrict = districtManager.GetDistrict(outgoingPosition);
 							outgoingPark = districtManager.GetPark(outgoingPosition);
+
+							// Get AI reference.
+							outgoingAI = buildingBuffer[outgoingBuilding].Info.m_buildingAI;
 						}
 					}
 
@@ -508,6 +539,25 @@ namespace TransferController
 									// Ensure we've got at least one valid building in the match before going further.
 									if (outgoingBuilding + inCandidateBuilding != 0)
 									{
+										// Check vehicle quota for warehouses.
+										BuildingAI candidateAI = buildingBuffer[inCandidateBuilding].Info.m_buildingAI;
+										if (outgoingAI is WarehouseAI outgoingWarehouseAI)
+										{
+											// Outgoing building is warehouse.
+											if (!WarehouseControl.CheckVehicleQuota(outgoingWarehouseAI, outgoingBuilding, ref buildingBuffer[outgoingBuilding], material, candidateAI))
+											{
+												continue;
+											}
+										}
+										else if (candidateAI is WarehouseAI incomingWarehouseAI)
+										{
+											// Incoming candidate is warehouse.
+											if (!WarehouseControl.CheckVehicleQuota(incomingWarehouseAI, inCandidateBuilding, ref buildingBuffer[inCandidateBuilding], material, outgoingAI))
+											{
+												continue;
+											}
+										}
+
 										// Position of incoming building (source building or vehicle source building)
 										Vector3 inCandidatePosition = inCandidateBuilding == 0 ? incomingOfferCandidate.Position : buildingBuffer[inCandidateBuilding].m_position;
 

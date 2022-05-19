@@ -14,15 +14,13 @@ namespace TransferController
     internal class BuildingInfoPanel : UIPanel
     {
         // Layout constants.
-        private const float Margin = 5f;
-        private const float PanelWidth = TransferPanel.PanelWidth;
+        protected const float Margin = 5f;
+        protected const float PanelWidth = TransferPanel.PanelWidth;
         private const float TitleHeight = 50f;
         private const float LabelHeight = 30f;
         private const float ButtonHeight = 30f;
         private const float DistrictLabelY = TitleHeight + LabelHeight;
-        private const float ButtonY = DistrictLabelY + LabelHeight + Margin;
-        private const float PanelHeight = ButtonY + ButtonHeight + Margin;
-        private const float Panel1Y = PanelHeight + Margin;
+        protected const float ControlY = DistrictLabelY + LabelHeight + Margin;
         private const float PanelXOffset = -(TransferPanel.PanelWidth + Margin);
         private const float PanelYOffset = TransferPanel.PanelHeight + Margin;
         private const float ButtonWidth = 150f;
@@ -39,6 +37,11 @@ namespace TransferController
         private readonly TransferStruct[] transfers = new TransferStruct[4];
         private OffersPanel offersPanel;
         private LogPanel logPanel;
+
+
+        // Layout constants.
+        protected virtual float PanelHeight => ControlY + ButtonHeight + Margin;
+        private float Panel1Y => PanelHeight + Margin;
 
 
         // Dictionary getter.
@@ -98,11 +101,11 @@ namespace TransferController
                 };
 
                 // Offers button.
-                UIButton offersButton = UIControls.AddSmallerButton(this, Margin, ButtonY, Translations.Translate("TFC_OFF_TIT"), ButtonWidth);
+                UIButton offersButton = UIControls.AddSmallerButton(this, Margin, PanelHeight - ButtonHeight - Margin, Translations.Translate("TFC_OFF_TIT"), ButtonWidth);
                 offersButton.eventClicked += ShowOffers;
 
                 // Log button.
-                UIButton logButton = UIControls.AddSmallerButton(this, Margin + ButtonWidth + Margin, ButtonY, Translations.Translate("TFC_OFF_LOG"), ButtonWidth);
+                UIButton logButton = UIControls.AddSmallerButton(this, Margin + ButtonWidth + Margin, PanelHeight - ButtonHeight - Margin, Translations.Translate("TFC_OFF_LOG"), ButtonWidth);
                 logButton.eventClicked += ShowLog;
 
                 // District label.
@@ -120,7 +123,7 @@ namespace TransferController
         /// Sets/changes the currently selected building.
         /// </summary>
         /// <param name="buildingID">New building ID</param>
-        internal void SetTarget(ushort buildingID)
+        internal virtual void SetTarget(ushort buildingID)
         {
             // Local references.
             BuildingManager buildingManager = Singleton<BuildingManager>.instance;

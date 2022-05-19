@@ -1,4 +1,5 @@
-﻿- Adjust distance weighting for prioritized warehouse transfers
+﻿- New feature: reserve warehouse vehicles for unique factories or outside connections
+- Adjust distance weighting for prioritized warehouse transfers
 - Improve detection of deleted districts
 
 

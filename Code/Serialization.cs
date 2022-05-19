@@ -11,7 +11,7 @@ namespace TransferController
     {
         // Unique data ID.
         private readonly string dataID = "TransferController";
-        public const int DataVersion = 0;
+        public const int DataVersion = 1;
 
 
         /// <summary>
@@ -27,7 +27,14 @@ namespace TransferController
                 // Serialise savegame settings.
                 using (BinaryWriter writer = new BinaryWriter(stream))
                 {
+                    // Write version.
+                    writer.Write(DataVersion);
+
+                    // Serialize building data.
                     ServiceLimits.Serialize(writer);
+
+                    // Serialize warehouse data.
+                    WarehouseControl.Serialize(writer);
 
                     // Write to savegame.
                     serializableDataManager.SaveData(dataID, stream.ToArray());
@@ -57,8 +64,18 @@ namespace TransferController
                 {
                     using (BinaryReader reader = new BinaryReader(stream))
                     {
-                        // Deserialise savegame settings.
+                        // Read version.
+                        int version = reader.ReadInt32();
+
+                        // Deserialise building settings.
                         ServiceLimits.Deserialize(reader);
+
+                        // Deserialize warehouse settings.
+                        if (version > 0)
+                        {
+                            WarehouseControl.Deserialize(reader);
+                        }
+
                         Logging.Message("read ", stream.Length);
                     }
                 }

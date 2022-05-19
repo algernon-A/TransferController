@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using ColossalFramework;
 using ColossalFramework.UI;
 
 
@@ -20,7 +21,7 @@ namespace TransferController
         /// Creates the panel object in-game and displays it.
         /// </summary>
         /// <param name="parent">Parent component</param>
-        internal static void Create()
+        internal static void Create<T>() where T : BuildingInfoPanel
         {
             try
             {
@@ -32,7 +33,7 @@ namespace TransferController
                     uiGameObject.transform.parent = UIView.GetAView().transform;
 
                     // Add panel and set parent transform.
-                    panel = uiGameObject.AddComponent<BuildingInfoPanel>();
+                    panel = uiGameObject.AddComponent<T>();
                     Panel.transform.parent = uiGameObject.transform.parent;
 
                     // Show panel.
@@ -65,10 +66,30 @@ namespace TransferController
         /// <param name="buildingID">New building ID</param>
         internal static void SetTarget(ushort buildingID)
         {
-            // If no existing panel, create it.
-            if (Panel == null)
+            if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID].Info.m_buildingAI is WarehouseAI)
             {
-                Create();
+                if (Panel != null &&!(Panel is WarehouseInfoPanel))
+                    {
+                        Close();
+                    }
+
+                if (Panel == null)
+                {
+                    Create<WarehouseInfoPanel>();
+                }
+            }
+            else
+            {
+                if (Panel != null && Panel is WarehouseInfoPanel)
+                {
+                    Close();
+                }
+
+                // If no existing panel, create it.
+                if (Panel == null)
+                {
+                    Create<BuildingInfoPanel>();
+                }
             }
 
             // Set the target.

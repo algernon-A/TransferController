@@ -17,6 +17,7 @@ namespace TransferController
         [XmlIgnore]
         private static readonly string SettingsFileName = Path.Combine(ColossalFramework.IO.DataLocation.localApplicationData, "TransferController.xml");
 
+        // UUI hotkey.
         [XmlIgnore]
         private static readonly UnsavedInputKey uuiKey = new UnsavedInputKey(name: "Transfer Controller hotkey", keyCode: KeyCode.T, control: true, shift: false, alt: true);
 

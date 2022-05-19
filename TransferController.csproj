@@ -74,6 +74,7 @@
     <Compile Include="Code\Settings\ModSettings.cs" />
     <Compile Include="Code\TransferData\TransferDataUtils.cs" />
     <Compile Include="Code\TransferData\TransferLogging.cs" />
+    <Compile Include="Code\TransferData\WarehouseControl.cs" />
     <Compile Include="Code\TranslationFramework\TranslationFramework.cs" />
     <Compile Include="Code\TranslationFramework\TranslationXML.cs" />
     <Compile Include="Code\UI\CopyPaste.cs" />
@@ -90,6 +91,7 @@
     <Compile Include="Code\UI\UIFastList\DistrictRow.cs" />
     <Compile Include="Code\UI\UIFastList\OfferRow.cs" />
     <Compile Include="Code\UI\UIFastList\UIFastList.cs" />
+    <Compile Include="Code\UI\WarehouseInfoPanel.cs" />
     <Compile Include="Code\Utils\FontUtils.cs" />
     <Compile Include="Code\Utils\Logging.cs" />
     <Compile Include="Code\Utils\ModUtils.cs" />

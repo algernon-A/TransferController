@@ -10,7 +10,7 @@ namespace TransferController
     internal static class ServiceLimits
     {
         /// <summary>
-        /// Building restricion flags.
+        /// Building restriction flags.
         /// </summary>
         internal enum RestrictionFlags : uint
         {
@@ -302,17 +302,13 @@ namespace TransferController
         }
 
 
-
         /// <summary>
         /// Serializes savegame data.
         /// </summary>
         /// <param name="stream">Binary writer instance to serialize to</param>
         internal static void Serialize(BinaryWriter writer)
         {
-            Logging.Message("serializing savegame data");
-
-            // Write version.
-            writer.Write((int)0);
+            Logging.Message("serializing building data");
 
             // Write length of dictionary.
             writer.Write(buildingRecords.Count);
@@ -366,13 +362,10 @@ namespace TransferController
         /// <param name="stream">Data memory stream to deserialize from</param>
         internal static void Deserialize(BinaryReader reader)
         {
-            Logging.Message("deserializing savegame data");
+            Logging.Message("deserializing building data");
 
             // Clear dictionary.
             buildingRecords.Clear();
-
-            // Read version.
-            reader.ReadInt32();
 
             // Iterate through each entry read.
             int numEntries = reader.ReadInt32();

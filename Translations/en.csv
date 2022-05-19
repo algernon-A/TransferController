@@ -2,8 +2,6 @@
 NAME,English
 TFC_NAM,Transfer Controller
 TFC_DESC,Enables control of goods transfer and service vehicle coverage.
-TFC_RES_UNI,Reserve vehicles for unique factories
-TFC_RES_UNI_TIP,Selecting this will reserve a portion of this building's delivery vehicles to only service unique factories
 TFC_GEN_BUY,Buying restrictions
 TFC_GEN_SEL,Selling restrictions
 TFC_GEN_SER,Service restrictions
@@ -43,6 +41,12 @@ TFC_FIS_CFO,Canned fish for sale
 TFC_PWR_INC,Purchasing fuel
 TFC_OIL_INC,Oil supply
 TFC_SHT_INC,Buying goods
+TFC_WAR_RVU,Reserve vehicles for unique factories
+TFC_WAR_RVU_TIP,Selecting this will reserve a portion of this building's delivery vehicles to only service unique factories
+TFC_WAR_RVO,Reserve vehicles for outside connections
+TFC_WAR_RVO_TIP,Selecting this will reserve a portion of this building's delivery vehicles to only service outside connections (importing and exporting)
+TFC_WAR_RVC,Reserved vehicles
+TFC_WAR_RVC_TIP,Set the number of reserved vehicles
 TFC_OPT_DIS,Distance multiplier
 TFC_OPT_WAR,Warehouse priority boost
 TFC_OFF_TIT,Open offers
