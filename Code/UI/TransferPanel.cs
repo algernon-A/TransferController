@@ -20,7 +20,8 @@ namespace TransferController
         protected const float EnabledCheckY = HeadingY + HeadingHeight;
         protected const float SameDistrictCheckY = EnabledCheckY + CheckHeight;
         protected const float OutsideCheckY = SameDistrictCheckY + CheckHeight;
-        protected const float DistrictListY = OutsideCheckY + CheckHeight;
+        protected const float DistrictTitleY = OutsideCheckY + CheckHeight;
+        protected const float DistrictListY = DistrictTitleY + CheckHeight;
         internal const float ListHeight = 8f * DistrictRow.RowHeight;
         internal const float ColumnWidth = 210f;
         private const float ArrowSize = 32f;
@@ -246,10 +247,16 @@ namespace TransferController
                 removeDistrictButton.eventClicked += (control, clickEvent) => RemoveDistrict();
 
                 // District selection panels.
-                districtSelectionPanel = this.AddUIComponent<DistrictSelectionPanel>();
-                districtSelectionPanel.relativePosition = new Vector2(Margin, DistrictListY);
                 buildingDistrictSelectionPanel = this.AddUIComponent<BuildingDistrictSelectionPanel>();
-                buildingDistrictSelectionPanel.relativePosition = new Vector2(RightColumnX, DistrictListY);
+                buildingDistrictSelectionPanel.relativePosition = new Vector2(Margin, DistrictListY);
+                districtSelectionPanel = this.AddUIComponent<DistrictSelectionPanel>();
+                districtSelectionPanel.relativePosition = new Vector2(RightColumnX, DistrictListY);
+
+                // District selection panel labels.
+                UILabel districtSelectionLabel = UIControls.AddLabel(districtSelectionPanel, 0f, -15f, Translations.Translate("TFC_DIS_AVA"), ColumnWidth, 0.8f);
+                districtSelectionLabel.textAlignment = UIHorizontalAlignment.Center;
+                UILabel buildingDistrictSelectionLabel = UIControls.AddLabel(buildingDistrictSelectionPanel, 0f, -15f, Translations.Translate("TFC_DIS_SEL"), ColumnWidth, 0.8f);
+                buildingDistrictSelectionLabel.textAlignment = UIHorizontalAlignment.Center;
 
                 // Populate district selection panel (don't do the same with building panel yet, as recordNumber hasn't been assigned).
                 districtSelectionPanel.RefreshList();
