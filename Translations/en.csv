@@ -62,6 +62,8 @@ TFC_LOG_INC,Incoming
 TFC_LOG_OUT,Outgoing
 TRN_CHOICE,Set language
 TRN_SYS,Use game language
+KEY_KEY,Hotkey
+KEY_PRS,Press any key
 TFC_ERR_FAT,This means that the mod is not able to operate, and has shut down.
 TFC_ERR_HAR,Transfer Controller was unable to complete its required Harmony patches.
 MES_CLS,Close

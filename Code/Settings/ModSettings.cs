@@ -38,6 +38,26 @@ namespace TransferController
         }
 
 
+        // Tool hotkey.
+        [XmlElement("ToolKey")]
+        public KeyBinding XMLToolKey
+        {
+            get => uuiKey.KeyBinding;
+
+            set => uuiKey.KeyBinding = value;
+        }
+
+
+        // Matching intensity.
+        [XmlElement("DistanceMultiplier")]
+        public int XMLDistanceMultiplier { get => TransferManagerPatches.distancePercentage; set => TransferManagerPatches.distancePercentage = value; }
+
+
+        // Warehouse priority boost.
+        [XmlElement("WarehousePriority")]
+        public int XMLWarehousePriority { get => AddOffers.warehousePriority; set => AddOffers.warehousePriority = value; }
+
+
         /// <summary>
         /// Current hotkey as UUI UnsavedInputKey.
         /// </summary>
@@ -55,16 +75,6 @@ namespace TransferController
 
             set => uuiKey.value = value;
         }
-
-
-        // Matching intensity.
-        [XmlElement("DistanceMultiplier")]
-        public int XMLDistanceMultiplier { get => TransferManagerPatches.distancePercentage; set => TransferManagerPatches.distancePercentage = value; }
-
-
-        // Warehouse priority boost.
-        [XmlElement("WarehousePriority")]
-        public int XMLWarehousePriority { get => AddOffers.warehousePriority; set => AddOffers.warehousePriority = value; }
 
 
         /// <summary>

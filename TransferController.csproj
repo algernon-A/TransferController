@@ -70,6 +70,9 @@
     <Compile Include="Code\Patches\MatchOffers.cs" />
     <Compile Include="Code\Patches\Patcher.cs" />
     <Compile Include="Code\Serialization.cs" />
+    <Compile Include="Code\Settings\OptionsKeymapping.cs" />
+    <Compile Include="Code\Settings\OptionsPanel.cs" />
+    <Compile Include="Code\Settings\OptionsPanelManager.cs" />
     <Compile Include="Code\TransferData\BuildingExtension.cs" />
     <Compile Include="Code\TransferData\BuildingControl.cs" />
     <Compile Include="Code\Settings\ModSettings.cs" />

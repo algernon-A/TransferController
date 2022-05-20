@@ -26,6 +26,19 @@ namespace TransferController
             // Called here instead of OnCreated to allow the auto-downloader to do its work prior to launch.
             HarmonyHelper.DoOnHarmonyReady(() => Patcher.PatchAll());
 
+            // Add the options panel event handler for the start screen (to enable/disable options panel based on visibility).
+            // First, check to see if UIView is ready.
+            if (UIView.GetAView() != null)
+            {
+                // It's ready - attach the hook now.
+                OptionsPanelManager.OptionsEventHook();
+            }
+            else
+            {
+                // Otherwise, queue the hook for when the intro's finished loading.
+                LoadingManager.instance.m_introLoaded += OptionsPanelManager.OptionsEventHook;
+            }
+
             // Load the settings file.
             ModSettings.Load();
         }
@@ -49,28 +62,8 @@ namespace TransferController
         /// </summary>
         public void OnSettingsUI(UIHelperBase helper)
         {
-            // Language options.
-            UIHelperBase languageGroup = helper.AddGroup(Translations.Translate("TRN_CHOICE"));
-            UIDropDown languageDropDown = (UIDropDown)languageGroup.AddDropdown(Translations.Translate("TRN_CHOICE"), Translations.LanguageList, Translations.Index, (value) => { Translations.Index = value; ModSettings.Save(); });
-            languageDropDown.autoSize = false;
-            languageDropDown.width = 270f;
-
-            // Distance multiplier slider.
-            UISlider distanceSlider = helper.AddSlider(Translations.Translate("TFC_OPT_DIS"), 0f, 100f, 1f, TransferManagerPatches.distancePercentage, (value) => { TransferManagerPatches.distancePercentage = (int)value.RoundToNearest(1f); }) as UISlider;
-            UILabel distanceLabel = distanceSlider.parent.AddUIComponent<UILabel>();
-            distanceLabel.text = TransferManagerPatches.distancePercentage.ToString() + "%";
-            distanceSlider.eventValueChanged += (control,value) => { distanceLabel.text = TransferManagerPatches.distancePercentage.ToString() + "%"; ModSettings.Save(); };
-            distanceSlider.parent.height += 20f;
-            distanceSlider.parent.width += 100f;
-
-            // Warehouse priority slider.
-            UISlider warehouseSlider = helper.AddSlider(Translations.Translate("TFC_OPT_WAR"), 0f, 4f, 1f, AddOffers.warehousePriority, (value) => { AddOffers.warehousePriority = (int)value.RoundToNearest(1f); }) as UISlider;
-            UILabel warehouseLabel = warehouseSlider.parent.AddUIComponent<UILabel>();
-            warehouseLabel.autoSize = true;
-            warehouseLabel.wordWrap = false;
-            warehouseLabel.text = AddOffers.warehousePriority.ToString(); ;
-            warehouseSlider.eventValueChanged += (control, value) => { warehouseLabel.text = AddOffers.warehousePriority.ToString(); ModSettings.Save(); };
-            warehouseSlider.parent.width += 100f;
+            // Create options panel.
+            OptionsPanelManager.Setup(helper);
         }
     }
 }

@@ -120,6 +120,9 @@ namespace TransferController
                 // Initialise select tool.
                 ToolsModifierControl.toolController.gameObject.AddComponent<TCTool>();
 
+                // Set up options panel event handler (need to redo this now that options panel has been reset after loading into game).
+                OptionsPanelManager.OptionsEventHook();
+
                 // Add building info panel buttons.
                 BuildingPanelManager.AddInfoPanelButtons();
 

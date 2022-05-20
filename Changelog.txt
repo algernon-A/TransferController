@@ -3,6 +3,9 @@
 - New feature: reserve warehouse vehicles for unique factories or outside connections
 - Add shortcut buttons to building info panels
 - Several transfer panel UI improvements
+- Overhaul options panel
+- Hotkey is now configurable
+- Overhaul warehouse prioritization methodology
 - Adjust distance weighting for prioritized warehouse transfers
 - Improve detection of deleted districts
 
