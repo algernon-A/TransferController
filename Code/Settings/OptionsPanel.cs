@@ -13,8 +13,6 @@ namespace TransferController
         // Layout constants.
         private const float Margin = 5f;
         private const float LeftMargin = 24f;
-        private const float SubTitleX = 49f;
-        private const float CheckRowHeight = 22f;
         private const float GroupMargin = 40f;
 
 
