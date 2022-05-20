@@ -2,7 +2,7 @@
 
 - New feature: reserve warehouse vehicles for unique factories or outside connections
 - Add shortcut buttons to building info panels
-- Transfer panel UI adjustments
+- Several transfer panel UI improvements
 - Adjust distance weighting for prioritized warehouse transfers
 - Improve detection of deleted districts
 

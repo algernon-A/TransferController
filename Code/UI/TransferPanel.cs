@@ -40,8 +40,8 @@ namespace TransferController
         private ushort currentBuilding;
         private byte recordNumber;
 
-        // Event status.
-        private bool disableEvents = false;
+        // Status flags.
+        private bool disableEvents = false, outsideEligible = false;
 
         
         /// <summary>
@@ -60,12 +60,16 @@ namespace TransferController
                 // Show button if text isn't null.
                 if (value != null)
                 {
+                    outsideEligible = true;
                     outsideCheck.text = value;
-                    outsideCheck.Show();
+
+                    // Only show if the 'enabled' checkbox is checked.
+                    outsideCheck.isVisible = enabledCheck.isChecked;
                 }
                 else
                 {
                     // No value - hide checkbox.
+                    outsideEligible = false;
                     outsideCheck.Hide();
                 }
             }
@@ -198,6 +202,9 @@ namespace TransferController
                     {
                         Enabled = isChecked;
                     }
+
+                    // Enable/disable other controls based on new state - event status is irrelevant.
+                    UpdateEnabledStates();
                 };
 
                 // Same district only checkbox.
@@ -246,6 +253,9 @@ namespace TransferController
 
                 // Populate district selection panel (don't do the same with building panel yet, as recordNumber hasn't been assigned).
                 districtSelectionPanel.RefreshList();
+
+                // Set initial control states.
+                UpdateEnabledStates();
             }
             catch (Exception e)
             {
@@ -296,6 +306,22 @@ namespace TransferController
 
             // Update district list.
             buildingDistrictSelectionPanel.RefreshList();
+        }
+
+
+        /// <summary>
+        /// Toggles checkbox states based on 'Enable restrictions' setting.
+        /// </summary>
+        private void UpdateEnabledStates()
+        {
+            sameDistrictCheck.isVisible = enabledCheck.isChecked;
+            addDistrictButton.isVisible = enabledCheck.isChecked;
+            removeDistrictButton.isVisible = enabledCheck.isChecked;
+            districtSelectionPanel.isVisible = enabledCheck.isChecked;
+            buildingDistrictSelectionPanel.isVisible = enabledCheck.isChecked;
+
+            // Outside checkbox should only be shown if this building is eligible for outside connections.
+            outsideCheck.isVisible = enabledCheck.isChecked & outsideEligible;
         }
 
 
