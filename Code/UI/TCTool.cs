@@ -15,6 +15,10 @@ namespace TransferController
 		private CursorInfo lightCursor;
 		private CursorInfo darkCursor;
 
+		// Building target picking mode flag and reference.
+		internal static bool pickMode = false;
+		internal static TransferBuildingTab transferBuildingTab;
+
 		// Transfer struct for eligibility checking.
 		private readonly TransferStruct[] transfers = new TransferStruct[4];
 
@@ -133,6 +137,12 @@ namespace TransferController
 					// Set base tool accurate position.
 					m_accuratePosition = output.m_hitPos;
 
+					// Select parent building of any 'untouchable' (sub-)building.
+					if (output.m_building != 0 && (Singleton<BuildingManager>.instance.m_buildings.m_buffer[output.m_building].m_flags & Building.Flags.Untouchable) != 0)
+					{
+						output.m_building = Building.FindParentBuilding((ushort)output.m_building);
+					}
+
 					// Check for building hits.
 					if (output.m_building != 0)
 					{
@@ -140,9 +150,29 @@ namespace TransferController
 						output.m_hitPos = Singleton<BuildingManager>.instance.m_buildings.m_buffer[output.m_building].m_position;
 						if (TransferDataUtils.BuildingEligibility(output.m_building, transfers))
 						{
-							// Building has eligible transfers - set hover, and set cursor to light/
+							// Building has eligible transfers - set hover, and set cursor to light.
 							hoverInstance.Building = (ushort)output.m_building;
 							m_cursor = lightCursor;
+						}
+					}
+
+					// Has the hovered instance changed since last time?
+					if (hoverInstance != m_hoverInstance)
+					{
+						// Hover instance has changed.
+						// Unhide any previously-hidden buildings.
+						if (m_hoverInstance.Building != 0)
+						{
+							// Local references.
+							BuildingManager buildingManager = Singleton<BuildingManager>.instance;
+							Building[] buildingBuffer = buildingManager.m_buildings.m_buffer;
+
+							// Unhide previously hovered building.
+							if ((buildingBuffer[m_hoverInstance.Building].m_flags & Building.Flags.Hidden) != 0)
+							{
+								buildingBuffer[m_hoverInstance.Building].m_flags &= ~Building.Flags.Hidden;
+								buildingManager.UpdateBuildingRenderer(m_hoverInstance.Building, updateGroup: true);
+							}
 						}
 					}
 
@@ -166,6 +196,12 @@ namespace TransferController
 			m_mousePosition = output.m_hitPos;
 			m_selectErrors = errors;
 		}
+
+
+		/// <summary>
+		/// Activates the TCTool.
+		/// </summary>
+		internal static void Activate() => ToolsModifierControl.toolController.CurrentTool = Instance;
 
 
 		/// <summary>
@@ -223,8 +259,19 @@ namespace TransferController
 					// Got one; use the event.
 					UIInput.MouseUsed();
 
-					// Create the info panel with the hovered building prefab.
-					BuildingPanelManager.SetTarget(building);
+					// Are we in pick mode?
+					if (pickMode)
+					{
+						// Yes - clear pick mode and communicate selection back to requesting panel.
+						pickMode = false;
+						transferBuildingTab?.AddBuilding(building);
+						transferBuildingTab = null;
+					}
+					else
+					{
+						// Not in pick mode - create the info panel with the hovered building prefab.
+						BuildingPanelManager.SetTarget(building);
+					}
 				}
 			}
 
