@@ -1,4 +1,7 @@
-﻿Version 0.2 -
+﻿- Deprioritize warehouse to warehouse transfers
+
+
+Version 0.2 -
 
 - New feature: reserve warehouse vehicles for unique factories or outside connections
 - Add shortcut buttons to building info panels
