@@ -811,24 +811,24 @@ namespace TransferController
 					}
 				}
 
-				// Transfer is permitted if no restrictions are enabled.
-				if ((buildingRecord.flags & (BuildingControl.RestrictionFlags.DistrictEnabled | BuildingControl.RestrictionFlags.BuildingEnabled)) == 0)
-                {
+				// Check outside connection.
+				if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[outgoingBuildingID].Info.m_buildingAI is OutsideConnectionAI)
+				{
+					if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BlockOutsideConnection) == 0)
+					{
+						return true;
+					}
+				}
+				else if ((buildingRecord.flags & (BuildingControl.RestrictionFlags.DistrictEnabled | BuildingControl.RestrictionFlags.BuildingEnabled)) == 0)
+				{
+					// If not an outside connection, transfer is permitted if no restrictions are enabled.
 					return true;
-                }					
+                }
+
 
 				// Check district settings.
 				if ((buildingRecord.flags & BuildingControl.RestrictionFlags.DistrictEnabled) != 0)
 				{
-					// Check outside connection.
-					if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[outgoingBuildingID].Info.m_buildingAI is OutsideConnectionAI)
-					{
-						if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BlockOutsideConnection) == 0)
-                        {
-							return true;
-                        }
-					}
-
 					// Check same-district setting.
 					if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BlockSameDistrict) == 0 && (outgoingDistrict != 0 && incomingDistrict == outgoingDistrict || (outgoingPark != 0 && incomingPark == outgoingPark)))
 					{
@@ -870,7 +870,6 @@ namespace TransferController
 			// If we got here, we found a record but no permitted match was found; return false.
 			return false;
 		}
-
 
 
 		/// <summary>
@@ -918,12 +917,6 @@ namespace TransferController
 					}
 				}
 
-				// Transfer is permitted if no restrictions are enabled.
-				if ((buildingRecord.flags & (BuildingControl.RestrictionFlags.DistrictEnabled | BuildingControl.RestrictionFlags.BuildingEnabled)) == 0)
-				{
-					return true;
-				}
-
 				// Only block specified goods transfers where the 'None' wildcard is applied.
 				if (buildingRecord.reason == TransferManager.TransferReason.None)
 				{
@@ -958,19 +951,23 @@ namespace TransferController
 					}
 				}
 
+				// Check outside connection.
+				if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[incomingBuildingID].Info.m_buildingAI is OutsideConnectionAI)
+				{
+					if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BlockOutsideConnection) == 0)
+					{
+						return true;
+					}
+				}
+				else if ((buildingRecord.flags & (BuildingControl.RestrictionFlags.DistrictEnabled | BuildingControl.RestrictionFlags.BuildingEnabled)) == 0)
+				{
+					// If not an outside connection, transfer is permitted if no restrictions are enabled.
+					return true;
+				}
 
 				// Check district settings.
 				if ((buildingRecord.flags & BuildingControl.RestrictionFlags.DistrictEnabled) != 0)
 				{
-					// Check outside connection.
-					if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[incomingBuildingID].Info.m_buildingAI is OutsideConnectionAI)
-					{
-						if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BlockOutsideConnection) == 0)
-                        {
-							return true;
-                        }
-					}
-
 					// Check same-district setting.
 					if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BlockSameDistrict) == BuildingControl.RestrictionFlags.None && (incomingDistrict != 0 && incomingDistrict == outgoingDistrict || (incomingPark != 0 && incomingPark == outgoingPark)))
 					{

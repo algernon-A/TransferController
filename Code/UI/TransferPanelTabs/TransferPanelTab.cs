@@ -13,18 +13,54 @@ namespace TransferController
         protected const float ButtonHeight = 28f;
         protected const float EnabledCheckY = Margin;
         protected const float SameDistrictCheckY = EnabledCheckY + CheckHeight;
-        protected const float OutsideCheckY = SameDistrictCheckY + CheckHeight;
-        protected const float DistrictTitleY = OutsideCheckY + CheckHeight;
-        protected const float DistrictListY = DistrictTitleY + CheckHeight;
-        internal const float ListHeight = 8f * DistrictRow.RowHeight;
+        protected const float ListTitleY = SameDistrictCheckY + CheckHeight;
+        protected const float ListY = ListTitleY + CheckHeight;
+        internal const float ListHeight = 10f * DistrictRow.RowHeight;
         internal const float ColumnWidth = 210f;
         protected const float ArrowSize = 32f;
         protected const float MidControlX = Margin + ColumnWidth + Margin;
         protected const float RightColumnX = MidControlX + ArrowSize + Margin;
         internal const float PanelWidth = RightColumnX + ColumnWidth + Margin;
-        internal const float PanelHeight = DistrictListY + ListHeight + Margin;
+        internal const float PanelHeight = ListY + ListHeight + Margin;
+
+        // Current selections.
+        private ushort currentBuilding;
 
 
+        /// <summary>
+        /// Current record number.
+        /// </summary>
+        internal byte RecordNumber { get; set; }
+
+
+        /// <summary>
+        /// Other record flag.
+        /// </summary>
+        internal byte NextRecord { get; set; }
+
+
+        /// <summary>
+        /// Transfer reason.
+        /// </summary>
+        internal TransferManager.TransferReason TransferReason { get; set; }
+
+
+        /// <summary>
+        /// Currently selected building.
+        /// </summary>
+        internal ushort CurrentBuilding
+        {
+            get => currentBuilding;
+
+            set
+            {
+                if (currentBuilding != value)
+                {
+                    currentBuilding = value;
+                    Refresh();
+                }
+            }
+        }
 
 
         /// <summary>
@@ -60,5 +96,11 @@ namespace TransferController
 
             return newButton;
         }
+
+
+        /// <summary>
+        /// Refreshes the controls with current data.
+        /// </summary>
+        protected abstract void Refresh();
     }
 }

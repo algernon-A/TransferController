@@ -10,84 +10,13 @@ namespace TransferController
     /// </summary>
     internal class TransferBuildingTab : TransferPanelTab
     {
-        // Layout constants.
-        private const float ExtraListHeight = DistrictRow.RowHeight * 2f;
-        private const float BuildingListY = DistrictListY - ExtraListHeight;
-        internal const float BuildingListHeight = ListHeight + ExtraListHeight;
-
         // Panel components.
         private readonly UICheckBox enabledCheck;
         private readonly UIButton addBuildingButton, removeBuildingButton;
         private SelectedBuildingPanel selectedBuildingPanel;
 
-        // Current selections.
-        private ushort currentBuilding;
-        private byte recordNumber;
-
         // Status flags.
         private bool disableEvents = false;
-
-
-        /// <summary>
-        /// Currently selected building.
-        /// </summary>
-        internal ushort CurrentBuilding
-        {
-            get => currentBuilding;
-
-            set
-            {
-                if (currentBuilding != value)
-                {
-                    currentBuilding = value;
-                    Refresh();
-                }
-            }
-        }
-
-
-        /// <summary>
-        /// Current record number.
-        /// </summary>
-        internal byte RecordNumber
-        {
-            get => recordNumber;
-
-            set
-            {
-                if (recordNumber != value)
-                {
-                    recordNumber = value;
-                    Refresh();
-                }
-            }
-        }
-
-
-        /// <summary>
-        /// Transfer reason.
-        /// </summary>
-        internal TransferManager.TransferReason TransferReason { private get; set; }
-
-
-        /// <summary>
-        /// Other record flag.
-        /// </summary>
-        internal byte NextRecord { private get; set; }
-
-
-        /// <summary>
-        /// Refreshes the controls with current data.
-        /// </summary>
-        private void Refresh()
-        {
-            selectedBuildingPanel.RefreshList();
-
-            // Disable events while we update same district check avoid triggering event handler.
-            disableEvents = true;
-            enabledCheck.isChecked = Enabled;
-            disableEvents = false;
-        }
 
 
         /// <summary>
@@ -95,8 +24,8 @@ namespace TransferController
         /// </summary>
         private bool Enabled
         {
-            get => BuildingControl.GetBuildingEnabled(currentBuilding, recordNumber);
-            set => BuildingControl.SetBuildingEnabled(currentBuilding, recordNumber, value, TransferReason, NextRecord);
+            get => BuildingControl.GetBuildingEnabled(CurrentBuilding, RecordNumber);
+            set => BuildingControl.SetBuildingEnabled(CurrentBuilding, RecordNumber, value, TransferReason, NextRecord);
         }
 
 
@@ -108,7 +37,6 @@ namespace TransferController
         {
             try
             {
-
                 // Restrictions enabled checkbox.
                 enabledCheck = UIControls.LabelledCheckBox(parentPanel, CheckMargin, EnabledCheckY, Translations.Translate("TFC_BLD_ENA"), tooltip: Translations.Translate("TFC_BLD_ENA_TIP"));
                 enabledCheck.isChecked = Enabled;
@@ -124,7 +52,7 @@ namespace TransferController
                 };
 
                 // 'Add building' button.
-                addBuildingButton = AddIconButton(parentPanel, MidControlX, BuildingListY, ArrowSize, "TFC_BUI_ADD", TextureUtils.LoadSpriteAtlas("TC-ArrowPlus"));
+                addBuildingButton = AddIconButton(parentPanel, MidControlX, ListY, ArrowSize, "TFC_BUI_ADD", TextureUtils.LoadSpriteAtlas("TC-ArrowPlus"));
                 addBuildingButton.eventClicked += (control, clickEvent) =>
                 {
                     // Add building via tool selection.
@@ -133,14 +61,14 @@ namespace TransferController
                 };
 
                 // Remove building button.
-                removeBuildingButton = AddIconButton(parentPanel, MidControlX, BuildingListY + ArrowSize, ArrowSize, "TFC_BUI_SUB", TextureUtils.LoadSpriteAtlas("TC-ArrowMinus"));
+                removeBuildingButton = AddIconButton(parentPanel, MidControlX, ListY + ArrowSize, ArrowSize, "TFC_BUI_SUB", TextureUtils.LoadSpriteAtlas("TC-ArrowMinus"));
                 removeBuildingButton.isEnabled = false;
                 removeBuildingButton.eventClicked += (control, clickEvent) => RemoveBuilding();
 
                 // Building selection panel.
                 selectedBuildingPanel = parentPanel.AddUIComponent<SelectedBuildingPanel>();
                 selectedBuildingPanel.ParentPanel = this;
-                selectedBuildingPanel.relativePosition = new Vector2(Margin, BuildingListY);
+                selectedBuildingPanel.relativePosition = new Vector2(Margin, ListY);
 
                 // Building selection panel label.
                 UILabel buildingSelectionLabel = UIControls.AddLabel(selectedBuildingPanel, 0f, -15f, Translations.Translate("TFC_BUI_SEL"), ColumnWidth, 0.8f);
@@ -151,7 +79,7 @@ namespace TransferController
             }
             catch (Exception e)
             {
-                Logging.LogException(e, "exception setting up outgoing panel");
+                Logging.LogException(e, "exception setting up TransferBuildingTab");
             }
         }
 
@@ -172,7 +100,7 @@ namespace TransferController
         internal void AddBuilding(ushort buildingID)
         {
             // Add district to building.
-            BuildingControl.AddBuilding(currentBuilding, recordNumber, buildingID, TransferReason, NextRecord);
+            BuildingControl.AddBuilding(CurrentBuilding, RecordNumber, buildingID, TransferReason, NextRecord);
 
             // Add district to building and update current selection.
             selectedBuildingPanel.SelectedBuilding = buildingID;
@@ -183,13 +111,27 @@ namespace TransferController
 
 
         /// <summary>
+        /// Refreshes the controls with current data.
+        /// </summary>
+        protected override void Refresh()
+        {
+            selectedBuildingPanel.RefreshList();
+
+            // Disable events while we update controls to avoid recursively triggering event handler.
+            disableEvents = true;
+            enabledCheck.isChecked = Enabled;
+            disableEvents = false;
+        }
+
+
+        /// <summary>
         /// Removes the currently selected district from the list for this building.
         /// Should be called as base after district has been updated by child class.
         /// </summary>
         private void RemoveBuilding()
         {
             // Remove selected district from building.
-            BuildingControl.RemoveBuilding(currentBuilding, recordNumber, selectedBuildingPanel.SelectedBuilding);
+            BuildingControl.RemoveBuilding(CurrentBuilding, RecordNumber, selectedBuildingPanel.SelectedBuilding);
 
             // Remove selected district from building and clear current selection.
             selectedBuildingPanel.SelectedBuilding = 0;

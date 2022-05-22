@@ -11,113 +11,13 @@ namespace TransferController
     internal class TransferDistrictTab : TransferPanelTab
     {
         // Panel components.
-        private readonly UICheckBox enabledCheck, sameDistrictCheck, outsideCheck;
+        private readonly UICheckBox enabledCheck, sameDistrictCheck;
         private readonly UIButton addDistrictButton, removeDistrictButton;
         private DistrictSelectionPanel districtSelectionPanel;
         private SelectedDistrictPanel buildingDistrictSelectionPanel;
 
-        // Current selections.
-        private ushort currentBuilding;
-        private byte recordNumber;
-
         // Status flags.
-        private bool disableEvents = false, outsideEligible = false;
-
-
-        /// <summary>
-        /// Sets the outside connection checkbox label text.
-        /// </summary>
-        internal string OutsideLabel
-        {
-            set
-            {
-                // Show button if text isn't null.
-                if (value != null)
-                {
-                    outsideEligible = true;
-                    outsideCheck.text = value;
-
-                    // Only show if the 'enabled' checkbox is checked.
-                    outsideCheck.isVisible = enabledCheck.isChecked;
-                }
-                else
-                {
-                    // No value - hide checkbox.
-                    outsideEligible = false;
-                    outsideCheck.Hide();
-                }
-            }
-        }
-
-
-        /// <summary>
-        /// Sets the outside connection checkbox tooltip text.
-        /// </summary>
-        internal string OutsideTip { set => outsideCheck.tooltip = value; }
-
-
-        /// <summary>
-        /// Currently selected building.
-        /// </summary>
-        internal ushort CurrentBuilding
-        {
-            get => currentBuilding;
-
-            set
-            {
-                if (currentBuilding != value)
-                {
-                    currentBuilding = value;
-                    Refresh();
-                }
-            }
-        }
-
-
-        /// <summary>
-        /// Current record number.
-        /// </summary>
-        internal byte RecordNumber
-        {
-            get => recordNumber;
-
-            set
-            {
-                if (recordNumber != value)
-                {
-                    recordNumber = value;
-                    Refresh();
-                }
-            }
-        }
-
-
-        /// <summary>
-        /// Transfer reason.
-        /// </summary>
-        internal TransferManager.TransferReason TransferReason { private get; set; }
-
-
-        /// <summary>
-        /// Other record flag.
-        /// </summary>
-        internal byte NextRecord { private get; set; }
-
-
-        /// <summary>
-        /// Refreshes the controls with current data.
-        /// </summary>
-        private void Refresh()
-        {
-            buildingDistrictSelectionPanel.RefreshList();
-
-            // Disable events while we update same district check avoid triggering event handler.
-            disableEvents = true;
-            enabledCheck.isChecked = Enabled;
-            sameDistrictCheck.isChecked = !SameDistrict;
-            outsideCheck.isChecked = !OutsideConnection;
-            disableEvents = false;
-        }
+        private bool disableEvents = false;
 
 
         /// <summary>
@@ -125,8 +25,8 @@ namespace TransferController
         /// </summary>
         private bool Enabled
         {
-            get => BuildingControl.GetDistrictEnabled(currentBuilding, recordNumber);
-            set => BuildingControl.SetDistrictEnabled(currentBuilding, recordNumber, value, TransferReason, NextRecord);
+            get => BuildingControl.GetDistrictEnabled(CurrentBuilding, RecordNumber);
+            set => BuildingControl.SetDistrictEnabled(CurrentBuilding, RecordNumber, value, TransferReason, NextRecord);
         }
 
 
@@ -135,19 +35,10 @@ namespace TransferController
         /// </summary>
         private bool SameDistrict
         {
-            get => BuildingControl.GetSameDistrict(currentBuilding, recordNumber);
-            set => BuildingControl.SetSameDistrict(currentBuilding, recordNumber, value, TransferReason, NextRecord);
+            get => BuildingControl.GetSameDistrict(CurrentBuilding, RecordNumber);
+            set => BuildingControl.SetSameDistrict(CurrentBuilding, RecordNumber, value, TransferReason, NextRecord);
         }
 
-
-        /// <summary>
-        /// Outside connection setting.
-        /// </summary>
-        private bool OutsideConnection
-        {
-            get => BuildingControl.GetOutsideConnection(currentBuilding, recordNumber);
-            set => BuildingControl.SetOutsideConnection(currentBuilding, recordNumber, value, TransferReason, NextRecord);
-        }
 
         /// <summary>
         /// Constructor - performs initial setup.
@@ -157,9 +48,8 @@ namespace TransferController
         {
             try
             {
-
                 // Restrictions enabled checkbox.
-                enabledCheck = UIControls.LabelledCheckBox(parentPanel, CheckMargin, EnabledCheckY, Translations.Translate("TFC_BLD_ENA"), tooltip: Translations.Translate("TFC_BLD_ENA_TIP"));
+                enabledCheck = UIControls.LabelledCheckBox(parentPanel, CheckMargin, EnabledCheckY, Translations.Translate("TFC_DIS_ENA"), tooltip: Translations.Translate("TFC_DIS_ENA_TIP"));
                 enabledCheck.isChecked = Enabled;
                 enabledCheck.eventCheckChanged += (control, isChecked) =>
                 {
@@ -184,35 +74,23 @@ namespace TransferController
                     }
                 };
 
-                // Outside connection checkbox.
-                // Note state is inverted - underlying flag is restrictive, but checkbox is permissive.
-                outsideCheck = UIControls.LabelledCheckBox(parentPanel, CheckMargin, OutsideCheckY, Translations.Translate("TFC_BLD_IMP"), tooltip: string.Empty);
-                outsideCheck.isChecked = !OutsideConnection;
-                outsideCheck.eventCheckChanged += (control, isChecked) =>
-                {
-                    if (!disableEvents)
-                    {
-                        OutsideConnection = !isChecked;
-                    }
-                };
-
                 // 'Add district' button.
-                addDistrictButton = AddIconButton(parentPanel, MidControlX, DistrictListY, ArrowSize, "TFC_DIS_ADD", TextureUtils.LoadSpriteAtlas("TC-ArrowPlus"));
+                addDistrictButton = AddIconButton(parentPanel, MidControlX, ListY, ArrowSize, "TFC_DIS_ADD", TextureUtils.LoadSpriteAtlas("TC-ArrowPlus"));
                 addDistrictButton.isEnabled = false;
                 addDistrictButton.eventClicked += (control, clickEvent) => AddDistrict(districtSelectionPanel.SelectedDistrict);
 
                 // Remove district button.
-                removeDistrictButton = AddIconButton(parentPanel, MidControlX, DistrictListY + ArrowSize, ArrowSize, "TFC_DIS_SUB", TextureUtils.LoadSpriteAtlas("TC-ArrowMinus"));
+                removeDistrictButton = AddIconButton(parentPanel, MidControlX, ListY + ArrowSize, ArrowSize, "TFC_DIS_SUB", TextureUtils.LoadSpriteAtlas("TC-ArrowMinus"));
                 removeDistrictButton.isEnabled = false;
                 removeDistrictButton.eventClicked += (control, clickEvent) => RemoveDistrict();
 
                 // District selection panels.
                 buildingDistrictSelectionPanel = parentPanel.AddUIComponent<SelectedDistrictPanel>();
-                buildingDistrictSelectionPanel.relativePosition = new Vector2(Margin, DistrictListY);
+                buildingDistrictSelectionPanel.relativePosition = new Vector2(Margin, ListY);
                 buildingDistrictSelectionPanel.ParentPanel = this;
                 districtSelectionPanel = parentPanel.AddUIComponent<DistrictSelectionPanel>();
                 districtSelectionPanel.ParentPanel = this;
-                districtSelectionPanel.relativePosition = new Vector2(RightColumnX, DistrictListY);
+                districtSelectionPanel.relativePosition = new Vector2(RightColumnX, ListY);
 
                 // District selection panel labels.
                 UILabel districtSelectionLabel = UIControls.AddLabel(districtSelectionPanel, 0f, -15f, Translations.Translate("TFC_DIS_AVA"), ColumnWidth, 0.8f);
@@ -228,7 +106,7 @@ namespace TransferController
             }
             catch (Exception e)
             {
-                Logging.LogException(e, "exception setting up outgoing panel");
+                Logging.LogException(e, "exception setting up TransferDistrictTab");
             }
         }
 
@@ -244,6 +122,21 @@ namespace TransferController
 
 
         /// <summary>
+        /// Refreshes the controls with current data.
+        /// </summary>
+        protected override void Refresh()
+        {
+            buildingDistrictSelectionPanel.RefreshList();
+
+            // Disable events while we update controls to avoid recursively triggering event handler.
+            disableEvents = true;
+            enabledCheck.isChecked = Enabled;
+            sameDistrictCheck.isChecked = !SameDistrict;
+            disableEvents = false;
+        }
+
+
+        /// <summary>
         /// Adds a district to the list for this building.
         /// Should be called as base after district has been updated by child class.
         /// </summary>
@@ -251,7 +144,7 @@ namespace TransferController
         private void AddDistrict(int districtID)
         {
             // Add district to building.
-            BuildingControl.AddDistrict(currentBuilding, recordNumber, districtID, TransferReason, NextRecord);
+            BuildingControl.AddDistrict(CurrentBuilding, RecordNumber, districtID, TransferReason, NextRecord);
 
             // Add district to building and update current selection.
             buildingDistrictSelectionPanel.SelectedDistrict = districtID;
@@ -268,7 +161,7 @@ namespace TransferController
         private void RemoveDistrict()
         {
             // Remove selected district from building.
-            BuildingControl.RemoveDistrict(currentBuilding, recordNumber, buildingDistrictSelectionPanel.SelectedDistrict);
+            BuildingControl.RemoveDistrict(CurrentBuilding, RecordNumber, buildingDistrictSelectionPanel.SelectedDistrict);
 
             // Remove selected district from building and clear current selection.
             buildingDistrictSelectionPanel.SelectedDistrict = 0;
@@ -288,9 +181,6 @@ namespace TransferController
             removeDistrictButton.isVisible = enabledCheck.isChecked;
             districtSelectionPanel.isVisible = enabledCheck.isChecked;
             buildingDistrictSelectionPanel.isVisible = enabledCheck.isChecked;
-
-            // Outside checkbox should only be shown if this building is eligible for outside connections.
-            outsideCheck.isVisible = enabledCheck.isChecked & outsideEligible;
         }
     }
 }

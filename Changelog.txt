@@ -1,4 +1,8 @@
-﻿Version 0.2.2 -
+﻿﻿- New feature: permit individual buildings
+- Update transfer logging
+
+
+Version 0.2.2 -
 
 - Import/export restrictions can be set independently of 'enable restrictions' setting
 - Exclude warehouse prioritization from outside connections

@@ -53,7 +53,7 @@ namespace TransferController
                 canFocus = true;
                 isInteractive = true;
                 width = TransferPanelTab.ColumnWidth;
-                height = TransferBuildingTab.BuildingListHeight;
+                height = TransferBuildingTab.ListHeight;
 
                 // District selection list.
                 buildingList = UIBuildingFastList.Create<BuildingRow, UIBuildingFastList>(this);

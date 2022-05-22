@@ -125,9 +125,6 @@ namespace TransferController
 			ToolErrors errors = ToolErrors.None;
 			RaycastOutput output;
 
-			// Cursor is dark by default.
-			m_cursor = darkCursor;
-
 			// Is the base mouse ray valid?
 			if (m_mouseRayValid)
 			{
@@ -157,6 +154,16 @@ namespace TransferController
 							hoverInstance.Building = (ushort)output.m_building;
 							m_cursor = currentLightCursor;
 						}
+						else
+                        {
+							// Ineligible building - set dark cursor.
+							m_cursor = darkCursor;
+						}
+					}
+					else
+                    {
+						// No hovered building - set dark cursor.
+						m_cursor = darkCursor;
 					}
 
 					// Has the hovered instance changed since last time?
@@ -220,6 +227,14 @@ namespace TransferController
 			}
 			else
 			{
+				// Are we in pick mode?
+				if (Instance.pickMode)
+				{
+					// Yes - clear pick mode.
+					Instance.pickMode = false;
+					Instance.transferBuildingTab = null;
+				}
+
 				// Activate default tool.
 				ToolsModifierControl.SetTool<DefaultTool>();
 			}
@@ -233,8 +248,19 @@ namespace TransferController
         {
 			transferBuildingTab = callingTab;
 			pickMode = true;
-			lightCursor = pickCursor;
-        }
+			currentLightCursor = pickCursor;
+		}
+
+
+		/// <summary>
+		/// Clears pick mode.
+		/// </summary>
+		internal void ClearPickMode()
+		{
+			pickMode = false;
+			transferBuildingTab = null;
+			currentLightCursor = lightCursor;
+		}
 
 
 		/// <summary>
@@ -278,9 +304,9 @@ namespace TransferController
 					{
 						// Yes - clear pick mode and communicate selection back to requesting panel.
 						pickMode = false;
-						currentLightCursor = lightCursor;
 						transferBuildingTab?.AddBuilding(building);
 						transferBuildingTab = null;
+						currentLightCursor = lightCursor;
 					}
 					else
 					{

@@ -10,7 +10,7 @@ namespace TransferController
     /// </summary>
     internal class TransferPanel : UIPanel
     {
-        // Layout constants - main panel.
+        // Layout constants .
         private const float Margin = 5f;
         private const float TitleY = 10f;
         private const float HeadingHeight = 20f;
@@ -19,20 +19,32 @@ namespace TransferController
         internal const float PanelWidth = TransferPanelTab.PanelWidth + Margin + Margin;
         internal const float PanelHeight = TabY + TabHeight + TransferPanelTab.PanelHeight + Margin;
 
+        // Tab indexes.
+        private enum TabIndexes : int
+        {
+            DistrictTab = 0,
+            BuildingTab,
+            OutsideTab
+        }
+
         // Panel components.
         private readonly UILabel directionLabel;
         private readonly TransferDistrictTab districtPanel;
         private readonly TransferBuildingTab buildingPanel;
+        private readonly TransferOutsideTab outsidePanel;
+        private readonly UIButton outsideButton;
+        private readonly UITabstrip tabStrip;
 
         // Current selections.
         private ushort currentBuilding;
         private byte recordNumber, nextRecord;
         private TransferManager.TransferReason material;
 
+
         /// <summary>
-        /// District panel reference.
+        /// Outside panel reference.
         /// </summary>
-        internal TransferDistrictTab DistrictPanel => districtPanel;
+        internal TransferOutsideTab OutsidePanel => outsidePanel;
 
 
         /// <summary>
@@ -55,6 +67,7 @@ namespace TransferController
                     currentBuilding = value;
                     districtPanel.CurrentBuilding = value;
                     buildingPanel.CurrentBuilding = value;
+                    outsidePanel.CurrentBuilding = value;
                 }
             }
         }
@@ -74,6 +87,7 @@ namespace TransferController
                     recordNumber = value;
                     districtPanel.RecordNumber = value;
                     buildingPanel.RecordNumber = value;
+                    outsidePanel.RecordNumber = value;
                 }
             }
         }
@@ -91,6 +105,7 @@ namespace TransferController
                 material = value;
                 districtPanel.TransferReason = value;
                 buildingPanel.TransferReason = value;
+                outsidePanel.TransferReason = value;
             }
         }
 
@@ -107,6 +122,48 @@ namespace TransferController
                 nextRecord = value;
                 districtPanel.NextRecord = value;
                 buildingPanel.NextRecord = value;
+                outsidePanel.NextRecord = value;
+            }
+        }
+
+
+        /// <summary>
+        /// Sets the outside connection checkbox label text.
+        /// </summary>
+        internal string OutsideLabel
+        {
+            set
+            {
+                // Set outside panel label.
+                outsidePanel.OutsideLabel = value;
+
+                // Valid value?
+                if (value == null)
+                {
+                    // No valid value - deselect outside tab if selected.
+                    if (tabStrip.selectedIndex == (int)TabIndexes.OutsideTab)
+                    {
+                        tabStrip.selectedIndex = (int)TabIndexes.DistrictTab;
+                    }
+
+                    // Hide outside connection tab.
+                    outsideButton.Hide();
+                }
+                else
+                {
+                    // Valid import/export building; show outside connection tab and set text.
+                    if ((recordNumber & BuildingControl.OutgoingMask) != 0)
+                    {
+                        // Exports - outgoing.
+                        outsideButton.text = Translations.Translate("TFC_TAB_EXP");
+                    }
+                    else
+                    {
+                        // Imports - incoming.
+                        outsideButton.text = Translations.Translate("TFC_TAB_IMP");
+                    }
+                    outsideButton.Show();
+                }
             }
         }
 
@@ -132,7 +189,7 @@ namespace TransferController
                 directionLabel.textAlignment = UIHorizontalAlignment.Center;
 
                 // Add tabstrip.
-                UITabstrip tabStrip = this.AddUIComponent<UITabstrip>();
+                tabStrip = this.AddUIComponent<UITabstrip>();
                 tabStrip.relativePosition = new Vector2(Margin, TabY);
                 tabStrip.size = new Vector2(TransferPanelTab.PanelWidth, TransferPanelTab.PanelHeight + TabHeight);
 
@@ -143,8 +200,9 @@ namespace TransferController
                 tabStrip.tabPages = tabContainer;
 
                 // Add tabs.
-                districtPanel = new TransferDistrictTab(AddTextTab(tabStrip, "District", 0));
-                buildingPanel = new TransferBuildingTab(AddTextTab(tabStrip, "Building", 1));
+                districtPanel = new TransferDistrictTab(AddTextTab(tabStrip, Translations.Translate("TFC_TAB_DIS"), (int)TabIndexes.DistrictTab, out UIButton _));
+                buildingPanel = new TransferBuildingTab(AddTextTab(tabStrip, Translations.Translate("TFC_TAB_BLD"), (int)TabIndexes.BuildingTab, out UIButton _));
+                outsidePanel = new TransferOutsideTab(AddTextTab(tabStrip, Translations.Translate("TFC_TAB_IMP"), (int)TabIndexes.OutsideTab, out outsideButton));
                 tabStrip.selectedIndex = 1;
                 tabStrip.selectedIndex = 0;
             }
@@ -161,13 +219,14 @@ namespace TransferController
         /// <param name="tabStrip">UIT tabstrip to add to</param>
         /// <param name="tabName">Name of this tab</param>
         /// <param name="tabIndex">Index number of this tab</param>
+        /// <param name="button">Tab button instance reference</param>
         /// <param name="width">Tab width</param>
-        /// <param name="autoLayout">Default autoLayout setting</param>
         /// <returns>UIHelper instance for the new tab panel</returns>
-        private UIPanel AddTextTab(UITabstrip tabStrip, string tabName, int tabIndex, float width = 200f, bool autoLayout = false)
+        private UIPanel AddTextTab(UITabstrip tabStrip, string tabName, int tabIndex, out UIButton button, float width = TransferPanelTab.PanelWidth / 3f)
         {
             // Create tab.
             UIButton tabButton = tabStrip.AddTab(tabName);
+            button = tabButton;
 
             // Sprites.
             tabButton.normalBgSprite = "SubBarButtonBase";
@@ -191,7 +250,7 @@ namespace TransferController
             UIPanel rootPanel = tabStrip.tabContainer.components[tabIndex] as UIPanel;
 
             // Panel setup.
-            rootPanel.autoLayout = autoLayout;
+            rootPanel.autoLayout = false;
             rootPanel.autoLayoutDirection = LayoutDirection.Vertical;
             rootPanel.autoLayoutPadding.top = 5;
             rootPanel.autoLayoutPadding.left = 10;

@@ -93,6 +93,7 @@
     <Compile Include="Code\UI\TransferPanel.cs" />
     <Compile Include="Code\UI\BuildingInfoPanel.cs" />
     <Compile Include="Code\UI\BuildingPanelManager.cs" />
+    <Compile Include="Code\UI\TransferPanelTabs\TransferOutsideTab.cs" />
     <Compile Include="Code\UI\TransferPanelTabs\TransferPanelTab.cs" />
     <Compile Include="Code\UI\UIFastList\BasicRow.cs" />
     <Compile Include="Code\UI\UIFastList\BuildingRow.cs" />

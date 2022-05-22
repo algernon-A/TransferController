@@ -2,6 +2,12 @@
 NAME,English
 TFC_NAM,Transfer Controller
 TFC_DESC,Enables control of goods transfer and service vehicle coverage.
+TFC_TAB_DIS,Districts
+TFC_TAB_BLD,Buildings
+TFC_TAB_IMP,Imports
+TFC_TAB_EXP,Exports
+TFC_DIS_ENA,Restrict permitted districts
+TFC_DIS_ENA_TIP,"If this is selected, service will be restricted to the districts listed below (and any permitted buildings or outside connections)."
 TFC_DIS_AVA,Available districts
 TFC_DIS_SEL,Permitted districts
 TFC_DIS_ADD,Add this district to the list of permitted districts
@@ -12,14 +18,14 @@ TFC_BUI_SUB,Remove this building from the list of permitted buildings
 TFC_GEN_BUY,Buying restrictions
 TFC_GEN_SEL,Selling restrictions
 TFC_GEN_SER,Service restrictions
-TFC_BLD_ENA,Enable restrictions
-TFC_BLD_ENA_TIP,"Select this to enable restrictions for this building.  If this is not selected, no other settings will take effect."
+TFC_BLD_ENA,Restrict permitted building
+TFC_BLD_ENA_TIP,"If this is selected, service will be restricted to the buildings listed below (and any permitted districts or outside connections)."
 TFC_BLD_SDO,Always service same district
 TFC_BLD_SDO_TIP,"Enable to ensure that the building can always service the same district and/or area that it's in, even if the district or area later changes."
 TFC_BLD_IMP,Allow imports
-TFC_BLD_IMP_TIP,Permit this building to import from outside connections.
+TFC_BLD_IMP_TIP,Permit this building to import from outside connections. This is not affected by district or building restrictions.
 TFC_BLD_EXP,Allow exports
-TFC_BLD_EXP_TIP,Permit this building to export to outside connections.
+TFC_BLD_EXP_TIP,Permit this building to export to outside connections. This is not affected by district or building restrictions.
 TFC_BLD_NOD,No local district
 TFC_FIR_BUI,Building fire fighting
 TFC_FIR_FOR,Forest fire fighting

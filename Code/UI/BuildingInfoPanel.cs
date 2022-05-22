@@ -147,13 +147,13 @@ namespace TransferController
                 }
 
                 // Set panel instance properties.
-                transfers[i].panel.DirectionTitle = transfers[i].panelTitle;
-                transfers[i].panel.DistrictPanel.OutsideLabel = transfers[i].outsideText;
-                transfers[i].panel.DistrictPanel.OutsideTip = transfers[i].outsideTip;
                 transfers[i].panel.RecordNumber = transfers[i].recordNumber;
-                transfers[i].panel.TransferReason = transfers[i].reason;
                 transfers[i].panel.NextRecord = transfers[i].nextRecord;
+                transfers[i].panel.TransferReason = transfers[i].reason;
                 transfers[i].panel.CurrentBuilding = currentBuilding;
+                transfers[i].panel.DirectionTitle = transfers[i].panelTitle;
+                transfers[i].panel.OutsideLabel = transfers[i].outsideText;
+                transfers[i].panel.OutsidePanel.OutsideTip = transfers[i].outsideTip;
             }
 
             // Destroy any unused panels.
