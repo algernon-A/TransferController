@@ -1,4 +1,5 @@
-﻿- Exclude warehouse prioritization from outside connections.
+﻿- Import/export restrictions can be set independently of 'enable restrictions' setting
+- Exclude warehouse prioritization from outside connections
 
 
 Version 0.2.1 -

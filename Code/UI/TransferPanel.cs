@@ -17,10 +17,10 @@ namespace TransferController
         protected const float ButtonHeight = 28f;
         protected const float HeadingHeight = 25f;
         protected const float HeadingY = 10f;
-        protected const float EnabledCheckY = HeadingY + HeadingHeight;
+        protected const float OutsideCheckY = HeadingY + HeadingHeight;
+        protected const float EnabledCheckY = OutsideCheckY + CheckHeight;
         protected const float SameDistrictCheckY = EnabledCheckY + CheckHeight;
-        protected const float OutsideCheckY = SameDistrictCheckY + CheckHeight;
-        protected const float DistrictTitleY = OutsideCheckY + CheckHeight;
+        protected const float DistrictTitleY = SameDistrictCheckY + CheckHeight;
         protected const float DistrictListY = DistrictTitleY + CheckHeight;
         internal const float ListHeight = 8f * DistrictRow.RowHeight;
         internal const float ColumnWidth = 210f;
@@ -42,7 +42,7 @@ namespace TransferController
         private byte recordNumber;
 
         // Status flags.
-        private bool disableEvents = false, outsideEligible = false;
+        private bool disableEvents = false;
 
         
         /// <summary>
@@ -61,16 +61,13 @@ namespace TransferController
                 // Show button if text isn't null.
                 if (value != null)
                 {
-                    outsideEligible = true;
+                    // Set text and show checkbox.
                     outsideCheck.text = value;
-
-                    // Only show if the 'enabled' checkbox is checked.
-                    outsideCheck.isVisible = enabledCheck.isChecked;
+                    outsideCheck.Show();
                 }
                 else
                 {
                     // No value - hide checkbox.
-                    outsideEligible = false;
                     outsideCheck.Hide();
                 }
             }
@@ -326,9 +323,6 @@ namespace TransferController
             removeDistrictButton.isVisible = enabledCheck.isChecked;
             districtSelectionPanel.isVisible = enabledCheck.isChecked;
             buildingDistrictSelectionPanel.isVisible = enabledCheck.isChecked;
-
-            // Outside checkbox should only be shown if this building is eligible for outside connections.
-            outsideCheck.isVisible = enabledCheck.isChecked & outsideEligible;
         }
 
 
