@@ -306,7 +306,7 @@ namespace TransferController
 												if (candidateAI is WarehouseAI)
 												{
 													// Yes - reverse warehouse priority modifier.
-													otherPriorityPlus -= AddOffers.warehousePriority;
+													otherPriorityPlus -= AddOffers.warehousePriority * 2f;
 												}
 												else
 												{
@@ -316,7 +316,7 @@ namespace TransferController
 											}
 											else if (candidateAI is WarehouseAI outgoingWarehouseAI)
                                             {
-												// Outgoing candidate is warehouse.
+												// Outgoing candidate is warehouse (but this incoming one isn't).
 												if(!WarehouseControl.CheckVehicleQuota(outgoingWarehouseAI, outCandidateBuilding, ref buildingBuffer[outCandidateBuilding], material, incomingAI))
                                                 {
 													continue;
@@ -568,7 +568,7 @@ namespace TransferController
 											if (candidateAI is WarehouseAI)
 											{
 												// Yes - reverse warehouse priority modifier.
-												otherPriorityPlus -= AddOffers.warehousePriority;
+												otherPriorityPlus -= AddOffers.warehousePriority * 2f;
 											}
 											else
 											{
@@ -578,7 +578,7 @@ namespace TransferController
 										}
 										else if (candidateAI is WarehouseAI incomingWarehouseAI)
 										{
-											// Incoming candidate is warehouse.
+											// Incoming candidate is warehouse (but this outgoing building isn't).
 											if (!WarehouseControl.CheckVehicleQuota(incomingWarehouseAI, inCandidateBuilding, ref buildingBuffer[inCandidateBuilding], material, outgoingAI))
 											{
 												continue;
