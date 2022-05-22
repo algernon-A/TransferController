@@ -1,4 +1,8 @@
-﻿Version 0.2.1 -
+﻿- New feature: permit individual buildings
+- Update transfer logging
+
+
+Version 0.2.1 -
 
 - Deprioritize warehouse to warehouse transfers
 
