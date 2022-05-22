@@ -5,14 +5,14 @@ using System.Collections.Generic;
 namespace TransferController
 {
     /// <summary>
-    /// District selection panel main class.
+    /// Selected district panel.
     /// </summary>
-    internal class BuildingDistrictSelectionPanel : DistrictSelectionPanel
+    internal class SelectedDistrictPanel : DistrictSelectionPanel
     {
         /// <summary>
         /// HashSet of relevant district settings for this panel type.
         /// </summary>
-        private HashSet<int> DistrictSettingsList => BuildingControl.GetBuildingDistricts((parent as TransferPanel).CurrentBuilding, (parent as TransferPanel).RecordNumber);
+        private HashSet<int> DistrictSettingsList => BuildingControl.GetDistricts(ParentPanel.CurrentBuilding, ParentPanel.RecordNumber);
 
 
         /// <summary>

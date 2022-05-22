@@ -15,9 +15,10 @@ namespace TransferController
         internal enum RestrictionFlags : uint
         {
             None = 0x00,
-            Enabled = 0x01,
+            DistrictEnabled = 0x01,
             BlockSameDistrict = 0x02,
-            BlockOutsideConnection = 0x04
+            BlockOutsideConnection = 0x04,
+            BuildingEnabled = 0x08
         }
 
         internal const byte IncomingMask = 0x00;
@@ -49,7 +50,7 @@ namespace TransferController
         /// <param name="districtID">District ID to add</param>
         /// <param name="transferReason">Transfer reason</param>
         /// <param name="nextRecordMask">Next record mask</param>
-        internal static void AddBuildingDistrict(uint buildingID, byte recordID, int districtID, TransferManager.TransferReason transferReason, byte nextRecordMask)
+        internal static void AddDistrict(uint buildingID, byte recordID, int districtID, TransferManager.TransferReason transferReason, byte nextRecordMask)
         {
             // Calculate building record ID.
             uint mask = (uint)recordID << 24;
@@ -92,7 +93,7 @@ namespace TransferController
         /// <param name="buildingID">Building ID to remove from</param>
         /// <param name="recordID">Building record number to remove from</param>
         /// <param name="districtID">District ID to remove</param>
-        internal static void RemoveBuildingDistrict(uint buildingID, byte recordID, int districtID)
+        internal static void RemoveDistrict(uint buildingID, byte recordID, int districtID)
         {
             Logging.Message("attempting to remove district ", districtID, " from ", buildingID);
 
@@ -120,12 +121,90 @@ namespace TransferController
 
 
         /// <summary>
+        /// Adds a building to a building's list of permitted building using the specified dictionary.
+        /// </summary>
+        /// <param name="buildingID">Building ID to apply to</param>
+        /// <param name="recordID">Building record number</param>
+        /// <param name="newBuilding">Building ID to add</param>
+        /// <param name="transferReason">Transfer reason</param>
+        /// <param name="nextRecordMask">Next record mask</param>
+        internal static void AddBuilding(uint buildingID, byte recordID, ushort newBuilding, TransferManager.TransferReason transferReason, byte nextRecordMask)
+        {
+            // Calculate building record ID.
+            uint mask = (uint)recordID << 24;
+            uint buildingRecordID = (uint)(buildingID | mask);
+            Logging.Message("adding building ", newBuilding, " to buildings for record ", buildingRecordID);
+
+            // See if we've already got an entry for this building; if not, create one.
+            if (!buildingRecords.TryGetValue(buildingRecordID, out BuildingRecord buildingRecord))
+            {
+                // Init buildingRecord.
+                buildingRecords.Add(buildingRecordID, new BuildingRecord
+                {
+                    nextRecord = nextRecordMask,
+                    flags = RestrictionFlags.None,
+                    reason = transferReason,
+                    buildings = new HashSet<uint> { newBuilding }
+                });
+            }
+            else
+            {
+                // Existing entry for this building.
+                // Create district hashset if it doesn't already exist.
+                if (buildingRecord.buildings == null)
+                {
+                    buildingRecord.buildings = new HashSet<uint> { newBuilding };
+                    buildingRecords[buildingRecordID] = buildingRecord;
+                }
+                else
+                {
+                    // Existing hasheset - add district.
+                    buildingRecords[buildingRecordID].buildings.Add(newBuilding);
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Removes a building from a building's list of permitted buildings.
+        /// </summary>
+        /// <param name="buildingID">Building ID to remove from</param>
+        /// <param name="recordID">Building record number to remove from</param>
+        /// <param name="removeBuilding">Building ID to remove</param>
+        internal static void RemoveBuilding(uint buildingID, byte recordID, uint removeBuilding)
+        {
+            Logging.Message("attempting to remove building ", removeBuilding, " from ", buildingID);
+
+            // Calculate building record ID.
+            uint mask = (uint)recordID << 24;
+            uint buildingRecordID = (uint)(buildingID | mask);
+
+            // See if we've got an entry for this building.
+            if (buildingRecords.TryGetValue(buildingRecordID, out BuildingRecord buildingRecord))
+            {
+                if (buildingRecord.buildings != null)
+                {
+                    // Got an entry - remove district from hasshset.
+                    buildingRecord.buildings.Remove(removeBuilding);
+
+                    // If no further entries left in hashset, clear it totally.
+                    if (buildingRecord.buildings.Count == 0)
+                    {
+                        buildingRecord.buildings = null;
+                        buildingRecords[buildingRecordID] = buildingRecord;
+                    }
+                }
+            }
+        }
+
+
+        /// <summary>
         /// Gets the current list of districts attached to a building as a HashSet.
         /// </summary>
         /// <param name="buildingID">Building ID</param>
         /// <param name="recordID">Building record number to check</param>
         /// <returns>Hashset of districts attached to the building, null if none</returns>
-        internal static HashSet<int> GetBuildingDistricts(uint buildingID, byte recordID)
+        internal static HashSet<int> GetDistricts(uint buildingID, byte recordID)
         {
             // Calculate building record ID.
             uint mask = (uint)recordID << 24;
@@ -143,6 +222,40 @@ namespace TransferController
         }
 
 
+        /// <summary>
+        /// Gets the current list of buildings attached to a building as a HashSet.
+        /// </summary>
+        /// <param name="buildingID">Building ID</param>
+        /// <param name="recordID">Building record number to check</param>
+        /// <returns>Hashset of districts attached to the building, null if none</returns>
+        internal static HashSet<uint> GetBuildings(uint buildingID, byte recordID)
+        {
+            // Calculate building record ID.
+            uint mask = (uint)recordID << 24;
+            uint buildingRecordID = (uint)(buildingID | mask);
+
+            // See if we've got an entry for this building.
+            if (buildingRecords.TryGetValue(buildingRecordID, out BuildingRecord buildingRecord))
+            {
+                // Got an entry - return it.
+                return buildingRecord.buildings;
+            }
+
+            // If we got here, no entry was found; return null.
+            return null;
+        }
+
+
+        /// <summary>
+        /// Sets the district restrictions enabled status of the given building record.
+        /// </summary>
+        /// <param name="buildingID">ID of building to check</param>
+        /// <param name="recordID">Building record number to set</param>
+        /// <param name="status">Enabled status to set</param>
+        /// <param name="transferReason">Transfer reason</param>
+        /// <param name="nextRecordMask">Next record mask</param>
+        internal static void SetDistrictEnabled(uint buildingID, byte recordID, bool status, TransferManager.TransferReason transferReason, byte nextRecordMask) => SetFlag(buildingID, recordID, status, RestrictionFlags.DistrictEnabled, transferReason, nextRecordMask);
+
 
         /// <summary>
         /// Sets the same-district status of the given building record.
@@ -156,17 +269,6 @@ namespace TransferController
 
 
         /// <summary>
-        /// Sets the restrictions enabled status of the given building record.
-        /// </summary>
-        /// <param name="buildingID">ID of building to check</param>
-        /// <param name="recordID">Building record number to set</param>
-        /// <param name="status">Enabled status to set</param>
-        /// <param name="transferReason">Transfer reason</param>
-        /// <param name="nextRecordMask">Next record mask</param>
-        internal static void SetEnabled(uint buildingID, byte recordID, bool status, TransferManager.TransferReason transferReason, byte nextRecordMask) => SetFlag(buildingID, recordID, status, RestrictionFlags.Enabled, transferReason, nextRecordMask);
-
-
-        /// <summary>
         /// Sets the outside connection status of the given building record.
         /// </summary>
         /// <param name="buildingID">ID of building to set</param>
@@ -177,13 +279,25 @@ namespace TransferController
         internal static void SetOutsideConnection(uint buildingID, byte recordID, bool status, TransferManager.TransferReason transferReason, byte nextRecordMask) => SetFlag(buildingID, recordID, status, RestrictionFlags.BlockOutsideConnection, transferReason, nextRecordMask);
 
 
+
         /// <summary>
-        /// Returns the current restrictions enabled status of the given building record.
+        /// Sets the building restrictions enabled status of the given building record.
+        /// </summary>
+        /// <param name="buildingID">ID of building to check</param>
+        /// <param name="recordID">Building record number to set</param>
+        /// <param name="status">Enabled status to set</param>
+        /// <param name="transferReason">Transfer reason</param>
+        /// <param name="nextRecordMask">Next record mask</param>
+        internal static void SetBuildingEnabled(uint buildingID, byte recordID, bool status, TransferManager.TransferReason transferReason, byte nextRecordMask) => SetFlag(buildingID, recordID, status, RestrictionFlags.BuildingEnabled, transferReason, nextRecordMask);
+
+
+        /// <summary>
+        /// Returns the current district restrictions enabled status of the given building record.
         /// </summary>
         /// <param name="buildingID">ID of building to check</param>
         /// <param name="recordID">Building record number to check</param>
         /// <returns>True if building incoming restrictions are enabled, false otherwise</returns>
-        internal static bool GetEnabled(uint buildingID, byte recordID) => GetFlags(buildingID, recordID, RestrictionFlags.Enabled);
+        internal static bool GetDistrictEnabled(uint buildingID, byte recordID) => GetFlags(buildingID, recordID, RestrictionFlags.DistrictEnabled);
 
 
         /// <summary>
@@ -202,6 +316,15 @@ namespace TransferController
         /// <param name="recordID">Building record number to check</param>
         /// <returns>True if building incoming restrictions are enabled, false otherwise</returns>
         internal static bool GetOutsideConnection(uint buildingID, byte recordID) => GetFlags(buildingID, recordID, RestrictionFlags.BlockOutsideConnection);
+
+
+        /// <summary>
+        /// Returns the current building restrictions enabled status of the given building record.
+        /// </summary>
+        /// <param name="buildingID">ID of building to check</param>
+        /// <param name="recordID">Building record number to check</param>
+        /// <returns>True if building incoming restrictions are enabled, false otherwise</returns>
+        internal static bool GetBuildingEnabled(uint buildingID, byte recordID) => GetFlags(buildingID, recordID, RestrictionFlags.BuildingEnabled);
 
 
         /// <summary>

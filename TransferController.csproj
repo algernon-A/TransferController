@@ -82,18 +82,24 @@
     <Compile Include="Code\TranslationFramework\TranslationFramework.cs" />
     <Compile Include="Code\TranslationFramework\TranslationXML.cs" />
     <Compile Include="Code\UI\CopyPaste.cs" />
-    <Compile Include="Code\UI\DistrictSelectionPanel\BuildingDistrictSelectionPanel.cs" />
     <Compile Include="Code\UI\LogPanel.cs" />
     <Compile Include="Code\UI\OffersPanel.cs" />
+    <Compile Include="Code\UI\SelectionPanels\DistrictSelectionPanel.cs" />
+    <Compile Include="Code\UI\SelectionPanels\SelectedBuildingPanel.cs" />
+    <Compile Include="Code\UI\SelectionPanels\SelectedDistrictPanel.cs" />
     <Compile Include="Code\UI\TCTool.cs" />
+    <Compile Include="Code\UI\TransferBuildingTab.cs" />
+    <Compile Include="Code\UI\TransferDistrictTab.cs" />
     <Compile Include="Code\UI\TransferPanel.cs" />
     <Compile Include="Code\UI\BuildingInfoPanel.cs" />
     <Compile Include="Code\UI\BuildingPanelManager.cs" />
-    <Compile Include="Code\UI\DistrictSelectionPanel\DistrictSelectionPanel.cs" />
+    <Compile Include="Code\UI\TransferPanelTab.cs" />
     <Compile Include="Code\UI\UIFastList\BasicRow.cs" />
+    <Compile Include="Code\UI\UIFastList\BuildingRow.cs" />
     <Compile Include="Code\UI\UIFastList\DistrictFastList.cs" />
     <Compile Include="Code\UI\UIFastList\DistrictRow.cs" />
     <Compile Include="Code\UI\UIFastList\OfferRow.cs" />
+    <Compile Include="Code\UI\UIFastList\UIBuildingFastList.cs" />
     <Compile Include="Code\UI\UIFastList\UIFastList.cs" />
     <Compile Include="Code\UI\WarehouseInfoPanel.cs" />
     <Compile Include="Code\Utils\FontUtils.cs" />
@@ -125,6 +131,7 @@
     <Content Include="Images\PreviewImage.png" />
     <Content Include="Resources\TC-CursorOn.png" />
     <Content Include="Resources\TC-CursorOff.png" />
+    <Content Include="Resources\TC-CursorPick.png" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
