@@ -1,4 +1,7 @@
-﻿Version 0.2.1 -
+﻿- Exclude warehouse prioritization from outside connections.
+
+
+Version 0.2.1 -
 
 - Deprioritize warehouse to warehouse transfers
 

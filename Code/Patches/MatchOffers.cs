@@ -302,11 +302,11 @@ namespace TransferController
 													continue;
 												}
 
-												// Is the candidate building also a warehouse?
-												if (candidateAI is WarehouseAI)
+												// Is the candidate building also a warehouse, or an outside connection?
+												if (candidateAI is WarehouseAI || candidateAI is OutsideConnectionAI)
 												{
-													// Yes - reverse warehouse priority modifier.
-													otherPriorityPlus -= AddOffers.warehousePriority;
+													// Yes - reverse warehouse priority modifier (this doesn't apply to warehouse-warehouse or warehouse-outside connection transfers).
+													otherPriorityPlus -= AddOffers.warehousePriority * 2f;
 												}
 												else
 												{
@@ -322,8 +322,12 @@ namespace TransferController
 													continue;
 												}
 
-												// Adjust distane modifier for warehouse priority.
-												distanceModifier /= (1 + AddOffers.warehousePriority);
+												// Is this an outside connection?
+												if (!(incomingAI is OutsideConnectionAI))
+												{
+													// No - adjust distance modifier for warehouse priority (this doesn't apply to warehouse-warehouse or warehouse-outside connection transfers).
+													distanceModifier /= (1 + AddOffers.warehousePriority);
+												}
 											}
 
 											// Position of incoming building (source building or vehicle source building)
@@ -564,11 +568,11 @@ namespace TransferController
 												continue;
 											}
 
-											// Is the candidate building also a warehouse?
-											if (candidateAI is WarehouseAI)
+											// Is the candidate building also a warehouse, or an outside connection?
+											if (candidateAI is WarehouseAI || candidateAI is OutsideConnectionAI)
 											{
-												// Yes - reverse warehouse priority modifier.
-												otherPriorityPlus -= AddOffers.warehousePriority;
+												// Yes - reverse warehouse priority modifier (this doesn't apply to warehouse-warehouse or warehouse-outside connection transfers).
+												otherPriorityPlus -= AddOffers.warehousePriority * 2f;
 											}
 											else
 											{
@@ -584,8 +588,12 @@ namespace TransferController
 												continue;
 											}
 
-											// Adjust distane modifier for warehouse priority.
-											distanceModifier /= (1 + AddOffers.warehousePriority);
+											// Is this an outside connection?
+											if (!(outgoingAI is OutsideConnectionAI))
+											{
+												// No - adjust distance modifier for warehouse priority (this doesn't apply to warehouse-warehouse or warehouse-outside connection transfers).
+												distanceModifier /= (1 + AddOffers.warehousePriority);
+											}
 										}
 
 										// Position of incoming building (source building or vehicle source building)
