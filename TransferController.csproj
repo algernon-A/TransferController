@@ -88,12 +88,12 @@
     <Compile Include="Code\UI\SelectionPanels\SelectedBuildingPanel.cs" />
     <Compile Include="Code\UI\SelectionPanels\SelectedDistrictPanel.cs" />
     <Compile Include="Code\UI\TCTool.cs" />
-    <Compile Include="Code\UI\TransferBuildingTab.cs" />
-    <Compile Include="Code\UI\TransferDistrictTab.cs" />
+    <Compile Include="Code\UI\TransferPanelTabs\TransferBuildingTab.cs" />
+    <Compile Include="Code\UI\TransferPanelTabs\TransferDistrictTab.cs" />
     <Compile Include="Code\UI\TransferPanel.cs" />
     <Compile Include="Code\UI\BuildingInfoPanel.cs" />
     <Compile Include="Code\UI\BuildingPanelManager.cs" />
-    <Compile Include="Code\UI\TransferPanelTab.cs" />
+    <Compile Include="Code\UI\TransferPanelTabs\TransferPanelTab.cs" />
     <Compile Include="Code\UI\UIFastList\BasicRow.cs" />
     <Compile Include="Code\UI\UIFastList\BuildingRow.cs" />
     <Compile Include="Code\UI\UIFastList\DistrictFastList.cs" />
@@ -127,11 +127,11 @@
     <Content Include="License.txt" />
     <Content Include="Resources\TC-ArrowMinus.png" />
     <Content Include="Resources\TC-ArrowPlus.png" />
+    <Content Include="Resources\TC-CursorPick.png" />
     <Content Include="Resources\TC-UUI.png" />
     <Content Include="Images\PreviewImage.png" />
     <Content Include="Resources\TC-CursorOn.png" />
     <Content Include="Resources\TC-CursorOff.png" />
-    <Content Include="Resources\TC-CursorPick.png" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
