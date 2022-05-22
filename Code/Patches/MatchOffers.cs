@@ -295,15 +295,24 @@ namespace TransferController
 											// Check vehicle quota for warehouses.
 											BuildingAI candidateAI = buildingBuffer[outCandidateBuilding].Info.m_buildingAI;
 											if (incomingAI is WarehouseAI incomingWarehouseAI)
-                                            {
+											{
 												// Incoming building is warehouse.
-												if(!WarehouseControl.CheckVehicleQuota(incomingWarehouseAI, incomingBuilding, ref buildingBuffer[incomingBuilding], material, candidateAI))
-                                                {
+												if (!WarehouseControl.CheckVehicleQuota(incomingWarehouseAI, incomingBuilding, ref buildingBuffer[incomingBuilding], material, candidateAI))
+												{
 													continue;
-                                                }
+												}
 
-												// Adjust distane modifier for warehouse priority.
-												distanceModifier /= (1 + AddOffers.warehousePriority);
+												// Is the candidate building also a warehouse?
+												if (candidateAI is WarehouseAI)
+												{
+													// Yes - reverse warehouse priority modifier.
+													otherPriorityPlus -= AddOffers.warehousePriority;
+												}
+												else
+												{
+													// No - add additional warehouse distance divisor.
+													distanceModifier /= (1 + AddOffers.warehousePriority);
+												}
 											}
 											else if (candidateAI is WarehouseAI outgoingWarehouseAI)
                                             {
@@ -555,8 +564,17 @@ namespace TransferController
 												continue;
 											}
 
-											// Adjust distane modifier for warehouse priority.
-											distanceModifier /= (1 + AddOffers.warehousePriority);
+											// Is the candidate building also a warehouse?
+											if (candidateAI is WarehouseAI)
+											{
+												// Yes - reverse warehouse priority modifier.
+												otherPriorityPlus -= AddOffers.warehousePriority;
+											}
+											else
+											{
+												// No - add additional warehouse distance divisor.
+												distanceModifier /= (1 + AddOffers.warehousePriority);
+											}
 										}
 										else if (candidateAI is WarehouseAI incomingWarehouseAI)
 										{
