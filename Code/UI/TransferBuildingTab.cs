@@ -128,8 +128,7 @@ namespace TransferController
                 addBuildingButton.eventClicked += (control, clickEvent) =>
                 {
                     // Add building via tool selection.
-                    TCTool.transferBuildingTab = this;
-                    TCTool.pickMode = true;
+                    TCTool.Instance.SetPickMode(this);
                     TCTool.Activate();
                 };
 

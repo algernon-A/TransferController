@@ -12,12 +12,12 @@ namespace TransferController
 	public class TCTool : DefaultTool
 	{
 		// Cursor textures.
-		private CursorInfo lightCursor;
-		private CursorInfo darkCursor;
+		private CursorInfo lightCursor, darkCursor, pickCursor;
+		private CursorInfo currentLightCursor;
 
 		// Building target picking mode flag and reference.
-		internal static bool pickMode = false;
-		internal static TransferBuildingTab transferBuildingTab;
+		private bool pickMode = false;
+		private TransferBuildingTab transferBuildingTab;
 
 		// Transfer struct for eligibility checking.
 		private readonly TransferStruct[] transfers = new TransferStruct[4];
@@ -33,6 +33,7 @@ namespace TransferController
 		public static bool IsActiveTool => Instance != null && ToolsModifierControl.toolController.CurrentTool == Instance;
 
 
+
 		/// <summary>
 		/// Initialise the tool.
 		/// Called by unity when the tool is created.
@@ -44,7 +45,9 @@ namespace TransferController
 			// Load cursors.
 			lightCursor = TextureUtils.LoadCursor("TC-CursorOn.png");
 			darkCursor = TextureUtils.LoadCursor("TC-CursorOff.png");
+			pickCursor = TextureUtils.LoadCursor("TC-CursorPick.png");
 			m_cursor = darkCursor;
+			currentLightCursor = lightCursor;
 
 			// Create new UUI button.
 			UIComponent uuiButton = UUIHelpers.RegisterToolButton(
@@ -152,7 +155,7 @@ namespace TransferController
 						{
 							// Building has eligible transfers - set hover, and set cursor to light.
 							hoverInstance.Building = (ushort)output.m_building;
-							m_cursor = lightCursor;
+							m_cursor = currentLightCursor;
 						}
 					}
 
@@ -224,6 +227,17 @@ namespace TransferController
 
 
 		/// <summary>
+		/// Sets the tool to pick mode (selecting buildings).
+		/// </summary>
+		internal void SetPickMode(TransferBuildingTab callingTab)
+        {
+			transferBuildingTab = callingTab;
+			pickMode = true;
+			lightCursor = pickCursor;
+        }
+
+
+		/// <summary>
 		/// Unity late update handling.
 		/// Called by game every late update.
 		/// </summary>
@@ -264,6 +278,7 @@ namespace TransferController
 					{
 						// Yes - clear pick mode and communicate selection back to requesting panel.
 						pickMode = false;
+						currentLightCursor = lightCursor;
 						transferBuildingTab?.AddBuilding(building);
 						transferBuildingTab = null;
 					}
