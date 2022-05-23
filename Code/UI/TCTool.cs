@@ -1,4 +1,5 @@
-﻿using ColossalFramework;
+﻿using System.Collections.Generic;
+using ColossalFramework;
 using ColossalFramework.UI;
 using UnityEngine;
 using UnifiedUI.Helpers;
@@ -209,6 +210,66 @@ namespace TransferController
 			// Set mouse position and record errors.
 			m_mousePosition = output.m_hitPos;
 			m_selectErrors = errors;
+		}
+
+
+		/// <summary>
+		/// Called by the game when the tool is disabled.
+		/// </summary>
+		protected override void OnDisable()
+        {
+			ClearPickMode();
+
+			base.OnDisable();
+		}
+
+
+		/// <summary>
+		/// Called by game when overlay is to be rendered.
+		/// </summary>
+		/// <param name="cameraInfo">Current camera instance</param>
+		public override void RenderOverlay(RenderManager.CameraInfo cameraInfo)
+		{
+			base.RenderOverlay(cameraInfo);
+
+			// Local references.
+			ToolManager toolManager = Singleton<ToolManager>.instance;
+			Building[] buildingBuffer = Singleton<BuildingManager>.instance.m_buildings.m_buffer;
+
+			// Highlight linked buildings if in picking mode.
+			if (pickMode)
+			{
+				// Linked building list.
+				HashSet<uint> hashSet = BuildingControl.GetBuildings(transferBuildingTab.CurrentBuilding, transferBuildingTab.RecordNumber);
+				if (hashSet != null && hashSet.Count > 0)
+				{
+					// Apply yellow overlay to each linked building.
+					Color yellow = new Color(1f, 1f, 0f, 0.75f);
+					foreach (uint building in hashSet)
+					{
+						BuildingTool.RenderOverlay(cameraInfo, ref buildingBuffer[building], yellow, yellow);
+						toolManager.m_drawCallData.m_overlayCalls++;
+					}
+				}
+			}
+			else
+			{
+				// If not in buildng picker mode, highlight all buildings with Transfer Controller settings in magenta.
+				Color magenta = new Color(1f, 0f, 1f, 0.75f);
+				foreach (uint key in BuildingControl.buildingRecords.Keys)
+				{
+					// Skip any secondary records.
+					if ((key & (BuildingControl.NextRecordMask << 24)) != 0)
+					{
+						continue;
+					}
+
+					// Apply overlay.
+					ushort buildingID = (ushort)(key & 0x0000FFFF);
+					BuildingTool.RenderOverlay(cameraInfo, ref buildingBuffer[buildingID], magenta, magenta);
+					toolManager.m_drawCallData.m_overlayCalls++;
+				}
+			}
 		}
 
 

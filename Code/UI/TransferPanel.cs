@@ -82,13 +82,10 @@ namespace TransferController
 
             set
             {
-                if (recordNumber != value)
-                {
-                    recordNumber = value;
-                    districtPanel.RecordNumber = value;
-                    buildingPanel.RecordNumber = value;
-                    outsidePanel.RecordNumber = value;
-                }
+                recordNumber = value;
+                districtPanel.RecordNumber = value;
+                buildingPanel.RecordNumber = value;
+                outsidePanel.RecordNumber = value;
             }
         }
 

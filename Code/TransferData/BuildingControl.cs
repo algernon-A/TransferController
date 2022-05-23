@@ -23,6 +23,7 @@ namespace TransferController
 
         internal const byte IncomingMask = 0x00;
         internal const byte OutgoingMask = 0x80;
+        internal const byte NextRecordMask = 0x7F;
 
 
         /// <summary>

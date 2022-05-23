@@ -1,4 +1,5 @@
 ﻿﻿- New feature: permit individual buildings
+- Highlight all buildings with active settings in magenta when tool is active
 - Update transfer logging
 
 
