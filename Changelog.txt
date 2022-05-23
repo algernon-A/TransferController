@@ -1,5 +1,6 @@
 ﻿﻿- New feature: permit individual buildings
 - Highlight all buildings with active settings in magenta when tool is active
+- Ensure open offers and transfer log panels can't both be open at the same time
 - Update transfer logging
 
 
