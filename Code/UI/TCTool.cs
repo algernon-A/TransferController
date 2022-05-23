@@ -12,8 +12,8 @@ namespace TransferController
 	public class TCTool : DefaultTool
 	{
 		// Cursor textures.
-		private CursorInfo lightCursor, darkCursor, pickCursor;
-		private CursorInfo currentLightCursor;
+		private CursorInfo selectCursorOn, selectCursorOff, pickCursorOn, pickCursorOff;
+		private CursorInfo currentCursorOn, currentCursorOff;
 
 		// Building target picking mode flag and reference.
 		private bool pickMode = false;
@@ -43,11 +43,13 @@ namespace TransferController
 			base.Awake();
 
 			// Load cursors.
-			lightCursor = TextureUtils.LoadCursor("TC-CursorOn.png");
-			darkCursor = TextureUtils.LoadCursor("TC-CursorOff.png");
-			pickCursor = TextureUtils.LoadCursor("TC-CursorPick.png");
-			m_cursor = darkCursor;
-			currentLightCursor = lightCursor;
+			selectCursorOn = TextureUtils.LoadCursor("TC-CursorOn.png");
+			selectCursorOff = TextureUtils.LoadCursor("TC-CursorOff.png");
+			pickCursorOn = TextureUtils.LoadCursor("TC-CursorPickOn.png");
+			pickCursorOff = TextureUtils.LoadCursor("TC-CursorPickOff.png");
+			currentCursorOn = selectCursorOn;
+			currentCursorOff = selectCursorOff;
+			m_cursor = currentCursorOff;
 
 			// Create new UUI button.
 			UIComponent uuiButton = UUIHelpers.RegisterToolButton(
@@ -152,18 +154,18 @@ namespace TransferController
 						{
 							// Building has eligible transfers - set hover, and set cursor to light.
 							hoverInstance.Building = (ushort)output.m_building;
-							m_cursor = currentLightCursor;
+							m_cursor = currentCursorOn;
 						}
 						else
                         {
 							// Ineligible building - set dark cursor.
-							m_cursor = darkCursor;
+							m_cursor = currentCursorOff;
 						}
 					}
 					else
                     {
 						// No hovered building - set dark cursor.
-						m_cursor = darkCursor;
+						m_cursor = currentCursorOff;
 					}
 
 					// Has the hovered instance changed since last time?
@@ -193,6 +195,7 @@ namespace TransferController
 				{
 					// Raycast failed.
 					errors = ToolErrors.RaycastFailed;
+					m_cursor = currentCursorOff;
 				}
 			}
 			else
@@ -200,6 +203,7 @@ namespace TransferController
 				// No valid mouse ray.
 				output = default;
 				errors = ToolErrors.RaycastFailed;
+				m_cursor = currentCursorOff;
 			}
 
 			// Set mouse position and record errors.
@@ -248,7 +252,9 @@ namespace TransferController
         {
 			transferBuildingTab = callingTab;
 			pickMode = true;
-			currentLightCursor = pickCursor;
+			currentCursorOn = pickCursorOn;
+			currentCursorOff = pickCursorOff;
+			m_cursor = currentCursorOff;
 		}
 
 
@@ -259,7 +265,8 @@ namespace TransferController
 		{
 			pickMode = false;
 			transferBuildingTab = null;
-			currentLightCursor = lightCursor;
+			currentCursorOn = selectCursorOn;
+			currentCursorOff = selectCursorOff;
 		}
 
 
@@ -302,11 +309,9 @@ namespace TransferController
 					// Are we in pick mode?
 					if (pickMode)
 					{
-						// Yes - clear pick mode and communicate selection back to requesting panel.
-						pickMode = false;
+						// Yes - communicate selection back to requesting panel and clear pick mode.
 						transferBuildingTab?.AddBuilding(building);
-						transferBuildingTab = null;
-						currentLightCursor = lightCursor;
+						ClearPickMode();
 					}
 					else
 					{

@@ -52,14 +52,14 @@ namespace TransferController
                 isVisible = true;
                 canFocus = true;
                 isInteractive = true;
-                width = TransferPanelTab.ColumnWidth;
+                width = TransferBuildingTab.BuildingColumnWidth;
                 height = TransferBuildingTab.ListHeight;
 
                 // District selection list.
                 buildingList = UIBuildingFastList.Create<BuildingRow, UIBuildingFastList>(this);
                 buildingList.backgroundSprite = "UnlockingPanel";
-                buildingList.width = TransferPanelTab.ColumnWidth;
-                buildingList.height = TransferPanelTab.ListHeight;
+                buildingList.width = TransferBuildingTab.BuildingColumnWidth;
+                buildingList.height = TransferBuildingTab.ListHeight;
                 buildingList.canSelect = true;
                 buildingList.rowHeight = DistrictRow.RowHeight;
                 buildingList.autoHideScrollbar = true;

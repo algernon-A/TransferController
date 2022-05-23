@@ -126,13 +126,16 @@
   <ItemGroup>
     <Content Include="Changelog.txt" />
     <Content Include="License.txt" />
+    <Content Include="Resources\TC-RoundMinus.png" />
+    <Content Include="Resources\TC-RoundPlus.png" />
     <Content Include="Resources\TC-ArrowMinus.png" />
     <Content Include="Resources\TC-ArrowPlus.png" />
-    <Content Include="Resources\TC-CursorPick.png" />
+    <Content Include="Resources\TC-CursorPickOn.png" />
     <Content Include="Resources\TC-UUI.png" />
     <Content Include="Images\PreviewImage.png" />
     <Content Include="Resources\TC-CursorOn.png" />
     <Content Include="Resources\TC-CursorOff.png" />
+    <Content Include="Resources\TC-CursorPickOff.png" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
@@ -149,7 +152,7 @@ del "%25LOCALAPPDATA%25\Colossal Order\Cities_Skylines\Addons\Mods\$(ProjectName
 xcopy /y "$(ProjectDir)\Translations\" "$(LOCALAPPDATA)\Colossal Order\Cities_Skylines\Addons\Mods\$(ProjectName)\Translations" /s /e
 
 mkdir "$(LOCALAPPDATA)\Colossal Order\Cities_Skylines\Addons\Mods\$(ProjectName)\Resources"
-del "%25LOCALAPPDATA%25\Colossal Order\Cities_Skylines\Addons\Mods\$(ProjectName)\Resources\*"
+del "%25LOCALAPPDATA%25\Colossal Order\Cities_Skylines\Addons\Mods\$(ProjectName)\Resources\*.png"
 xcopy /y "$(ProjectDir)\Resources\" "$(LOCALAPPDATA)\Colossal Order\Cities_Skylines\Addons\Mods\$(ProjectName)\Resources" /s /e</PostBuildEvent>
   </PropertyGroup>
 </Project>

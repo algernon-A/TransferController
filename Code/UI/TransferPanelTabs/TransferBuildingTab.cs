@@ -10,6 +10,11 @@ namespace TransferController
     /// </summary>
     internal class TransferBuildingTab : TransferPanelTab
     {
+        // Layout constants (double-width column).
+        internal const float BuildingColumnWidth = ColumnWidth * 2f;
+        private const float ButtonX = MidControlX + ColumnWidth;
+
+
         // Panel components.
         private readonly UICheckBox enabledCheck;
         private readonly UIButton addBuildingButton, removeBuildingButton;
@@ -52,7 +57,7 @@ namespace TransferController
                 };
 
                 // 'Add building' button.
-                addBuildingButton = AddIconButton(parentPanel, MidControlX, ListY, ArrowSize, "TFC_BUI_ADD", TextureUtils.LoadSpriteAtlas("TC-ArrowPlus"));
+                addBuildingButton = AddIconButton(parentPanel, ButtonX, ListY, ArrowSize, "TFC_BUI_ADD", TextureUtils.LoadSpriteAtlas("TC-RoundPlus"));
                 addBuildingButton.eventClicked += (control, clickEvent) =>
                 {
                     // Add building via tool selection.
@@ -61,7 +66,7 @@ namespace TransferController
                 };
 
                 // Remove building button.
-                removeBuildingButton = AddIconButton(parentPanel, MidControlX, ListY + ArrowSize, ArrowSize, "TFC_BUI_SUB", TextureUtils.LoadSpriteAtlas("TC-ArrowMinus"));
+                removeBuildingButton = AddIconButton(parentPanel, ButtonX, ListY + ArrowSize, ArrowSize, "TFC_BUI_SUB", TextureUtils.LoadSpriteAtlas("TC-RoundMinus"));
                 removeBuildingButton.isEnabled = false;
                 removeBuildingButton.eventClicked += (control, clickEvent) => RemoveBuilding();
 
