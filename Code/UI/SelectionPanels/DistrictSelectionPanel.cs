@@ -19,6 +19,9 @@ namespace TransferController
         // Current selection.
         private int selectedDistrict;
 
+        // Parent reference.
+        internal TransferDistrictTab ParentPanel { get; set; }
+
 
         /// <summary>
         /// Currently selected district.
@@ -32,10 +35,7 @@ namespace TransferController
                 selectedDistrict = value;
 
                 // Refresh parent panel button states.
-                if (parent is TransferPanel transferPanel)
-                {
-                    transferPanel.SelectionUpdated();
-                }
+                ParentPanel.SelectionUpdated();
             }
         }
 
@@ -53,14 +53,14 @@ namespace TransferController
                 isVisible = true;
                 canFocus = true;
                 isInteractive = true;
-                width = TransferPanel.ColumnWidth;
-                height = TransferPanel.ListHeight;
+                width = TransferPanelTab.ColumnWidth;
+                height = TransferPanelTab.ListHeight;
 
                 // District selection list.
                 districtList = UIDistrictFastList.Create<DistrictRow, UIDistrictFastList>(this);
                 districtList.backgroundSprite = "UnlockingPanel";
-                districtList.width = TransferPanel.ColumnWidth;
-                districtList.height = TransferPanel.ListHeight;
+                districtList.width = TransferPanelTab.ColumnWidth;
+                districtList.height = TransferPanelTab.ListHeight;
                 districtList.canSelect = true;
                 districtList.rowHeight = DistrictRow.RowHeight;
                 districtList.autoHideScrollbar = true;
@@ -71,7 +71,7 @@ namespace TransferController
             }
             catch (Exception e)
             {
-                Logging.LogException(e, "exception setting up building panel");
+                Logging.LogException(e, "exception setting up district selection panel");
             }
         }
 

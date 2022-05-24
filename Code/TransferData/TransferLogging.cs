@@ -9,22 +9,11 @@ namespace TransferController
     /// </summary>
     public struct LogEntry
     {
-        /// <summary>
-        /// Transfer blocking reason enum/
-        /// </summary>
-        public enum BlockReason : ushort
-        {
-            None = 0,
-            IncomingDistrict = 0x01,
-            OutgoingDistrict = 0x02
-        }
-
         public TransferManager.TransferReason reason;
         public bool incoming;
         public byte priorityIn, priorityOut;
         public ushort inBuilding, outBuilding;
         public bool allowed;
-        public BlockReason blockedReason;
     }
 
 
@@ -48,8 +37,7 @@ namespace TransferController
         /// <param name="inBuilding">Incoming building ID</param>
         /// <param name="outBuilding">Outgoing building ID</param>
         /// <param name="allowed">True if the transfer was allowed, false if blocked</param>
-        /// <param name="blockedReason">Reason for transfer being blocked</param>
-        internal static void AddEntry(TransferManager.TransferReason reason, bool incoming, byte priorityIn, byte priorityOut, ushort inBuilding, ushort outBuilding, bool allowed, LogEntry.BlockReason blockedReason)
+        internal static void AddEntry(TransferManager.TransferReason reason, bool incoming, byte priorityIn, byte priorityOut, ushort inBuilding, ushort outBuilding, bool allowed)
         {
             // Add new log entry with provided data and increment log index pointer.
             log[logIndex++] = new LogEntry
@@ -60,8 +48,7 @@ namespace TransferController
                 priorityOut = priorityOut,
                 inBuilding = inBuilding,
                 outBuilding = outBuilding,
-                allowed = allowed,
-                blockedReason = blockedReason
+                allowed = allowed
             };
         }
 
@@ -85,12 +72,12 @@ namespace TransferController
             {
                 // Apply filters.
                 LogEntry thisEntry = log[i];
-                if ((thisEntry.inBuilding != 0 || thisEntry.outBuilding != 0)
+                bool thisBuildingIn = buildingID == 0 ? thisEntry.incoming : thisEntry.inBuilding == buildingID;
+                if ((thisEntry.inBuilding != 0 | thisEntry.outBuilding != 0)
                     && (buildingID == 0 | thisEntry.inBuilding == buildingID | thisEntry.outBuilding == buildingID)
-                    && ((showBlocked && !thisEntry.allowed) | (showAllowed && thisEntry.allowed))
-                    && ((showIn && thisEntry.incoming) | (showOut && !thisEntry.incoming)))
+                    && ((showBlocked & !thisEntry.allowed) | (showAllowed & thisEntry.allowed))
+                    && ((showIn & thisBuildingIn) | (showOut & !thisBuildingIn)))
                 {
-                    bool thisBuildingIn = thisEntry.inBuilding == buildingID;
                     string inString = "In";
                     string outString = "Out";
                     if (thisEntry.incoming)
@@ -109,7 +96,7 @@ namespace TransferController
                         thisEntry.priorityOut,
                         thisEntry.inBuilding,
                         thisEntry.outBuilding,
-                        thisEntry.allowed ? "Allowed" : "Blocked - " + thisEntry.blockedReason),
+                        thisEntry.allowed ? "Allowed" : "Blocked"),
                         thisBuildingIn ? thisEntry.outBuilding : thisEntry.inBuilding));
                 }
             }

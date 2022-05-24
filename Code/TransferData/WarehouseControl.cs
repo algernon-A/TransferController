@@ -151,8 +151,6 @@ namespace TransferController
             // See if we've got an entry for this building.
             if (buildingID != 0 && warehouseRecords.TryGetValue(buildingID, out WarehouseRecord warehouseRecord))
             {
-                Logging.Message("found ", warehouseRecord.reserveVehicles);
-
                 // Entry found - return same-district flag status.
                 return warehouseRecord.reserveVehicles;
             }

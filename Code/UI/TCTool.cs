@@ -1,4 +1,5 @@
-﻿using ColossalFramework;
+﻿using System.Collections.Generic;
+using ColossalFramework;
 using ColossalFramework.UI;
 using UnityEngine;
 using UnifiedUI.Helpers;
@@ -12,8 +13,12 @@ namespace TransferController
 	public class TCTool : DefaultTool
 	{
 		// Cursor textures.
-		private CursorInfo lightCursor;
-		private CursorInfo darkCursor;
+		private CursorInfo selectCursorOn, selectCursorOff, pickCursorOn, pickCursorOff;
+		private CursorInfo currentCursorOn, currentCursorOff;
+
+		// Building target picking mode flag and reference.
+		private bool pickMode = false;
+		private TransferBuildingTab transferBuildingTab;
 
 		// Transfer struct for eligibility checking.
 		private readonly TransferStruct[] transfers = new TransferStruct[4];
@@ -29,6 +34,7 @@ namespace TransferController
 		public static bool IsActiveTool => Instance != null && ToolsModifierControl.toolController.CurrentTool == Instance;
 
 
+
 		/// <summary>
 		/// Initialise the tool.
 		/// Called by unity when the tool is created.
@@ -38,9 +44,13 @@ namespace TransferController
 			base.Awake();
 
 			// Load cursors.
-			lightCursor = TextureUtils.LoadCursor("TC-CursorOn.png");
-			darkCursor = TextureUtils.LoadCursor("TC-CursorOff.png");
-			m_cursor = darkCursor;
+			selectCursorOn = TextureUtils.LoadCursor("TC-CursorOn.png");
+			selectCursorOff = TextureUtils.LoadCursor("TC-CursorOff.png");
+			pickCursorOn = TextureUtils.LoadCursor("TC-CursorPickOn.png");
+			pickCursorOff = TextureUtils.LoadCursor("TC-CursorPickOff.png");
+			currentCursorOn = selectCursorOn;
+			currentCursorOff = selectCursorOff;
+			m_cursor = currentCursorOff;
 
 			// Create new UUI button.
 			UIComponent uuiButton = UUIHelpers.RegisterToolButton(
@@ -118,9 +128,6 @@ namespace TransferController
 			ToolErrors errors = ToolErrors.None;
 			RaycastOutput output;
 
-			// Cursor is dark by default.
-			m_cursor = darkCursor;
-
 			// Is the base mouse ray valid?
 			if (m_mouseRayValid)
 			{
@@ -133,6 +140,12 @@ namespace TransferController
 					// Set base tool accurate position.
 					m_accuratePosition = output.m_hitPos;
 
+					// Select parent building of any 'untouchable' (sub-)building.
+					if (output.m_building != 0 && (Singleton<BuildingManager>.instance.m_buildings.m_buffer[output.m_building].m_flags & Building.Flags.Untouchable) != 0)
+					{
+						output.m_building = Building.FindParentBuilding((ushort)output.m_building);
+					}
+
 					// Check for building hits.
 					if (output.m_building != 0)
 					{
@@ -140,9 +153,39 @@ namespace TransferController
 						output.m_hitPos = Singleton<BuildingManager>.instance.m_buildings.m_buffer[output.m_building].m_position;
 						if (TransferDataUtils.BuildingEligibility(output.m_building, transfers))
 						{
-							// Building has eligible transfers - set hover, and set cursor to light/
+							// Building has eligible transfers - set hover, and set cursor to light.
 							hoverInstance.Building = (ushort)output.m_building;
-							m_cursor = lightCursor;
+							m_cursor = currentCursorOn;
+						}
+						else
+                        {
+							// Ineligible building - set dark cursor.
+							m_cursor = currentCursorOff;
+						}
+					}
+					else
+                    {
+						// No hovered building - set dark cursor.
+						m_cursor = currentCursorOff;
+					}
+
+					// Has the hovered instance changed since last time?
+					if (hoverInstance != m_hoverInstance)
+					{
+						// Hover instance has changed.
+						// Unhide any previously-hidden buildings.
+						if (m_hoverInstance.Building != 0)
+						{
+							// Local references.
+							BuildingManager buildingManager = Singleton<BuildingManager>.instance;
+							Building[] buildingBuffer = buildingManager.m_buildings.m_buffer;
+
+							// Unhide previously hovered building.
+							if ((buildingBuffer[m_hoverInstance.Building].m_flags & Building.Flags.Hidden) != 0)
+							{
+								buildingBuffer[m_hoverInstance.Building].m_flags &= ~Building.Flags.Hidden;
+								buildingManager.UpdateBuildingRenderer(m_hoverInstance.Building, updateGroup: true);
+							}
 						}
 					}
 
@@ -153,6 +196,7 @@ namespace TransferController
 				{
 					// Raycast failed.
 					errors = ToolErrors.RaycastFailed;
+					m_cursor = currentCursorOff;
 				}
 			}
 			else
@@ -160,12 +204,79 @@ namespace TransferController
 				// No valid mouse ray.
 				output = default;
 				errors = ToolErrors.RaycastFailed;
+				m_cursor = currentCursorOff;
 			}
 
 			// Set mouse position and record errors.
 			m_mousePosition = output.m_hitPos;
 			m_selectErrors = errors;
 		}
+
+
+		/// <summary>
+		/// Called by the game when the tool is disabled.
+		/// </summary>
+		protected override void OnDisable()
+        {
+			ClearPickMode();
+
+			base.OnDisable();
+		}
+
+
+		/// <summary>
+		/// Called by game when overlay is to be rendered.
+		/// </summary>
+		/// <param name="cameraInfo">Current camera instance</param>
+		public override void RenderOverlay(RenderManager.CameraInfo cameraInfo)
+		{
+			base.RenderOverlay(cameraInfo);
+
+			// Local references.
+			ToolManager toolManager = Singleton<ToolManager>.instance;
+			Building[] buildingBuffer = Singleton<BuildingManager>.instance.m_buildings.m_buffer;
+
+			// Highlight linked buildings if in picking mode.
+			if (pickMode)
+			{
+				// Linked building list.
+				HashSet<uint> hashSet = BuildingControl.GetBuildings(transferBuildingTab.CurrentBuilding, transferBuildingTab.RecordNumber);
+				if (hashSet != null && hashSet.Count > 0)
+				{
+					// Apply yellow overlay to each linked building.
+					Color yellow = new Color(1f, 1f, 0f, 0.75f);
+					foreach (uint building in hashSet)
+					{
+						BuildingTool.RenderOverlay(cameraInfo, ref buildingBuffer[building], yellow, yellow);
+						toolManager.m_drawCallData.m_overlayCalls++;
+					}
+				}
+			}
+			else
+			{
+				// If not in buildng picker mode, highlight all buildings with Transfer Controller settings in magenta.
+				Color magenta = new Color(1f, 0f, 1f, 0.75f);
+				foreach (uint key in BuildingControl.buildingRecords.Keys)
+				{
+					// Skip any secondary records.
+					if ((key & (BuildingControl.NextRecordMask << 24)) != 0)
+					{
+						continue;
+					}
+
+					// Apply overlay.
+					ushort buildingID = (ushort)(key & 0x0000FFFF);
+					BuildingTool.RenderOverlay(cameraInfo, ref buildingBuffer[buildingID], magenta, magenta);
+					toolManager.m_drawCallData.m_overlayCalls++;
+				}
+			}
+		}
+
+
+		/// <summary>
+		/// Activates the TCTool.
+		/// </summary>
+		internal static void Activate() => ToolsModifierControl.toolController.CurrentTool = Instance;
 
 
 		/// <summary>
@@ -181,9 +292,42 @@ namespace TransferController
 			}
 			else
 			{
+				// Are we in pick mode?
+				if (Instance.pickMode)
+				{
+					// Yes - clear pick mode.
+					Instance.pickMode = false;
+					Instance.transferBuildingTab = null;
+				}
+
 				// Activate default tool.
 				ToolsModifierControl.SetTool<DefaultTool>();
 			}
+		}
+
+
+		/// <summary>
+		/// Sets the tool to pick mode (selecting buildings).
+		/// </summary>
+		internal void SetPickMode(TransferBuildingTab callingTab)
+        {
+			transferBuildingTab = callingTab;
+			pickMode = true;
+			currentCursorOn = pickCursorOn;
+			currentCursorOff = pickCursorOff;
+			m_cursor = currentCursorOff;
+		}
+
+
+		/// <summary>
+		/// Clears pick mode.
+		/// </summary>
+		internal void ClearPickMode()
+		{
+			pickMode = false;
+			transferBuildingTab = null;
+			currentCursorOn = selectCursorOn;
+			currentCursorOff = selectCursorOff;
 		}
 
 
@@ -223,8 +367,18 @@ namespace TransferController
 					// Got one; use the event.
 					UIInput.MouseUsed();
 
-					// Create the info panel with the hovered building prefab.
-					BuildingPanelManager.SetTarget(building);
+					// Are we in pick mode?
+					if (pickMode)
+					{
+						// Yes - communicate selection back to requesting panel and clear pick mode.
+						transferBuildingTab?.AddBuilding(building);
+						ClearPickMode();
+					}
+					else
+					{
+						// Not in pick mode - create the info panel with the hovered building prefab.
+						BuildingPanelManager.SetTarget(building);
+					}
 				}
 			}
 

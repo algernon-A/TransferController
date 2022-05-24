@@ -82,18 +82,25 @@
     <Compile Include="Code\TranslationFramework\TranslationFramework.cs" />
     <Compile Include="Code\TranslationFramework\TranslationXML.cs" />
     <Compile Include="Code\UI\CopyPaste.cs" />
-    <Compile Include="Code\UI\DistrictSelectionPanel\BuildingDistrictSelectionPanel.cs" />
     <Compile Include="Code\UI\LogPanel.cs" />
     <Compile Include="Code\UI\OffersPanel.cs" />
+    <Compile Include="Code\UI\SelectionPanels\DistrictSelectionPanel.cs" />
+    <Compile Include="Code\UI\SelectionPanels\SelectedBuildingPanel.cs" />
+    <Compile Include="Code\UI\SelectionPanels\SelectedDistrictPanel.cs" />
     <Compile Include="Code\UI\TCTool.cs" />
+    <Compile Include="Code\UI\TransferPanelTabs\TransferBuildingTab.cs" />
+    <Compile Include="Code\UI\TransferPanelTabs\TransferDistrictTab.cs" />
     <Compile Include="Code\UI\TransferPanel.cs" />
     <Compile Include="Code\UI\BuildingInfoPanel.cs" />
     <Compile Include="Code\UI\BuildingPanelManager.cs" />
-    <Compile Include="Code\UI\DistrictSelectionPanel\DistrictSelectionPanel.cs" />
+    <Compile Include="Code\UI\TransferPanelTabs\TransferOutsideTab.cs" />
+    <Compile Include="Code\UI\TransferPanelTabs\TransferPanelTab.cs" />
     <Compile Include="Code\UI\UIFastList\BasicRow.cs" />
+    <Compile Include="Code\UI\UIFastList\BuildingRow.cs" />
     <Compile Include="Code\UI\UIFastList\DistrictFastList.cs" />
     <Compile Include="Code\UI\UIFastList\DistrictRow.cs" />
     <Compile Include="Code\UI\UIFastList\OfferRow.cs" />
+    <Compile Include="Code\UI\UIFastList\UIBuildingFastList.cs" />
     <Compile Include="Code\UI\UIFastList\UIFastList.cs" />
     <Compile Include="Code\UI\WarehouseInfoPanel.cs" />
     <Compile Include="Code\Utils\FontUtils.cs" />
@@ -119,12 +126,16 @@
   <ItemGroup>
     <Content Include="Changelog.txt" />
     <Content Include="License.txt" />
+    <Content Include="Resources\TC-RoundMinus.png" />
+    <Content Include="Resources\TC-RoundPlus.png" />
     <Content Include="Resources\TC-ArrowMinus.png" />
     <Content Include="Resources\TC-ArrowPlus.png" />
+    <Content Include="Resources\TC-CursorPickOn.png" />
     <Content Include="Resources\TC-UUI.png" />
     <Content Include="Images\PreviewImage.png" />
     <Content Include="Resources\TC-CursorOn.png" />
     <Content Include="Resources\TC-CursorOff.png" />
+    <Content Include="Resources\TC-CursorPickOff.png" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
@@ -141,7 +152,7 @@ del "%25LOCALAPPDATA%25\Colossal Order\Cities_Skylines\Addons\Mods\$(ProjectName
 xcopy /y "$(ProjectDir)\Translations\" "$(LOCALAPPDATA)\Colossal Order\Cities_Skylines\Addons\Mods\$(ProjectName)\Translations" /s /e
 
 mkdir "$(LOCALAPPDATA)\Colossal Order\Cities_Skylines\Addons\Mods\$(ProjectName)\Resources"
-del "%25LOCALAPPDATA%25\Colossal Order\Cities_Skylines\Addons\Mods\$(ProjectName)\Resources\*"
+del "%25LOCALAPPDATA%25\Colossal Order\Cities_Skylines\Addons\Mods\$(ProjectName)\Resources\*.png"
 xcopy /y "$(ProjectDir)\Resources\" "$(LOCALAPPDATA)\Colossal Order\Cities_Skylines\Addons\Mods\$(ProjectName)\Resources" /s /e</PostBuildEvent>
   </PropertyGroup>
 </Project>

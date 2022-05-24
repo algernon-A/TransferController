@@ -147,13 +147,13 @@ namespace TransferController
                 }
 
                 // Set panel instance properties.
+                transfers[i].panel.RecordNumber = transfers[i].recordNumber;
+                transfers[i].panel.NextRecord = transfers[i].nextRecord;
+                transfers[i].panel.TransferReason = transfers[i].reason;
+                transfers[i].panel.CurrentBuilding = currentBuilding;
                 transfers[i].panel.DirectionTitle = transfers[i].panelTitle;
                 transfers[i].panel.OutsideLabel = transfers[i].outsideText;
-                transfers[i].panel.OutsideTip = transfers[i].outsideTip;
-                transfers[i].panel.RecordNumber = transfers[i].recordNumber;
-                transfers[i].panel.TransferReason = transfers[i].reason;
-                transfers[i].panel.NextRecord = transfers[i].nextRecord;
-                transfers[i].panel.CurrentBuilding = currentBuilding;
+                transfers[i].panel.OutsidePanel.OutsideTip = transfers[i].outsideTip;
             }
 
             // Destroy any unused panels.
@@ -225,6 +225,14 @@ namespace TransferController
         /// <param name="clickEvent">Click event (unused)</param>
         private void ShowOffers(UIComponent component, UIMouseEventParameter clickEvent)
         {
+            // Close log panel if it's open.
+            if (logPanel != null)
+            {
+                RemoveUIComponent(logPanel);
+                GameObject.Destroy(logPanel);
+                logPanel = null;
+            }
+
             // Create offers panel if it isn't already created.
             if (offersPanel == null)
             {
@@ -247,6 +255,14 @@ namespace TransferController
         /// <param name="clickEvent">Click event (unused)</param>
         private void ShowLog(UIComponent component, UIMouseEventParameter clickEvent)
         {
+            // Close offers panel if it's open.
+            if (offersPanel != null)
+            {
+                RemoveUIComponent(offersPanel);
+                GameObject.Destroy(offersPanel);
+                offersPanel = null;
+            }
+
             // Create log panel if it isn't already created.
             if (logPanel == null)
             {

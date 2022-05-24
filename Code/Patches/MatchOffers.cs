@@ -316,7 +316,7 @@ namespace TransferController
 											}
 											else if (candidateAI is WarehouseAI outgoingWarehouseAI)
                                             {
-												// Outgoing candidate is warehouse.
+												// Outgoing candidate is warehouse (but this incoming one isn't).
 												if(!WarehouseControl.CheckVehicleQuota(outgoingWarehouseAI, outCandidateBuilding, ref buildingBuffer[outCandidateBuilding], material, incomingAI))
                                                 {
 													continue;
@@ -333,7 +333,7 @@ namespace TransferController
 											// Position of incoming building (source building or vehicle source building)
 											Vector3 outCandidatePosition = outCandidateBuilding == 0 ? outgoingOfferCandidate.Position : buildingBuffer[outCandidateBuilding].m_position;
 
-											if (!DistrictChecksPassed(true, (byte)thisPriority, (byte)otherPriority, incomingBuilding, outCandidateBuilding, incomingDistrict, districtManager.GetDistrict(outCandidatePosition), incomingPark, districtManager.GetPark(outCandidatePosition), material))
+											if (!ChecksPassed(true, (byte)thisPriority, (byte)otherPriority, incomingBuilding, outCandidateBuilding, incomingDistrict, districtManager.GetDistrict(outCandidatePosition), incomingPark, districtManager.GetPark(outCandidatePosition), material))
 											{
 												continue;
 											}
@@ -582,7 +582,7 @@ namespace TransferController
 										}
 										else if (candidateAI is WarehouseAI incomingWarehouseAI)
 										{
-											// Incoming candidate is warehouse.
+											// Incoming candidate is warehouse (but this outgoing building isn't).
 											if (!WarehouseControl.CheckVehicleQuota(incomingWarehouseAI, inCandidateBuilding, ref buildingBuffer[inCandidateBuilding], material, outgoingAI))
 											{
 												continue;
@@ -599,7 +599,7 @@ namespace TransferController
 										// Position of incoming building (source building or vehicle source building)
 										Vector3 inCandidatePosition = inCandidateBuilding == 0 ? incomingOfferCandidate.Position : buildingBuffer[inCandidateBuilding].m_position;
 
-										if (!DistrictChecksPassed(false, (byte)otherPriority, (byte)thisPriority, inCandidateBuilding, outgoingBuilding, districtManager.GetDistrict(inCandidatePosition), outgoingDistrict, districtManager.GetPark(inCandidatePosition), outgoingPark, material))
+										if (!ChecksPassed(false, (byte)otherPriority, (byte)thisPriority, inCandidateBuilding, outgoingBuilding, districtManager.GetDistrict(inCandidatePosition), outgoingDistrict, districtManager.GetPark(inCandidatePosition), outgoingPark, material))
 										{
 											continue;
 										}
@@ -734,7 +734,7 @@ namespace TransferController
 
 
 		/// <summary>
-		/// Applies district fileters, both incoming and outgoing.
+		/// Checks against district and building filters, both incoming and outgoing.
 		/// </summary>
 		/// <param name="incoming">True if this is an incoming offer, false otherwise</param
 		/// <param name="priorityIn">Incoming offer priority</param
@@ -747,25 +747,25 @@ namespace TransferController
 		/// <param name="outgoingPark">Park area of outgoing offer</param>
 		/// <param name="reason">Transfer reason</param>
 		/// <returns>True if the transfer is permitted, false if prohibited</returns>
-		private static bool DistrictChecksPassed(bool incoming, byte priorityIn, byte priorityOut, ushort incomingBuildingID, ushort outgoingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason reason)
+		private static bool ChecksPassed(bool incoming, byte priorityIn, byte priorityOut, ushort incomingBuildingID, ushort outgoingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason reason)
 		{
-			// First, check for incoming district restrictions.
-			if (IncomingDistrictChecksPassed(incomingBuildingID, outgoingBuildingID, incomingDistrict, outgoingDistrict, incomingPark, outgoingPark, reason))
+			// First, check for incoming restrictions.
+			if (IncomingChecksPassed(incomingBuildingID, outgoingBuildingID, incomingDistrict, outgoingDistrict, incomingPark, outgoingPark, reason))
 			{
 				// Then, outgoing.
-				bool result = OutgoingDistrictChecksPassed(outgoingBuildingID, incomingBuildingID, incomingDistrict, outgoingDistrict, incomingPark, outgoingPark, reason);
-				TransferLogging.AddEntry(reason, incoming, priorityIn, priorityOut, incomingBuildingID, outgoingBuildingID, result, result ? LogEntry.BlockReason.None : LogEntry.BlockReason.OutgoingDistrict);
+				bool result = OutgoingChecksPassed(outgoingBuildingID, incomingBuildingID, incomingDistrict, outgoingDistrict, incomingPark, outgoingPark, reason);
+				TransferLogging.AddEntry(reason, incoming, priorityIn, priorityOut, incomingBuildingID, outgoingBuildingID, result);
 				return result;
 			}
 
 			// Failed incoming district restrictions - return false.
-			TransferLogging.AddEntry(reason, incoming, priorityIn, priorityOut, incomingBuildingID, outgoingBuildingID, false, LogEntry.BlockReason.IncomingDistrict);
+			TransferLogging.AddEntry(reason, incoming, priorityIn, priorityOut, incomingBuildingID, outgoingBuildingID, false);
 			return false;
 		}
 
 
 		/// <summary>
-		///  Applies incoming district filters.
+		///  Applies incoming district and building filters.
 		/// </summary>
 		/// <param name="buildingID">Building ID to check</param>
 		/// <param name="priority">Offer priority</param
@@ -776,7 +776,7 @@ namespace TransferController
 		/// <param name="outgoingPark">Park area of outgoing offer</param>
 		/// <param name="transferReason">Transfer reason</param>
 		/// <returns>True if the transfer is permitted, false if prohibited</returns>
-		private static bool IncomingDistrictChecksPassed(ushort buildingID, ushort outgoingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason transferReason)
+		private static bool IncomingChecksPassed(ushort buildingID, ushort outgoingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason transferReason)
 		{
 			// Calculate building record ID.
 			uint mask = BuildingControl.IncomingMask << 24;
@@ -811,22 +811,54 @@ namespace TransferController
 					}
 				}
 
+				// Check outside connection.
 				if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[outgoingBuildingID].Info.m_buildingAI is OutsideConnectionAI)
 				{
-					return (buildingRecord.flags & BuildingControl.RestrictionFlags.BlockOutsideConnection) == BuildingControl.RestrictionFlags.None;
+					if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BlockOutsideConnection) == 0)
+					{
+						return true;
+					}
 				}
-
-				// Check same-district setting.
-				if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BlockSameDistrict) == BuildingControl.RestrictionFlags.None && (incomingDistrict != 0 && incomingDistrict == outgoingDistrict || (incomingPark != 0 && incomingPark == outgoingPark)))
+				else if ((buildingRecord.flags & (BuildingControl.RestrictionFlags.DistrictEnabled | BuildingControl.RestrictionFlags.BuildingEnabled)) == 0)
 				{
-					// Same district match - permitted.
+					// If not an outside connection, transfer is permitted if no restrictions are enabled.
 					return true;
+                }
+
+
+				// Check district settings.
+				if ((buildingRecord.flags & BuildingControl.RestrictionFlags.DistrictEnabled) != 0)
+				{
+					// Check same-district setting.
+					if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BlockSameDistrict) == 0 && (outgoingDistrict != 0 && incomingDistrict == outgoingDistrict || (outgoingPark != 0 && incomingPark == outgoingPark)))
+					{
+						// Same district match - permitted.
+						return true;
+					}
+
+					// Check permitted districts.
+					if (buildingRecord.districts != null)
+					{
+						if (buildingRecord.districts.Contains(outgoingDistrict) || buildingRecord.districts.Contains(-outgoingPark))
+                        {
+							// Permitted district.
+							return true;
+                        }
+					}
 				}
 
-				// No same-district setting: return value is if the transfer reason is a match and if outgoing district is in the allowed districts for this building.
-				if ((buildingRecord.reason == TransferManager.TransferReason.None || buildingRecord.reason == transferReason) && buildingRecord.districts != null)
+				// Check building settings.
+				if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BuildingEnabled) != 0)
 				{
-					return buildingRecord.districts.Contains(outgoingDistrict) || buildingRecord.districts.Contains(-outgoingPark);
+					// Check permitted buildings.
+					if (buildingRecord.buildings != null)
+					{
+						if (buildingRecord.buildings.Contains(outgoingBuildingID))
+						{
+							// Permitted building.
+							return true;
+						}
+					}
 				}
 			}
 			else
@@ -835,14 +867,13 @@ namespace TransferController
 				return true;
 			}
 
-			// If we got here, we didn't get a record.
+			// If we got here, we found a record but no permitted match was found; return false.
 			return false;
 		}
 
 
-
 		/// <summary>
-		///  Applies outgoing district filters.
+		///  Applies outgoing district and building filters.
 		/// </summary>
 		/// <param name="buildingID">Building ID to check</param>
 		/// <param name="incomingBuildingID">Building ID of incoming building</param>
@@ -852,7 +883,7 @@ namespace TransferController
 		/// <param name="outgoingDistrict">District of outgoing offer</param>
 		/// <param name="transferReason">Transfer reason</param>
 		/// <returns>True if the transfer is permitted, false if prohibited</returns>
-		private static bool OutgoingDistrictChecksPassed(ushort buildingID, ushort incomingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason transferReason)
+		private static bool OutgoingChecksPassed(ushort buildingID, ushort incomingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason transferReason)
 		{
 			// Calculate building record ID.
 			uint mask = (uint)BuildingControl.OutgoingMask << 24;
@@ -886,20 +917,7 @@ namespace TransferController
 					}
 				}
 
-				// Check outside connection.
-				if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[incomingBuildingID].Info.m_buildingAI is OutsideConnectionAI)
-				{
-					return (buildingRecord.flags & BuildingControl.RestrictionFlags.BlockOutsideConnection) == BuildingControl.RestrictionFlags.None;
-				}
-
-				// Check same-district setting.
-				if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BlockSameDistrict) == BuildingControl.RestrictionFlags.None && (incomingDistrict != 0 && incomingDistrict == outgoingDistrict || (incomingPark != 0 && incomingPark == outgoingPark)))
-				{
-					// Same district match - permitted.
-					return true;
-				}
-
-				// Only block specified transfers.
+				// Only block specified goods transfers where the 'None' wildcard is applied.
 				if (buildingRecord.reason == TransferManager.TransferReason.None)
 				{
 					switch (transferReason)
@@ -933,10 +951,53 @@ namespace TransferController
 					}
 				}
 
-				// No same-district setting: return value is if the transfer reason is a match and if outgoing district is in the allowed districts for this building.
-				if ((buildingRecord.reason == TransferManager.TransferReason.None || buildingRecord.reason == transferReason) && buildingRecord.districts != null)
+				// Check outside connection.
+				if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[incomingBuildingID].Info.m_buildingAI is OutsideConnectionAI)
 				{
-					return buildingRecord.districts.Contains(incomingDistrict) || buildingRecord.districts.Contains(-incomingPark);
+					if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BlockOutsideConnection) == 0)
+					{
+						return true;
+					}
+				}
+				else if ((buildingRecord.flags & (BuildingControl.RestrictionFlags.DistrictEnabled | BuildingControl.RestrictionFlags.BuildingEnabled)) == 0)
+				{
+					// If not an outside connection, transfer is permitted if no restrictions are enabled.
+					return true;
+				}
+
+				// Check district settings.
+				if ((buildingRecord.flags & BuildingControl.RestrictionFlags.DistrictEnabled) != 0)
+				{
+					// Check same-district setting.
+					if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BlockSameDistrict) == BuildingControl.RestrictionFlags.None && (incomingDistrict != 0 && incomingDistrict == outgoingDistrict || (incomingPark != 0 && incomingPark == outgoingPark)))
+					{
+						// Same district match - permitted.
+						return true;
+					}
+
+					// Check permitted districts.
+					if ((buildingRecord.reason == TransferManager.TransferReason.None || buildingRecord.reason == transferReason) && buildingRecord.districts != null)
+					{
+						if (buildingRecord.districts.Contains(incomingDistrict) || buildingRecord.districts.Contains(-incomingPark))
+						{
+							// Permitted district.
+							return true;
+                        }
+					}
+				}
+
+				// Check building settings.
+				if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BuildingEnabled) != 0)
+				{
+					// Check permitted buildings.
+					if (buildingRecord.buildings != null)
+					{
+						if (buildingRecord.buildings.Contains(incomingBuildingID))
+						{
+							// Permitted building.
+							return true;
+						}
+					}
 				}
 			}
 			else

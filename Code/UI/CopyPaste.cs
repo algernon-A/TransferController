@@ -60,18 +60,18 @@ namespace TransferController
 
                 for (int i = 0; i < transfers.Length; ++i)
                 {
-                    BuildingControl.SetEnabled(building, transfers[i].recordNumber, BuildingControl.GetEnabled(BuildingTemplate, Transfers[i].recordNumber), transfers[i].reason, transfers[i].nextRecord);
+                    BuildingControl.SetDistrictEnabled(building, transfers[i].recordNumber, BuildingControl.GetDistrictEnabled(BuildingTemplate, Transfers[i].recordNumber), transfers[i].reason, transfers[i].nextRecord);
 
                     BuildingControl.SetSameDistrict(building, transfers[i].recordNumber, BuildingControl.GetSameDistrict(BuildingTemplate, Transfers[i].recordNumber), transfers[i].reason, transfers[i].nextRecord);
 
                     BuildingControl.SetOutsideConnection(building, transfers[i].recordNumber, BuildingControl.GetOutsideConnection(BuildingTemplate, Transfers[i].recordNumber), transfers[i].reason, transfers[i].nextRecord);
 
-                    var DistrictsServed = BuildingControl.GetBuildingDistricts(BuildingTemplate, transfers[i].recordNumber);
+                    var DistrictsServed = BuildingControl.GetDistricts(BuildingTemplate, transfers[i].recordNumber);
                     if (DistrictsServed != null)
                     {
                         foreach (var districtPark in DistrictsServed)
                         {
-                            BuildingControl.AddBuildingDistrict(building, transfers[i].recordNumber, districtPark, transfers[i].reason, transfers[i].nextRecord);
+                            BuildingControl.AddDistrict(building, transfers[i].recordNumber, districtPark, transfers[i].reason, transfers[i].nextRecord);
                         }
                     }
                 }
