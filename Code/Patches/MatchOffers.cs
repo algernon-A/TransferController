@@ -292,11 +292,11 @@ namespace TransferController
 										// Ensure we've got at least one valid building in the match before going further.
 										if (incomingBuilding + outCandidateBuilding != 0)
 										{
-											// Check vehicle quota for warehouses.
+											// Check for warehouses.
 											BuildingAI candidateAI = buildingBuffer[outCandidateBuilding].Info.m_buildingAI;
 											if (incomingAI is WarehouseAI incomingWarehouseAI)
 											{
-												// Incoming building is warehouse.
+												// Incoming building is warehouse - check vehicle quotas.
 												if (!WarehouseControl.CheckVehicleQuota(incomingWarehouseAI, incomingBuilding, ref buildingBuffer[incomingBuilding], material, candidateAI))
 												{
 													continue;
@@ -306,7 +306,12 @@ namespace TransferController
 												if (candidateAI is WarehouseAI || candidateAI is OutsideConnectionAI)
 												{
 													// Yes - reverse warehouse priority modifier (this doesn't apply to warehouse-warehouse or warehouse-outside connection transfers).
+													// Note - warehouses set to fill/empty aren't assigned the bonus to begin with, so this decreases below the original.  This is intentional to prioritise other transfers.
 													otherPriorityPlus -= AddOffers.warehousePriority * 2f;
+													if (otherPriorityPlus < 0)
+													{
+														otherPriorityPlus = 0;
+													}
 												}
 												else
 												{
@@ -316,8 +321,8 @@ namespace TransferController
 											}
 											else if (candidateAI is WarehouseAI outgoingWarehouseAI)
                                             {
-												// Outgoing candidate is warehouse (but this incoming one isn't).
-												if(!WarehouseControl.CheckVehicleQuota(outgoingWarehouseAI, outCandidateBuilding, ref buildingBuffer[outCandidateBuilding], material, incomingAI))
+												// Outgoing candidate is warehouse (but this incoming one isn't) - check vehicle quotas.
+												if (!WarehouseControl.CheckVehicleQuota(outgoingWarehouseAI, outCandidateBuilding, ref buildingBuffer[outCandidateBuilding], material, incomingAI))
                                                 {
 													continue;
 												}
@@ -558,11 +563,11 @@ namespace TransferController
 									// Ensure we've got at least one valid building in the match before going further.
 									if (outgoingBuilding + inCandidateBuilding != 0)
 									{
-										// Check vehicle quota for warehouses.
+										// Check for warehouses.
 										BuildingAI candidateAI = buildingBuffer[inCandidateBuilding].Info.m_buildingAI;
 										if (outgoingAI is WarehouseAI outgoingWarehouseAI)
 										{
-											// Outgoing building is warehouse.
+											// Outgoing building is warehouse - check vehicle quotas.
 											if (!WarehouseControl.CheckVehicleQuota(outgoingWarehouseAI, outgoingBuilding, ref buildingBuffer[outgoingBuilding], material, candidateAI))
 											{
 												continue;
@@ -572,7 +577,13 @@ namespace TransferController
 											if (candidateAI is WarehouseAI || candidateAI is OutsideConnectionAI)
 											{
 												// Yes - reverse warehouse priority modifier (this doesn't apply to warehouse-warehouse or warehouse-outside connection transfers).
+
+												// Note - warehouses set to fill/empty aren't assigned the bonus to begin with, so this decreases below the original.  This is intentional to prioritise other transfers.
 												otherPriorityPlus -= AddOffers.warehousePriority * 2f;
+												if (otherPriorityPlus < 0)
+												{
+													otherPriorityPlus = 0;
+												}
 											}
 											else
 											{
@@ -582,7 +593,7 @@ namespace TransferController
 										}
 										else if (candidateAI is WarehouseAI incomingWarehouseAI)
 										{
-											// Incoming candidate is warehouse (but this outgoing building isn't).
+											// Incoming candidate is warehouse (but this outgoing one isn't) - check vehicle quotas.
 											if (!WarehouseControl.CheckVehicleQuota(incomingWarehouseAI, inCandidateBuilding, ref buildingBuffer[inCandidateBuilding], material, outgoingAI))
 											{
 												continue;
