@@ -13,8 +13,10 @@ namespace TransferController
     public enum WarehouseFlags : ushort
     {
         None = 0,
-        ReserveUnique = 1,
-        ReserveOutside = 2,
+        ReserveUnique = 0x01,
+        ReserveOutside = 0x02,
+        ReserveCity = 0x04,
+        AllReserveFlags = ReserveUnique | ReserveOutside | ReserveCity
     }
 
 
@@ -68,7 +70,9 @@ namespace TransferController
             if (warehouseRecords.TryGetValue(warehouseID, out WarehouseRecord warehouseRecord))
             {
                 // Entry found - determine if a quota needs to be reserved.
-                if (((warehouseRecord.flags & WarehouseFlags.ReserveUnique) != 0 && !(otherAI is UniqueFactoryAI)) || ((warehouseRecord.flags & WarehouseFlags.ReserveOutside) != 0 && !(otherAI is OutsideConnectionAI)))
+                if (((warehouseRecord.flags & WarehouseFlags.ReserveUnique) != 0 && !(otherAI is UniqueFactoryAI)) ||
+                    ((warehouseRecord.flags & WarehouseFlags.ReserveOutside) != 0 && !(otherAI is OutsideConnectionAI)) ||
+                    ((warehouseRecord.flags & WarehouseFlags.ReserveCity) != 0) && (otherAI is OutsideConnectionAI))
                 {
                     // Retrieve reserved vehicle count - don't bother checking if no vehicles are reserved.
                     byte reservedVehicles = GetReservedVehicles(warehouseID);
@@ -96,8 +100,8 @@ namespace TransferController
         /// <param name="buildingID">Warehouse builidng ID</param>
         internal static void SetReserveUnique(uint buildingID)
         {
+            SetFlags(buildingID, false, WarehouseFlags.AllReserveFlags);
             SetFlags(buildingID, true, WarehouseFlags.ReserveUnique);
-            SetFlags(buildingID, false, WarehouseFlags.ReserveOutside);
         }
 
 
@@ -107,8 +111,19 @@ namespace TransferController
         /// <param name="buildingID">Warehouse builidng ID</param>
         internal static void SetReserveOutside(uint buildingID)
         {
+            SetFlags(buildingID, false, WarehouseFlags.AllReserveFlags);
             SetFlags(buildingID, true, WarehouseFlags.ReserveOutside);
-            SetFlags(buildingID, false, WarehouseFlags.ReserveUnique);
+        }
+
+
+        /// <summary>
+        /// Sets the warehouse to reserve vehicles for the city.
+        /// </summary>
+        /// <param name="buildingID">Warehouse builidng ID</param>
+        internal static void SetReserveCity(uint buildingID)
+        {
+            SetFlags(buildingID, false, WarehouseFlags.AllReserveFlags);
+            SetFlags(buildingID, true, WarehouseFlags.ReserveCity);
         }
 
 
@@ -116,7 +131,7 @@ namespace TransferController
         /// Clears the reserved vehicle state for the specified warehouse.
         /// </summary>
         /// <param name="buildingID">Warehouse builidng ID</param>
-        internal static void ClearReserve(uint buildingID) => SetFlags(buildingID, false, WarehouseFlags.ReserveUnique | WarehouseFlags.ReserveOutside);
+        internal static void ClearReserve(uint buildingID) => SetFlags(buildingID, false, WarehouseFlags.AllReserveFlags);
 
 
         /// <summary>
@@ -133,6 +148,14 @@ namespace TransferController
         /// <param name="buildingID">Building ID of warehouse to check</param>
         /// <returns>True if the warehouse is set to reserve vehicles for outside connections, false otherwise</returns>
         internal static bool GetReserveOutside(uint buildingID) => GetFlags(buildingID, WarehouseFlags.ReserveOutside);
+
+
+        /// <summary>
+        /// Checks if the given warehouse is set to reserve vehicles for the city.
+        /// </summary>
+        /// <param name="buildingID">Building ID of warehouse to check</param>
+        /// <returns>True if the warehouse is set to reserve vehicles for local deliveries, false otherwise</returns>
+        internal static bool GetReserveCity(uint buildingID) => GetFlags(buildingID, WarehouseFlags.ReserveCity);
 
 
         /// <summary>

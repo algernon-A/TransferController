@@ -13,14 +13,18 @@ namespace TransferController
         // Layout constants.
         private const float DoubleMargin = Margin + Margin;
         private const float CheckHeight = 25f;
+        private const float Check1Y = ControlY;
+        private const float Check2Y = Check1Y + CheckHeight;
+        private const float Check3Y = Check2Y + CheckHeight;
+        private const float SliderY = Check3Y + CheckHeight;
         private const float SliderWidth = PanelWidth - DoubleMargin - DoubleMargin;
 
         // Default vehicle slider maximum.
-        private const int MaxReservedVehicles = 8;
+        private const int MaxReservedVehicles = 16;
 
 
         // Panel components.
-        private readonly UICheckBox reserveUniqueCheck, reserveOutsideCheck;
+        private readonly UICheckBox reserveUniqueCheck, reserveOutsideCheck, reserveCityCheck;
         private readonly UISlider reservedVehiclesSlider;
 
         // Status flag.
@@ -28,7 +32,7 @@ namespace TransferController
 
 
         // Layout constants.
-        protected override float PanelHeight => base.PanelHeight + (CheckHeight * 2f) + 40f + Margin;
+        protected override float PanelHeight => base.PanelHeight + (CheckHeight * 3f) + 40f + Margin;
 
 
         /// <summary>
@@ -37,13 +41,15 @@ namespace TransferController
         internal WarehouseInfoPanel()
         {
             // Add reserve vehicle checkboxes.
-            reserveUniqueCheck = UIControls.LabelledCheckBox(this, Margin, ControlY, Translations.Translate("TFC_WAR_RVU"), tooltip: Translations.Translate("TFC_WAR_RVU_TIP"));
-            reserveOutsideCheck = UIControls.LabelledCheckBox(this, Margin, ControlY + CheckHeight, Translations.Translate("TFC_WAR_RVO"), tooltip: Translations.Translate("TFC_WAR_RVO_TIP"));
+            reserveCityCheck = UIControls.LabelledCheckBox(this, Margin, Check1Y, Translations.Translate("TFC_WAR_RVI"), tooltip: Translations.Translate("TFC_WAR_RVI_TIP"));
+            reserveUniqueCheck = UIControls.LabelledCheckBox(this, Margin, Check2Y, Translations.Translate("TFC_WAR_RVU"), tooltip: Translations.Translate("TFC_WAR_RVU_TIP"));
+            reserveOutsideCheck = UIControls.LabelledCheckBox(this, Margin, Check3Y, Translations.Translate("TFC_WAR_RVO"), tooltip: Translations.Translate("TFC_WAR_RVO_TIP"));
             reserveUniqueCheck.eventCheckChanged += ReserveUniqueCheckChanged;
             reserveOutsideCheck.eventCheckChanged += ReserveOutsideCheckChanged;
+            reserveCityCheck.eventCheckChanged += ReserveCityCheckChanged;
 
             // Reserved vehicles slider.
-            reservedVehiclesSlider = AddVehicleSlider(this, DoubleMargin, ControlY + CheckHeight + CheckHeight, SliderWidth, WarehouseControl.GetReservedVehicles(CurrentBuilding));
+            reservedVehiclesSlider = AddVehicleSlider(this, DoubleMargin, SliderY, SliderWidth, WarehouseControl.GetReservedVehicles(CurrentBuilding));
         }
 
 
@@ -62,6 +68,7 @@ namespace TransferController
             if (buildingID != 0)
             {
                 // Set checkboxes.
+                reserveCityCheck.isChecked = WarehouseControl.GetReserveCity(CurrentBuilding);
                 reserveUniqueCheck.isChecked = WarehouseControl.GetReserveUnique(CurrentBuilding);
                 reserveOutsideCheck.isChecked = WarehouseControl.GetReserveOutside(CurrentBuilding);
 
@@ -106,6 +113,7 @@ namespace TransferController
             {
                 // If this is checked, unchek the reserve vehicles for outside connections checkbox.
                 reserveOutsideCheck.isChecked = false;
+                reserveCityCheck.isChecked = false;
                 WarehouseControl.SetReserveUnique(CurrentBuilding);
             }
             else
@@ -139,7 +147,42 @@ namespace TransferController
             {
                 // If this is checked, unchek the reserve vehicles for unique factories checkbox.
                 reserveUniqueCheck.isChecked = false;
+                reserveCityCheck.isChecked = false;
                 WarehouseControl.SetReserveOutside(CurrentBuilding);
+            }
+            else
+            {
+                WarehouseControl.ClearReserve(CurrentBuilding);
+            }
+
+            // Resume event processing.
+            ignoreEvents = false;
+        }
+
+
+        /// <summary>
+        /// Reserve vehicles for local service checkbox event handler.
+        /// </summary>
+        /// <param name="component">Calling component</param>
+        /// <param name="isChecked">New checked status</param>
+        private void ReserveCityCheckChanged(UIComponent component, bool isChecked)
+        {
+            // Don't do anything if we're ignoring events.
+            if (ignoreEvents)
+            {
+                return;
+            }
+
+            // Suspend event processing.
+            ignoreEvents = true;
+
+            // Set warehouse status to reflect current state.
+            if (isChecked)
+            {
+                // If this is checked, unchek the reserve vehicles for unique factories checkbox.
+                reserveOutsideCheck.isChecked = false;
+                reserveUniqueCheck.isChecked = false;
+                WarehouseControl.SetReserveCity(CurrentBuilding);
             }
             else
             {

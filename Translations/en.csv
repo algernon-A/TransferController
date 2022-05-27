@@ -58,6 +58,8 @@ TFC_WAR_RVU,Reserve vehicles for unique factories
 TFC_WAR_RVU_TIP,Selecting this will reserve a portion of this building's delivery vehicles to only service unique factories
 TFC_WAR_RVO,Reserve vehicles for outside connections
 TFC_WAR_RVO_TIP,Selecting this will reserve a portion of this building's delivery vehicles to only service outside connections (importing and exporting)
+TFC_WAR_RVI,Reserve vehicles for city delivery
+TFC_WAR_RVI_TIP,Selecting this will reserve a portion of this building's delivery vehicles to only service delivery within this city (and not be available for importing or exporting)
 TFC_WAR_RVC,Reserved vehicles
 TFC_WAR_RVC_TIP,Set the number of reserved vehicles
 TFC_OPT_DIS,Distance multiplier

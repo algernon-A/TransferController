@@ -248,7 +248,7 @@ namespace TransferController
 					foreach (uint building in hashSet)
 					{
 						BuildingTool.RenderOverlay(cameraInfo, ref buildingBuffer[building], yellow, yellow);
-						toolManager.m_drawCallData.m_overlayCalls++;
+						++toolManager.m_drawCallData.m_overlayCalls;
 					}
 				}
 			}
@@ -267,7 +267,7 @@ namespace TransferController
 					// Apply overlay.
 					ushort buildingID = (ushort)(key & 0x0000FFFF);
 					BuildingTool.RenderOverlay(cameraInfo, ref buildingBuffer[buildingID], magenta, magenta);
-					toolManager.m_drawCallData.m_overlayCalls++;
+					++toolManager.m_drawCallData.m_overlayCalls;
 				}
 			}
 		}

@@ -1,4 +1,7 @@
-﻿Version 0.3 -﻿
+﻿- Add ability to reserve vehicles for city (non-import/export) delivery only
+
+
+Version 0.3 -﻿
 
 - New feature: permit individual buildings
 - Highlight all buildings with active settings in magenta when tool is active
