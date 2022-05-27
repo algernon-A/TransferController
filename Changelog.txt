@@ -1,4 +1,5 @@
 ﻿- Add ability to reserve vehicles for city (non-import/export) delivery only
+- Fix deleted buildings still being recorded in restrictions lists
 
 
 Version 0.3 -﻿

@@ -421,8 +421,38 @@ namespace TransferController
         /// <param name="buildingID">Building ID to delete</param>
         internal static void DeleteEntry(uint buildingID)
         {
-            buildingRecords.Remove(buildingID);
-            buildingRecords.Remove(buildingID & (uint)(1 << 24));
+            // Remove all incoming records for this building.
+            uint nextRecord = (uint)(buildingID | IncomingMask);
+            if (buildingRecords.ContainsKey(nextRecord))
+            {
+                while (nextRecord != 0)
+                {
+                    uint thisRecord = nextRecord;
+                    nextRecord = buildingRecords[nextRecord].nextRecord;
+                    buildingRecords.Remove(thisRecord);
+                }
+            }
+
+            // Remove all outgoing records for this building.
+            nextRecord = (uint)(buildingID | OutgoingMask);
+            if (buildingRecords.ContainsKey(nextRecord))
+            {
+                while (nextRecord != 0)
+                {
+                    uint thisRecord = nextRecord;
+                    nextRecord = buildingRecords[nextRecord].nextRecord;
+                    buildingRecords.Remove(thisRecord);
+                }
+            }
+
+            // Then, iterate through all records and remove this reference from all building lists.
+            foreach (KeyValuePair<uint, BuildingRecord> entry in buildingRecords)
+            {
+                if (entry.Value.buildings != null)
+                {
+                    entry.Value.buildings.Remove(buildingID);
+                }
+            }
         }
 
 
