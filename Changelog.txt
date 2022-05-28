@@ -1,4 +1,6 @@
-﻿- Overhaul copy/paste
+﻿Version 0.3.2 -
+
+- Overhaul copy/paste
 - Highlight selected building in red
 
 
