@@ -1,89 +1,160 @@
-﻿using ColossalFramework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
+using ColossalFramework;
+
 
 namespace TransferController
 {
+    /// <summary>
+    /// Handles copying and pasting of building settings.
+    /// </summary>
     public static class CopyPaste
     {
+        // Copy buffer.
+        private static int bufferSize;
+        private static BuildingControl.BuildingRecord[] copyBuffer = new BuildingControl.BuildingRecord[BuildingInfoPanel.MaxTransfers];
+        private static byte[] copyRecordNumbers = new byte[BuildingInfoPanel.MaxTransfers];
 
-        internal static ushort BuildingTemplate = 0;
+        // Prevent heap allocations every time we copy.
+        private static TransferStruct[] transferBuffer = new TransferStruct[BuildingInfoPanel.MaxTransfers];
 
-        internal static TransferStruct[] Transfers = new TransferStruct[4];
-
-        /// <summary>
-        /// Check if can copy between buildings
-        /// </summary>
-        /// <param name="source_building">building to copy from (source building)</param>
-        /// <param name="destination_building">building to copy to (destination building)</param>
-        internal static bool CanCopy(ushort source_building, ushort destination_building)
-        {
-            List<byte> source_building_list = new List<byte>();
-            List<byte> destination_building_list = new List<byte>();
-
-            var source_building_transfers = new TransferStruct[4];
-            var destination_building_transfers = new TransferStruct[4];
-
-            var source_building_number = TransferDataUtils.BuildingEligibility(source_building, Singleton<BuildingManager>.instance.m_buildings.m_buffer[source_building].Info, source_building_transfers);
-            var destination_building_number = TransferDataUtils.BuildingEligibility(destination_building, Singleton<BuildingManager>.instance.m_buildings.m_buffer[destination_building].Info, destination_building_transfers);
-            if(source_building_number != destination_building_number)
-            {
-                return false;
-            }
-            foreach (var record in source_building_transfers) 
-            {
-                source_building_list.Add(record.recordNumber);
-            }
-            foreach (var record in destination_building_transfers)
-            {
-                destination_building_list.Add(record.recordNumber);
-            }
-            bool equals = source_building_list.OrderBy(a => a).SequenceEqual(destination_building_list.OrderBy(a => a));
-            if (!equals)
-            {
-                return false;
-            }
-            return true;
-        }
 
         /// <summary>
-        /// Copy policy between buildings.
+        /// Copies TC data from the given building to the copy buffer.
         /// </summary>
-        /// <param name="building">Building to copy to (destination building)</param>
-        /// <param name="transfers">Building transfers (destination building)</param>
-        internal static bool CopyPolicyTo(ushort building, TransferStruct[] transfers)
+        /// <param name="buildingID">Source building ID</param>
+        /// <param name="buildingInfo">Source building info</param>
+        internal static void Copy(ushort buildingID, BuildingInfo buildingInfo)
         {
-            try
-            {
-                BuildingControl.DeleteEntry(building);
+            Logging.Message("copying from building ", buildingID);
 
-                for (int i = 0; i < transfers.Length; ++i)
+            // Saftey checks.
+            if (buildingID == 0 || buildingInfo == null)
+            {
+                Logging.Error("invalid parameter passed to CopyPaste.Copy");
+                return;
+            }
+
+            // Number of records to copy.
+            int length = TransferDataUtils.BuildingEligibility(buildingID, buildingInfo, transferBuffer);
+            bufferSize = length;
+
+            // Copy records from source building to buffer.
+            for (int i = 0; i < length; ++i)
+            {
+                // Calculate building record ID.
+                uint mask = (uint)transferBuffer[i].recordNumber << 24;
+                uint buildingRecordID = (uint)(buildingID | mask);
+
+                // Try to get valid entry, outputting to the copy buffer.
+                if (BuildingControl.buildingRecords.TryGetValue(buildingRecordID, out copyBuffer[i]))
                 {
-                    BuildingControl.SetDistrictEnabled(building, transfers[i].recordNumber, BuildingControl.GetDistrictEnabled(BuildingTemplate, Transfers[i].recordNumber), transfers[i].reason, transfers[i].nextRecord);
+                    // Set record mask.
+                    copyRecordNumbers[i] = transferBuffer[i].recordNumber;
 
-                    BuildingControl.SetSameDistrict(building, transfers[i].recordNumber, BuildingControl.GetSameDistrict(BuildingTemplate, Transfers[i].recordNumber), transfers[i].reason, transfers[i].nextRecord);
-
-                    BuildingControl.SetOutsideConnection(building, transfers[i].recordNumber, BuildingControl.GetOutsideConnection(BuildingTemplate, Transfers[i].recordNumber), transfers[i].reason, transfers[i].nextRecord);
-
-                    var DistrictsServed = BuildingControl.GetDistricts(BuildingTemplate, transfers[i].recordNumber);
-                    if (DistrictsServed != null)
+                    // Copy district and building buffers to new HashSets, otherwise the old ones will be shared.
+                    if (copyBuffer[i].districts != null)
                     {
-                        foreach (var districtPark in DistrictsServed)
-                        {
-                            BuildingControl.AddDistrict(building, transfers[i].recordNumber, districtPark, transfers[i].reason, transfers[i].nextRecord);
-                        }
+                        copyBuffer[i].districts = new HashSet<int>(copyBuffer[i].districts);
+                    }
+                    if (copyBuffer[i].buildings != null)
+                    {
+                        copyBuffer[i].buildings = new HashSet<uint>(copyBuffer[i].buildings);
                     }
                 }
- 
-                return true;
+                else
+                {
+                    // If no valid entry for this record, clear the buffer entry.
+                    copyBuffer[i] = default;
+                    copyRecordNumbers[i] = 0;
+                }
             }
-            catch (Exception ex)
+        }
+
+
+
+        /// <summary>
+        /// Attempts to paste TC data from the copy buffer to the given building.
+        /// </summary>
+        /// <param name="buildingID">Source building ID</param>
+        internal static bool Paste(ushort buildingID) => Paste(buildingID, Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID].Info);
+
+
+        /// <summary>
+        /// Attempts to paste TC data from the copy buffer to the given building.
+        /// </summary>
+        /// <param name="buildingID">Source building ID</param>
+        /// <param name="buildingInfo">Source building info</param>
+        internal static bool Paste(ushort buildingID, BuildingInfo buildingInfo)
+        {
+            Logging.Message("pasting to building ", buildingID);
+
+            // Saftey checks.
+            if (buildingID == 0 || buildingInfo == null)
             {
-                Logging.Error(ex);
+                Logging.Error("invalid parameter passed to CopyPaste.Paste");
                 return false;
             }
-            
+
+            // Determine length of target building transfer buffer.
+            int length = TransferDataUtils.BuildingEligibility(buildingID, buildingInfo, transferBuffer);
+
+            // Check for a length match between buffer and target.
+            if (length != bufferSize)
+            {
+                Logging.Message("copy-paste buffer size mismatch");
+                return false;
+            }
+
+            // Check for record type (incoming/outoging) match between buffer and target.
+            for (int i = 0; i < length; ++i)
+            {
+                if (transferBuffer[i].recordNumber != copyRecordNumbers[i])
+                {
+                    Logging.Message("copy-paste record type mismatch");
+                    return false;
+                }
+            }
+
+            // All checks passed - copy records from buffer to building.
+            for (int i = 0; i < length; ++i)
+            {
+                // New building entry.
+                BuildingControl.BuildingRecord newRecord = new BuildingControl.BuildingRecord
+                {
+                    nextRecord = transferBuffer[i].nextRecord,
+                    flags = copyBuffer[i].flags,
+                    reason = transferBuffer[i].reason
+                };
+
+                // Copy district and building buffers to new HashSets, otherwise the old ones will be shared.
+                if (copyBuffer[i].districts != null)
+                {
+                    newRecord.districts = new HashSet<int>(copyBuffer[i].districts);
+                }
+                if (copyBuffer[i].buildings != null)
+                {
+                    newRecord.buildings = new HashSet<uint>(copyBuffer[i].buildings);
+                }
+
+                // Calculate target record ID.
+                uint mask = (uint)transferBuffer[i].recordNumber << 24;
+                uint buildingRecordID = (uint)(buildingID | mask);
+
+                // Do we already have an entry for this building?
+                if (BuildingControl.buildingRecords.ContainsKey(buildingRecordID))
+                {
+                    // Yes - replace existing entry with the new one.
+                    BuildingControl.buildingRecords[buildingRecordID] = newRecord;
+                }
+                else
+                {
+                    // No - create new entry.
+                    BuildingControl.buildingRecords.Add(buildingRecordID, newRecord);
+                }
+            }
+
+            // If we got here, then pasting was successful.
+            return true;
         }
     }
 }

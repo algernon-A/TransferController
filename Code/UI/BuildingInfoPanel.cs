@@ -25,6 +25,8 @@ namespace TransferController
         private const float PanelYOffset = TransferPanel.PanelHeight + Margin;
         private const float ButtonWidth = 150f;
 
+        // Maximum number of supported transfers per building.
+        internal const int MaxTransfers = 4;
 
         // Panel components.
         private readonly UILabel buildingLabel, districtLabel;
@@ -34,9 +36,12 @@ namespace TransferController
         private BuildingInfo thisBuildingInfo;
 
         // Sub-panels.
-        private readonly TransferStruct[] transfers = new TransferStruct[4];
+        private readonly TransferStruct[] transfers = new TransferStruct[MaxTransfers];
         private OffersPanel offersPanel;
         private LogPanel logPanel;
+
+        // Event handling.
+        private bool copyProcessing = false, pasteProcessing = false;
 
 
         // Layout constants.
@@ -52,6 +57,46 @@ namespace TransferController
         /// Current building accessor.
         /// </summary>
         internal ushort CurrentBuilding => currentBuilding;
+
+
+        /// <summary>
+        /// Called by Unity every update.
+        /// Used to check for copy/paste keypress.
+        /// </summary>
+        public override void Update()
+        {
+            // Copy key processing - use event flag to avoid repeated triggering.
+            if (ModSettings.keyCopy.IsPressed())
+            {
+                if (!copyProcessing)
+                {
+                    Copy();
+                    copyProcessing = true;
+                }
+            }
+            else
+            {
+                // Key no longer down - resume processing of events.
+                copyProcessing = false;
+            }
+
+            // Paste key processing - use event flag to avoid repeated triggering.
+            if (ModSettings.keyPaste.IsPressed())
+            {
+                if (!pasteProcessing)
+                {
+                    Paste();
+                    pasteProcessing = true;
+                }
+            }
+            else
+            {
+                // Key no longer down - resume processing of events.
+                pasteProcessing = false;
+            }
+
+            base.Update();
+        }
 
 
         /// <summary>
@@ -215,6 +260,25 @@ namespace TransferController
 
             // Update target for offer panel, if open.
             offersPanel?.SetTarget(buildingID);
+        }
+
+
+        /// <summary>
+        /// Copies the TC settings of the currently selected building.
+        /// </summary>
+        internal void Copy() => CopyPaste.Copy(CurrentBuilding, thisBuildingInfo);
+
+
+        /// <summary>
+        /// Pastes copied TC settings to the currently selected building.
+        /// </summary>
+        internal void Paste()
+        {
+            if (CopyPaste.Paste(CurrentBuilding, thisBuildingInfo))
+            {
+                // Referesh panels if paste was successful.
+                SetTarget(CurrentBuilding);
+            }
         }
 
 

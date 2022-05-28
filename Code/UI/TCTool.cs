@@ -365,7 +365,7 @@ namespace TransferController
 				if (e.type == EventType.MouseDown && e.button == 0)
 				{
 					// Got one; use the event.
-					UIInput.MouseUsed();
+					e.Use();
 
 					// Are we in pick mode?
 					if (pickMode)
@@ -382,33 +382,21 @@ namespace TransferController
 				}
 			}
 
-			// Check for copy key.
-			if (ModSettings.keyCopy.IsPressed(e))
+			// Handle paste through tool-only selection if panel isn't open.
+			if (ModSettings.keyPaste.IsPressed(e) && BuildingPanelManager.Panel == null)
 			{
-				TransferStruct[] transfers = new TransferStruct[4];
-				if (building != 0 && TransferDataUtils.BuildingEligibility(building, transfers))
+				e.Use();
+				if (building != 0)
 				{
-					CopyPaste.BuildingTemplate = building;
-					CopyPaste.Transfers = transfers;
+					CopyPaste.Paste(building);
 				}
 			}
-			// Check for paste key, if we've got a copied record.
-			else if (CopyPaste.BuildingTemplate != 0 && ModSettings.keyPaste.IsPressed(e))
-            {
-				TransferStruct[] transfers = new TransferStruct[4];
-				if (building != 0 && TransferDataUtils.BuildingEligibility(building, transfers) && CopyPaste.CanCopy(CopyPaste.BuildingTemplate, building))
-                {
-					if (!CopyPaste.CopyPolicyTo(building, transfers))
-                    {
-						Logging.Error("Error copying transfer settings to building ", building);
-                    }
-                }
-            }
 
 			// Right-click disables tool.
 			if (e.type == EventType.MouseDown && e.button == 1)
 			{
 				// Cancel tool on right-click.
+				e.Use();
 				ToggleTool();
 			}
 		}
