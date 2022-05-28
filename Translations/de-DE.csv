@@ -58,6 +58,8 @@
 "TFC_WAR_RVU_TIP","Diese Auswahl wird einen Teil der Lieferfahrzeuge dieses Gebäudes reservieren, um nur einzigartige Fabriken zu bedienen"
 "TFC_WAR_RVO","Fahrzeuge für externe Verbindungen reservieren"
 "TFC_WAR_RVO_TIP","Diese Auswahl wird einen Teil der Lieferfahrzeuge dieses Gebäudes reservieren, um nur Verbindungen nach Außerhalb zu bedienen (Import und Export)"
+"TFC_WAR_RVI","Fahrzeuge für Lieferungen innerhalb der Stadt reservieren"
+"TFC_WAR_RVI_TIP","Diese Auswahl wird einen Teil der Lieferfahrzeuge dieses Gebäudes reservieren, um nur Verbindungen innerhalb der Stadt zu bedienen (Diese stehen dann nicht für Import oder Export zur Verfügung)"
 "TFC_WAR_RVC","Reservierte Fahrzeuge"
 "TFC_WAR_RVC_TIP","Anzahl der reservierten Fahrzeuge festlegen"
 "TFC_OPT_DIS","Distanzmultiplikator"
