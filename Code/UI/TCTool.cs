@@ -16,9 +16,10 @@ namespace TransferController
 		private CursorInfo selectCursorOn, selectCursorOff, pickCursorOn, pickCursorOff;
 		private CursorInfo currentCursorOn, currentCursorOff;
 
-		// Building target picking mode flag and reference.
+		// Building targets.
 		private bool pickMode = false;
 		private TransferBuildingTab transferBuildingTab;
+		private ushort currentBuilding;
 
 		// Transfer struct for eligibility checking.
 		private readonly TransferStruct[] transfers = new TransferStruct[4];
@@ -73,6 +74,12 @@ namespace TransferController
 		public override TreeInstance.Flags GetTreeIgnoreFlags() => TreeInstance.Flags.All;
 		public override PropInstance.Flags GetPropIgnoreFlags() => PropInstance.Flags.All;
 		public override Vehicle.Flags GetVehicleIgnoreFlags() => Vehicle.Flags.LeftHandDrive | Vehicle.Flags.Created | Vehicle.Flags.Deleted | Vehicle.Flags.Spawned | Vehicle.Flags.Inverted | Vehicle.Flags.TransferToTarget | Vehicle.Flags.TransferToSource | Vehicle.Flags.Emergency1 | Vehicle.Flags.Emergency2 | Vehicle.Flags.WaitingPath | Vehicle.Flags.Stopped | Vehicle.Flags.Leaving | Vehicle.Flags.Arriving | Vehicle.Flags.Reversed | Vehicle.Flags.TakingOff | Vehicle.Flags.Flying | Vehicle.Flags.Landing | Vehicle.Flags.WaitingSpace | Vehicle.Flags.WaitingCargo | Vehicle.Flags.GoingBack | Vehicle.Flags.WaitingTarget | Vehicle.Flags.Importing | Vehicle.Flags.Exporting | Vehicle.Flags.Parking | Vehicle.Flags.CustomName | Vehicle.Flags.OnGravel | Vehicle.Flags.WaitingLoading | Vehicle.Flags.Congestion | Vehicle.Flags.DummyTraffic | Vehicle.Flags.Underground | Vehicle.Flags.Transition | Vehicle.Flags.InsideBuilding;
+
+
+		/// <summary>
+		/// The building currently selected by the info panel.
+		/// </summary>
+		internal ushort CurrentBuilding { set => currentBuilding = value; }
 
 
 		// Select all buildings.
@@ -254,7 +261,7 @@ namespace TransferController
 			}
 			else
 			{
-				// If not in buildng picker mode, highlight all buildings with Transfer Controller settings in magenta.
+				// If not in building picker mode, highlight all buildings with Transfer Controller settings in magenta.
 				Color magenta = new Color(1f, 0f, 1f, 0.75f);
 				foreach (uint key in BuildingControl.buildingRecords.Keys)
 				{
@@ -266,9 +273,22 @@ namespace TransferController
 
 					// Apply overlay.
 					ushort buildingID = (ushort)(key & 0x0000FFFF);
-					BuildingTool.RenderOverlay(cameraInfo, ref buildingBuffer[buildingID], magenta, magenta);
-					++toolManager.m_drawCallData.m_overlayCalls;
+
+					// Skip current building.
+					if (buildingID != currentBuilding)
+					{
+						BuildingTool.RenderOverlay(cameraInfo, ref buildingBuffer[buildingID], magenta, magenta);
+						++toolManager.m_drawCallData.m_overlayCalls;
+					}
 				}
+			}
+
+			// Highlight selected building in red.
+			if (currentBuilding != 0)
+			{
+				Color red = new Color(1f, 0f, 0f, 0.75f);
+				BuildingTool.RenderOverlay(cameraInfo, ref buildingBuffer[currentBuilding], Color.red, Color.red);
+				++toolManager.m_drawCallData.m_overlayCalls;
 			}
 		}
 

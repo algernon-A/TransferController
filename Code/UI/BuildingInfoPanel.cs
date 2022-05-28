@@ -177,6 +177,7 @@ namespace TransferController
             // Update selected building ID.
             currentBuilding = buildingID;
             thisBuildingInfo = Singleton<BuildingManager>.instance.m_buildings.m_buffer[currentBuilding].Info;
+            TCTool.Instance.CurrentBuilding = buildingID;
 
             // Maximum number of panels.
             int numPanels = TransferDataUtils.BuildingEligibility(buildingID, thisBuildingInfo, transfers);

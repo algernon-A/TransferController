@@ -56,8 +56,9 @@ namespace TransferController
         /// </summary>
         internal static void Close()
         {
-            // Ensure that the TCTool is not in picker mode.
+            // Clear TCTool mode and highlighting references/
             TCTool.Instance.ClearPickMode();
+            TCTool.Instance.CurrentBuilding = 0;
 
             GameObject.Destroy(panel);
             GameObject.Destroy(uiGameObject);
