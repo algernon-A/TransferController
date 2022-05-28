@@ -278,6 +278,15 @@ namespace TransferController
             if (CopyPaste.Paste(CurrentBuilding, thisBuildingInfo))
             {
                 // Referesh panels if paste was successful.
+                for (int i = 0; i < transfers.Length; ++i)
+                {
+                    if (transfers[i].panel != null)
+                    {
+                        this.RemoveUIComponent(transfers[i].panel);
+                        GameObject.Destroy(transfers[i].panel);
+                        transfers[i].panel = null;
+                    }
+                }
                 SetTarget(CurrentBuilding);
             }
         }

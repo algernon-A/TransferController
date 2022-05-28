@@ -1,4 +1,9 @@
-﻿Version 0.3.2 -
+﻿Version 0.3.2.1 -
+
+- Fix transfer panels not always refreshing when pasting settings
+
+
+Version 0.3.2 -
 
 - Overhaul copy/paste
 - Highlight selected building in red

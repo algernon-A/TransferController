@@ -117,14 +117,14 @@ namespace TransferController
             }
 
             // Check for record type (incoming/outoging) match between buffer and target.
-            for (int i = 0; i < length; ++i)
+            /*for (int i = 0; i < length; ++i)
             {
                 if (transferBuffer[i].recordNumber != copyRecordNumbers[i])
                 {
                     Logging.Message("copy-paste record type mismatch between ", transferBuffer[i].recordNumber, " and ", copyRecordNumbers[i]);
                     return false;
                 }
-            }
+            }*/
 
             // All checks passed - copy records from buffer to building.
             for (int i = 0; i < length; ++i)
