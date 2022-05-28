@@ -39,6 +39,15 @@ namespace TransferController
 
 
         /// <summary>
+        /// Attempts to retrieve a warehouse record from the dictionary.
+        /// </summary>
+        /// <param name="buildingID">Warehouse building ID to retrieve</param>
+        /// <param name="warehouseRecord">Warehouse data record</param>
+        /// <returns>True if a record was sucessfully retrieved, false otherwise</returns>
+        internal static bool TryGetRecord(ushort buildingID, out WarehouseRecord warehouseRecord) => warehouseRecords.TryGetValue(buildingID, out warehouseRecord);
+
+
+        /// <summary>
         /// Harmony reverse patch for CommonBuildingAI.CalculateOwnVehicles to access protected method of original instance.
         /// </summary>
         /// <param name="instance">Object instance</param>
@@ -234,6 +243,39 @@ namespace TransferController
                     warehouseRecord.reserveVehicles = vehicles;
                     warehouseRecords[buildingID] = warehouseRecord;
                 }
+            }
+        }
+
+
+        /// <summary>
+        /// Updates the record for the given warehouse with the provided warehouse record data.
+        /// </summary>
+        /// <param name="buildingID">Warehouse building ID to update</param>
+        /// <param name="recordData">Warehouse ecord data to update to</param>
+        internal static void UpdateRecord(ushort buildingID,  WarehouseRecord recordData)
+        {
+            // Does the provided building record have any flags?
+            bool isEmpty = recordData.flags == 0;
+
+            // Do we already have an entry for this building?
+            if (warehouseRecords.ContainsKey(buildingID))
+            {
+                // Yes - is the new entry empty?
+                if (isEmpty)
+                {
+                    // Yes - remove existing record.
+                    warehouseRecords.Remove(buildingID);
+                }
+                else
+                {
+                    // Not empty replace existing entry with the new one.
+                    warehouseRecords[buildingID] = recordData;
+                }
+            }
+            else if (!isEmpty)
+            {
+                // No - create new entry if the provided data wasn't empty.
+                warehouseRecords.Add(buildingID, recordData);
             }
         }
 

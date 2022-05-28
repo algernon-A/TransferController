@@ -329,88 +329,55 @@ namespace TransferController
 
 
         /// <summary>
-        /// Sets or clears the specified flag for the given building instance using the specified dictionary.
+        /// Updates the record for the given building with the provided building record data.
         /// </summary>
-        /// <param name="buildingID">Building ID</param>
-        /// <param name="recordID">Building record number to set</param>
-        /// <param name="status">True to set flag, false to clear</param>
-        /// <param name="flag">Flag to set/clear</param>
-        /// <param name="transferReason">Transfer reason</param>
-        /// <param name="nextRecordMask">Next record mask</param>
-        private static void SetFlag(uint buildingID, byte recordID, bool status, RestrictionFlags flag, TransferManager.TransferReason transferReason, byte nextRecordMask)
+        /// <param name="buildingID">Building ID to update</param>
+        /// <param name="recordID">Record ID to update</param>
+        /// <param name="recordData">Record data to update to</param>
+        internal static void UpdateRecord(ushort buildingID, byte recordID, ref BuildingRecord recordData)
         {
-            // Calculate building record ID.
+            // Copy record data.
+            BuildingRecord newRecord = recordData;
+
+            // Calculate target record ID.
             uint mask = (uint)recordID << 24;
             uint buildingRecordID = (uint)(buildingID | mask);
 
-            // Try to get existing entry.
-            bool hasEntry = buildingRecords.TryGetValue(buildingRecordID, out BuildingRecord buildingRecord);
+            // Does the provided building record have any flags?
+            bool isEmpty = recordData.flags == 0;
 
-            // Setting or clearing?
-            if (status)
+            // If the record isn't empty, copy district and building buffers to new HashSets, otherwise the old ones will be shared.
+            if (!isEmpty)
             {
-                // Setting a flag - do we have an existing entry?
-                if (hasEntry)
+                if (newRecord.districts != null)
                 {
-                    // Add flag to existing entry.
-                    buildingRecord.flags |= flag;
-                    buildingRecords[buildingRecordID] = buildingRecord;
+                    newRecord.districts = new HashSet<int>(newRecord.districts);
                 }
-                else
+                if (newRecord.buildings != null)
                 {
-                    // No record for building in dictionary - add one.
-                    buildingRecords.Add(buildingRecordID, new BuildingRecord
-                    {
-                        nextRecord = nextRecordMask,
-                        flags = flag,
-                        reason = transferReason
-                    });
+                    newRecord.buildings = new HashSet<uint>(newRecord.buildings);
                 }
             }
-            else if (hasEntry)
-            {
-                // Clearing a flag - only bother if we've got an existing entry.
-                // Get updated flags.
-                RestrictionFlags updatedFlags = buildingRecord.flags & ~flag;
 
-                // If no flags remaining, remove entire dictionary entry.
-                if (updatedFlags == RestrictionFlags.None)
+            // Do we already have an entry for this building?
+            if (buildingRecords.ContainsKey(buildingRecordID))
+            {
+                // Yes - is the new entry empty?
+                if (isEmpty)
                 {
+                    // Yes - remove existing record.
                     buildingRecords.Remove(buildingRecordID);
                 }
                 else
                 {
-                    // Update existing entry.
-                    buildingRecord.flags = updatedFlags;
-                    buildingRecords[buildingRecordID] = buildingRecord;
+                    // Not empty replace existing entry with the new one.
+                    buildingRecords[buildingRecordID] = newRecord;
                 }
             }
-        }
-
-
-        /// <summary>
-        /// Returns the current status of the given flag for the given building using the specified dictionary.
-        /// </summary>
-        /// <param name="buildingID">ID of building to check</param>
-        /// <param name="recordID">Building record number to check</param>
-        /// <param name="flag">Flag to check</param>
-        /// <returns>True if flag is set, false otherwise</returns>
-        private static bool GetFlags(uint buildingID, byte recordID, RestrictionFlags flag)
-        {
-            // Calculate building record ID.
-            uint mask = (uint)recordID << 24;
-            uint buildingRecordID = (uint)(buildingID | mask);
-
-            // See if we've got an entry for this building.
-            if (buildingRecords.TryGetValue(buildingRecordID, out BuildingRecord buildingRecord))
+            else if (!isEmpty)
             {
-                // Entry found - return same-district flag status.
-                return (buildingRecord.flags & flag) != RestrictionFlags.None;
-            }
-            else
-            {
-                // No dictionary entry, therefore no same-district setting.
-                return false;
+                // No - create new entry if the provided data wasn't empty.
+                buildingRecords.Add(buildingRecordID, newRecord);
             }
         }
 
@@ -419,30 +386,24 @@ namespace TransferController
         /// Deletes all records relating to the specified building.
         /// </summary>
         /// <param name="buildingID">Building ID to delete</param>
-        internal static void DeleteEntry(uint buildingID)
+        internal static void ReleaseBuilding(uint buildingID)
         {
+            const uint BuildingIncrement = 0x01 << 24;
+
             // Remove all incoming records for this building.
-            uint nextRecord = (uint)(buildingID | IncomingMask);
-            if (buildingRecords.ContainsKey(nextRecord))
+            uint recordID = (uint)(buildingID | IncomingMask);
+            for (int i = 0; i < BuildingInfoPanel.MaxTransfers; ++i)
             {
-                while (nextRecord != 0)
-                {
-                    uint thisRecord = nextRecord;
-                    nextRecord = buildingRecords[nextRecord].nextRecord;
-                    buildingRecords.Remove(thisRecord);
-                }
+                buildingRecords.Remove(recordID);
+                recordID += BuildingIncrement;
             }
 
             // Remove all outgoing records for this building.
-            nextRecord = (uint)(buildingID | OutgoingMask);
-            if (buildingRecords.ContainsKey(nextRecord))
+            recordID = (uint)(buildingID | OutgoingMask);
+            for (int i = 0; i < BuildingInfoPanel.MaxTransfers; ++i)
             {
-                while (nextRecord != 0)
-                {
-                    uint thisRecord = nextRecord;
-                    nextRecord = buildingRecords[nextRecord].nextRecord;
-                    buildingRecords.Remove(thisRecord);
-                }
+                buildingRecords.Remove(recordID);
+                recordID += BuildingIncrement;
             }
 
             // Then, iterate through all records and remove this reference from all building lists.
@@ -576,6 +537,93 @@ namespace TransferController
                 // Add completed entry to dictionary.
                 buildingRecords.Add(key, buildingRecord);
                 Logging.Message("read entry ", key);
+            }
+        }
+
+
+        /// <summary>
+        /// Sets or clears the specified flag for the given building instance using the specified dictionary.
+        /// </summary>
+        /// <param name="buildingID">Building ID</param>
+        /// <param name="recordID">Building record number to set</param>
+        /// <param name="status">True to set flag, false to clear</param>
+        /// <param name="flag">Flag to set/clear</param>
+        /// <param name="transferReason">Transfer reason</param>
+        /// <param name="nextRecordMask">Next record mask</param>
+        private static void SetFlag(uint buildingID, byte recordID, bool status, RestrictionFlags flag, TransferManager.TransferReason transferReason, byte nextRecordMask)
+        {
+            // Calculate building record ID.
+            uint mask = (uint)recordID << 24;
+            uint buildingRecordID = (uint)(buildingID | mask);
+
+            // Try to get existing entry.
+            bool hasEntry = buildingRecords.TryGetValue(buildingRecordID, out BuildingRecord buildingRecord);
+
+            // Setting or clearing?
+            if (status)
+            {
+                // Setting a flag - do we have an existing entry?
+                if (hasEntry)
+                {
+                    // Add flag to existing entry.
+                    buildingRecord.flags |= flag;
+                    buildingRecords[buildingRecordID] = buildingRecord;
+                }
+                else
+                {
+                    // No record for building in dictionary - add one.
+                    buildingRecords.Add(buildingRecordID, new BuildingRecord
+                    {
+                        nextRecord = nextRecordMask,
+                        flags = flag,
+                        reason = transferReason
+                    });
+                }
+            }
+            else if (hasEntry)
+            {
+                // Clearing a flag - only bother if we've got an existing entry.
+                // Get updated flags.
+                RestrictionFlags updatedFlags = buildingRecord.flags & ~flag;
+
+                // If no flags remaining, remove entire dictionary entry.
+                if (updatedFlags == RestrictionFlags.None)
+                {
+                    buildingRecords.Remove(buildingRecordID);
+                }
+                else
+                {
+                    // Update existing entry.
+                    buildingRecord.flags = updatedFlags;
+                    buildingRecords[buildingRecordID] = buildingRecord;
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Returns the current status of the given flag for the given building using the specified dictionary.
+        /// </summary>
+        /// <param name="buildingID">ID of building to check</param>
+        /// <param name="recordID">Building record number to check</param>
+        /// <param name="flag">Flag to check</param>
+        /// <returns>True if flag is set, false otherwise</returns>
+        private static bool GetFlags(uint buildingID, byte recordID, RestrictionFlags flag)
+        {
+            // Calculate building record ID.
+            uint mask = (uint)recordID << 24;
+            uint buildingRecordID = (uint)(buildingID | mask);
+
+            // See if we've got an entry for this building.
+            if (buildingRecords.TryGetValue(buildingRecordID, out BuildingRecord buildingRecord))
+            {
+                // Entry found - return same-district flag status.
+                return (buildingRecord.flags & flag) != RestrictionFlags.None;
+            }
+            else
+            {
+                // No dictionary entry, therefore no same-district setting.
+                return false;
             }
         }
     }

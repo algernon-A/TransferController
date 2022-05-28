@@ -14,6 +14,11 @@ namespace TransferController
         private static BuildingControl.BuildingRecord[] copyBuffer = new BuildingControl.BuildingRecord[BuildingInfoPanel.MaxTransfers];
         private static byte[] copyRecordNumbers = new byte[BuildingInfoPanel.MaxTransfers];
 
+        // Copy buffer - warehouse extensions.
+        private static bool isWarehouse = false;
+        private static WarehouseRecord warehouseRecord;
+
+
         // Prevent heap allocations every time we copy.
         private static TransferStruct[] transferBuffer = new TransferStruct[BuildingInfoPanel.MaxTransfers];
 
@@ -34,42 +39,48 @@ namespace TransferController
                 return;
             }
 
-            // Number of records to copy.
+            // Number of records to copy - make sure there's at least one before pre.
             int length = TransferDataUtils.BuildingEligibility(buildingID, buildingInfo, transferBuffer);
             bufferSize = length;
 
-            // Copy records from source building to buffer.
-            for (int i = 0; i < length; ++i)
+            // Make sure there's at least one tranfer before proceeding.
+            if (length > 0)
             {
-                // Calculate building record ID.
-                uint mask = (uint)transferBuffer[i].recordNumber << 24;
-                uint buildingRecordID = (uint)(buildingID | mask);
+                // Copy warehouse settings, if any.
+                isWarehouse = buildingInfo.m_buildingAI is WarehouseAI && WarehouseControl.TryGetRecord(buildingID, out warehouseRecord);
 
-                // Try to get valid entry, outputting to the copy buffer.
-                if (BuildingControl.buildingRecords.TryGetValue(buildingRecordID, out copyBuffer[i]))
+                // Copy records from source building to buffer.
+                for (int i = 0; i < length; ++i)
                 {
-                    // Set record mask.
-                    copyRecordNumbers[i] = transferBuffer[i].recordNumber;
+                    // Calculate building record ID.
+                    uint mask = (uint)transferBuffer[i].recordNumber << 24;
+                    uint buildingRecordID = (uint)(buildingID | mask);
 
-                    // Copy district and building buffers to new HashSets, otherwise the old ones will be shared.
-                    if (copyBuffer[i].districts != null)
+                    // Try to get valid entry, outputting to the copy buffer.
+                    if (BuildingControl.buildingRecords.TryGetValue(buildingRecordID, out copyBuffer[i]))
                     {
-                        copyBuffer[i].districts = new HashSet<int>(copyBuffer[i].districts);
+                        // Set record mask.
+                        copyRecordNumbers[i] = transferBuffer[i].recordNumber;
+
+                        // Copy district and building buffers to new HashSets, otherwise the old ones will be shared.
+                        if (copyBuffer[i].districts != null)
+                        {
+                            copyBuffer[i].districts = new HashSet<int>(copyBuffer[i].districts);
+                        }
+                        if (copyBuffer[i].buildings != null)
+                        {
+                            copyBuffer[i].buildings = new HashSet<uint>(copyBuffer[i].buildings);
+                        }
                     }
-                    if (copyBuffer[i].buildings != null)
+                    else
                     {
-                        copyBuffer[i].buildings = new HashSet<uint>(copyBuffer[i].buildings);
+                        // If no valid entry for this record, clear the buffer entry.
+                        copyBuffer[i] = default;
+                        copyRecordNumbers[i] = 0;
                     }
-                }
-                else
-                {
-                    // If no valid entry for this record, clear the buffer entry.
-                    copyBuffer[i] = default;
-                    copyRecordNumbers[i] = 0;
                 }
             }
         }
-
 
 
         /// <summary>
@@ -110,7 +121,7 @@ namespace TransferController
             {
                 if (transferBuffer[i].recordNumber != copyRecordNumbers[i])
                 {
-                    Logging.Message("copy-paste record type mismatch");
+                    Logging.Message("copy-paste record type mismatch between ", transferBuffer[i].recordNumber, " and ", copyRecordNumbers[i]);
                     return false;
                 }
             }
@@ -118,39 +129,22 @@ namespace TransferController
             // All checks passed - copy records from buffer to building.
             for (int i = 0; i < length; ++i)
             {
-                // New building entry.
+                // Create new building entry from copied data and update dictionary.
                 BuildingControl.BuildingRecord newRecord = new BuildingControl.BuildingRecord
                 {
                     nextRecord = transferBuffer[i].nextRecord,
                     flags = copyBuffer[i].flags,
-                    reason = transferBuffer[i].reason
+                    reason = transferBuffer[i].reason,
+                    districts = copyBuffer[i].districts,
+                    buildings = copyBuffer[i].buildings
                 };
+                BuildingControl.UpdateRecord(buildingID, transferBuffer[i].recordNumber, ref newRecord);
+            }
 
-                // Copy district and building buffers to new HashSets, otherwise the old ones will be shared.
-                if (copyBuffer[i].districts != null)
-                {
-                    newRecord.districts = new HashSet<int>(copyBuffer[i].districts);
-                }
-                if (copyBuffer[i].buildings != null)
-                {
-                    newRecord.buildings = new HashSet<uint>(copyBuffer[i].buildings);
-                }
-
-                // Calculate target record ID.
-                uint mask = (uint)transferBuffer[i].recordNumber << 24;
-                uint buildingRecordID = (uint)(buildingID | mask);
-
-                // Do we already have an entry for this building?
-                if (BuildingControl.buildingRecords.ContainsKey(buildingRecordID))
-                {
-                    // Yes - replace existing entry with the new one.
-                    BuildingControl.buildingRecords[buildingRecordID] = newRecord;
-                }
-                else
-                {
-                    // No - create new entry.
-                    BuildingControl.buildingRecords.Add(buildingRecordID, newRecord);
-                }
+            // Paste warehouse info, if applicable.
+            if (buildingInfo.m_buildingAI is WarehouseAI && isWarehouse)
+            {
+                WarehouseControl.UpdateRecord(buildingID, warehouseRecord);
             }
 
             // If we got here, then pasting was successful.

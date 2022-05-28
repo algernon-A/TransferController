@@ -13,6 +13,6 @@ namespace TransferController
         /// Called by the game when a building instance is released.
         /// </summary>
         /// <param name="id">Building instance ID</param>
-        public override void OnBuildingReleased(ushort id) => BuildingControl.DeleteEntry(id);
+        public override void OnBuildingReleased(ushort id) => BuildingControl.ReleaseBuilding(id);
     }
 }
