@@ -349,12 +349,17 @@ namespace TransferController
             // Add slider component.
             UIPanel sliderPanel = parent.AttachUIComponent(UITemplateManager.GetAsGameObject("OptionsSliderTemplate")) as UIPanel;
 
+            // Panel layout.
+            sliderPanel.autoLayout = false;
+            sliderPanel.autoSize = false;
+            sliderPanel.width = width + 50f;
+            sliderPanel.height = 65f;
+
             // Label.
             UILabel sliderLabel = sliderPanel.Find<UILabel>("Label");
             sliderLabel.autoHeight = true;
             sliderLabel.width = width;
             sliderLabel.anchor = UIAnchorStyle.Left | UIAnchorStyle.Top;
-            sliderLabel.relativePosition = Vector3.zero;
             sliderLabel.relativePosition = Vector3.zero;
             sliderLabel.text = text;
 
@@ -366,15 +371,9 @@ namespace TransferController
             newSlider.value = defaultValue;
 
             // Move default slider position to match resized label.
-            sliderPanel.autoLayout = false;
             newSlider.anchor = UIAnchorStyle.Left | UIAnchorStyle.Top;
             newSlider.relativePosition = PositionUnder(sliderLabel);
             newSlider.width = width;
-
-            // Increase height of panel to accomodate it all plus some extra space for margin.
-            sliderPanel.autoSize = false;
-            sliderPanel.width = width + 50f;
-            sliderPanel.height = newSlider.relativePosition.y + newSlider.height + 20f;
 
             return newSlider;
         }
