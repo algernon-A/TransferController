@@ -1,4 +1,7 @@
-﻿Version 0.3.2.1 -
+﻿- District selection lists no longer show districts already added to restrictions
+
+
+Version 0.3.2.1 -
 
 - Fix transfer panels not always refreshing when pasting settings
 

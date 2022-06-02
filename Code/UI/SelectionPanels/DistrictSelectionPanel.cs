@@ -21,6 +21,12 @@ namespace TransferController
 
         // Parent reference.
         internal TransferDistrictTab ParentPanel { get; set; }
+        
+        
+        /// <summary>
+        /// HashSet of currently selected districts for the currently selected building.
+        /// </summary>
+        protected HashSet<int> DistrictSettingsList => BuildingControl.GetDistricts(ParentPanel.CurrentBuilding, ParentPanel.RecordNumber);
 
 
         /// <summary>
@@ -94,6 +100,9 @@ namespace TransferController
         /// </summary>
         protected virtual void PopulateList()
         {
+            // Local reference.
+            HashSet<int> selectedDistricts = DistrictSettingsList;
+
             // Local references.
             List<DistrictItem> districtRecords = new List<DistrictItem>();
             DistrictManager districtManager = Singleton<DistrictManager>.instance;
@@ -104,7 +113,11 @@ namespace TransferController
             {
                 if ((districtBuffer[i].m_flags & District.Flags.Created) != District.Flags.None)
                 {
-                    districtRecords.Add(new DistrictItem(i));
+                    // Skip any existing records.
+                    if (selectedDistricts != null && !selectedDistricts.Contains(i))
+                    {
+                        districtRecords.Add(new DistrictItem(i));
+                    }
                 }
             }
 
@@ -114,7 +127,11 @@ namespace TransferController
             {
                 if ((parkBuffer[i].m_flags & DistrictPark.Flags.Created) != DistrictPark.Flags.None)
                 {
-                    districtRecords.Add(new DistrictItem(-i));
+                    // Skip any existing records.
+                    if (selectedDistricts != null && !selectedDistricts.Contains(i))
+                    {
+                        districtRecords.Add(new DistrictItem(-i));
+                    }
                 }
             }
 

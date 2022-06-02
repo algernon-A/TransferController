@@ -98,9 +98,6 @@ namespace TransferController
                 UILabel buildingDistrictSelectionLabel = UIControls.AddLabel(buildingDistrictSelectionPanel, 0f, -15f, Translations.Translate("TFC_DIS_SEL"), ColumnWidth, 0.8f);
                 buildingDistrictSelectionLabel.textAlignment = UIHorizontalAlignment.Center;
 
-                // Populate district selection panel (don't do the same with building panel yet, as recordNumber hasn't been assigned).
-                districtSelectionPanel.RefreshList();
-
                 // Set initial control states.
                 UpdateEnabledStates();
             }
@@ -127,6 +124,7 @@ namespace TransferController
         protected override void Refresh()
         {
             buildingDistrictSelectionPanel.RefreshList();
+            districtSelectionPanel.RefreshList();
 
             // Disable events while we update controls to avoid recursively triggering event handler.
             disableEvents = true;
@@ -149,8 +147,9 @@ namespace TransferController
             // Add district to building and update current selection.
             buildingDistrictSelectionPanel.SelectedDistrict = districtID;
 
-            // Update district list.
+            // Update district lists.
             buildingDistrictSelectionPanel.RefreshList();
+            districtSelectionPanel.RefreshList();
         }
 
 
@@ -166,8 +165,9 @@ namespace TransferController
             // Remove selected district from building and clear current selection.
             buildingDistrictSelectionPanel.SelectedDistrict = 0;
 
-            // Update district list.
+            // Update district lists.
             buildingDistrictSelectionPanel.RefreshList();
+            districtSelectionPanel.RefreshList();
         }
 
 

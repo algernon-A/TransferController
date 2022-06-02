@@ -10,12 +10,6 @@ namespace TransferController
     internal class SelectedDistrictPanel : DistrictSelectionPanel
     {
         /// <summary>
-        /// HashSet of relevant district settings for this panel type.
-        /// </summary>
-        private HashSet<int> DistrictSettingsList => BuildingControl.GetDistricts(ParentPanel.CurrentBuilding, ParentPanel.RecordNumber);
-
-
-        /// <summary>
         /// Populates the list.
         /// </summary>
         protected override void PopulateList()
