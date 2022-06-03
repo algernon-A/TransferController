@@ -1,5 +1,6 @@
 ﻿- New feature: block attempted transfers between buildings when the game can't find a path between them
 - District selection lists no longer show districts already added to restrictions
+- Update tooltips
 
 
 Version 0.3.2.1 -

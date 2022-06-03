@@ -108,6 +108,7 @@
     <Compile Include="Code\Utils\Logging.cs" />
     <Compile Include="Code\Utils\ModUtils.cs" />
     <Compile Include="Code\Utils\TextureUtils.cs" />
+    <Compile Include="Code\Utils\TooltipUtils.cs" />
     <Compile Include="Code\Utils\UIControls.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

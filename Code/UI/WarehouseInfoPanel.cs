@@ -42,8 +42,11 @@ namespace TransferController
         {
             // Add reserve vehicle checkboxes.
             reserveCityCheck = UIControls.LabelledCheckBox(this, Margin, Check1Y, Translations.Translate("TFC_WAR_RVI"), tooltip: Translations.Translate("TFC_WAR_RVI_TIP"));
+            reserveCityCheck.tooltipBox = TooltipUtils.TooltipBox;
             reserveUniqueCheck = UIControls.LabelledCheckBox(this, Margin, Check2Y, Translations.Translate("TFC_WAR_RVU"), tooltip: Translations.Translate("TFC_WAR_RVU_TIP"));
+            reserveUniqueCheck.tooltipBox = TooltipUtils.TooltipBox;
             reserveOutsideCheck = UIControls.LabelledCheckBox(this, Margin, Check3Y, Translations.Translate("TFC_WAR_RVO"), tooltip: Translations.Translate("TFC_WAR_RVO_TIP"));
+            reserveOutsideCheck.tooltipBox = TooltipUtils.TooltipBox;
             reserveUniqueCheck.eventCheckChanged += ReserveUniqueCheckChanged;
             reserveOutsideCheck.eventCheckChanged += ReserveOutsideCheckChanged;
             reserveCityCheck.eventCheckChanged += ReserveCityCheckChanged;

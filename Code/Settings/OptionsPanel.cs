@@ -44,16 +44,21 @@ namespace TransferController
             // Distance multiplier slider.
             UISlider distanceSlider = UIControls.AddSliderWithValue(this, Translations.Translate("TFC_OPT_DIS"), 0f, 100f, 1f, TransferManagerPatches.distancePercentage, (value) => { TransferManagerPatches.distancePercentage = (int)value.RoundToNearest(1f); });
             distanceSlider.parent.relativePosition = new Vector2(LeftMargin, currentY);
+            distanceSlider.tooltip = Translations.Translate("TFC_OPT_DIS_TIP");
+            distanceSlider.tooltipBox = TooltipUtils.TooltipBox;
             currentY += distanceSlider.parent.height + GroupMargin;
 
             // Warehouse priority slider.
             UISlider warehouseSlider = UIControls.AddSliderWithValue(this, Translations.Translate("TFC_OPT_WAR"), 0f, 4f, 1f, AddOffers.warehousePriority, (value) => { AddOffers.warehousePriority = (int)value.RoundToNearest(1f); });
             warehouseSlider.parent.relativePosition = new Vector2(LeftMargin, currentY);
+            warehouseSlider.tooltip = Translations.Translate("TFC_OPT_WAR_TIP");
+            warehouseSlider.tooltipBox = TooltipUtils.TooltipBox;
             currentY += distanceSlider.parent.height + GroupMargin;
 
             // Pathfind failure montioring checkbox.
             UICheckBox blockPathfindCheck = UIControls.AddPlainCheckBox(this, LeftMargin, currentY, Translations.Translate("TFC_OPT_PAT"));
             blockPathfindCheck.tooltip = Translations.Translate("TFC_OPT_PAT_TIP");
+            blockPathfindCheck.tooltipBox = TooltipUtils.TooltipBox;
             blockPathfindCheck.isChecked = PathFindFailure.EnableFailTracking;
             blockPathfindCheck.eventCheckChanged += (control, isChecked) => PathFindFailure.EnableFailTracking = isChecked;
         }
