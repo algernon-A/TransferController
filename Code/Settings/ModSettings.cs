@@ -58,6 +58,11 @@ namespace TransferController
         public int XMLWarehousePriority { get => AddOffers.warehousePriority; set => AddOffers.warehousePriority = value; }
 
 
+        // Monitor pathfind failures.
+        [XmlElement("BlockFailedPathfinds")]
+        public bool XMLBlockFailedPathfinds { get => PathFindFailure.EnableFailTracking; set => PathFindFailure.EnableFailTracking = value; }
+
+
         /// <summary>
         /// Current hotkey as UUI UnsavedInputKey.
         /// </summary>

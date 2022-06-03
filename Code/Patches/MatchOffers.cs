@@ -292,6 +292,12 @@ namespace TransferController
 										// Ensure we've got at least one valid building in the match before going further.
 										if (incomingBuilding + outCandidateBuilding != 0)
 										{
+											// Check for pathfinding fails.
+											if (PathFindFailure.HasFailure(incomingBuilding, outCandidateBuilding))
+											{
+												continue;
+											}
+
 											// Check for warehouses.
 											BuildingAI candidateAI = buildingBuffer[outCandidateBuilding].Info.m_buildingAI;
 											if (incomingAI is WarehouseAI incomingWarehouseAI)
@@ -563,6 +569,12 @@ namespace TransferController
 									// Ensure we've got at least one valid building in the match before going further.
 									if (outgoingBuilding + inCandidateBuilding != 0)
 									{
+										// Check for pathfinding fails.
+										if (PathFindFailure.HasFailure(inCandidateBuilding, outgoingBuilding))
+										{
+											continue;
+										}
+
 										// Check for warehouses.
 										BuildingAI candidateAI = buildingBuffer[inCandidateBuilding].Info.m_buildingAI;
 										if (outgoingAI is WarehouseAI outgoingWarehouseAI)

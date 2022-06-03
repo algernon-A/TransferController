@@ -49,6 +49,13 @@ namespace TransferController
             // Warehouse priority slider.
             UISlider warehouseSlider = UIControls.AddSliderWithValue(this, Translations.Translate("TFC_OPT_WAR"), 0f, 4f, 1f, AddOffers.warehousePriority, (value) => { AddOffers.warehousePriority = (int)value.RoundToNearest(1f); });
             warehouseSlider.parent.relativePosition = new Vector2(LeftMargin, currentY);
+            currentY += distanceSlider.parent.height + GroupMargin;
+
+            // Pathfind failure montioring checkbox.
+            UICheckBox blockPathfindCheck = UIControls.AddPlainCheckBox(this, LeftMargin, currentY, Translations.Translate("TFC_OPT_PAT"));
+            blockPathfindCheck.tooltip = Translations.Translate("TFC_OPT_PAT_TIP");
+            blockPathfindCheck.isChecked = PathFindFailure.EnableFailTracking;
+            blockPathfindCheck.eventCheckChanged += (control, isChecked) => PathFindFailure.EnableFailTracking = isChecked;
         }
     }
 }

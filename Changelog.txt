@@ -1,4 +1,5 @@
-﻿- District selection lists no longer show districts already added to restrictions
+﻿- New feature: block attempted transfers between buildings when the game can't find a path between them
+- District selection lists no longer show districts already added to restrictions
 
 
 Version 0.3.2.1 -

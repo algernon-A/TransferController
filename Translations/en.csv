@@ -64,6 +64,8 @@ TFC_WAR_RVC,Reserved vehicles
 TFC_WAR_RVC_TIP,Set the number of reserved vehicles
 TFC_OPT_DIS,Distance multiplier
 TFC_OPT_WAR,Warehouse priority boost
+TFC_OPT_PAT,Block offers with recent pathfind failures
+TFC_OPT_PAT_TIP,Prevents offers from being matched if there's been a vehicle pathfinding failure between the two buildings in the past five minutes
 TFC_OFF_TIT,Open offers
 TFC_OFF_LOG,Transfer log
 TFC_LOG_BLD,This building only

@@ -9,10 +9,14 @@ namespace TransferController
     public class BuildingExtension : BuildingExtensionBase
     {
         /// <summary>
-        /// Checks to see if a released building has a custom settting, and if so, removes that setting.
         /// Called by the game when a building instance is released.
+        /// Used to clear data records relating to the released building.
         /// </summary>
         /// <param name="id">Building instance ID</param>
-        public override void OnBuildingReleased(ushort id) => BuildingControl.ReleaseBuilding(id);
+        public override void OnBuildingReleased(ushort id)
+        {
+            BuildingControl.ReleaseBuilding(id);
+            PathFindFailure.ReleaseBuilding(id);
+        }
     }
 }

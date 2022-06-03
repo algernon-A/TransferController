@@ -69,6 +69,7 @@
     <Compile Include="Code\Patches\Escape.cs" />
     <Compile Include="Code\Patches\MatchOffers.cs" />
     <Compile Include="Code\Patches\Patcher.cs" />
+    <Compile Include="Code\Patches\PathfindFailure.cs" />
     <Compile Include="Code\Serialization.cs" />
     <Compile Include="Code\Settings\OptionsKeymapping.cs" />
     <Compile Include="Code\Settings\OptionsPanel.cs" />
