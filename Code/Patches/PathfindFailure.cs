@@ -26,7 +26,7 @@ namespace TransferController
 
 
         // Enable recording of failures.
-        private static bool enableFailureTracking = false;
+        private static bool enableFailureTracking = true;
 
 
         // Dictionary of failed pathfinds (building pair plus timestamp in ticks).
