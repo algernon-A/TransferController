@@ -114,7 +114,7 @@ namespace TransferController
                 if ((districtBuffer[i].m_flags & District.Flags.Created) != District.Flags.None)
                 {
                     // Skip any existing records.
-                    if (selectedDistricts != null && !selectedDistricts.Contains(i))
+                    if (selectedDistricts == null || !selectedDistricts.Contains(i))
                     {
                         districtRecords.Add(new DistrictItem(i));
                     }
@@ -128,7 +128,7 @@ namespace TransferController
                 if ((parkBuffer[i].m_flags & DistrictPark.Flags.Created) != DistrictPark.Flags.None)
                 {
                     // Skip any existing records.
-                    if (selectedDistricts != null && !selectedDistricts.Contains(i))
+                    if (selectedDistricts == null || !selectedDistricts.Contains(-i))
                     {
                         districtRecords.Add(new DistrictItem(-i));
                     }
