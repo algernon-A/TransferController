@@ -105,7 +105,6 @@ namespace TransferController
                 if (time + Timeout > DateTime.Now.Ticks)
                 {
                     // Five minutes haven't passed - block the transfer.
-                    Logging.Message("blocked transfer between buildings ", sourceBuilding, " and ", targetBuilding, " due to pathfinding failure");
                     return true;
                 }
                 else
