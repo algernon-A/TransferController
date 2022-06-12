@@ -63,8 +63,8 @@ namespace TransferController
 
 
         // Outside shipping connection boost.
-        [XmlElement("OutsideRailPriority")]
-        public int XMLOutsideShippingPriority { get => TransferManagerPatches.outsideShipPriority; set => TransferManagerPatches.outsideShipPriority = value; }
+        [XmlElement("OutsideShipPriority")]
+        public int XMLOutsideShipPriority { get => TransferManagerPatches.outsideShipPriority; set => TransferManagerPatches.outsideShipPriority = value; }
 
 
         // Monitor pathfind failures.
