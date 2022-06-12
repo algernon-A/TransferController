@@ -57,6 +57,15 @@ namespace TransferController
         [XmlElement("WarehousePriority")]
         public int XMLWarehousePriority { get => AddOffers.warehousePriority; set => AddOffers.warehousePriority = value; }
 
+        // Outside rail connection boost.
+        [XmlElement("OutsideRailPriority")]
+        public int XMLOutsideRailPriority { get => TransferManagerPatches.outsideRailPriority; set => TransferManagerPatches.outsideRailPriority = value; }
+
+
+        // Outside shipping connection boost.
+        [XmlElement("OutsideRailPriority")]
+        public int XMLOutsideShippingPriority { get => TransferManagerPatches.outsideShipPriority; set => TransferManagerPatches.outsideShipPriority = value; }
+
 
         // Monitor pathfind failures.
         [XmlElement("BlockFailedPathfinds")]

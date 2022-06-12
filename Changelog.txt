@@ -1,4 +1,7 @@
-﻿Version 0.4 -
+﻿- Add configurable boost to outside rail and shipping connections
+
+
+Version 0.4 -
 
 - New feature: block attempted transfers between buildings when the game can't find a path between them
 - District selection lists no longer show districts already added to restrictions

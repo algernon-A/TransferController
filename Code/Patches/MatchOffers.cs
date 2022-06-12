@@ -19,6 +19,11 @@ namespace TransferController
 		// Matching distance multiplier.
 		internal static int distancePercentage = 100;
 
+		// External connection priorities.
+		internal static int outsideRailPriority = 0;
+		internal static int outsideShipPriority = 0;
+
+
 		// Reflection info for private TransferManager fields.
 		private static FieldInfo m_incomingCountField;
 		private static FieldInfo m_outgoingCountField;
@@ -176,6 +181,10 @@ namespace TransferController
 
 						// AI reference.
 						BuildingAI incomingAI = null;
+						bool incomingIsOutside = false;
+
+						// Boosted status.
+						bool incomingRailBoosted = false, incomingShipBoosted = false;
 
 						// Set up for exclusion checking if this is a supported reason.
 						if (supportedReason)
@@ -203,7 +212,16 @@ namespace TransferController
 								incomingPark = districtManager.GetPark(incomingPosition);
 
 								// Get AI reference.
-								incomingAI = buildingBuffer[incomingBuilding].Info.m_buildingAI;
+								BuildingInfo incomingInfo = buildingBuffer[incomingBuilding].Info;
+								incomingAI = incomingInfo.m_buildingAI;
+
+								// Get boosted status.
+								if (incomingAI is OutsideConnectionAI)
+								{
+									incomingIsOutside = true;
+									incomingRailBoosted = incomingInfo.m_class.m_subService == ItemClass.SubService.PublicTransportTrain;
+									incomingShipBoosted = incomingInfo.m_class.m_subService == ItemClass.SubService.PublicTransportShip;
+								}
 							}
 						}
 
@@ -298,8 +316,9 @@ namespace TransferController
 												continue;
 											}
 
-											// Check for warehouses.
-											BuildingAI candidateAI = buildingBuffer[outCandidateBuilding].Info.m_buildingAI;
+											// Check for warehouses and other boosts.
+											BuildingInfo candidateInfo = buildingBuffer[outCandidateBuilding].Info;
+											BuildingAI candidateAI = candidateInfo.m_buildingAI;
 											if (incomingAI is WarehouseAI incomingWarehouseAI)
 											{
 												// Incoming building is warehouse - check vehicle quotas.
@@ -326,10 +345,10 @@ namespace TransferController
 												}
 											}
 											else if (candidateAI is WarehouseAI outgoingWarehouseAI)
-                                            {
+											{
 												// Outgoing candidate is warehouse (but this incoming one isn't) - check vehicle quotas.
 												if (!WarehouseControl.CheckVehicleQuota(outgoingWarehouseAI, outCandidateBuilding, ref buildingBuffer[outCandidateBuilding], material, incomingAI))
-                                                {
+												{
 													continue;
 												}
 
@@ -339,6 +358,33 @@ namespace TransferController
 													// No - adjust distance modifier for warehouse priority (this doesn't apply to warehouse-warehouse or warehouse-outside connection transfers).
 													distanceModifier /= (1 + AddOffers.warehousePriority);
 												}
+											}
+											else if (candidateAI is OutsideConnectionAI)
+											{
+												// Apply outside connection boosts as applicable.
+												if (!incomingIsOutside)
+												{
+													if (candidateInfo.m_class.m_subService == ItemClass.SubService.PublicTransportTrain)
+													{
+														otherPriorityPlus += outsideRailPriority;
+														distanceModifier /= (1 + Mathf.Pow(outsideRailPriority, 2));
+													}
+													else if (candidateInfo.m_class.m_subService == ItemClass.SubService.PublicTransportShip)
+													{
+														otherPriorityPlus += outsideShipPriority;
+														distanceModifier /= (1 + Mathf.Pow(outsideShipPriority, 2));
+													}
+												}
+											}
+											else if (incomingRailBoosted)
+											{
+												otherPriorityPlus += outsideRailPriority;
+												distanceModifier /= (1 + Mathf.Pow(outsideRailPriority, 2));
+											}
+											else if (incomingShipBoosted)
+											{
+												otherPriorityPlus += outsideShipPriority;
+												distanceModifier /= (1 + Mathf.Pow(outsideShipPriority, 2));
 											}
 
 											// Position of incoming building (source building or vehicle source building)
@@ -463,6 +509,10 @@ namespace TransferController
 
 					// AI reference.
 					BuildingAI outgoingAI = null;
+					bool outgoingIsOutside = false;
+
+					// Boosted status.
+					bool outgoingRailBoosted = false, outgoingShipBoosted = false;
 
 					// Set up for exclusion checking if this is a supported reason.
 					if (supportedReason)
@@ -487,7 +537,16 @@ namespace TransferController
 							outgoingPark = districtManager.GetPark(outgoingPosition);
 
 							// Get AI reference.
-							outgoingAI = buildingBuffer[outgoingBuilding].Info.m_buildingAI;
+							BuildingInfo outgoingInfo = buildingBuffer[outgoingBuilding].Info;
+							outgoingAI = outgoingInfo.m_buildingAI;
+
+							// Get boosted status.
+							if (outgoingAI is OutsideConnectionAI)
+							{
+								outgoingIsOutside = true;
+								outgoingRailBoosted = outgoingInfo.m_class.m_subService == ItemClass.SubService.PublicTransportTrain;
+								outgoingRailBoosted = outgoingInfo.m_class.m_subService == ItemClass.SubService.PublicTransportShip;
+							}
 						}
 					}
 
@@ -575,8 +634,9 @@ namespace TransferController
 											continue;
 										}
 
-										// Check for warehouses.
-										BuildingAI candidateAI = buildingBuffer[inCandidateBuilding].Info.m_buildingAI;
+										// Check for warehouses and other boosts.
+										BuildingInfo candidateInfo = buildingBuffer[inCandidateBuilding].Info;
+										BuildingAI candidateAI = candidateInfo.m_buildingAI;
 										if (outgoingAI is WarehouseAI outgoingWarehouseAI)
 										{
 											// Outgoing building is warehouse - check vehicle quotas.
@@ -617,6 +677,33 @@ namespace TransferController
 												// No - adjust distance modifier for warehouse priority (this doesn't apply to warehouse-warehouse or warehouse-outside connection transfers).
 												distanceModifier /= (1 + AddOffers.warehousePriority);
 											}
+										}
+										else if (candidateAI is OutsideConnectionAI)
+										{
+											// Apply outside connection boosts as applicable.
+											if (!outgoingIsOutside)
+											{
+												if (candidateInfo.m_class.m_subService == ItemClass.SubService.PublicTransportTrain)
+												{
+													otherPriorityPlus += outsideRailPriority;
+													distanceModifier /= (1 + Mathf.Pow(outsideRailPriority, 2));
+												}
+												else if (candidateInfo.m_class.m_subService == ItemClass.SubService.PublicTransportShip)
+												{
+													otherPriorityPlus += outsideShipPriority;
+													distanceModifier /= (1 + Mathf.Pow(outsideShipPriority, 2));
+												}
+											}
+										}
+										else if (outgoingRailBoosted)
+										{
+											otherPriorityPlus += outsideRailPriority;
+											distanceModifier /= (1 + Mathf.Pow(outsideRailPriority, 2));
+										}
+										else if (outgoingShipBoosted)
+										{
+											otherPriorityPlus += outsideShipPriority;
+											distanceModifier /= (1 + Mathf.Pow(outsideShipPriority, 2));
 										}
 
 										// Position of incoming building (source building or vehicle source building)
@@ -846,7 +933,7 @@ namespace TransferController
 				{
 					// If not an outside connection, transfer is permitted if no restrictions are enabled.
 					return true;
-                }
+				}
 
 
 				// Check district settings.
@@ -863,10 +950,10 @@ namespace TransferController
 					if (buildingRecord.districts != null)
 					{
 						if (buildingRecord.districts.Contains(outgoingDistrict) || buildingRecord.districts.Contains(-outgoingPark))
-                        {
+						{
 							// Permitted district.
 							return true;
-                        }
+						}
 					}
 				}
 
@@ -1005,7 +1092,7 @@ namespace TransferController
 						{
 							// Permitted district.
 							return true;
-                        }
+						}
 					}
 				}
 

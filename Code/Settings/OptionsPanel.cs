@@ -55,6 +55,20 @@ namespace TransferController
             warehouseSlider.tooltipBox = TooltipUtils.TooltipBox;
             currentY += distanceSlider.parent.height + GroupMargin;
 
+            // Outside rail connection priority slider.
+            UISlider railSlider = UIControls.AddSliderWithValue(this, Translations.Translate("TFC_OPT_ORP"), 0f, 4f, 1f, TransferManagerPatches.outsideRailPriority, (value) => { TransferManagerPatches.outsideRailPriority = (int)value.RoundToNearest(1f); });
+            railSlider.parent.relativePosition = new Vector2(LeftMargin, currentY);
+            railSlider.tooltip = Translations.Translate("TFC_OPT_ORP_TIP");
+            railSlider.tooltipBox = TooltipUtils.TooltipBox;
+            currentY += railSlider.parent.height + GroupMargin;
+
+            // Outside shipping connection priority slider.
+            UISlider shippingSlider = UIControls.AddSliderWithValue(this, Translations.Translate("TFC_OPT_OSP"), 0f, 4f, 1f, TransferManagerPatches.outsideShipPriority, (value) => { TransferManagerPatches.outsideShipPriority = (int)value.RoundToNearest(1f); });
+            shippingSlider.parent.relativePosition = new Vector2(LeftMargin, currentY);
+            shippingSlider.tooltip = Translations.Translate("TFC_OPT_OSP_TIP");
+            shippingSlider.tooltipBox = TooltipUtils.TooltipBox;
+            currentY += shippingSlider.parent.height + GroupMargin;
+
             // Pathfind failure montioring checkbox.
             UICheckBox blockPathfindCheck = UIControls.AddPlainCheckBox(this, LeftMargin, currentY, Translations.Translate("TFC_OPT_PAT"));
             blockPathfindCheck.tooltip = Translations.Translate("TFC_OPT_PAT_TIP");
