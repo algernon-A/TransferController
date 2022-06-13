@@ -1,4 +1,5 @@
 ﻿- Add configurable boost to outside rail and shipping connections
+- Warehouse vehicle quotas no longer affect incoming transfers
 
 
 Version 0.4 -

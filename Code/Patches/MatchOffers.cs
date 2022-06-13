@@ -319,14 +319,8 @@ namespace TransferController
 											// Check for warehouses and other boosts.
 											BuildingInfo candidateInfo = buildingBuffer[outCandidateBuilding].Info;
 											BuildingAI candidateAI = candidateInfo.m_buildingAI;
-											if (incomingAI is WarehouseAI incomingWarehouseAI)
+											if (incomingAI is WarehouseAI)
 											{
-												// Incoming building is warehouse - check vehicle quotas.
-												if (!WarehouseControl.CheckVehicleQuota(incomingWarehouseAI, incomingBuilding, ref buildingBuffer[incomingBuilding], material, candidateAI))
-												{
-													continue;
-												}
-
 												// Is the candidate building also a warehouse, or an outside connection?
 												if (candidateAI is WarehouseAI || candidateAI is OutsideConnectionAI)
 												{
@@ -663,14 +657,8 @@ namespace TransferController
 												distanceModifier /= (1 + AddOffers.warehousePriority);
 											}
 										}
-										else if (candidateAI is WarehouseAI incomingWarehouseAI)
+										else if (candidateAI is WarehouseAI)
 										{
-											// Incoming candidate is warehouse (but this outgoing one isn't) - check vehicle quotas.
-											if (!WarehouseControl.CheckVehicleQuota(incomingWarehouseAI, inCandidateBuilding, ref buildingBuffer[inCandidateBuilding], material, outgoingAI))
-											{
-												continue;
-											}
-
 											// Is this an outside connection?
 											if (!(outgoingAI is OutsideConnectionAI))
 											{
