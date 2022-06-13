@@ -545,7 +545,7 @@ namespace TransferController
 							{
 								outgoingIsOutside = true;
 								outgoingRailBoosted = outgoingInfo.m_class.m_subService == ItemClass.SubService.PublicTransportTrain;
-								outgoingRailBoosted = outgoingInfo.m_class.m_subService == ItemClass.SubService.PublicTransportShip;
+								outgoingShipBoosted = outgoingInfo.m_class.m_subService == ItemClass.SubService.PublicTransportShip;
 							}
 						}
 					}
