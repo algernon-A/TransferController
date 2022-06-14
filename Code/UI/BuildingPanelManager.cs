@@ -38,7 +38,6 @@ namespace TransferController
 
                     // Add panel and set parent transform.
                     panel = uiGameObject.AddComponent<T>();
-                    Panel.transform.parent = uiGameObject.transform.parent;
 
                     // Show panel.
                     Panel.Show();

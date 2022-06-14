@@ -10,7 +10,7 @@ namespace TransferController
     internal static class TooltipUtils
     {
         // Custom tooltip box.
-        private static UILabel realPop2ToolTipBox;
+        private static UILabel customTooltipBox;
 
 
         /// <summary>
@@ -20,12 +20,12 @@ namespace TransferController
         {
             get
             {
-                if (realPop2ToolTipBox == null)
+                if (customTooltipBox == null)
                 {
-                    realPop2ToolTipBox = CustomTooltipBox();
+                    customTooltipBox = CustomTooltipBox();
                 }
 
-                return realPop2ToolTipBox;
+                return customTooltipBox;
             }
         }
 
