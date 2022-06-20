@@ -206,7 +206,6 @@ namespace TransferController
 						// ---- Start code insert
 
 						// If this is a supported transfer, try to get ulitmate building source (leaving as zero by default).
-						ushort incomingBuilding = 0;
 						byte incomingDistrict = 0;
 						byte incomingPark = 0;
 
@@ -219,7 +218,7 @@ namespace TransferController
 
 						// Set up for exclusion checking.
 						// Get incoming building and vehicle IDs.
-						incomingBuilding = incomingOfferToMatch.Building;
+						ushort incomingBuilding = incomingOfferToMatch.Building;
 
 						// If no building, use vehicle source building, if any.
 						if (incomingBuilding == 0)
@@ -539,7 +538,6 @@ namespace TransferController
 					// ---- Start code insert
 
 					// If this is a supported transfer, try to get ulitmate building source (leaving as zero by default).
-					ushort outgoingBuilding = 0;
 					byte outgoingDistrict = 0;
 					byte outgoingPark = 0;
 
@@ -552,7 +550,7 @@ namespace TransferController
 
 					// Set up for exclusion checking.
 					// Get incoming building and vehicle IDs.
-					outgoingBuilding = outgoingOfferToMatch.Building;
+					ushort outgoingBuilding = outgoingOfferToMatch.Building;
 					ushort outgoingVehicle = outgoingOfferToMatch.Vehicle;
 
 					// If no building, use vehicle source building, if any.
