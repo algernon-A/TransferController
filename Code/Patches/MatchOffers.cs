@@ -66,13 +66,24 @@ namespace TransferController
 
 
 		/// <summary>
-		/// Harmony transpiler for TransferManager.MatchOffers, calling 
+		/// Harmony transpiler for TransferManager.MatchOffers, inserting a call to our custom replacement method if the TransferReason is supported, otherwise falling through to base-game code.
 		/// </summary>
 		/// <param name="instructions">Original ILCode</param>
-		public static IEnumerable<CodeInstruction> MatchOffersTranspiler(IEnumerable<CodeInstruction> instructions)
+		/// <param name="instructions">Harmony ILGenerator injection</param>
+		public static IEnumerable<CodeInstruction> MatchOffersTranspiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
 		{
-			// Replace original ILCode with a call to our custom method.
+			// Instruction enumerator.
+			IEnumerator<CodeInstruction> instructionsEnumerator = instructions.GetEnumerator();
 
+			// Define label for our conditional jump.
+			Label jumpLabel = generator.DefineLabel();
+
+			// Insert conditional check - if this isn't a supported reason, we jump ahead to the original code.
+			yield return new CodeInstruction(OpCodes.Ldarg_1);
+			yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(TransferManagerPatches), nameof(TransferManagerPatches.SupportedTransfer)));
+			yield return new CodeInstruction(OpCodes.Brfalse_S, jumpLabel);
+
+			// Insert call to custom method.
 			yield return new CodeInstruction(OpCodes.Ldarg_0);
 			yield return new CodeInstruction(OpCodes.Ldarg_1);
 			yield return new CodeInstruction(OpCodes.Ldarg_0);
@@ -88,7 +99,29 @@ namespace TransferController
 			yield return new CodeInstruction(OpCodes.Ldarg_0);
 			yield return new CodeInstruction(OpCodes.Ldfld, m_outgoingAmountField);
 			yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(TransferManagerPatches), nameof(TransferManagerPatches.MatchOffers)));
+
+			// Return from method here (after this is original code, which we obviously don't want to execute).
 			yield return new CodeInstruction(OpCodes.Ret);
+
+			// Add label to following instruction.
+			if (instructionsEnumerator.MoveNext())
+			{
+				CodeInstruction instruction = instructionsEnumerator.Current;
+				instruction.labels.Add(jumpLabel);
+				yield return instruction;
+			}
+			else
+			{
+				Logging.Error("empty instruction enumerator when transpiling MatchOffers");
+				yield break;
+			}
+
+			// Copy over remainder of original code.
+			while (instructionsEnumerator.MoveNext())
+			{
+				// Get next instruction.
+				yield return instructionsEnumerator.Current;
+			}
 		}
 
 
@@ -129,8 +162,6 @@ namespace TransferController
 			Vehicle[] vehicleBuffer = Singleton<VehicleManager>.instance.m_vehicles.m_buffer;
 			Building[] buildingBuffer = Singleton<BuildingManager>.instance.m_buildings.m_buffer;
 
-			bool supportedReason = SupportedTransfer(material);
-
 			// --- End setup for code inserts.
 
 			// Distance multiplier for this transfer.
@@ -139,10 +170,7 @@ namespace TransferController
 			// num = optimalDistanceSquared (offers within this distance are automatically accepted first go, with no further candidates examined).
 			float optimalDistanceSquared = ((distanceMultiplier == 0f) ? 0f : (0.01f / distanceMultiplier));
 			// ---- Start code insert
-			if (supportedReason)
-			{
-				optimalDistanceSquared *= distancePercentage / 100f;
-			}
+			optimalDistanceSquared *= distancePercentage / 100f;
 			// ---- End code insert
 
 			// num2 = thisPriority
@@ -189,42 +217,39 @@ namespace TransferController
 						// Boosted status.
 						bool incomingRailBoosted = false, incomingShipBoosted = false;
 
-						// Set up for exclusion checking if this is a supported reason.
-						if (supportedReason)
+						// Set up for exclusion checking.
+						// Get incoming building and vehicle IDs.
+						incomingBuilding = incomingOfferToMatch.Building;
+
+						// If no building, use vehicle source building, if any.
+						if (incomingBuilding == 0)
 						{
-							// Get incoming building and vehicle IDs.
-							incomingBuilding = incomingOfferToMatch.Building;
-
-							// If no building, use vehicle source building, if any.
-							if (incomingBuilding == 0)
+							ushort incomingVehicle = incomingOfferToMatch.Vehicle;
+							if (incomingVehicle != 0)
 							{
-								ushort incomingVehicle = incomingOfferToMatch.Vehicle;
-								if (incomingVehicle != 0)
-								{
-									incomingBuilding = vehicleBuffer[incomingVehicle].m_sourceBuilding;
-								}
+								incomingBuilding = vehicleBuffer[incomingVehicle].m_sourceBuilding;
 							}
+						}
 
-							// Position of incoming building (source building or vehicle source building), if any.
-							if (incomingBuilding != 0)
+						// Position of incoming building (source building or vehicle source building), if any.
+						if (incomingBuilding != 0)
+						{
+							incomingPosition = buildingBuffer[incomingBuilding].m_position;
+
+							// Incoming district.
+							incomingDistrict = districtManager.GetDistrict(incomingPosition);
+							incomingPark = districtManager.GetPark(incomingPosition);
+
+							// Get AI reference.
+							BuildingInfo incomingInfo = buildingBuffer[incomingBuilding].Info;
+							incomingAI = incomingInfo.m_buildingAI;
+
+							// Get boosted status.
+							if (incomingAI is OutsideConnectionAI)
 							{
-								incomingPosition = buildingBuffer[incomingBuilding].m_position;
-
-								// Incoming district.
-								incomingDistrict = districtManager.GetDistrict(incomingPosition);
-								incomingPark = districtManager.GetPark(incomingPosition);
-
-								// Get AI reference.
-								BuildingInfo incomingInfo = buildingBuffer[incomingBuilding].Info;
-								incomingAI = incomingInfo.m_buildingAI;
-
-								// Get boosted status.
-								if (incomingAI is OutsideConnectionAI)
-								{
-									incomingIsOutside = true;
-									incomingRailBoosted = incomingInfo.m_class.m_subService == ItemClass.SubService.PublicTransportTrain;
-									incomingShipBoosted = incomingInfo.m_class.m_subService == ItemClass.SubService.PublicTransportShip;
-								}
+								incomingIsOutside = true;
+								incomingRailBoosted = incomingInfo.m_class.m_subService == ItemClass.SubService.PublicTransportTrain;
+								incomingShipBoosted = incomingInfo.m_class.m_subService == ItemClass.SubService.PublicTransportShip;
 							}
 						}
 
@@ -300,102 +325,99 @@ namespace TransferController
 									otherPriorityPlus = (float)otherPriority + 0.1f;
 
 									// Apply custom districts filter - if failed, skip this candidate and cotinue to next candidate.
-									if (supportedReason)
-									{
-										// Get outgoing building and vehicle IDs.
-										ushort outCandidateBuilding = outgoingOfferCandidate.Building;
+									// Get outgoing building and vehicle IDs.
+									ushort outCandidateBuilding = outgoingOfferCandidate.Building;
 
-										// If no building, use vehicle source building, if any.
-										if (outCandidateBuilding == 0)
+									// If no building, use vehicle source building, if any.
+									if (outCandidateBuilding == 0)
+									{
+										ushort outCandidateVehicle = outgoingOfferCandidate.Vehicle;
+										if (outCandidateVehicle != 0)
 										{
-											ushort outCandidateVehicle = outgoingOfferCandidate.Vehicle;
-											if (outCandidateVehicle != 0)
-											{
-												outCandidateBuilding = vehicleBuffer[outCandidateVehicle].m_sourceBuilding;
-											}
+											outCandidateBuilding = vehicleBuffer[outCandidateVehicle].m_sourceBuilding;
+										}
+									}
+
+									// Ensure we've got at least one valid building in the match before going further.
+									if (incomingBuilding + outCandidateBuilding != 0)
+									{
+										// Check for pathfinding fails.
+										if (PathFindFailure.HasFailure(incomingBuilding, outCandidateBuilding))
+										{
+											continue;
 										}
 
-										// Ensure we've got at least one valid building in the match before going further.
-										if (incomingBuilding + outCandidateBuilding != 0)
+										// Check for warehouses and other boosts.
+										BuildingInfo candidateInfo = buildingBuffer[outCandidateBuilding].Info;
+										BuildingAI candidateAI = candidateInfo.m_buildingAI;
+										if (incomingAI is WarehouseAI)
 										{
-											// Check for pathfinding fails.
-											if (PathFindFailure.HasFailure(incomingBuilding, outCandidateBuilding))
+											// Is the candidate building also a warehouse, or an outside connection?
+											if (candidateAI is WarehouseAI || candidateAI is OutsideConnectionAI)
+											{
+												// Yes - reverse warehouse priority modifier (this doesn't apply to warehouse-warehouse or warehouse-outside connection transfers).
+												// Note - warehouses set to fill/empty aren't assigned the bonus to begin with, so this decreases below the original.  This is intentional to prioritise other transfers.
+												otherPriorityPlus -= AddOffers.warehousePriority * 2f;
+												if (otherPriorityPlus < 0)
+												{
+													otherPriorityPlus = 0;
+												}
+											}
+											else
+											{
+												// No - add additional warehouse distance divisor.
+												distanceModifier /= (1 + AddOffers.warehousePriority);
+											}
+										}
+										else if (candidateAI is WarehouseAI outgoingWarehouseAI)
+										{
+											// Outgoing candidate is warehouse (but this incoming one isn't) - check vehicle quotas.
+											if (!WarehouseControl.CheckVehicleQuota(outgoingWarehouseAI, outCandidateBuilding, ref buildingBuffer[outCandidateBuilding], material, incomingAI))
 											{
 												continue;
 											}
 
-											// Check for warehouses and other boosts.
-											BuildingInfo candidateInfo = buildingBuffer[outCandidateBuilding].Info;
-											BuildingAI candidateAI = candidateInfo.m_buildingAI;
-											if (incomingAI is WarehouseAI)
+											// Is this an outside connection?
+											if (!(incomingAI is OutsideConnectionAI))
 											{
-												// Is the candidate building also a warehouse, or an outside connection?
-												if (candidateAI is WarehouseAI || candidateAI is OutsideConnectionAI)
+												// No - adjust distance modifier for warehouse priority (this doesn't apply to warehouse-warehouse or warehouse-outside connection transfers).
+												distanceModifier /= (1 + AddOffers.warehousePriority);
+											}
+										}
+										else if (candidateAI is OutsideConnectionAI)
+										{
+											// Apply outside connection boosts as applicable.
+											if (!incomingIsOutside)
+											{
+												if (candidateInfo.m_class.m_subService == ItemClass.SubService.PublicTransportTrain)
 												{
-													// Yes - reverse warehouse priority modifier (this doesn't apply to warehouse-warehouse or warehouse-outside connection transfers).
-													// Note - warehouses set to fill/empty aren't assigned the bonus to begin with, so this decreases below the original.  This is intentional to prioritise other transfers.
-													otherPriorityPlus -= AddOffers.warehousePriority * 2f;
-													if (otherPriorityPlus < 0)
-													{
-														otherPriorityPlus = 0;
-													}
+													otherPriorityPlus += outsideRailPriority;
+													distanceModifier /= (1 + Mathf.Pow(outsideRailPriority, 2));
 												}
-												else
+												else if (candidateInfo.m_class.m_subService == ItemClass.SubService.PublicTransportShip)
 												{
-													// No - add additional warehouse distance divisor.
-													distanceModifier /= (1 + AddOffers.warehousePriority);
+													otherPriorityPlus += outsideShipPriority;
+													distanceModifier /= (1 + Mathf.Pow(outsideShipPriority, 2));
 												}
 											}
-											else if (candidateAI is WarehouseAI outgoingWarehouseAI)
-											{
-												// Outgoing candidate is warehouse (but this incoming one isn't) - check vehicle quotas.
-												if (!WarehouseControl.CheckVehicleQuota(outgoingWarehouseAI, outCandidateBuilding, ref buildingBuffer[outCandidateBuilding], material, incomingAI))
-												{
-													continue;
-												}
+										}
+										else if (incomingRailBoosted)
+										{
+											otherPriorityPlus += outsideRailPriority;
+											distanceModifier /= (1 + Mathf.Pow(outsideRailPriority, 2));
+										}
+										else if (incomingShipBoosted)
+										{
+											otherPriorityPlus += outsideShipPriority;
+											distanceModifier /= (1 + Mathf.Pow(outsideShipPriority, 2));
+										}
 
-												// Is this an outside connection?
-												if (!(incomingAI is OutsideConnectionAI))
-												{
-													// No - adjust distance modifier for warehouse priority (this doesn't apply to warehouse-warehouse or warehouse-outside connection transfers).
-													distanceModifier /= (1 + AddOffers.warehousePriority);
-												}
-											}
-											else if (candidateAI is OutsideConnectionAI)
-											{
-												// Apply outside connection boosts as applicable.
-												if (!incomingIsOutside)
-												{
-													if (candidateInfo.m_class.m_subService == ItemClass.SubService.PublicTransportTrain)
-													{
-														otherPriorityPlus += outsideRailPriority;
-														distanceModifier /= (1 + Mathf.Pow(outsideRailPriority, 2));
-													}
-													else if (candidateInfo.m_class.m_subService == ItemClass.SubService.PublicTransportShip)
-													{
-														otherPriorityPlus += outsideShipPriority;
-														distanceModifier /= (1 + Mathf.Pow(outsideShipPriority, 2));
-													}
-												}
-											}
-											else if (incomingRailBoosted)
-											{
-												otherPriorityPlus += outsideRailPriority;
-												distanceModifier /= (1 + Mathf.Pow(outsideRailPriority, 2));
-											}
-											else if (incomingShipBoosted)
-											{
-												otherPriorityPlus += outsideShipPriority;
-												distanceModifier /= (1 + Mathf.Pow(outsideShipPriority, 2));
-											}
+										// Position of incoming building (source building or vehicle source building)
+										Vector3 outCandidatePosition = outCandidateBuilding == 0 ? outgoingOfferCandidate.Position : buildingBuffer[outCandidateBuilding].m_position;
 
-											// Position of incoming building (source building or vehicle source building)
-											Vector3 outCandidatePosition = outCandidateBuilding == 0 ? outgoingOfferCandidate.Position : buildingBuffer[outCandidateBuilding].m_position;
-
-											if (!ChecksPassed(true, (byte)thisPriority, (byte)otherPriority, incomingBuilding, outCandidateBuilding, incomingDistrict, districtManager.GetDistrict(outCandidatePosition), incomingPark, districtManager.GetPark(outCandidatePosition), material))
-											{
-												continue;
-											}
+										if (!ChecksPassed(true, (byte)thisPriority, (byte)otherPriority, incomingBuilding, outCandidateBuilding, incomingDistrict, districtManager.GetDistrict(outCandidatePosition), incomingPark, districtManager.GetPark(outCandidatePosition), material))
+										{
+											continue;
 										}
 									}
 									// ---- End code insert
@@ -528,39 +550,36 @@ namespace TransferController
 					// Boosted status.
 					bool outgoingRailBoosted = false, outgoingShipBoosted = false;
 
-					// Set up for exclusion checking if this is a supported reason.
-					if (supportedReason)
+					// Set up for exclusion checking.
+					// Get incoming building and vehicle IDs.
+					outgoingBuilding = outgoingOfferToMatch.Building;
+					ushort outgoingVehicle = outgoingOfferToMatch.Vehicle;
+
+					// If no building, use vehicle source building, if any.
+					if (outgoingBuilding == 0 & outgoingVehicle != 0)
 					{
-						// Get incoming building and vehicle IDs.
-						outgoingBuilding = outgoingOfferToMatch.Building;
-						ushort outgoingVehicle = outgoingOfferToMatch.Vehicle;
+						outgoingBuilding = vehicleBuffer[outgoingVehicle].m_sourceBuilding;
+					}
 
-						// If no building, use vehicle source building, if any.
-						if (outgoingBuilding == 0 & outgoingVehicle != 0)
+					// Position of incoming building (source building or vehicle source building), if any.
+					if (outgoingBuilding != 0)
+					{
+						outgoingPosition = buildingBuffer[outgoingBuilding].m_position;
+
+						// Outgoing district.
+						outgoingDistrict = districtManager.GetDistrict(outgoingPosition);
+						outgoingPark = districtManager.GetPark(outgoingPosition);
+
+						// Get AI reference.
+						BuildingInfo outgoingInfo = buildingBuffer[outgoingBuilding].Info;
+						outgoingAI = outgoingInfo.m_buildingAI;
+
+						// Get boosted status.
+						if (outgoingAI is OutsideConnectionAI)
 						{
-							outgoingBuilding = vehicleBuffer[outgoingVehicle].m_sourceBuilding;
-						}
-
-						// Position of incoming building (source building or vehicle source building), if any.
-						if (outgoingBuilding != 0)
-						{
-							outgoingPosition = buildingBuffer[outgoingBuilding].m_position;
-
-							// Outgoing district.
-							outgoingDistrict = districtManager.GetDistrict(outgoingPosition);
-							outgoingPark = districtManager.GetPark(outgoingPosition);
-
-							// Get AI reference.
-							BuildingInfo outgoingInfo = buildingBuffer[outgoingBuilding].Info;
-							outgoingAI = outgoingInfo.m_buildingAI;
-
-							// Get boosted status.
-							if (outgoingAI is OutsideConnectionAI)
-							{
-								outgoingIsOutside = true;
-								outgoingRailBoosted = outgoingInfo.m_class.m_subService == ItemClass.SubService.PublicTransportTrain;
-								outgoingShipBoosted = outgoingInfo.m_class.m_subService == ItemClass.SubService.PublicTransportShip;
-							}
+							outgoingIsOutside = true;
+							outgoingRailBoosted = outgoingInfo.m_class.m_subService == ItemClass.SubService.PublicTransportTrain;
+							outgoingShipBoosted = outgoingInfo.m_class.m_subService == ItemClass.SubService.PublicTransportShip;
 						}
 					}
 
@@ -630,103 +649,100 @@ namespace TransferController
 								otherPriorityPlus = (float)otherPriority + 0.1f;
 
 								// Apply custom districts filter - if failed, skip this candidate and cotinue to next candidate.
-								if (supportedReason)
-								{
-									// Get incoming building and vehicle IDs.
-									ushort inCandidateBuilding = incomingOfferCandidate.Building;
+								// Get incoming building and vehicle IDs.
+								ushort inCandidateBuilding = incomingOfferCandidate.Building;
 
-									// If no building, use vehicle source building, if any.
-									if (inCandidateBuilding == 0)
+								// If no building, use vehicle source building, if any.
+								if (inCandidateBuilding == 0)
+								{
+									ushort inCandidateVehicle = incomingOfferCandidate.Vehicle;
+									if (inCandidateVehicle != 0)
 									{
-										ushort inCandidateVehicle = incomingOfferCandidate.Vehicle;
-										if (inCandidateVehicle != 0)
-										{
-											inCandidateBuilding = vehicleBuffer[inCandidateVehicle].m_sourceBuilding;
-										}
+										inCandidateBuilding = vehicleBuffer[inCandidateVehicle].m_sourceBuilding;
+									}
+								}
+
+								// Ensure we've got at least one valid building in the match before going further.
+								if (outgoingBuilding + inCandidateBuilding != 0)
+								{
+									// Check for pathfinding fails.
+									if (PathFindFailure.HasFailure(inCandidateBuilding, outgoingBuilding))
+									{
+										continue;
 									}
 
-									// Ensure we've got at least one valid building in the match before going further.
-									if (outgoingBuilding + inCandidateBuilding != 0)
+									// Check for warehouses and other boosts.
+									BuildingInfo candidateInfo = buildingBuffer[inCandidateBuilding].Info;
+									BuildingAI candidateAI = candidateInfo.m_buildingAI;
+									if (outgoingAI is WarehouseAI outgoingWarehouseAI)
 									{
-										// Check for pathfinding fails.
-										if (PathFindFailure.HasFailure(inCandidateBuilding, outgoingBuilding))
+										// Outgoing building is warehouse - check vehicle quotas.
+										if (!WarehouseControl.CheckVehicleQuota(outgoingWarehouseAI, outgoingBuilding, ref buildingBuffer[outgoingBuilding], material, candidateAI))
 										{
 											continue;
 										}
 
-										// Check for warehouses and other boosts.
-										BuildingInfo candidateInfo = buildingBuffer[inCandidateBuilding].Info;
-										BuildingAI candidateAI = candidateInfo.m_buildingAI;
-										if (outgoingAI is WarehouseAI outgoingWarehouseAI)
+										// Is the candidate building also a warehouse, or an outside connection?
+										if (candidateAI is WarehouseAI || candidateAI is OutsideConnectionAI)
 										{
-											// Outgoing building is warehouse - check vehicle quotas.
-											if (!WarehouseControl.CheckVehicleQuota(outgoingWarehouseAI, outgoingBuilding, ref buildingBuffer[outgoingBuilding], material, candidateAI))
-											{
-												continue;
-											}
+											// Yes - reverse warehouse priority modifier (this doesn't apply to warehouse-warehouse or warehouse-outside connection transfers).
 
-											// Is the candidate building also a warehouse, or an outside connection?
-											if (candidateAI is WarehouseAI || candidateAI is OutsideConnectionAI)
+											// Note - warehouses set to fill/empty aren't assigned the bonus to begin with, so this decreases below the original.  This is intentional to prioritise other transfers.
+											otherPriorityPlus -= AddOffers.warehousePriority * 2f;
+											if (otherPriorityPlus < 0)
 											{
-												// Yes - reverse warehouse priority modifier (this doesn't apply to warehouse-warehouse or warehouse-outside connection transfers).
+												otherPriorityPlus = 0;
+											}
+										}
+										else
+										{
+											// No - add additional warehouse distance divisor.
+											distanceModifier /= (1 + AddOffers.warehousePriority);
+										}
+									}
+									else if (candidateAI is WarehouseAI)
+									{
+										// Is this an outside connection?
+										if (!(outgoingAI is OutsideConnectionAI))
+										{
+											// No - adjust distance modifier for warehouse priority (this doesn't apply to warehouse-warehouse or warehouse-outside connection transfers).
+											distanceModifier /= (1 + AddOffers.warehousePriority);
+										}
+									}
+									else if (candidateAI is OutsideConnectionAI)
+									{
+										// Apply outside connection boosts as applicable.
+										if (!outgoingIsOutside)
+										{
+											if (candidateInfo.m_class.m_subService == ItemClass.SubService.PublicTransportTrain)
+											{
+												otherPriorityPlus += outsideRailPriority;
+												distanceModifier /= (1 + Mathf.Pow(outsideRailPriority, 2));
+											}
+											else if (candidateInfo.m_class.m_subService == ItemClass.SubService.PublicTransportShip)
+											{
+												otherPriorityPlus += outsideShipPriority;
+												distanceModifier /= (1 + Mathf.Pow(outsideShipPriority, 2));
+											}
+										}
+									}
+									else if (outgoingRailBoosted)
+									{
+										otherPriorityPlus += outsideRailPriority;
+										distanceModifier /= (1 + Mathf.Pow(outsideRailPriority, 2));
+									}
+									else if (outgoingShipBoosted)
+									{
+										otherPriorityPlus += outsideShipPriority;
+										distanceModifier /= (1 + Mathf.Pow(outsideShipPriority, 2));
+									}
 
-												// Note - warehouses set to fill/empty aren't assigned the bonus to begin with, so this decreases below the original.  This is intentional to prioritise other transfers.
-												otherPriorityPlus -= AddOffers.warehousePriority * 2f;
-												if (otherPriorityPlus < 0)
-												{
-													otherPriorityPlus = 0;
-												}
-											}
-											else
-											{
-												// No - add additional warehouse distance divisor.
-												distanceModifier /= (1 + AddOffers.warehousePriority);
-											}
-										}
-										else if (candidateAI is WarehouseAI)
-										{
-											// Is this an outside connection?
-											if (!(outgoingAI is OutsideConnectionAI))
-											{
-												// No - adjust distance modifier for warehouse priority (this doesn't apply to warehouse-warehouse or warehouse-outside connection transfers).
-												distanceModifier /= (1 + AddOffers.warehousePriority);
-											}
-										}
-										else if (candidateAI is OutsideConnectionAI)
-										{
-											// Apply outside connection boosts as applicable.
-											if (!outgoingIsOutside)
-											{
-												if (candidateInfo.m_class.m_subService == ItemClass.SubService.PublicTransportTrain)
-												{
-													otherPriorityPlus += outsideRailPriority;
-													distanceModifier /= (1 + Mathf.Pow(outsideRailPriority, 2));
-												}
-												else if (candidateInfo.m_class.m_subService == ItemClass.SubService.PublicTransportShip)
-												{
-													otherPriorityPlus += outsideShipPriority;
-													distanceModifier /= (1 + Mathf.Pow(outsideShipPriority, 2));
-												}
-											}
-										}
-										else if (outgoingRailBoosted)
-										{
-											otherPriorityPlus += outsideRailPriority;
-											distanceModifier /= (1 + Mathf.Pow(outsideRailPriority, 2));
-										}
-										else if (outgoingShipBoosted)
-										{
-											otherPriorityPlus += outsideShipPriority;
-											distanceModifier /= (1 + Mathf.Pow(outsideShipPriority, 2));
-										}
+									// Position of incoming building (source building or vehicle source building)
+									Vector3 inCandidatePosition = inCandidateBuilding == 0 ? incomingOfferCandidate.Position : buildingBuffer[inCandidateBuilding].m_position;
 
-										// Position of incoming building (source building or vehicle source building)
-										Vector3 inCandidatePosition = inCandidateBuilding == 0 ? incomingOfferCandidate.Position : buildingBuffer[inCandidateBuilding].m_position;
-
-										if (!ChecksPassed(false, (byte)otherPriority, (byte)thisPriority, inCandidateBuilding, outgoingBuilding, districtManager.GetDistrict(inCandidatePosition), outgoingDistrict, districtManager.GetPark(inCandidatePosition), outgoingPark, material))
-										{
-											continue;
-										}
+									if (!ChecksPassed(false, (byte)otherPriority, (byte)thisPriority, inCandidateBuilding, outgoingBuilding, districtManager.GetDistrict(inCandidatePosition), outgoingDistrict, districtManager.GetPark(inCandidatePosition), outgoingPark, material))
+									{
+										continue;
 									}
 								}
 								// ---- End code insert
