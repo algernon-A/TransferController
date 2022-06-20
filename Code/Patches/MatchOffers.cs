@@ -575,7 +575,7 @@ namespace TransferController
 							// num32 = otherBlock
 							int otherBlock = (int)material * 8 + otherPriority;
 
-							// num33 = blockCouBnt
+							// num33 = blockCount
 							int blockCount = m_incomingCount[otherBlock];
 
 							// num34 - otherPriorityPlus
