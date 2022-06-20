@@ -240,7 +240,8 @@ namespace TransferController
 							// num9 = lowerPriorityBound
 							int lowerPriorityBound = Mathf.Max(0, 2 - thisPriority);
 
-							int num10 = ((!incomingOfferToMatch.Exclude) ? lowerPriorityBound : Mathf.Max(0, offerBlock - thisPriority));
+							// num10 = minPriority (minimum priority to accept)
+							int minPriority = ((!incomingOfferToMatch.Exclude) ? lowerPriorityBound : Mathf.Max(0, offerBlock - thisPriority));
 
 							// num11 = matchedPriority
 							int matchedPriority = -1;
@@ -278,7 +279,7 @@ namespace TransferController
 								{
 									// transferOffer 2 = outgoingOfferCandidate
 									TransferManager.TransferOffer outgoingOfferCandidate = m_outgoingOffers[otherBlock * 256 + candidateIndex];
-									if (!(incomingOfferToMatch.m_object != outgoingOfferCandidate.m_object) || (outgoingOfferCandidate.Exclude && otherPriority < num10))
+									if (!(incomingOfferToMatch.m_object != outgoingOfferCandidate.m_object) || (outgoingOfferCandidate.Exclude && otherPriority < minPriority))
 									{
 										continue;
 									}
@@ -552,7 +553,9 @@ namespace TransferController
 					{
 						// num9 = lowerPriorityBound
 						int lowerPriorityBound = Mathf.Max(0, 2 - thisPriority);
-						int num26 = ((!outgoingOfferToMatch.Exclude) ? lowerPriorityBound : Mathf.Max(0, 3 - thisPriority));
+
+						// num26 = lowerPriorityBound (resuing from above)
+						lowerPriorityBound = ((!outgoingOfferToMatch.Exclude) ? lowerPriorityBound : Mathf.Max(0, 3 - thisPriority));
 
 						// num27 = matchedPriority
 						int matchedPriority = -1;
@@ -572,7 +575,7 @@ namespace TransferController
 							// num32 = otherBlock
 							int otherBlock = (int)material * 8 + otherPriority;
 
-							// num33 = blockCount
+							// num33 = blockCouBnt
 							int blockCount = m_incomingCount[otherBlock];
 
 							// num34 - otherPriorityPlus
@@ -590,7 +593,7 @@ namespace TransferController
 							{
 								// transferOffer5 = incomingOfferCandidate
 								TransferManager.TransferOffer incomingOfferCandidate = m_incomingOffers[otherBlock * 256 + candidateIndex];
-								if (!(outgoingOfferToMatch.m_object != incomingOfferCandidate.m_object) || (incomingOfferCandidate.Exclude && otherPriority < num26))
+								if (!(outgoingOfferToMatch.m_object != incomingOfferCandidate.m_object) || (incomingOfferCandidate.Exclude && otherPriority < lowerPriorityBound))
 								{
 									continue;
 								}
