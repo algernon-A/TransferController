@@ -50,12 +50,12 @@ namespace TransferController
 
         // Distance-only matching.
         [XmlElement("DistanceOnly")]
-        public bool XMLDistanceOnly { get => TransferManagerPatches.distanceOnly; set => TransferManagerPatches.distanceOnly = value; }
+        public bool XMLDistanceOnly { get => Matching.distanceOnly; set => Matching.distanceOnly = value; }
 
 
         // Matching intensity.
         [XmlElement("DistanceMultiplier")]
-        public int XMLDistanceMultiplier { get => TransferManagerPatches.distancePercentage; set => TransferManagerPatches.distancePercentage = value; }
+        public int XMLDistanceMultiplier { get => Matching.distancePercentage; set => Matching.distancePercentage = value; }
 
 
         // Warehouse priority boost.
@@ -64,12 +64,12 @@ namespace TransferController
 
         // Outside rail connection boost.
         [XmlElement("OutsideRailPriority")]
-        public int XMLOutsideRailPriority { get => TransferManagerPatches.outsideRailPriority; set => TransferManagerPatches.outsideRailPriority = value; }
+        public int XMLOutsideRailPriority { get => Matching.outsideRailPriority; set => Matching.outsideRailPriority = value; }
 
 
         // Outside shipping connection boost.
         [XmlElement("OutsideShipPriority")]
-        public int XMLOutsideShipPriority { get => TransferManagerPatches.outsideShipPriority; set => TransferManagerPatches.outsideShipPriority = value; }
+        public int XMLOutsideShipPriority { get => Matching.outsideShipPriority; set => Matching.outsideShipPriority = value; }
 
 
         // Monitor pathfind failures.

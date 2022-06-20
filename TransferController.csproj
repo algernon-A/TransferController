@@ -61,13 +61,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Code\Loading.cs" />
+    <Compile Include="Code\Matching\Matching.cs" />
     <Compile Include="Code\MessageBox\ListMessageBox.cs" />
     <Compile Include="Code\MessageBox\MessageBoxBase.cs" />
     <Compile Include="Code\Mod.cs" />
     <Compile Include="Code\Patches\AddOffers.cs" />
     <Compile Include="Code\Patches\BuildingWorldInfoPanel.cs" />
     <Compile Include="Code\Patches\Escape.cs" />
-    <Compile Include="Code\Patches\MatchOffers.cs" />
+    <Compile Include="Code\Patches\TransferManagerPatches.cs" />
     <Compile Include="Code\Patches\Patcher.cs" />
     <Compile Include="Code\Patches\PathfindFailure.cs" />
     <Compile Include="Code\Serialization.cs" />
