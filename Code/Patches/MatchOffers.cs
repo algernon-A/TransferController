@@ -16,6 +16,9 @@ namespace TransferController
 	[HarmonyPatch]
 	public static class TransferManagerPatches
 	{
+		// Distance matching only (don't factor priority into distance).
+		internal static bool distanceOnly = true;
+
 		// Matching distance multiplier.
 		internal static int distancePercentage = 100;
 
@@ -252,6 +255,10 @@ namespace TransferController
 							// num13 = bestDistanceValue
 							float bestDistanceValue = -1f;
 
+							/// ---- Start code insert
+							float closestDistance = float.MaxValue;
+							/// ---- End code insert
+
 							// num14 = currentIncomingIndex
 							int currentIncomingIndex = outgoingIndex;
 
@@ -396,29 +403,41 @@ namespace TransferController
 									// num19 = squaredDistance
 									float squaredDistance = Vector3.SqrMagnitude(outgoingOfferCandidate.Position - incomingPosition);
 
-									// num20 = distanceValue
-									// E.g. distanceMultiplier for Fire is 1E-0.5f.
-									// For other priority 5 and distance 1,000: 5.1 - 5.1 / (1f - 1,000^2 * 0.00001) = 0.4636364
-									// For other priority 5 and distance 400: 5.1 - 5.1 / (1f - 400^2 * 0.00001) = 1.961539
-									// For other priority 5 and distance 100: 5.1 - 5.1 / (1f - 100^2 * 0.00001) = 4.636364
-									// For other priority 2 and distance 1,000: 2.1 - 2.1 / (1f - 1,000^2 * 0.00001) = 0.1909091
-									// For other priority 2 and distance 400: 2.1 - 2.1 / (1f - 400^2 * 0.00001) = 0.8076923
-									// For other priority 2 and distance 100: 2.1 - 2.1 / (1f - 100^2 * 0.00001) = 1.909091
-									// This means that distance is more important for higher-level transfers.
-									// A lower-priority transfer will take priority only if it's much closer, or conversely, a higher-priority offer will take precedence over a greater radius.
-									float distanceValue = ((!(distanceMultiplier < 0f)) ? (otherPriorityPlus / (1f + squaredDistance * distanceMultiplier)) : (otherPriorityPlus - otherPriorityPlus / (1f - squaredDistance * distanceMultiplier))) * distanceModifier;
-									if (distanceValue > bestDistanceValue)
+
+									/// ---- Start code replacement (additional if-else).
+									if (squaredDistance < closestDistance)
 									{
 										matchedPriority = otherPriority;
 										matchedIndex = candidateIndex;
-										bestDistanceValue = distanceValue;
-
-										// Automatically accept offers within the optimal distance.
-										if (squaredDistance < optimalDistanceSquared)
+										closestDistance = squaredDistance;
+									}
+									else
+									{
+										// num20 = distanceValue
+										// E.g. distanceMultiplier for Fire is 1E-0.5f.
+										// For other priority 5 and distance 1,000: 5.1 - 5.1 / (1f - 1,000^2 * 0.00001) = 0.4636364
+										// For other priority 5 and distance 400: 5.1 - 5.1 / (1f - 400^2 * 0.00001) = 1.961539
+										// For other priority 5 and distance 100: 5.1 - 5.1 / (1f - 100^2 * 0.00001) = 4.636364
+										// For other priority 2 and distance 1,000: 2.1 - 2.1 / (1f - 1,000^2 * 0.00001) = 0.1909091
+										// For other priority 2 and distance 400: 2.1 - 2.1 / (1f - 400^2 * 0.00001) = 0.8076923
+										// For other priority 2 and distance 100: 2.1 - 2.1 / (1f - 100^2 * 0.00001) = 1.909091
+										// This means that distance is more important for higher-level transfers.
+										// A lower-priority transfer will take priority only if it's much closer, or conversely, a higher-priority offer will take precedence over a greater radius.
+										float distanceValue = ((!(distanceMultiplier < 0f)) ? (otherPriorityPlus / (1f + squaredDistance * distanceMultiplier)) : (otherPriorityPlus - otherPriorityPlus / (1f - squaredDistance * distanceMultiplier))) * distanceModifier;
+										if (distanceValue > bestDistanceValue)
 										{
-											break;
+											matchedPriority = otherPriority;
+											matchedIndex = candidateIndex;
+											bestDistanceValue = distanceValue;
+
+											// Automatically accept offers within the optimal distance.
+											if (squaredDistance < optimalDistanceSquared)
+											{
+												break;
+											}
 										}
 									}
+									/// --- End code replacement (additional if-else)
 								}
 								currentIncomingIndex = 0;
 							}
@@ -566,6 +585,10 @@ namespace TransferController
 						// num29 = bestDistanceValue
 						float bestDistanceValue = -1f;
 
+						/// ---- Start code insert
+						float closestDistance = float.MaxValue;
+						/// ---- End code insert
+
 						// num30 = currentOutgoingIndex
 						int currentOutgoingIndex = incomingIndex;
 
@@ -712,21 +735,32 @@ namespace TransferController
 								// num35 = squaredDistance
 								float squaredDistance = Vector3.SqrMagnitude(incomingOfferCandidate.Position - outgoingPosition);
 
-								// num36 = distanceValue
-								// See above re num20 for details.
-								float distanceValue = (!(distanceMultiplier < 0f)) ? (otherPriorityPlus / (1f + squaredDistance * distanceMultiplier)) : (otherPriorityPlus - otherPriorityPlus / (1f - squaredDistance * distanceMultiplier)) * distanceModifier;
-								if (distanceValue > bestDistanceValue)
+								/// ---- Start code replacement (additional if-else).
+								if (squaredDistance < closestDistance)
 								{
 									matchedPriority = otherPriority;
 									matchedIndex = candidateIndex;
-									bestDistanceValue = distanceValue;
-
-									// Automatically accept offers within the optimal distance.
-									if (squaredDistance < optimalDistanceSquared)
+									closestDistance = squaredDistance;
+								}
+								else
+								{
+									// num36 = distanceValue
+									// See above re num20 for details.
+									float distanceValue = (!(distanceMultiplier < 0f)) ? (otherPriorityPlus / (1f + squaredDistance * distanceMultiplier)) : (otherPriorityPlus - otherPriorityPlus / (1f - squaredDistance * distanceMultiplier)) * distanceModifier;
+									if (distanceValue > bestDistanceValue)
 									{
-										break;
+										matchedPriority = otherPriority;
+										matchedIndex = candidateIndex;
+										bestDistanceValue = distanceValue;
+
+										// Automatically accept offers within the optimal distance.
+										if (squaredDistance < optimalDistanceSquared)
+										{
+											break;
+										}
 									}
 								}
+								/// --- End code replacement (additional if-else)
 							}
 							currentOutgoingIndex = 0;
 						}

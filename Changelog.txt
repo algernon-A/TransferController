@@ -1,4 +1,7 @@
-﻿Version 0.5 -
+﻿- Add distance-only matching option
+
+
+Version 0.5 -
 
 - Add configurable boost to outside rail and shipping connections
 - Warehouse vehicle quotas no longer affect incoming transfers

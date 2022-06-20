@@ -48,6 +48,11 @@ namespace TransferController
         }
 
 
+        // Distance-only matching.
+        [XmlElement("DistanceOnly")]
+        public bool XMLDistanceOnly { get => TransferManagerPatches.distanceOnly; set => TransferManagerPatches.distanceOnly = value; }
+
+
         // Matching intensity.
         [XmlElement("DistanceMultiplier")]
         public int XMLDistanceMultiplier { get => TransferManagerPatches.distancePercentage; set => TransferManagerPatches.distancePercentage = value; }

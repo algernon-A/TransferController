@@ -15,6 +15,9 @@ namespace TransferController
         private const float GroupMargin = 40f;
 
 
+        // Components.
+        private UISlider distanceSlider;
+
         /// <summary>
         /// Performs initial setup for the panel; we don't use Start() as that's not sufficiently reliable (race conditions), and is not needed with the dynamic create/destroy process.
         /// </summary>
@@ -41,11 +44,20 @@ namespace TransferController
             keyMapping.uIPanel.relativePosition = new Vector2(LeftMargin, currentY);
             currentY += keyMapping.uIPanel.height + GroupMargin;
 
+            // Distance matching only checkbox.
+            UICheckBox distanceOnlyCheck = UIControls.AddPlainCheckBox(this, LeftMargin, currentY, Translations.Translate("TFC_OPT_DON"));
+            distanceOnlyCheck.tooltip = Translations.Translate("TFC_OPT_DON_TIP");
+            distanceOnlyCheck.tooltipBox = TooltipUtils.TooltipBox;
+            distanceOnlyCheck.isChecked = TransferManagerPatches.distanceOnly;
+            distanceOnlyCheck.eventCheckChanged += (control, isChecked) => { TransferManagerPatches.distanceOnly = isChecked; distanceSlider.parent.isVisible = !isChecked; };
+            currentY += distanceOnlyCheck.height + Margin;
+
             // Distance multiplier slider.
-            UISlider distanceSlider = UIControls.AddSliderWithValue(this, Translations.Translate("TFC_OPT_DIS"), 0f, 100f, 1f, TransferManagerPatches.distancePercentage, (value) => { TransferManagerPatches.distancePercentage = (int)value.RoundToNearest(1f); });
+            distanceSlider = UIControls.AddSliderWithValue(this, Translations.Translate("TFC_OPT_DIS"), 0f, 100f, 1f, TransferManagerPatches.distancePercentage, (value) => { TransferManagerPatches.distancePercentage = (int)value.RoundToNearest(1f); });
             distanceSlider.parent.relativePosition = new Vector2(LeftMargin, currentY);
             distanceSlider.tooltip = Translations.Translate("TFC_OPT_DIS_TIP");
             distanceSlider.tooltipBox = TooltipUtils.TooltipBox;
+            distanceSlider.parent.isVisible = !distanceOnlyCheck.isChecked;
             currentY += distanceSlider.parent.height + GroupMargin;
 
             // Warehouse priority slider.
