@@ -41,7 +41,7 @@ namespace TransferController
 			int reasonBlock = (int)reason * 8;
 
 			// Match by priority within this reason, descending.
-			for (int priority = 7; priority > 0; --priority)
+			for (int priority = 7; priority >= 0; --priority)
 			{
 				int priorityIndex = reasonBlock + priority;
 				int incomingIndex = 0, outgoingIndex = 0;
