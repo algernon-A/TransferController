@@ -53,7 +53,7 @@ namespace TransferController
             currentY += newAlgorithmCheck.height + Margin;
 
             // Distance multiplier slider.
-            distanceSlider = UIControls.AddSliderWithValue(this, Translations.Translate("TFC_OPT_DIS"), 0f, 100f, 1f, Matching.distancePercentage, (value) => { Matching.distancePercentage = (int)value.RoundToNearest(1f); });
+            distanceSlider = UIControls.AddSliderWithValue(this, Translations.Translate("TFC_OPT_DIS"), 0f, 100f, 1f, OldMatching.distancePercentage, (value) => { OldMatching.distancePercentage = (int)value.RoundToNearest(1f); });
             distanceSlider.parent.relativePosition = new Vector2(LeftMargin, currentY);
             distanceSlider.tooltip = Translations.Translate("TFC_OPT_DIS_TIP");
             distanceSlider.tooltipBox = TooltipUtils.TooltipBox;

@@ -15,7 +15,7 @@ namespace TransferController
 
         // Flag.
         internal static bool Patched => _patched;
-        private static bool _patched = false;
+        private static bool _patched = false, _addOffersPatched = false;
         private static bool _useNewAlgorithm = true;
 
 
@@ -28,8 +28,15 @@ namespace TransferController
 
             set
             {
-                PatchNewAlgorithm(value);
-                _useNewAlgorithm = value;
+                // Don't do anything if already in effect.
+                if (value != _useNewAlgorithm)
+                {
+                    // Update value.
+                    _useNewAlgorithm = value;
+
+                    // Apply patches.
+                    PatchNewAlgorithm(new Harmony(harmonyID), value);
+                }
             }
         }
 
@@ -84,13 +91,47 @@ namespace TransferController
         /// <summary>
         /// Applies Harmomny patches for the matching algorithm selection.
         /// </summary>
-        /// <param name="usingNew">True to apply new algorithm, false to use the legacy algorithm.</param>
-        private static void PatchNewAlgorithm(bool usingNew)
+        /// <param name="harmonyInstance">Harmony instance</param>
+        /// <param name="usingNew">True to apply new algorithm, false to use the legacy algorithm</param>
+        private static void PatchNewAlgorithm(Harmony harmonyInstance, bool usingNew)
         {
             // Ensure Harmony is ready before patching.
             if (HarmonyHelper.IsHarmonyInstalled)
             {
-                TransferManagerPatches.Patch(new Harmony(harmonyID), usingNew);
+                // Patch MatchOffers.
+                TransferManagerPatches.Patch(harmonyInstance, usingNew);
+
+                // Patch/unpatch AddOffers patches.
+                MethodInfo matchIncomingTarget = typeof(TransferManager).GetMethod(nameof(TransferManager.AddIncomingOffer));
+                MethodInfo matchOutgoingTarget = typeof(TransferManager).GetMethod(nameof(TransferManager.AddOutgoingOffer));
+                MethodInfo matchIncomingPatch = typeof(AddOffers).GetMethod(nameof(AddOffers.AddIncomingOffer));
+                MethodInfo matchOutgoingPatch = typeof(AddOffers).GetMethod(nameof(AddOffers.AddOutgoingOffer));
+
+                // Patch/unpatch MatchOffers.
+                if (usingNew)
+                {
+                    // Applying new algorithm: unpatch legacy patches if they're appied.
+                    if (_addOffersPatched)
+                    {
+                        Logging.Message("unapplying MatchOffers prefixes");
+
+                        harmonyInstance.Unpatch(matchIncomingTarget, matchIncomingPatch);
+                        harmonyInstance.Unpatch(matchOutgoingTarget, matchOutgoingPatch);
+                        _addOffersPatched = false;
+                    }
+                }
+                else
+                {
+                    // Applying legacy algorithm: patch legacy patches if we haven't aready.
+                    if (!_addOffersPatched)
+                    {
+                        Logging.Message("applying MatchOffers prefixes");
+
+                        harmonyInstance.Patch(matchIncomingTarget, prefix: new HarmonyMethod(matchIncomingPatch));
+                        harmonyInstance.Patch(matchOutgoingTarget, prefix: new HarmonyMethod(matchOutgoingPatch));
+                        _addOffersPatched = true;
+                    }
+                }
             }
             else
             {

@@ -1,5 +1,4 @@
 ﻿using ColossalFramework;
-using HarmonyLib;
 
 
 namespace TransferController
@@ -7,7 +6,6 @@ namespace TransferController
 	/// <summary>
 	/// Harmony patches to manipulate priorities of new offers.
 	/// </summary>
-	[HarmonyPatch(typeof(TransferManager), nameof(TransferManager.AddIncomingOffer))]
 	public static class AddOffers
 	{
 		// Warehouse priority value.
@@ -19,20 +17,14 @@ namespace TransferController
 		/// </summary>
 		/// <param name="material">Transfer material</param>
 		/// <param name="offer">Incoming offer</param>
-		[HarmonyPatch(nameof(TransferManager.AddIncomingOffer))]
-		[HarmonyPrefix]
 		public static void AddIncomingOffer(TransferManager.TransferReason material, ref TransferManager.TransferOffer offer) => PrioritizeOffer(material, ref offer, Building.Flags.Downgrading);
 
-
-
-
+		
 		/// <summary>
 		/// Harmony Prefix to manipulate priorities of incoming or outgoing offers.
 		/// </summary>
 		/// <param name="material">Transfer material</param>
 		/// <param name="offer">Incoming offer</param>
-		[HarmonyPatch(nameof(TransferManager.AddOutgoingOffer))]
-		[HarmonyPrefix]
 		public static void AddOutgoingOffer(TransferManager.TransferReason material, ref TransferManager.TransferOffer offer) => PrioritizeOffer(material, ref offer, Building.Flags.Filling);
 
 
@@ -44,12 +36,6 @@ namespace TransferController
 		/// <param name="warehouseFlags">Building flags to skip warehouse prioritization (e.g. skip prioritization of outgoing offers if warehouse is filling)</param>
 		private static void PrioritizeOffer(TransferManager.TransferReason material, ref TransferManager.TransferOffer offer, Building.Flags warehouseFlags)
 		{
-			// Don't do this if using new matching algorithm.
-			if (Patcher.UseNewAlgorithm)
-			{
-				return;
-			}
-
 			// Check for valid building.
 			if (offer.Building != 0)
 			{

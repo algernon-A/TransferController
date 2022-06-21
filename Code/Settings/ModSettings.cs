@@ -55,7 +55,7 @@ namespace TransferController
 
         // Matching intensity.
         [XmlElement("DistanceMultiplier")]
-        public int XMLDistanceMultiplier { get => Matching.distancePercentage; set => Matching.distancePercentage = value; }
+        public int XMLDistanceMultiplier { get => OldMatching.distancePercentage; set => OldMatching.distancePercentage = value; }
 
 
         // Warehouse priority boost.

@@ -49,7 +49,7 @@ namespace TransferController
 
 			// Patch method with new pre-emptive prefix.
 			MethodBase targetMethod = typeof(TransferManager).GetMethod("MatchOffers", BindingFlags.Instance | BindingFlags.NonPublic);
-			patchMethod = newAlgorithm ? AccessTools.Method(typeof(NewMatching), nameof(NewMatching.MatchOffers)) : AccessTools.Method(typeof(Matching), nameof(Matching.MatchOffers));
+			patchMethod = newAlgorithm ? AccessTools.Method(typeof(Matching), nameof(Matching.MatchOffers)) : AccessTools.Method(typeof(OldMatching), nameof(OldMatching.MatchOffers));
 			harmonyInstance.Patch(targetMethod, transpiler: new HarmonyMethod(typeof(TransferManagerPatches), nameof(TransferManagerPatches.MatchOffersTranspiler)));
 			Logging.KeyMessage("MatchOffers patched");
 		}

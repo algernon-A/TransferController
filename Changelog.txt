@@ -1,4 +1,4 @@
-﻿- Add distance-only matching option
+﻿- New feature: new distance-based matching algorithm
 - Add support for education transfers
 
 
