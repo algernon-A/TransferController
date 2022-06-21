@@ -62,6 +62,7 @@
   <ItemGroup>
     <Compile Include="Code\Loading.cs" />
     <Compile Include="Code\Matching\Matching.cs" />
+    <Compile Include="Code\Matching\NewMatching.cs" />
     <Compile Include="Code\MessageBox\ListMessageBox.cs" />
     <Compile Include="Code\MessageBox\MessageBoxBase.cs" />
     <Compile Include="Code\Mod.cs" />

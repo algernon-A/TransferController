@@ -8,7 +8,7 @@ using HarmonyLib;
 namespace TransferController
 {
 	/// <summary>
-	/// Custom offer matching.
+	/// Custom offer matching - old version.
 	/// </summary>
 	[HarmonyPatch]
 	public static class Matching
@@ -57,6 +57,12 @@ namespace TransferController
 			}
 
 			// --- Setup for code inserts.
+			if (distanceOnly)
+			{
+				NewMatching.MatchOffers(__instance, material, m_incomingCount, m_outgoingCount, m_incomingOffers, m_outgoingOffers, m_incomingAmount, m_outgoingAmount);
+				return;
+			}
+
 			DistrictManager districtManager = Singleton<DistrictManager>.instance;
 			Vehicle[] vehicleBuffer = Singleton<VehicleManager>.instance.m_vehicles.m_buffer;
 			Building[] buildingBuffer = Singleton<BuildingManager>.instance.m_buildings.m_buffer;
@@ -795,7 +801,7 @@ namespace TransferController
 		/// <param name="outgoingPark">Park area of outgoing offer</param>
 		/// <param name="reason">Transfer reason</param>
 		/// <returns>True if the transfer is permitted, false if prohibited</returns>
-		private static bool ChecksPassed(bool incoming, byte priorityIn, byte priorityOut, ushort incomingBuildingID, ushort outgoingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason reason)
+		internal static bool ChecksPassed(bool incoming, byte priorityIn, byte priorityOut, ushort incomingBuildingID, ushort outgoingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason reason)
 		{
 			// First, check for incoming restrictions.
 			if (IncomingChecksPassed(incomingBuildingID, outgoingBuildingID, incomingDistrict, outgoingDistrict, incomingPark, outgoingPark, reason))

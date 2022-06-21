@@ -44,6 +44,12 @@ namespace TransferController
 		/// <param name="warehouseFlags">Building flags to skip warehouse prioritization (e.g. skip prioritization of outgoing offers if warehouse is filling)</param>
 		private static void PrioritizeOffer(TransferManager.TransferReason material, ref TransferManager.TransferOffer offer, Building.Flags warehouseFlags)
 		{
+			// Don't do this if using new matching algorithm.
+			if (Matching.distanceOnly)
+			{
+				return;
+			}
+
 			// Check for valid building.
 			if (offer.Building != 0)
 			{

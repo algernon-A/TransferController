@@ -83,7 +83,7 @@ namespace TransferController
 			yield return new CodeInstruction(OpCodes.Ldfld, m_incomingAmountField);
 			yield return new CodeInstruction(OpCodes.Ldarg_0);
 			yield return new CodeInstruction(OpCodes.Ldfld, m_outgoingAmountField);
-			yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Matching), nameof(Matching.MatchOffers)));
+			yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(NewMatching), nameof(NewMatching.MatchOffers)));
 
 			// Return from method here (after this is original code, which we obviously don't want to execute).
 			yield return new CodeInstruction(OpCodes.Ret);

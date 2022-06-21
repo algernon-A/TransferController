@@ -67,13 +67,13 @@ namespace TransferController
         /// <summary>
         /// Checks to see if the specified warehouse has available vehicles for dispatch to serve the proposed transfer after allowing for quotas.
         /// </summary>
-        /// <param name="warehouseAI">Warehouse AI reference</param>
+        /// <param name="warehouseAI">Warehouse building AI reference</param>
         /// <param name="warehouseID">Warehouse building ID</param>
         /// <param name="warehouseData">Warehouse building data record</param>
         /// <param name="material">Transfer material</param>
         /// <param name="otherAI">AI reference for the other building in the transfer</param>
         /// <returns>True if transfer permitted, false otherwise</returns>
-        internal static bool CheckVehicleQuota(WarehouseAI warehouseAI, ushort warehouseID, ref Building warehouseData, TransferManager.TransferReason material, BuildingAI otherAI)
+        internal static bool CheckVehicleQuota(BuildingAI warehouseAI, ushort warehouseID, ref Building warehouseData, TransferManager.TransferReason material, BuildingAI otherAI)
         {
             // Check to see if there's an entry for this warehouse.
             if (warehouseRecords.TryGetValue(warehouseID, out WarehouseRecord warehouseRecord))
@@ -83,17 +83,20 @@ namespace TransferController
                     ((warehouseRecord.flags & WarehouseFlags.ReserveOutside) != 0 && !(otherAI is OutsideConnectionAI)) ||
                     ((warehouseRecord.flags & WarehouseFlags.ReserveCity) != 0) && (otherAI is OutsideConnectionAI))
                 {
-                    // Retrieve reserved vehicle count - don't bother checking if no vehicles are reserved.
-                    byte reservedVehicles = GetReservedVehicles(warehouseID);
-                    if (reservedVehicles != 0)
+                    if (warehouseAI is WarehouseAI thisWarehouseAI)
                     {
-                        // Calculate non-reserved vehicle count quota and compare to in-use vehicle count.
-                        int quota = (int)(warehouseAI.m_truckCount - reservedVehicles);
-                        int vehicleCount = 0, cargoLoad = 0, cargoCapacity = 0, inUse = 0;
-                        CalculateOwnVehicles(warehouseAI, warehouseID, ref warehouseData, material, ref vehicleCount, ref cargoLoad, ref cargoCapacity, ref inUse);
-                        
-                        // Permit transfer if we've got available (non-in-use) vehicles less than the maximum quota permitted.
-                        return inUse < quota;
+                        // Retrieve reserved vehicle count - don't bother checking if no vehicles are reserved.
+                        byte reservedVehicles = GetReservedVehicles(warehouseID);
+                        if (reservedVehicles != 0)
+                        {
+                            // Calculate non-reserved vehicle count quota and compare to in-use vehicle count.
+                            int quota = (int)(thisWarehouseAI.m_truckCount - reservedVehicles);
+                            int vehicleCount = 0, cargoLoad = 0, cargoCapacity = 0, inUse = 0;
+                            CalculateOwnVehicles(thisWarehouseAI, warehouseID, ref warehouseData, material, ref vehicleCount, ref cargoLoad, ref cargoCapacity, ref inUse);
+
+                            // Permit transfer if we've got available (non-in-use) vehicles less than the maximum quota permitted.
+                            return inUse < quota;
+                        }
                     }
                 }
             }
