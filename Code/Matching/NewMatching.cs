@@ -110,11 +110,13 @@ namespace TransferController
 			DistrictManager districtManager = Singleton<DistrictManager>.instance;
 			Vehicle[] vehicleBuffer = Singleton<VehicleManager>.instance.m_vehicles.m_buffer;
 			Building[] buildingBuffer = Singleton<BuildingManager>.instance.m_buildings.m_buffer;
+			Citizen[] citizenBuffer = Singleton<CitizenManager>.instance.m_citizens.m_buffer;
 
 			// Defaults.
 			byte offerDistrict = 0, offerPark = 0;
 			bool offerIsOutside = false;
 			BuildingAI offerBuildingAI = null;
+			Vector3 offerPosition = offer.Position;
 
 			/*
 			 * Matching is done in descending priority order; a lower priority bound is set for lower priorities;
@@ -134,22 +136,49 @@ namespace TransferController
 				{
 					offerBuilding = vehicleBuffer[offerVehicle].m_sourceBuilding;
 				}
-			}
+				else
+				{
+					// No vehicle or building - use citizen home building, if appropriate.
+					uint offerCitizen = offer.Citizen;
+					if (offerCitizen != 0)
+					{
+						switch (reason)
+						{
+							// These cases are picked up from their current location.
+							case TransferManager.TransferReason.Sick:
+							case TransferManager.TransferReason.Sick2:
+							case TransferManager.TransferReason.SickMove:
+							case TransferManager.TransferReason.Taxi:
+								break;
+							// Otherwise, we use the citizen's home building.
+							default:
+								offerBuilding = citizenBuffer[offerCitizen].m_homeBuilding;
+								break;
+						}
+					}
+				}
 
-			// Position of incoming building (source building or vehicle source building), if any.
-			if (offerBuilding != 0)
+				// Did we find a suitable building?
+				if (offerBuilding != 0)
+				{
+					// Yes - update offer position and AI reference to match.
+					offerPosition = buildingBuffer[offerBuilding].m_position;
+					offerBuildingAI = buildingBuffer[offerBuilding].Info.m_buildingAI;
+				}
+			}
+			else
 			{
-				// Building district and park.
-				Vector3 offerBuildingPosition = buildingBuffer[offerBuilding].m_position;
-				offerDistrict = districtManager.GetDistrict(offerBuildingPosition);
-				offerPark = districtManager.GetPark(offerBuildingPosition);
-
-				// Get AI reference.
+				// Initial offer was a building; assume the offer position is the building position.
+				// Just update AI reference.
 				offerBuildingAI = buildingBuffer[offerBuilding].Info.m_buildingAI;
-
-				// Outside connection status.
-				offerIsOutside = offerBuildingAI is OutsideConnectionAI;
 			}
+
+			// Get offer district and park area.
+			offerDistrict = districtManager.GetDistrict(offerPosition);
+			offerPark = districtManager.GetPark(offerPosition);
+
+			// Outside connection status.
+			offerIsOutside = offerBuildingAI is OutsideConnectionAI;
 
 			// Keep going until we've used up all the offer amount with matched transfers.
 			int outstandingAmount = offer.Amount;
@@ -183,8 +212,13 @@ namespace TransferController
 							continue;
 						}
 
-						// If no building, use vehicle source building, if any.
+						// Defaults.
+						Vector3 candidatePosition = candidate.Position;
 						ushort candidateBuilding = candidate.Building;
+						BuildingAI candidateBuildingAI = null;
+						float distanceModifier = 1f;
+
+						// If no building, use vehicle source building, if any.
 						if (candidateBuilding == 0)
 						{
 							ushort candidateVehicle = candidate.Vehicle;
@@ -192,44 +226,65 @@ namespace TransferController
 							{
 								candidateBuilding = vehicleBuffer[candidateVehicle].m_sourceBuilding;
 							}
-						}
 
-						// Defaults.
-						BuildingAI candidateBuildingAI = null;
-						float distanceModifier = 1f;
-
-						// Only perform these checks if we've got two valid buildings.
-						if (candidateBuilding != 0)
-						{
-							// Check for pathfinding fails.
-							if (PathFindFailure.HasFailure(offerBuilding, candidateBuilding))
+							// No vehicle or building - use citizen home building, if appropriate.
+							uint candidateCitizen = offer.Citizen;
+							if (candidateCitizen != 0)
 							{
-								continue;
-							}
-
-							// Assign AI references.
-							BuildingInfo candidateBuildingInfo = buildingBuffer[candidateBuilding].Info;
-							candidateBuildingAI = candidateBuildingInfo.m_buildingAI;
-
-							// Apply warehouse boost if the candidate builing is a warehouse and the offer building isn't a warehouse or outside connection.
-							if (candidate.Exclude & !(offer.Exclude | offerIsOutside))
-							{
-								distanceModifier /= (1 + AddOffers.warehousePriority);
-							}
-
-							// Apply outside connection boost if candidate is an outside connection, unless offer is also an outside connection.
-							if (!offerIsOutside && candidateBuildingAI is OutsideConnectionAI)
-							{
-								switch (candidateBuildingInfo.m_class.m_subService)
+								switch (reason)
 								{
-									case ItemClass.SubService.PublicTransportTrain:
-										distanceModifier /= (1 + Mathf.Pow(Matching.outsideRailPriority, 2));
+									// These cases are picked up from their current location.
+									case TransferManager.TransferReason.Sick:
+									case TransferManager.TransferReason.Sick2:
+									case TransferManager.TransferReason.SickMove:
+									case TransferManager.TransferReason.Taxi:
 										break;
-
-									case ItemClass.SubService.PublicTransportShip:
-										distanceModifier /= (1 + Mathf.Pow(Matching.outsideShipPriority, 2));
+									// Otherwise, we use the citizen's home building.
+									default:
+										candidateBuilding = citizenBuffer[candidateCitizen].m_homeBuilding;
 										break;
 								}
+							}
+
+							// Did we find a suitable building?
+							if (candidateBuilding != 0)
+							{
+								// Yes - update offer position and AI reference to match.
+								candidatePosition = buildingBuffer[candidateBuilding].m_position;
+								candidateBuildingAI = buildingBuffer[candidateBuilding].Info.m_buildingAI;
+							}
+						}
+						else
+						{
+							// Candidate offer was a building; assume the offer position is the building position.
+							// Just update AI reference.
+							candidateBuildingAI = buildingBuffer[candidateBuilding].Info.m_buildingAI;
+						}
+
+						// Check for pathfinding fails.
+						if (PathFindFailure.HasFailure(offerBuilding, candidateBuilding))
+						{
+							continue;
+						}
+
+						// Apply warehouse boost if the candidate builing is a warehouse and the offer building isn't a warehouse or outside connection.
+						if (candidate.Exclude & !(offer.Exclude | offerIsOutside))
+						{
+							distanceModifier /= (1 + AddOffers.warehousePriority);
+						}
+
+						// Apply outside connection boost if candidate is an outside connection, unless offer is also an outside connection.
+						if (!offerIsOutside && candidateBuildingAI is OutsideConnectionAI)
+						{
+							switch (candidateBuildingAI.m_info.m_class.m_subService)
+							{
+								case ItemClass.SubService.PublicTransportTrain:
+									distanceModifier /= (1 + Mathf.Pow(Matching.outsideRailPriority, 2));
+									break;
+
+								case ItemClass.SubService.PublicTransportShip:
+									distanceModifier /= (1 + Mathf.Pow(Matching.outsideShipPriority, 2));
+									break;
 							}
 						}
 
@@ -238,36 +293,32 @@ namespace TransferController
 						if (squaredDistance < bestDistance)
 						{
 							// New nearest disance - apply checks.
-							if (offerBuilding != 0 & candidateBuilding != 0)
+							byte candidateDistrict = districtManager.GetDistrict(candidatePosition);
+							byte candidatePark = districtManager.GetPark(candidatePosition);
+							if (incoming)
 							{
-								Vector3 candidateBuildingPosition = buildingBuffer[candidateBuilding].m_position;
-								byte candidateDistrict = districtManager.GetDistrict(candidateBuildingPosition);
-								byte candidatePark = districtManager.GetPark(candidateBuildingPosition);
-								if (incoming)
+								if (!Matching.ChecksPassed(incoming, (byte)priority, (byte)candidatePriority, offerBuilding, candidateBuilding, offerDistrict, candidateDistrict, offerPark, candidatePark, reason))
 								{
-									if (!Matching.ChecksPassed(incoming, (byte)priority, (byte)candidatePriority, offerBuilding, candidateBuilding, offerDistrict, candidateDistrict, offerPark, candidatePark, reason))
-									{
-										continue;
-									}
-
-									// If candidate (outgoing) building is a warehouse, check quota.
-									if (candidate.Exclude && !WarehouseControl.CheckVehicleQuota(candidateBuildingAI, candidateBuilding, ref buildingBuffer[candidateBuilding], reason, offerBuildingAI))
-									{
-										continue;
-									}
+									continue;
 								}
-								else
-								{
-									if (!Matching.ChecksPassed(incoming, (byte)candidatePriority, (byte)priority, candidateBuilding, offerBuilding, candidateDistrict, offerDistrict, candidatePark, offerPark, reason))
-									{
-										continue;
-									}
 
-									// Otherwise, if the offer building is a warehouse and is the outgoing party, check quota there.
-									if (offer.Exclude && !WarehouseControl.CheckVehicleQuota(offerBuildingAI, offerBuilding, ref buildingBuffer[offerBuilding], reason, candidateBuildingAI))
-									{
-										continue;
-									}
+								// If candidate (outgoing) building is a warehouse, check quota.
+								if (candidate.Exclude && !WarehouseControl.CheckVehicleQuota(candidateBuildingAI, candidateBuilding, ref buildingBuffer[candidateBuilding], reason, offerBuildingAI))
+								{
+									continue;
+								}
+							}
+							else
+							{
+								if (!Matching.ChecksPassed(incoming, (byte)candidatePriority, (byte)priority, candidateBuilding, offerBuilding, candidateDistrict, offerDistrict, candidatePark, offerPark, reason))
+								{
+									continue;
+								}
+
+								// Otherwise, if the offer building is a warehouse and is the outgoing party, check quota there.
+								if (offer.Exclude && !WarehouseControl.CheckVehicleQuota(offerBuildingAI, offerBuilding, ref buildingBuffer[offerBuilding], reason, candidateBuildingAI))
+								{
+									continue;
 								}
 							}
 

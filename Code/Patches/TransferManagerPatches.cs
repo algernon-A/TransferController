@@ -144,6 +144,9 @@ namespace TransferController
 				case TransferManager.TransferReason.Fire:
 				case TransferManager.TransferReason.Fire2:
 				case TransferManager.TransferReason.ForestFire:
+				case TransferManager.TransferReason.Student1:
+				case TransferManager.TransferReason.Student2:
+				case TransferManager.TransferReason.Student3:
 				case TransferManager.TransferReason.Sick:
 				case TransferManager.TransferReason.Sick2:
 				case TransferManager.TransferReason.SickMove:

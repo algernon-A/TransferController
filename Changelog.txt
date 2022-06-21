@@ -1,4 +1,5 @@
 ﻿- Add distance-only matching option
+- Add support for education transfers
 
 
 Version 0.5 -
