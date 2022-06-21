@@ -44,20 +44,20 @@ namespace TransferController
             keyMapping.uIPanel.relativePosition = new Vector2(LeftMargin, currentY);
             currentY += keyMapping.uIPanel.height + GroupMargin;
 
-            // Distance matching only checkbox.
-            UICheckBox distanceOnlyCheck = UIControls.AddPlainCheckBox(this, LeftMargin, currentY, Translations.Translate("TFC_OPT_DON"));
-            distanceOnlyCheck.tooltip = Translations.Translate("TFC_OPT_DON_TIP");
-            distanceOnlyCheck.tooltipBox = TooltipUtils.TooltipBox;
-            distanceOnlyCheck.isChecked = Matching.distanceOnly;
-            distanceOnlyCheck.eventCheckChanged += (control, isChecked) => { Matching.distanceOnly = isChecked; distanceSlider.parent.isVisible = !isChecked; };
-            currentY += distanceOnlyCheck.height + Margin;
+            // New algorithm checkbox.
+            UICheckBox newAlgorithmCheck = UIControls.AddPlainCheckBox(this, LeftMargin, currentY, Translations.Translate("TFC_OPT_NEW"));
+            newAlgorithmCheck.tooltip = Translations.Translate("TFC_OPT_NEW_TIP");
+            newAlgorithmCheck.tooltipBox = TooltipUtils.TooltipBox;
+            newAlgorithmCheck.isChecked = Patcher.UseNewAlgorithm;
+            newAlgorithmCheck.eventCheckChanged += (control, isChecked) => { Patcher.UseNewAlgorithm = isChecked; distanceSlider.parent.isVisible = !isChecked; };
+            currentY += newAlgorithmCheck.height + Margin;
 
             // Distance multiplier slider.
             distanceSlider = UIControls.AddSliderWithValue(this, Translations.Translate("TFC_OPT_DIS"), 0f, 100f, 1f, Matching.distancePercentage, (value) => { Matching.distancePercentage = (int)value.RoundToNearest(1f); });
             distanceSlider.parent.relativePosition = new Vector2(LeftMargin, currentY);
             distanceSlider.tooltip = Translations.Translate("TFC_OPT_DIS_TIP");
             distanceSlider.tooltipBox = TooltipUtils.TooltipBox;
-            distanceSlider.parent.isVisible = !distanceOnlyCheck.isChecked;
+            distanceSlider.parent.isVisible = !newAlgorithmCheck.isChecked;
             currentY += distanceSlider.parent.height + GroupMargin;
 
             // Warehouse priority slider.

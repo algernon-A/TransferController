@@ -13,9 +13,6 @@ namespace TransferController
 	[HarmonyPatch]
 	public static class Matching
 	{
-		// Distance matching only (don't factor priority into distance).
-		internal static bool distanceOnly = true;
-
 		// Matching distance multiplier.
 		internal static int distancePercentage = 100;
 
@@ -56,12 +53,9 @@ namespace TransferController
 				return;
 			}
 
+			Logging.Message("old");
+
 			// --- Setup for code inserts.
-			if (distanceOnly)
-			{
-				NewMatching.MatchOffers(__instance, material, m_incomingCount, m_outgoingCount, m_incomingOffers, m_outgoingOffers, m_incomingAmount, m_outgoingAmount);
-				return;
-			}
 
 			DistrictManager districtManager = Singleton<DistrictManager>.instance;
 			Vehicle[] vehicleBuffer = Singleton<VehicleManager>.instance.m_vehicles.m_buffer;

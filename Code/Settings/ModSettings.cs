@@ -49,8 +49,8 @@ namespace TransferController
 
 
         // Distance-only matching.
-        [XmlElement("DistanceOnly")]
-        public bool XMLDistanceOnly { get => Matching.distanceOnly; set => Matching.distanceOnly = value; }
+        [XmlElement("UseNewAlgorithm")]
+        public bool XMLUseNewAlgorithm { get => Patcher.UseNewAlgorithm; set => Patcher.UseNewAlgorithm = value; }
 
 
         // Matching intensity.

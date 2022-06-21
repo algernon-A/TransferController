@@ -37,6 +37,8 @@ namespace TransferController
 			 * etc.
 			 */
 
+			Logging.Message("new");
+
 			// Block relevant to this reason.
 			int reasonBlock = (int)reason * 8;
 
@@ -113,8 +115,6 @@ namespace TransferController
 			Citizen[] citizenBuffer = Singleton<CitizenManager>.instance.m_citizens.m_buffer;
 
 			// Defaults.
-			byte offerDistrict = 0, offerPark = 0;
-			bool offerIsOutside = false;
 			BuildingAI offerBuildingAI = null;
 			Vector3 offerPosition = offer.Position;
 
@@ -174,11 +174,11 @@ namespace TransferController
 			}
 
 			// Get offer district and park area.
-			offerDistrict = districtManager.GetDistrict(offerPosition);
-			offerPark = districtManager.GetPark(offerPosition);
+			byte offerDistrict = districtManager.GetDistrict(offerPosition);
+			byte offerPark = districtManager.GetPark(offerPosition);
 
 			// Outside connection status.
-			offerIsOutside = offerBuildingAI is OutsideConnectionAI;
+			bool offerIsOutside = offerBuildingAI is OutsideConnectionAI;
 
 			// Keep going until we've used up all the offer amount with matched transfers.
 			int outstandingAmount = offer.Amount;

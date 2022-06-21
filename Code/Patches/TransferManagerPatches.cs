@@ -20,12 +20,16 @@ namespace TransferController
 		private static FieldInfo m_incomingAmountField;
 		private static FieldInfo m_outgoingAmountField;
 
+		// Patch method for transpiler.
+		private static MethodInfo patchMethod;
+
 
 		/// <summary>
 		/// Patch TransferManager.MatchOffers.
 		/// </summary>
-		/// <param name="harmonyInstance"></param>
-		public static void Patch(Harmony harmonyInstance)
+		/// <param name="harmonyInstance">Harmony instance</param>
+		/// <param name="newAlgorithm">True to patch using the new algoritm, false for legacy.</param>
+		public static void Patch(Harmony harmonyInstance, bool newAlgorithm)
 		{
 			// Reflect private fields.
 			m_incomingCountField = typeof(TransferManager).GetField("m_incomingCount", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -45,8 +49,9 @@ namespace TransferController
 
 			// Patch method with new pre-emptive prefix.
 			MethodBase targetMethod = typeof(TransferManager).GetMethod("MatchOffers", BindingFlags.Instance | BindingFlags.NonPublic);
+			patchMethod = newAlgorithm ? AccessTools.Method(typeof(NewMatching), nameof(NewMatching.MatchOffers)) : AccessTools.Method(typeof(Matching), nameof(Matching.MatchOffers));
 			harmonyInstance.Patch(targetMethod, transpiler: new HarmonyMethod(typeof(TransferManagerPatches), nameof(TransferManagerPatches.MatchOffersTranspiler)));
-			Logging.Message("MatchOffers patched");
+			Logging.KeyMessage("MatchOffers patched");
 		}
 
 
@@ -83,7 +88,7 @@ namespace TransferController
 			yield return new CodeInstruction(OpCodes.Ldfld, m_incomingAmountField);
 			yield return new CodeInstruction(OpCodes.Ldarg_0);
 			yield return new CodeInstruction(OpCodes.Ldfld, m_outgoingAmountField);
-			yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(NewMatching), nameof(NewMatching.MatchOffers)));
+			yield return new CodeInstruction(OpCodes.Call, patchMethod);
 
 			// Return from method here (after this is original code, which we obviously don't want to execute).
 			yield return new CodeInstruction(OpCodes.Ret);

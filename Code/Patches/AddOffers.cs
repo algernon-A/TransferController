@@ -45,7 +45,7 @@ namespace TransferController
 		private static void PrioritizeOffer(TransferManager.TransferReason material, ref TransferManager.TransferOffer offer, Building.Flags warehouseFlags)
 		{
 			// Don't do this if using new matching algorithm.
-			if (Matching.distanceOnly)
+			if (Patcher.UseNewAlgorithm)
 			{
 				return;
 			}
