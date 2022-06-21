@@ -49,38 +49,74 @@ namespace TransferController
 			// Block relevant to this reason.
 			int reasonBlock = (int)reason * 8;
 
-			// Match by priority within this reason, descending.
-			for (int priority = 7; priority >= 0; --priority)
+			switch (reason)
 			{
-				int priorityIndex = reasonBlock + priority;
-				int incomingIndex = 0, outgoingIndex = 0;
-
-				// Keep iterating while offers are remaining in this priority block.
-				bool matching;
-				do
-				{
-					// Set status flag to false (will be set to true if any processing takes place).
-					matching = false;
-
-					// Match next incoming offer.
-					if (incomingIndex < incomingCounts[priorityIndex])
+				// Any outgoing emergency transfers get treated first (this prioritises closest response to incident).
+				case TransferManager.TransferReason.Fire:
+				case TransferManager.TransferReason.Fire2:
+				case TransferManager.TransferReason.ForestFire:
+				case TransferManager.TransferReason.Sick:
+				case TransferManager.TransferReason.Sick2:
+					// Match from highest to lowest priority.
+					for (int priority = 7; priority >= 0; --priority)
 					{
-						matching = true;
-						MatchOffer(true, reason, priority, incomingIndex++, incomingOffers, incomingCounts, outgoingOffers, outgoingCounts);
+						int priorityIndex = reasonBlock + priority;
+						int outgoingIndex = 0;
+
+						// Keep iterating while offers are remaining in this outgoing priority block.
+						while (outgoingIndex < outgoingCounts[priorityIndex])
+						{
+							MatchOffer(false, reason, priority, outgoingIndex++, outgoingOffers, outgoingCounts, incomingOffers, incomingCounts);
+						}
+
+						// Clear outgoing buffer once finished.
+						outgoingCounts[priorityIndex] = 0;
 					}
 
-					// Match next outgoing offer.
-					if (outgoingIndex < outgoingCounts[priorityIndex])
+					// At this point all outgoing offers have been matched, so we can just wipe any remaining incoming offers.
+					for (int priority = 7; priority >= 0; --priority)
 					{
-						matching = true;
-						MatchOffer(false, reason, priority, outgoingIndex++, outgoingOffers, outgoingCounts, incomingOffers, incomingCounts);
+						int priorityIndex = reasonBlock + priority;
+						incomingCounts[priorityIndex] = 0;
 					}
-				}
-				while (matching);
+					break;
 
-				// Matching finished - clear this priority level buffer (any unmatched offers are effectively erased).
-				incomingCounts[priorityIndex] = 0;
-				outgoingCounts[priorityIndex] = 0;
+				// Default treatment is to match incoming then outgoing by descending priority level (i.e. incoming 7, outgoing 7, incoming 6, outgoing 6, etc.)
+				default:
+					// Match by priority within this reason, descending.
+					for (int priority = 7; priority >= 0; --priority)
+					{
+						int priorityIndex = reasonBlock + priority;
+						int incomingIndex = 0, outgoingIndex = 0;
+
+						// Keep iterating while offers are remaining in this priority block.
+						bool matching;
+						do
+						{
+							// Set status flag to false (will be set to true if any processing takes place).
+							matching = false;
+
+							// Match next incoming offer.
+							if (incomingIndex < incomingCounts[priorityIndex])
+							{
+								matching = true;
+								MatchOffer(true, reason, priority, incomingIndex++, incomingOffers, incomingCounts, outgoingOffers, outgoingCounts);
+							}
+
+							// Match next outgoing offer.
+							if (outgoingIndex < outgoingCounts[priorityIndex])
+							{
+								matching = true;
+								MatchOffer(false, reason, priority, outgoingIndex++, outgoingOffers, outgoingCounts, incomingOffers, incomingCounts);
+							}
+						}
+						while (matching);
+
+						// Matching finished - clear this priority level buffer (any unmatched offers are effectively erased).
+						incomingCounts[priorityIndex] = 0;
+						outgoingCounts[priorityIndex] = 0;
+					}
+					break;
 			}
 
 			// Clear TransferManager outstanding amount totals for this TransferReason.
