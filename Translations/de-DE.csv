@@ -62,6 +62,8 @@
 "TFC_WAR_RVI_TIP","Diese Auswahl wird einen Teil der Lieferfahrzeuge dieses Gebäudes reservieren, um nur Verbindungen innerhalb der Stadt zu bedienen (Diese stehen dann nicht für Import oder Export zur Verfügung)"
 "TFC_WAR_RVC","Reservierte Fahrzeuge"
 "TFC_WAR_RVC_TIP","Anzahl der reservierten Fahrzeuge festlegen"
+"TFC_OPT_NEW","Neuen Distanz-basierten Algorithmus verwenden"
+"TFC_OPT_NEW_TIP","Wenn diese Option ausgewählt ist, wird die Mod einen benutzerdefinierten Algorithmus verwenden, um die Warentransporte basierend auf der kürzesten Distanz besser abzustimmen."
 "TFC_OPT_DIS","Distanzmultiplikator"
 "TFC_OPT_DIS_TIP","Verwende dies, um die Aggressivität des jeweils passenden Algorithmus anzupassen, wenn versucht wird, eine physikalisch nahe Übereinstimmung zu finden. 100% (Standard) ist das gleiche wie das ungemoddete Spiel; niedrigere Werte werden bedeuten, dass das Spiel mehr Zeit und Mühe damit verbringt, den Weg mit der kürzesten Distanz, zu finden. Dies geht zulasten der Systemperformance."
 "TFC_OPT_WAR","Lagerpriorität erhöhen"
