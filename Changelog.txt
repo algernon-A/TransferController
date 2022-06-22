@@ -1,4 +1,6 @@
-﻿- New feature: new distance-based matching algorithm
+﻿Version 0.6 -
+
+- New feature: new distance-based matching algorithm
 - Add support for education transfers
 
 
