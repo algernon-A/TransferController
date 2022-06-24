@@ -57,6 +57,23 @@ namespace TransferController
 				case TransferManager.TransferReason.ForestFire:
 				case TransferManager.TransferReason.Sick:
 				case TransferManager.TransferReason.Sick2:
+				case TransferManager.TransferReason.Crime:
+				case TransferManager.TransferReason.Collapsed:
+				case TransferManager.TransferReason.Collapsed2:
+				case TransferManager.TransferReason.FloodWater:
+
+				// Schools - go to closest (elementary and high, tertiary education is not necessarily closest-first):
+				case TransferManager.TransferReason.Student1:
+				case TransferManager.TransferReason.Student2:
+
+				// Basic city services - use closest provider.
+				case TransferManager.TransferReason.Garbage:
+				case TransferManager.TransferReason.Dead:
+				case TransferManager.TransferReason.Mail:
+				case TransferManager.TransferReason.RoadMaintenance:
+				case TransferManager.TransferReason.ParkMaintenance:
+				case TransferManager.TransferReason.Snow:
+
 					// Match from highest to lowest priority.
 					for (int priority = 7; priority >= 0; --priority)
 					{
