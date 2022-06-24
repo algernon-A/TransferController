@@ -12,16 +12,18 @@ namespace TransferController
     {
 		public string text;
 		public ushort buildingID;
+		public Vector3 position;
 
 		/// <summary>
 		/// Constructor
 		/// </summary>
 		/// <param name="displayText">Text to display</param>
 		/// <param name="building">Target building ID (0 for none)</param>
-		public OfferData(string displayText, ushort building)
+		public OfferData(string displayText, ushort building, Vector3 offerPos)
         {
 			text = displayText;
 			buildingID = building;
+			position = offerPos;
         }
     }
 
@@ -41,6 +43,10 @@ namespace TransferController
 
 		// Building ID.
 		private ushort buildingID;
+
+		// Transfer position.
+		private Vector3 transferPos;
+
 
 		/// <summary>
 		/// Generates and displays a list row.
@@ -68,8 +74,9 @@ namespace TransferController
 			// Update text and building ID.
 			if (data is OfferData offerData)
 			{
-				logLine.text = offerData.text;
+				logLine.text = offerData.text.ToString();
 				buildingID = offerData.buildingID;
+				transferPos = offerData.position;
 			}
 			else
             {
@@ -105,12 +112,17 @@ namespace TransferController
 		/// </summary>
 		protected override void UpdateSelection()
 		{
-			// Got to target building.
 			if (buildingID != 0)
-            {
+			{
+				// Go to target building if available.
 				InstanceID instance = default;
 				instance.Building = buildingID;
 				ToolsModifierControl.cameraController.SetTarget(instance, Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID].m_position, zoomIn: true);
+			}
+			else if (transferPos != Vector3.zero)
+			{
+				// Move camera target position.
+				ToolsModifierControl.cameraController.m_targetPosition = transferPos;
 			}
 		}
 	}

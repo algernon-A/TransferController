@@ -304,6 +304,12 @@ namespace TransferController
 							candidateBuildingAI = buildingBuffer[candidateBuilding].Info.m_buildingAI;
 						}
 
+						// Don't transfer to/from the same building, even indirectly.
+						if (candidateBuilding != 0 & candidateBuilding == offerBuilding)
+						{
+							continue;
+						}
+
 						// Check for pathfinding fails.
 						if (PathFindFailure.HasFailure(offerBuilding, candidateBuilding))
 						{
@@ -340,7 +346,7 @@ namespace TransferController
 							byte candidatePark = districtManager.GetPark(candidatePosition);
 							if (incoming)
 							{
-								if (!ChecksPassed(incoming, (byte)priority, (byte)candidatePriority, offerBuilding, candidateBuilding, offerDistrict, candidateDistrict, offerPark, candidatePark, reason))
+								if (!ChecksPassed(incoming, (byte)priority, (byte)candidatePriority, offerBuilding, candidateBuilding, offerDistrict, candidateDistrict, offerPark, candidatePark, reason, offer.Exclude, candidate.Exclude, offer.Position, candidate.Position))
 								{
 									continue;
 								}
@@ -353,7 +359,7 @@ namespace TransferController
 							}
 							else
 							{
-								if (!ChecksPassed(incoming, (byte)candidatePriority, (byte)priority, candidateBuilding, offerBuilding, candidateDistrict, offerDistrict, candidatePark, offerPark, reason))
+								if (!ChecksPassed(incoming, (byte)candidatePriority, (byte)priority, candidateBuilding, offerBuilding, candidateDistrict, offerDistrict, candidatePark, offerPark, reason, candidate.Exclude, offer.Exclude, candidate.Position, offer.Position))
 								{
 									continue;
 								}
@@ -473,19 +479,19 @@ namespace TransferController
 		/// <param name="outgoingPark">Park area of outgoing offer</param>
 		/// <param name="reason">Transfer reason</param>
 		/// <returns>True if the transfer is permitted, false if prohibited</returns>
-		internal static bool ChecksPassed(bool incoming, byte priorityIn, byte priorityOut, ushort incomingBuildingID, ushort outgoingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason reason)
+		internal static bool ChecksPassed(bool incoming, byte priorityIn, byte priorityOut, ushort incomingBuildingID, ushort outgoingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason reason, bool incomingExcluded, bool outgoingExcluded, Vector3 incomingPos, Vector3 outgoingPos)
 		{
 			// First, check for incoming restrictions.
 			if (IncomingChecksPassed(incomingBuildingID, outgoingBuildingID, incomingDistrict, outgoingDistrict, incomingPark, outgoingPark, reason))
 			{
 				// Then, outgoing.
 				bool result = OutgoingChecksPassed(outgoingBuildingID, incomingBuildingID, incomingDistrict, outgoingDistrict, incomingPark, outgoingPark, reason);
-				TransferLogging.AddEntry(reason, incoming, priorityIn, priorityOut, incomingBuildingID, outgoingBuildingID, result);
+				TransferLogging.AddEntry(reason, incoming, priorityIn, priorityOut, incomingBuildingID, outgoingBuildingID, result, incomingExcluded, outgoingExcluded, incomingPos, outgoingPos);
 				return result;
 			}
 
 			// Failed incoming district restrictions - return false.
-			TransferLogging.AddEntry(reason, incoming, priorityIn, priorityOut, incomingBuildingID, outgoingBuildingID, false);
+			TransferLogging.AddEntry(reason, incoming, priorityIn, priorityOut, incomingBuildingID, outgoingBuildingID, false, incomingExcluded, outgoingExcluded, incomingPos, outgoingPos);
 			return false;
 		}
 

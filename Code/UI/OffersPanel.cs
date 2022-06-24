@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Collections.Generic;
 using UnityEngine;
 using ColossalFramework;
@@ -142,16 +143,39 @@ namespace TransferController
                 // Incoming offers.
                 if (incomingOffers[i].Building == currentBuilding)
                 {
-                    offerList.Add(new OfferData(String.Format("Incoming {0} priority {1}", thisReason, priority), 0));
+                    // Generate offer text.
+                    StringBuilder offerText = new StringBuilder();
+                    offerText.Append("Incoming ");
+                    offerText.Append(thisReason);
+                    offerText.Append(' ');
+                    offerText.Append(priority);
+                    if (incomingOffers[i].Exclude)
+                    {
+                        offerText.Append('W');
+                    }
+                    
+                    // Add to list.
+                    offerList.Add(new OfferData(offerText.ToString(), 0, incomingOffers[i].Position));
                 }
 
                 // Outgoing offers.
                 if (outgoingOffers[i].Building == currentBuilding)
                 {
-                    offerList.Add(new OfferData(String.Format("Outgoing {0} priority {1}", thisReason, priority), 0));
+                    // Generate offer text.
+                    StringBuilder offerText = new StringBuilder();
+                    offerText.Append("Outgoing ");
+                    offerText.Append(thisReason);
+                    offerText.Append(' ');
+                    offerText.Append(priority);
+                    if (outgoingOffers[i].Exclude)
+                    {
+                        offerText.Append('W');
+                    }
+
+                    // Add to list.
+                    offerList.Add(new OfferData(offerText.ToString(), 0, outgoingOffers[i].Position));
                 }
             }
-
 
             // Set fastlist items.
             offersList.rowsData = new FastList<object>

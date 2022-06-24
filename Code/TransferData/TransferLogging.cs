@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Collections.Generic;
 
 
@@ -13,7 +14,8 @@ namespace TransferController
         public bool incoming;
         public byte priorityIn, priorityOut;
         public ushort inBuilding, outBuilding;
-        public bool allowed;
+        public bool allowed, inExcluded, outExcluded;
+        public UnityEngine.Vector3 incomingPos, outgoingPos;
     }
 
 
@@ -32,12 +34,16 @@ namespace TransferController
         /// </summary>
         /// <param name="reason">Transfer reason</param>
         /// <param name="incoming">True if the offer is incoming, false otherwise</param>
-		/// <param name="priorityIn">Incoming offer priority</param
-		/// <param name="priorityOut">Outgoing offer priority</param
+        /// <param name="priorityIn">Incoming offer priority</param
+        /// <param name="priorityOut">Outgoing offer priority</param
         /// <param name="inBuilding">Incoming building ID</param>
         /// <param name="outBuilding">Outgoing building ID</param>
         /// <param name="allowed">True if the transfer was allowed, false if blocked</param>
-        internal static void AddEntry(TransferManager.TransferReason reason, bool incoming, byte priorityIn, byte priorityOut, ushort inBuilding, ushort outBuilding, bool allowed)
+        /// <param name="inExcluded">Incoming offer excluded flag</param>
+        /// <param name="outExcluded">Outgoing offer excluded flag</param>
+        /// <param name="inPos">Incoming offer position</param>
+        /// <param name="outPos">Outgoing offer position</param>
+        internal static void AddEntry(TransferManager.TransferReason reason, bool incoming, byte priorityIn, byte priorityOut, ushort inBuilding, ushort outBuilding, bool allowed, bool inExcluded, bool outExcluded, UnityEngine.Vector3 inPos, UnityEngine.Vector3 outPos)
         {
             // Add new log entry with provided data and increment log index pointer.
             log[logIndex++] = new LogEntry
@@ -48,7 +54,11 @@ namespace TransferController
                 priorityOut = priorityOut,
                 inBuilding = inBuilding,
                 outBuilding = outBuilding,
-                allowed = allowed
+                allowed = allowed,
+                inExcluded = inExcluded,
+                outExcluded = outExcluded,
+                incomingPos = inPos,
+                outgoingPos = outPos
             };
         }
 
@@ -78,26 +88,60 @@ namespace TransferController
                     && ((showBlocked & !thisEntry.allowed) | (showAllowed & thisEntry.allowed))
                     && ((showIn & thisBuildingIn) | (showOut & !thisBuildingIn)))
                 {
-                    string inString = "In";
-                    string outString = "Out";
-                    if (thisEntry.incoming)
+                    ushort otherBuilding;
+                    UnityEngine.Vector3 thisPos;
+
+                    // Format display string.
+                    StringBuilder displayText = new StringBuilder();
+                    displayText.Append(thisEntry.reason);
+                    if (thisBuildingIn)
                     {
-                        inString += "*";
+                        displayText.Append(" in");
+                        if (thisEntry.incoming)
+                        {
+                            displayText.Append('*');
+                        }
                     }
                     else
                     {
-                        outString += "*";
+                        displayText.Append(" out");
+                        if (!thisEntry.incoming)
+                        {
+                            displayText.Append('*');
+                        }
+                    }
+                    displayText.Append(' ');
+                    displayText.Append(thisEntry.priorityIn);
+                    displayText.Append('-');
+
+                    // Warehouse flags (excluded flag).
+                    if (thisEntry.inExcluded)
+                    {
+                        displayText.Append('W');
+                    }
+                    displayText.Append(thisEntry.priorityOut);
+                    if (thisEntry.outExcluded)
+                    {
+                        displayText.Append('W');
                     }
 
-                    returnList.Add(new OfferData(String.Format("{0} {1} {2}-{3}: {4}-{5}: {6}",
-                        thisEntry.reason,
-                        thisBuildingIn ? inString : outString,
-                        thisEntry.priorityIn,
-                        thisEntry.priorityOut,
-                        thisEntry.inBuilding,
-                        thisEntry.outBuilding,
-                        thisEntry.allowed ? "Allowed" : "Blocked"),
-                        thisBuildingIn ? thisEntry.outBuilding : thisEntry.inBuilding));
+                    displayText.Append(": ");
+                    if (thisBuildingIn)
+                    {
+                        otherBuilding = thisEntry.outBuilding;
+                        thisPos = thisEntry.outgoingPos;
+                    }
+                    else
+                    {
+                        otherBuilding = thisEntry.inBuilding;
+                        thisPos = thisEntry.incomingPos;
+                    }
+                    displayText.Append(otherBuilding);
+                    displayText.Append(": ");
+                    displayText.Append(thisEntry.allowed ? "Allowed" : "Blocked");
+
+                    // Add entry to list.
+                    returnList.Add(new OfferData(displayText.ToString(), otherBuilding, thisPos));
                 }
             }
 
