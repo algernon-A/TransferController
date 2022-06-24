@@ -8,10 +8,6 @@ namespace TransferController
 	/// </summary>
 	public static class AddOffers
 	{
-		// Warehouse priority value.
-		internal static int warehousePriority = 0;
-
-
 		/// <summary>
 		/// Harmony Prefix to manipulate priorities of incoming or outgoing offers.
 		/// </summary>
@@ -54,7 +50,7 @@ namespace TransferController
 						if (material == warehouseAI.m_storageType || material == (TransferManager.TransferReason)building.m_adults || material == (TransferManager.TransferReason)building.m_seniors)
 						{
 							// Eligible material - boost offer priority by global setting.
-							offer.Priority += warehousePriority * 2;
+							offer.Priority += Matching.WarehousePriority * 2;
 
 							// Limit priority to max of 7.
 							if (offer.Priority > 7)

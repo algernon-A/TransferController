@@ -61,21 +61,21 @@ namespace TransferController
             currentY += distanceSlider.parent.height + GroupMargin;
 
             // Warehouse priority slider.
-            UISlider warehouseSlider = UIControls.AddSliderWithValue(this, Translations.Translate("TFC_OPT_WAR"), 0f, 4f, 1f, AddOffers.warehousePriority, (value) => { AddOffers.warehousePriority = (int)value.RoundToNearest(1f); });
+            UISlider warehouseSlider = UIControls.AddSliderWithValue(this, Translations.Translate("TFC_OPT_WAR"), 0f, 4f, 1f, Matching.WarehousePriority, (value) => { Matching.WarehousePriority = (int)value.RoundToNearest(1f); });
             warehouseSlider.parent.relativePosition = new Vector2(LeftMargin, currentY);
             warehouseSlider.tooltip = Translations.Translate("TFC_OPT_WAR_TIP");
             warehouseSlider.tooltipBox = TooltipUtils.TooltipBox;
             currentY += distanceSlider.parent.height + GroupMargin;
 
             // Outside rail connection priority slider.
-            UISlider railSlider = UIControls.AddSliderWithValue(this, Translations.Translate("TFC_OPT_ORP"), 0f, 4f, 1f, Matching.outsideRailPriority, (value) => { Matching.outsideRailPriority = (int)value.RoundToNearest(1f); });
+            UISlider railSlider = UIControls.AddSliderWithValue(this, Translations.Translate("TFC_OPT_ORP"), 0f, 4f, 1f, Matching.OutsideRailPriority, (value) => { Matching.OutsideRailPriority = (int)value.RoundToNearest(1f); });
             railSlider.parent.relativePosition = new Vector2(LeftMargin, currentY);
             railSlider.tooltip = Translations.Translate("TFC_OPT_ORP_TIP");
             railSlider.tooltipBox = TooltipUtils.TooltipBox;
             currentY += railSlider.parent.height + GroupMargin;
 
             // Outside shipping connection priority slider.
-            UISlider shippingSlider = UIControls.AddSliderWithValue(this, Translations.Translate("TFC_OPT_OSP"), 0f, 4f, 1f, Matching.outsideShipPriority, (value) => { Matching.outsideShipPriority = (int)value.RoundToNearest(1f); });
+            UISlider shippingSlider = UIControls.AddSliderWithValue(this, Translations.Translate("TFC_OPT_OSP"), 0f, 4f, 1f, Matching.OutsideShipPriority, (value) => { Matching.OutsideShipPriority = (int)value.RoundToNearest(1f); });
             shippingSlider.parent.relativePosition = new Vector2(LeftMargin, currentY);
             shippingSlider.tooltip = Translations.Translate("TFC_OPT_OSP_TIP");
             shippingSlider.tooltipBox = TooltipUtils.TooltipBox;

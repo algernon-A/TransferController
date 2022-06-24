@@ -60,16 +60,16 @@ namespace TransferController
 
         // Warehouse priority boost.
         [XmlElement("WarehousePriority")]
-        public int XMLWarehousePriority { get => AddOffers.warehousePriority; set => AddOffers.warehousePriority = value; }
+        public int XMLWarehousePriority { get => Matching.WarehousePriority; set => Matching.WarehousePriority = value; }
 
         // Outside rail connection boost.
         [XmlElement("OutsideRailPriority")]
-        public int XMLOutsideRailPriority { get => Matching.outsideRailPriority; set => Matching.outsideRailPriority = value; }
+        public int XMLOutsideRailPriority { get => Matching.OutsideRailPriority; set => Matching.OutsideRailPriority = value; }
 
 
         // Outside shipping connection boost.
         [XmlElement("OutsideShipPriority")]
-        public int XMLOutsideShipPriority { get => Matching.outsideShipPriority; set => Matching.outsideShipPriority = value; }
+        public int XMLOutsideShipPriority { get => Matching.OutsideShipPriority; set => Matching.OutsideShipPriority = value; }
 
 
         // Monitor pathfind failures.

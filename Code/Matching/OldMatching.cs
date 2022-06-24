@@ -249,7 +249,7 @@ namespace TransferController
 											{
 												// Yes - reverse warehouse priority modifier (this doesn't apply to warehouse-warehouse or warehouse-outside connection transfers).
 												// Note - warehouses set to fill/empty aren't assigned the bonus to begin with, so this decreases below the original.  This is intentional to prioritise other transfers.
-												otherPriorityPlus -= AddOffers.warehousePriority * 2f;
+												otherPriorityPlus -= Matching.WarehousePriority * 2f;
 												if (otherPriorityPlus < 0)
 												{
 													otherPriorityPlus = 0;
@@ -258,7 +258,7 @@ namespace TransferController
 											else
 											{
 												// No - add additional warehouse distance divisor.
-												distanceModifier /= (1 + AddOffers.warehousePriority);
+												distanceModifier /= (1 + Matching.WarehousePriority);
 											}
 										}
 										else if (candidateAI is WarehouseAI outgoingWarehouseAI)
@@ -273,7 +273,7 @@ namespace TransferController
 											if (!(incomingAI is OutsideConnectionAI))
 											{
 												// No - adjust distance modifier for warehouse priority (this doesn't apply to warehouse-warehouse or warehouse-outside connection transfers).
-												distanceModifier /= (1 + AddOffers.warehousePriority);
+												distanceModifier /= (1 + Matching.WarehousePriority);
 											}
 										}
 										else if (candidateAI is OutsideConnectionAI)
@@ -283,25 +283,25 @@ namespace TransferController
 											{
 												if (candidateInfo.m_class.m_subService == ItemClass.SubService.PublicTransportTrain)
 												{
-													otherPriorityPlus += Matching.outsideRailPriority;
-													distanceModifier /= (1 + Mathf.Pow(Matching.outsideRailPriority, 2));
+													otherPriorityPlus += Matching.OutsideRailPriority;
+													distanceModifier /= (1 + Mathf.Pow(Matching.OutsideRailPriority, 2));
 												}
 												else if (candidateInfo.m_class.m_subService == ItemClass.SubService.PublicTransportShip)
 												{
-													otherPriorityPlus += Matching.outsideShipPriority;
-													distanceModifier /= (1 + Mathf.Pow(Matching.outsideShipPriority, 2));
+													otherPriorityPlus += Matching.OutsideShipPriority;
+													distanceModifier /= (1 + Mathf.Pow(Matching.OutsideShipPriority, 2));
 												}
 											}
 										}
 										else if (incomingRailBoosted)
 										{
-											otherPriorityPlus += Matching.outsideRailPriority;
-											distanceModifier /= (1 + Mathf.Pow(Matching.outsideRailPriority, 2));
+											otherPriorityPlus += Matching.OutsideRailPriority;
+											distanceModifier /= (1 + Mathf.Pow(Matching.OutsideRailPriority, 2));
 										}
 										else if (incomingShipBoosted)
 										{
-											otherPriorityPlus += Matching.outsideShipPriority;
-											distanceModifier /= (1 + Mathf.Pow(Matching.outsideShipPriority, 2));
+											otherPriorityPlus += Matching.OutsideShipPriority;
+											distanceModifier /= (1 + Mathf.Pow(Matching.OutsideShipPriority, 2));
 										}
 
 										// Position of incoming building (source building or vehicle source building)
@@ -579,7 +579,7 @@ namespace TransferController
 											// Yes - reverse warehouse priority modifier (this doesn't apply to warehouse-warehouse or warehouse-outside connection transfers).
 
 											// Note - warehouses set to fill/empty aren't assigned the bonus to begin with, so this decreases below the original.  This is intentional to prioritise other transfers.
-											otherPriorityPlus -= AddOffers.warehousePriority * 2f;
+											otherPriorityPlus -= Matching.WarehousePriority * 2f;
 											if (otherPriorityPlus < 0)
 											{
 												otherPriorityPlus = 0;
@@ -588,7 +588,7 @@ namespace TransferController
 										else
 										{
 											// No - add additional warehouse distance divisor.
-											distanceModifier /= (1 + AddOffers.warehousePriority);
+											distanceModifier /= (1 + Matching.WarehousePriority);
 										}
 									}
 									else if (candidateAI is WarehouseAI)
@@ -597,7 +597,7 @@ namespace TransferController
 										if (!(outgoingAI is OutsideConnectionAI))
 										{
 											// No - adjust distance modifier for warehouse priority (this doesn't apply to warehouse-warehouse or warehouse-outside connection transfers).
-											distanceModifier /= (1 + AddOffers.warehousePriority);
+											distanceModifier /= (1 + Matching.WarehousePriority);
 										}
 									}
 									else if (candidateAI is OutsideConnectionAI)
@@ -607,25 +607,25 @@ namespace TransferController
 										{
 											if (candidateInfo.m_class.m_subService == ItemClass.SubService.PublicTransportTrain)
 											{
-												otherPriorityPlus += Matching.outsideRailPriority;
-												distanceModifier /= (1 + Mathf.Pow(Matching.outsideRailPriority, 2));
+												otherPriorityPlus += Matching.OutsideRailPriority;
+												distanceModifier /= (1 + Mathf.Pow(Matching.OutsideRailPriority, 2));
 											}
 											else if (candidateInfo.m_class.m_subService == ItemClass.SubService.PublicTransportShip)
 											{
-												otherPriorityPlus += Matching.outsideShipPriority;
-												distanceModifier /= (1 + Mathf.Pow(Matching.outsideShipPriority, 2));
+												otherPriorityPlus += Matching.OutsideShipPriority;
+												distanceModifier /= (1 + Mathf.Pow(Matching.OutsideShipPriority, 2));
 											}
 										}
 									}
 									else if (outgoingRailBoosted)
 									{
-										otherPriorityPlus += Matching.outsideRailPriority;
-										distanceModifier /= (1 + Mathf.Pow(Matching.outsideRailPriority, 2));
+										otherPriorityPlus += Matching.OutsideRailPriority;
+										distanceModifier /= (1 + Mathf.Pow(Matching.OutsideRailPriority, 2));
 									}
 									else if (outgoingShipBoosted)
 									{
-										otherPriorityPlus += Matching.outsideShipPriority;
-										distanceModifier /= (1 + Mathf.Pow(Matching.outsideShipPriority, 2));
+										otherPriorityPlus += Matching.OutsideShipPriority;
+										distanceModifier /= (1 + Mathf.Pow(Matching.OutsideShipPriority, 2));
 									}
 
 									// Position of incoming building (source building or vehicle source building)

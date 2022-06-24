@@ -13,9 +13,59 @@ namespace TransferController
 	[HarmonyPatch]
 	public static class Matching
 	{
+		// Warehouse priority value.
+		private static int warehousePriority = 0;
+		private static float warehouseWeighting = 0f;
+
 		// External connection priorities.
-		internal static int outsideRailPriority = 0;
-		internal static int outsideShipPriority = 0;
+		private static int outsideRailPriority = 0;
+		private static float outsideRailWeighting = 0f;
+		private static int outsideShipPriority = 0;
+		private static float outsideShipWeighting = 0f;
+
+
+		/// <summary>
+		/// Warehouse priority.
+		/// </summary>
+		public static int WarehousePriority
+		{
+			get => warehousePriority;
+
+			set
+			{
+				warehousePriority = value;
+				warehouseWeighting = 1f / (1f + Mathf.Pow(value, 2));
+			}
+		}
+
+		/// <summary>
+		/// Outside rail connection priority.
+		/// </summary>
+		public static int OutsideRailPriority
+		{
+			get => outsideRailPriority;
+
+			set
+			{
+				outsideRailPriority = value;
+				outsideRailWeighting = 1f / (1f + Mathf.Pow(value, 2));
+			}
+		}
+
+
+		/// <summary>
+		/// Outside ship connection priority.
+		/// </summary>
+		public static int OutsideShipPriority
+		{
+			get => outsideShipPriority;
+
+			set
+			{
+				outsideShipPriority = value;
+				outsideShipWeighting = 1f / (1f + Mathf.Pow(value, 2));
+			}
+		}
 
 
 		/// <summary>
@@ -336,7 +386,7 @@ namespace TransferController
 						// Apply warehouse boost if the candidate builing is a warehouse and the offer building isn't a warehouse or outside connection.
 						if (candidate.Exclude & !(offer.Exclude | offerIsOutside))
 						{
-							distanceModifier /= (1 + AddOffers.warehousePriority);
+							distanceModifier *= warehouseWeighting;
 						}
 
 						// Apply outside connection boost if candidate is an outside connection, unless offer is also an outside connection.
@@ -345,11 +395,11 @@ namespace TransferController
 							switch (candidateBuildingAI.m_info.m_class.m_subService)
 							{
 								case ItemClass.SubService.PublicTransportTrain:
-									distanceModifier /= (1 + Mathf.Pow(outsideRailPriority, 2));
+									distanceModifier *= outsideRailWeighting;
 									break;
 
 								case ItemClass.SubService.PublicTransportShip:
-									distanceModifier /= (1 + Mathf.Pow(outsideShipPriority, 2));
+									distanceModifier *= outsideShipWeighting;
 									break;
 							}
 						}
