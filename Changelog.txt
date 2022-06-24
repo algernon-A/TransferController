@@ -1,4 +1,6 @@
-﻿- Adjust warehouse distance weighting
+﻿Version 0.6.1 -
+
+- Adjust warehouse distance weighting
 - Adjust outgoing-prioritized transfer types
 - Adjust transfer logging display
 
