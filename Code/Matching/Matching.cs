@@ -316,8 +316,7 @@ namespace TransferController
 
 						// Skip inter-warehouse transfers if they're at the bottom level of our current priority matching.
 						// Warehouses uniquely set the Exclude flag on their transfers.
-						bool interWarehouse = offer.Exclude & candidate.Exclude;
-						if (interWarehouse & candidatePriority <= lowerPriorityBound)
+						if (offer.Exclude & candidate.Exclude & candidatePriority <= lowerPriorityBound)
 						{
 							continue;
 						}
@@ -386,7 +385,12 @@ namespace TransferController
 						// Apply warehouse boost if the candidate builing is a warehouse and the offer building isn't a warehouse or outside connection.
 						if (candidate.Exclude & !(offer.Exclude | offerIsOutside))
 						{
-							distanceModifier *= warehouseWeighting;
+							// Don't apply priority to incoming transfers to emptying warehouses, or outgoing transfers from filling warehouses.
+							Building.Flags warehouseFlags = buildingBuffer[candidateBuilding].m_flags;
+							if (!((incoming & (warehouseFlags & Building.Flags.Downgrading) != 0) | (!incoming & (warehouseFlags & Building.Flags.Filling) != 0)))
+							{
+								distanceModifier *= warehouseWeighting;
+							}
 						}
 
 						// Apply outside connection boost if candidate is an outside connection, unless offer is also an outside connection.
