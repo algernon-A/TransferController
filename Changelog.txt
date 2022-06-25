@@ -1,4 +1,6 @@
-﻿- Tool can now select unsupported buildings (to see open offers and logging details)
+﻿Version 0.6.2 -
+
+- Tool can now select unsupported buildings (to see open offers and logging details)
 - Add special matching process for hearses
 
 
