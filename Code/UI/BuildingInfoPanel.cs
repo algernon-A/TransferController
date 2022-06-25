@@ -213,13 +213,6 @@ namespace TransferController
                 }
             }
 
-            // If no panels are visible, then hide and exit.
-            if (numPanels == 0)
-            {
-                Hide();
-                return;
-            }
-
             // Make sure we're visible if we're not already.
             Show();
 

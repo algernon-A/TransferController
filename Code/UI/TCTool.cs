@@ -158,20 +158,12 @@ namespace TransferController
 					{
 						// Building - record hit position and check building eligibility.
 						output.m_hitPos = Singleton<BuildingManager>.instance.m_buildings.m_buffer[output.m_building].m_position;
-						if (TransferDataUtils.BuildingEligibility(output.m_building, transfers))
-						{
-							// Building has eligible transfers - set hover, and set cursor to light.
-							hoverInstance.Building = (ushort)output.m_building;
-							m_cursor = currentCursorOn;
-						}
-						else
-                        {
-							// Ineligible building - set dark cursor.
-							m_cursor = currentCursorOff;
-						}
+						// Building has eligible transfers - set hover, and set cursor to light.
+						hoverInstance.Building = (ushort)output.m_building;
+						m_cursor = currentCursorOn;
 					}
 					else
-                    {
+					{
 						// No hovered building - set dark cursor.
 						m_cursor = currentCursorOff;
 					}
