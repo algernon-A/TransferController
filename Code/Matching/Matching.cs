@@ -116,14 +116,6 @@ namespace TransferController
 				case TransferManager.TransferReason.Student1:
 				case TransferManager.TransferReason.Student2:
 
-				// Basic city services - use closest provider.
-				case TransferManager.TransferReason.Garbage:
-				case TransferManager.TransferReason.Dead:
-				case TransferManager.TransferReason.Mail:
-				case TransferManager.TransferReason.RoadMaintenance:
-				case TransferManager.TransferReason.ParkMaintenance:
-				case TransferManager.TransferReason.Snow:
-
 					// Match from highest to lowest priority.
 					for (int priority = 7; priority >= 0; --priority)
 					{
@@ -133,18 +125,114 @@ namespace TransferController
 						// Keep iterating while offers are remaining in this outgoing priority block.
 						while (outgoingIndex < outgoingCounts[priorityIndex])
 						{
-							MatchOffer(false, reason, priority, outgoingIndex++, outgoingOffers, outgoingCounts, incomingOffers, incomingCounts);
+							MatchOffer(false, 0, reason, priority, outgoingIndex++, outgoingOffers, outgoingCounts, incomingOffers, incomingCounts);
 						}
-
-						// Clear outgoing buffer once finished.
-						outgoingCounts[priorityIndex] = 0;
 					}
 
-					// At this point all outgoing offers have been matched, so we can just wipe any remaining incoming offers.
+					// Match any remaining incoming offers incoming-first (from depots outwards).
 					for (int priority = 7; priority >= 0; --priority)
 					{
 						int priorityIndex = reasonBlock + priority;
-						incomingCounts[priorityIndex] = 0;
+						int incomingIndex = 0;
+
+						// Keep iterating while offers are remaining in this incoming priority block.
+						while (incomingIndex < incomingCounts[priorityIndex])
+						{
+							MatchOffer(false, 0, reason, priority, incomingIndex++, incomingOffers, incomingCounts, outgoingOffers, outgoingCounts);
+						}
+					}
+					break;
+
+				// Basic city services - most efficent matching is from depot outwards.
+				case TransferManager.TransferReason.Garbage:
+				case TransferManager.TransferReason.Mail:
+				case TransferManager.TransferReason.RoadMaintenance:
+				case TransferManager.TransferReason.ParkMaintenance:
+				case TransferManager.TransferReason.Snow:
+					// Match offers incoming-first (from depots outwards).
+					for (int priority = 7; priority >= 0; --priority)
+					{
+						int priorityIndex = reasonBlock + priority;
+						int incomingIndex = 0;
+
+						// Keep iterating while offers are remaining in this incoming priority block.
+						while (incomingIndex < incomingCounts[priorityIndex])
+						{
+							MatchOffer(false, 0, reason, priority, incomingIndex++, incomingOffers, incomingCounts, outgoingOffers, outgoingCounts);
+						}
+					}
+
+					// Match any remaining outgoing offers.
+					for (int priority = 7; priority >= 0; --priority)
+					{
+						int priorityIndex = reasonBlock + priority;
+						int outgoingIndex = 0;
+
+						// Keep iterating while offers are remaining in this outgoing priority block.
+						while (outgoingIndex < outgoingCounts[priorityIndex])
+						{
+							MatchOffer(false, 0, reason, priority, outgoingIndex++, outgoingOffers, outgoingCounts, incomingOffers, incomingCounts);
+						}
+					}
+					break;
+
+
+				// Deathcare - most efficent matching is from depot outwards.
+				// However, need to prioritise high prioirty requests first.
+				// Start by matching depot outwards for very high priorities (5+), then match remaining highest priority requests (7-3) to address any outstanding urgent requests.
+				// Then service lower priorities from depot outwards for greatest efficiency:
+				case TransferManager.TransferReason.Dead:
+
+					// Match incoming offers, but only for highest priorities (3 and above) - these will be serviced by depots from closest to depot to furthest.
+					for (int priority = 7; priority >= 0; --priority)
+					{
+						int priorityIndex = reasonBlock + priority;
+						int incomingIndex = 0;
+
+						// Keep iterating while offers are remaining in this incoming priority block.
+						while (incomingIndex < incomingCounts[priorityIndex])
+						{
+							MatchOffer(false, 3, reason, priority, incomingIndex++, incomingOffers, incomingCounts, outgoingOffers, outgoingCounts);
+						}
+					}
+
+					// Then match outgoing offers first from highest to lowest priority, down to priority 3, to service any urgent issues.
+					for (int priority = 7; priority >= 3; --priority)
+					{
+						int priorityIndex = reasonBlock + priority;
+						int outgoingIndex = 0;
+
+						// Keep iterating while offers are remaining in this outgoing priority block.
+						while (outgoingIndex < outgoingCounts[priorityIndex])
+						{
+							MatchOffer(false, 0, reason, priority, outgoingIndex++, outgoingOffers, outgoingCounts, incomingOffers, incomingCounts);
+						}
+					}
+
+					// Then match all remaining incoming offers (depot outwards).
+					for (int priority = 7; priority >= 0; --priority)
+					{
+						int priorityIndex = reasonBlock + priority;
+						int incomingIndex = 0;
+
+						// Keep iterating while offers are remaining in this incoming priority block.
+						while (incomingIndex < incomingCounts[priorityIndex])
+						{
+							MatchOffer(false, 0, reason, priority, incomingIndex++, incomingOffers, incomingCounts, outgoingOffers, outgoingCounts);
+						}
+					}
+
+					// Then match any remaining outgoing offers.
+					for (int priority = 7; priority >= 0; --priority)
+					{
+						int priorityIndex = reasonBlock + priority;
+						int outgoingIndex = 0;
+
+						// Keep iterating while offers are remaining in this outgoing priority block.
+						while (outgoingIndex < outgoingCounts[priorityIndex])
+						{
+							MatchOffer(false, 0, reason, priority, outgoingIndex++, outgoingOffers, outgoingCounts, incomingOffers, incomingCounts);
+						}
 					}
 					break;
 
@@ -167,23 +255,28 @@ namespace TransferController
 							if (incomingIndex < incomingCounts[priorityIndex])
 							{
 								matching = true;
-								MatchOffer(true, reason, priority, incomingIndex++, incomingOffers, incomingCounts, outgoingOffers, outgoingCounts);
+								MatchOffer(true, 0, reason, priority, incomingIndex++, incomingOffers, incomingCounts, outgoingOffers, outgoingCounts);
 							}
 
 							// Match next outgoing offer.
 							if (outgoingIndex < outgoingCounts[priorityIndex])
 							{
 								matching = true;
-								MatchOffer(false, reason, priority, outgoingIndex++, outgoingOffers, outgoingCounts, incomingOffers, incomingCounts);
+								MatchOffer(false, 0, reason, priority, outgoingIndex++, outgoingOffers, outgoingCounts, incomingOffers, incomingCounts);
 							}
 						}
 						while (matching);
-
-						// Matching finished - clear this priority level buffer (any unmatched offers are effectively erased).
-						incomingCounts[priorityIndex] = 0;
-						outgoingCounts[priorityIndex] = 0;
 					}
 					break;
+			}
+
+
+			// Wipe any remaining offers.
+			for (int priority = 7; priority >= 0; --priority)
+			{
+				int priorityIndex = reasonBlock + priority;
+				incomingCounts[priorityIndex] = 0;
+				outgoingCounts[priorityIndex] = 0;
 			}
 
 			// Clear TransferManager outstanding amount totals for this TransferReason.
@@ -196,6 +289,7 @@ namespace TransferController
 		/// Finds a match for the specified offer, using closest-distance.
 		/// </summary>
 		/// <param name="incoming">True if this is an incoming offer, false otherwise.</param>
+		/// <param name="minPriority">Minimum priority to match to</param>
 		/// <param name="reason">Transfer reason</param>
 		/// <param name="priority">Specified reason's priority</param>
 		/// <param name="index">Specified reason's index (within priority block)</param>
@@ -203,7 +297,7 @@ namespace TransferController
 		/// <param name="offerCounts">Transfer counts array for specified transfer</param>
 		/// <param name="candidateBuffer">TransferReason buffer for candidate offers for matching</param>
 		/// <param name="candidateCounts">Transfer counts array for candidate offers for matching</param>
-		public static void MatchOffer(bool incoming, TransferManager.TransferReason reason, int priority, int index, TransferManager.TransferOffer[] offerBuffer, ushort[] offerCounts, TransferManager.TransferOffer[] candidateBuffer, ushort[] candidateCounts)
+		public static void MatchOffer(bool incoming, int minPriority, TransferManager.TransferReason reason, int priority, int index, TransferManager.TransferOffer[] offerBuffer, ushort[] offerCounts, TransferManager.TransferOffer[] candidateBuffer, ushort[] candidateCounts)
 		{
 			// Offer to match.
 			// Material block index.
@@ -233,7 +327,7 @@ namespace TransferController
 			 * an offer with priority 0 will only consider matching with priorities 7 down to 2, an offer with priority 1 will only consider priorities 7 down to 1.
 			 * This way lower-priority transfers will have slightly fewer candidates for matching than higher-priority transfers.
 			 */
-			int lowerPriorityBound = Mathf.Max(0, 2 - priority);
+			int lowerPriorityBound = Mathf.Max(Mathf.Max(0, 2 - priority), minPriority);
 
 			// TODO: Skip zero amounts.
 

@@ -1,4 +1,7 @@
-﻿Version 0.6.1 -
+﻿- Add special matching process for hearses
+
+
+Version 0.6.1 -
 
 - Adjust warehouse distance weighting
 - Adjust outgoing-prioritized transfer types
