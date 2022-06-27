@@ -6,7 +6,7 @@ using ColossalFramework.UI;
 namespace TransferController
 {
 	/// <summary>
-	/// District list item record.
+	/// Building list item record.
 	/// </summary>
 	public class BuildingItem
 	{
@@ -53,7 +53,7 @@ namespace TransferController
 	}
 
 	/// <summary>
-	/// UI fastlist item for districts.
+	/// UI fastlist item for buildings.
 	/// </summary>
 	public class BuildingRow : UIBasicRow
 	{
@@ -62,7 +62,7 @@ namespace TransferController
 		private const float LeftMargin = 5f;
 		private const float PaddingY = 3f;
 
-		// District name label.
+		// Building name label.
 		private UILabel buildingNameLabel;
 
 		// Building ID.
@@ -102,7 +102,7 @@ namespace TransferController
 			}
 			else
 			{
-				// Just in case (no valid district record).
+				// Just in case (no valid building record).
 				buildingNameLabel.text = string.Empty;
 			}
 
