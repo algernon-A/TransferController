@@ -23,7 +23,7 @@ namespace TransferController
 
 
         /// <summary>
-        /// Currently selected district.
+        /// Currently selected building.
         /// </summary>
         internal ushort SelectedBuilding
         {
@@ -61,7 +61,7 @@ namespace TransferController
                 buildingList.width = TransferBuildingTab.BuildingColumnWidth;
                 buildingList.height = TransferBuildingTab.ListHeight;
                 buildingList.canSelect = true;
-                buildingList.rowHeight = DistrictRow.RowHeight;
+                buildingList.rowHeight = DistrictRow.DefaultRowHeight;
                 buildingList.autoHideScrollbar = true;
                 buildingList.relativePosition = Vector2.zero;
                 buildingList.rowsData = new FastList<object>();
@@ -83,7 +83,7 @@ namespace TransferController
             // Repopulate the list.
             PopulateList();
 
-            // (Re)select currently-selected district to ensure list selection matches.
+            // (Re)select currently-selected building to ensure list selection matches.
             buildingList.FindBuilding(selectedBuilding);
         }
 

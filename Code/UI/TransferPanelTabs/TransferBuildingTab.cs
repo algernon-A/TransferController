@@ -107,7 +107,7 @@ namespace TransferController
             // Add district to building.
             BuildingControl.AddBuilding(CurrentBuilding, RecordNumber, buildingID, TransferReason, NextRecord);
 
-            // Add district to building and update current selection.
+            // Update current selection.
             selectedBuildingPanel.SelectedBuilding = buildingID;
 
             // Update district list.
@@ -138,7 +138,7 @@ namespace TransferController
             // Remove selected district from building.
             BuildingControl.RemoveBuilding(CurrentBuilding, RecordNumber, selectedBuildingPanel.SelectedBuilding);
 
-            // Remove selected district from building and clear current selection.
+            // Clear current selection.
             selectedBuildingPanel.SelectedBuilding = 0;
 
             // Update district list.

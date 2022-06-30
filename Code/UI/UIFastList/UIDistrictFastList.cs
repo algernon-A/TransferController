@@ -3,9 +3,9 @@
 namespace TransferController
 {
     /// <summary>
-    /// Fastlist for displaying buildings.
+    /// Fastlist for displaying districts.
     /// </summary>
-    public class UIBuildingFastList : UIFastList
+    public class UIDistrictFastList: UIFastList
     {
         /// <summary>
         /// Use this to create the UIFastList.
@@ -25,19 +25,18 @@ namespace TransferController
             return (U)list;
         }
 
-
         /// <summary>
-        /// Sets the selection to the given building ID.
+        /// Sets the selection to the given district ID.
         /// If no item is found, clears the selection and resets the list.
         /// </summary>
-        /// <param name="buildingID">DistrictID to find</param>
-        public void FindBuilding(ushort buildingID)
+        /// <param name="districtID">DistrictID to find</param>
+        public void FindDistrict(int districtID)
         {
             // Iterate through the rows list.
             for (int i = 0; i < m_rowsData.m_buffer.Length; ++i)
             {
                 // Look for a match.
-                if (m_rowsData.m_buffer[i] is ushort thisID && thisID == buildingID)
+                if (m_rowsData.m_buffer[i] is byte thisDistrict && thisDistrict == districtID)
                 {
                     // Found a match; set the selected index to this one.
                     selectedIndex = i;

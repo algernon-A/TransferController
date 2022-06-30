@@ -15,7 +15,7 @@ namespace TransferController
         protected const float SameDistrictCheckY = EnabledCheckY + CheckHeight;
         protected const float ListTitleY = SameDistrictCheckY + CheckHeight;
         protected const float ListY = ListTitleY + CheckHeight;
-        internal const float ListHeight = 10f * DistrictRow.RowHeight;
+        internal const float ListHeight = 10f * DistrictRow.DefaultRowHeight;
         internal const float ColumnWidth = 210f;
         protected const float ArrowSize = 32f;
         protected const float MidControlX = Margin + ColumnWidth + Margin;

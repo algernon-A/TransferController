@@ -21,7 +21,7 @@ namespace TransferController
         private const float FilterRow2 = FilterRow1 + FilterRowHeight;
         private const float FilterRow3 = FilterRow2 + FilterRowHeight;
         private const float ListY = FilterRow3 + FilterRowHeight + Margin;
-        private const float ListHeight = DistrictRow.RowHeight * 20f;
+        private const float ListHeight = DistrictRow.DefaultRowHeight * 20f;
         private const float PanelHeight = ListY + ListHeight + Margin;
         private const float FilterColumn1 = Margin;
         private const float FilterColumn2 = 200f;
@@ -92,7 +92,7 @@ namespace TransferController
                 logList.width = width - 10f;
                 logList.height = ListHeight;
                 logList.canSelect = true;
-                logList.rowHeight = DistrictRow.RowHeight;
+                logList.rowHeight = DistrictRow.DefaultRowHeight;
                 logList.autoHideScrollbar = true;
                 logList.relativePosition = new Vector2(Margin, ListY);
                 logList.rowsData = new FastList<object>();

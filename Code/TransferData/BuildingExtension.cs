@@ -17,6 +17,7 @@ namespace TransferController
         {
             BuildingControl.ReleaseBuilding(id);
             PathFindFailure.ReleaseBuilding(id);
+            VehicleControl.ReleaseBuilding(id);
         }
     }
 }

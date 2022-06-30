@@ -11,7 +11,10 @@ namespace TransferController
     public abstract class UIBasicRow : UIPanel, IUIFastListRow
     {
         // Layout constants.
-        internal const float RowHeight = 20f;
+        public const float DefaultRowHeight = 20f;
+
+        // Row height.
+        public float rowHeight = DefaultRowHeight;
 
         // Panel components.
         protected UIPanel panelBackground;
@@ -26,7 +29,7 @@ namespace TransferController
                 {
                     panelBackground = AddUIComponent<UIPanel>();
                     panelBackground.width = width;
-                    panelBackground.height = RowHeight;
+                    panelBackground.height = rowHeight;
                     panelBackground.relativePosition = Vector2.zero;
 
                     panelBackground.zOrder = 0;

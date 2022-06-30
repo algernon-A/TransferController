@@ -24,7 +24,8 @@ namespace TransferController
         {
             DistrictTab = 0,
             BuildingTab,
-            OutsideTab
+            OutsideTab,
+            VehicleTab
         }
 
         // Panel components.
@@ -32,7 +33,8 @@ namespace TransferController
         private readonly TransferDistrictTab districtPanel;
         private readonly TransferBuildingTab buildingPanel;
         private readonly TransferOutsideTab outsidePanel;
-        private readonly UIButton outsideButton;
+        private readonly TransferVehicleTab vehiclePanel;
+        private readonly UIButton outsideButton, vehicleButton;
         private readonly UITabstrip tabStrip;
 
         // Current selections.
@@ -68,6 +70,7 @@ namespace TransferController
                     districtPanel.CurrentBuilding = value;
                     buildingPanel.CurrentBuilding = value;
                     outsidePanel.CurrentBuilding = value;
+                    vehiclePanel.CurrentBuilding = value;
                 }
             }
         }
@@ -86,6 +89,7 @@ namespace TransferController
                 districtPanel.RecordNumber = value;
                 buildingPanel.RecordNumber = value;
                 outsidePanel.RecordNumber = value;
+                vehiclePanel.RecordNumber = value;
             }
         }
 
@@ -103,6 +107,7 @@ namespace TransferController
                 districtPanel.TransferReason = value;
                 buildingPanel.TransferReason = value;
                 outsidePanel.TransferReason = value;
+                vehiclePanel.TransferReason = value;
             }
         }
 
@@ -120,6 +125,19 @@ namespace TransferController
                 districtPanel.NextRecord = value;
                 buildingPanel.NextRecord = value;
                 outsidePanel.NextRecord = value;
+                vehiclePanel.NextRecord = value;
+            }
+        }
+
+
+        /// <summary>
+        /// Whether or not this transfer has vehicles.
+        /// </summary>
+        internal bool HasVehicles
+        {
+            set
+            {
+                vehicleButton.isVisible = value;
             }
         }
 
@@ -200,6 +218,7 @@ namespace TransferController
                 districtPanel = new TransferDistrictTab(AddTextTab(tabStrip, Translations.Translate("TFC_TAB_DIS"), (int)TabIndexes.DistrictTab, out UIButton _));
                 buildingPanel = new TransferBuildingTab(AddTextTab(tabStrip, Translations.Translate("TFC_TAB_BLD"), (int)TabIndexes.BuildingTab, out UIButton _));
                 outsidePanel = new TransferOutsideTab(AddTextTab(tabStrip, Translations.Translate("TFC_TAB_IMP"), (int)TabIndexes.OutsideTab, out outsideButton));
+                vehiclePanel = new TransferVehicleTab(AddTextTab(tabStrip, Translations.Translate("TFC_TAB_VEH"), (int)TabIndexes.VehicleTab, out vehicleButton));
                 tabStrip.selectedIndex = 1;
                 tabStrip.selectedIndex = 0;
             }
@@ -219,7 +238,7 @@ namespace TransferController
         /// <param name="button">Tab button instance reference</param>
         /// <param name="width">Tab width</param>
         /// <returns>UIHelper instance for the new tab panel</returns>
-        private UIPanel AddTextTab(UITabstrip tabStrip, string tabName, int tabIndex, out UIButton button, float width = TransferPanelTab.PanelWidth / 3f)
+        private UIPanel AddTextTab(UITabstrip tabStrip, string tabName, int tabIndex, out UIButton button, float width = TransferPanelTab.PanelWidth / 4f)
         {
             // Create tab.
             UIButton tabButton = tabStrip.AddTab(tabName);

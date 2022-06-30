@@ -200,6 +200,7 @@ namespace TransferController
                 transfers[i].panel.DirectionTitle = transfers[i].panelTitle;
                 transfers[i].panel.OutsideLabel = transfers[i].outsideText;
                 transfers[i].panel.OutsidePanel.OutsideTip = transfers[i].outsideTip;
+                transfers[i].panel.HasVehicles = transfers[i].spawnsVehicles;
             }
 
             // Destroy any unused panels.

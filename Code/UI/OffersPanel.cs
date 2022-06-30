@@ -20,7 +20,7 @@ namespace TransferController
         private const float PanelWidth = TransferPanel.PanelWidth;
         private const float TitleHeight = 50f;
         private const float ListY = TitleHeight + Margin;
-        private const float ListHeight = DistrictRow.RowHeight * 20f;
+        private const float ListHeight = DistrictRow.DefaultRowHeight * 20f;
         private const float PanelHeight = ListY + ListHeight + Margin;
 
 
@@ -73,7 +73,7 @@ namespace TransferController
                 offersList.width = width - 10f;
                 offersList.height = ListHeight;
                 offersList.canSelect = true;
-                offersList.rowHeight = DistrictRow.RowHeight;
+                offersList.rowHeight = DistrictRow.DefaultRowHeight;
                 offersList.autoHideScrollbar = true;
                 offersList.relativePosition = new Vector2(Margin, ListY);
                 offersList.rowsData = new FastList<object>();

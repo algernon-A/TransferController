@@ -97,7 +97,7 @@ namespace TransferController
 				canFocus = true;
 				isInteractive = true;
 				width = parent.width;
-				height = RowHeight;
+				height = rowHeight;
 
 				// Add object name label.
 				districtNameLabel = AddUIComponent<UILabel>();

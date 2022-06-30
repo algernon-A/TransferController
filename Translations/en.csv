@@ -6,6 +6,7 @@ TFC_TAB_DIS,Districts
 TFC_TAB_BLD,Buildings
 TFC_TAB_IMP,Imports
 TFC_TAB_EXP,Exports
+TFC_TAB_VEH,Vehicles
 TFC_DIS_ENA,Restrict permitted districts
 TFC_DIS_ENA_TIP,"If this is selected, service will be restricted to the districts listed below (and any permitted buildings or outside connections)."
 TFC_DIS_AVA,Available districts
@@ -15,6 +16,10 @@ TFC_DIS_SUB,Remove this district from the list of permitted districts
 TFC_BUI_SEL,Permitted buildings
 TFC_BUI_ADD,Use the cursor to select a building to add to the list of permitted building
 TFC_BUI_SUB,Remove this building from the list of permitted buildings
+TFC_VEH_AVA,Available vehicles
+TFC_VEH_SEL,Permitted vehicles
+TFC_VEH_ADD,Add this vehicle to the list of permitted vehicles
+TFC_VEH_SUB,Remove this vehicle from the list of permitted vehicles
 TFC_GEN_BUY,Buying restrictions
 TFC_GEN_SEL,Selling restrictions
 TFC_GEN_SER,Service restrictions

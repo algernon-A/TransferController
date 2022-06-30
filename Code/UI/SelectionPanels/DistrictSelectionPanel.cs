@@ -68,7 +68,7 @@ namespace TransferController
                 districtList.width = TransferPanelTab.ColumnWidth;
                 districtList.height = TransferPanelTab.ListHeight;
                 districtList.canSelect = true;
-                districtList.rowHeight = DistrictRow.RowHeight;
+                districtList.rowHeight = DistrictRow.DefaultRowHeight;
                 districtList.autoHideScrollbar = true;
                 districtList.relativePosition = Vector2.zero;
                 districtList.rowsData = new FastList<object>();

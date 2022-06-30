@@ -62,7 +62,7 @@ namespace TransferController
 				canFocus = true;
 				isInteractive = true;
 				width = parent.width;
-				height = RowHeight;
+				height = rowHeight;
 
 				// Add logging name label.
 				logLine = AddUIComponent<UILabel>();

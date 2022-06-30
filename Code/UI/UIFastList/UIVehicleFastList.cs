@@ -2,9 +2,11 @@
 
 namespace TransferController
 {
-    public class UIDistrictFastList: UIFastList
+    /// <summary>
+    /// Fastlist for displaying vehicles.
+    /// </summary>
+    public class UIVehicleFastList : UIFastList
     {
-
         /// <summary>
         /// Use this to create the UIFastList.
         /// Do NOT use AddUIComponent.
@@ -27,14 +29,21 @@ namespace TransferController
         /// Sets the selection to the given district ID.
         /// If no item is found, clears the selection and resets the list.
         /// </summary>
-        /// <param name="districtID">DistrictID to find</param>
-        public void FindDistrict(int districtID)
+        /// <param name="prefab">Vehicle prefab to find</param>
+        public void FindVehicle(VehicleInfo prefab)
         {
+            // Clear selction if no prefab is selected.
+            if (prefab == null)
+            {
+                selectedIndex = -1;
+                return;
+            }
+
             // Iterate through the rows list.
             for (int i = 0; i < m_rowsData.m_buffer.Length; ++i)
             {
                 // Look for a match.
-                if (m_rowsData.m_buffer[i] is byte thisDistrict && thisDistrict == districtID)
+                if (m_rowsData.m_buffer[i] is VehicleInfo thisInfo && thisInfo == prefab)
                 {
                     // Found a match; set the selected index to this one.
                     selectedIndex = i;

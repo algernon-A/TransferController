@@ -14,6 +14,7 @@ namespace TransferController
         public TransferManager.TransferReason reason;
         public byte recordNumber;
         public byte nextRecord;
+        public bool spawnsVehicles;
     }
 
 
@@ -43,24 +44,35 @@ namespace TransferController
         {
             switch (buildingInfo.GetService())
             {
+                // Education - nothing special.
                 case ItemClass.Service.Education:
-                case ItemClass.Service.HealthCare:
                 case ItemClass.Service.PlayerEducation:
-                    // Basic service offering; incoming restrictions only, generic title, no specific reason.
                     transfers[0].panelTitle = Translations.Translate("TFC_GEN_SER");
                     transfers[0].outsideText = null;
                     transfers[0].recordNumber = BuildingControl.IncomingMask;
                     transfers[0].reason = TransferManager.TransferReason.None;
                     transfers[0].nextRecord = 0;
+                    transfers[0].spawnsVehicles = false;
                     return 1;
 
+                // Healthcare.
+                case ItemClass.Service.HealthCare:
+                    transfers[0].panelTitle = Translations.Translate("TFC_GEN_SER");
+                    transfers[0].outsideText = null;
+                    transfers[0].recordNumber = BuildingControl.IncomingMask;
+                    transfers[0].reason = TransferManager.TransferReason.None;
+                    transfers[0].nextRecord = 0;
+                    transfers[0].spawnsVehicles = true;
+                    return 1;
+
+                // Fire.
                 case ItemClass.Service.FireDepartment:
-                    // Fire departments have one basic entry.
                     transfers[0].panelTitle = Translations.Translate("TFC_FIR_BUI");
                     transfers[0].outsideText = null;
                     transfers[0].recordNumber = BuildingControl.IncomingMask;
                     transfers[0].reason = TransferManager.TransferReason.Fire;
                     transfers[0].nextRecord = 0;
+                    transfers[0].spawnsVehicles = true;
 
                     // Second service for fire helicopters.
                     if (buildingInfo.GetAI() is HelicopterDepotAI)
@@ -70,6 +82,7 @@ namespace TransferController
                         transfers[1].recordNumber = BuildingControl.IncomingMask + 1;
                         transfers[1].reason = TransferManager.TransferReason.Fire2;
                         transfers[1].nextRecord = 0;
+                        transfers[1].spawnsVehicles = true;
                         return 2;
                     }
 
@@ -84,6 +97,7 @@ namespace TransferController
                         transfers[0].recordNumber = BuildingControl.IncomingMask;
                         transfers[0].reason = TransferManager.TransferReason.FloodWater;
                         transfers[0].nextRecord = 0;
+                        transfers[0].spawnsVehicles = true;
                         return 1;
                     }
                     // Boiler station - imports oil.
@@ -95,6 +109,7 @@ namespace TransferController
                         transfers[0].recordNumber = BuildingControl.IncomingMask;
                         transfers[0].reason = TransferManager.TransferReason.Oil;
                         transfers[0].nextRecord = 0;
+                        transfers[0].spawnsVehicles = false;
                         return 1;
                     }
                     return 0;
@@ -108,11 +123,13 @@ namespace TransferController
                         transfers[0].recordNumber = BuildingControl.IncomingMask;
                         transfers[0].reason = TransferManager.TransferReason.Collapsed;
                         transfers[0].nextRecord = 0;
+                        transfers[0].spawnsVehicles = true;
                         transfers[1].panelTitle = Translations.Translate("TFC_DIS_HEL");
                         transfers[1].outsideText = null;
                         transfers[1].recordNumber = BuildingControl.IncomingMask + 1;
                         transfers[1].reason = TransferManager.TransferReason.Collapsed2;
                         transfers[1].nextRecord = 0;
+                        transfers[1].spawnsVehicles = true;
                         return 2;
                     }
                     // Sheters import goods (supplies).
@@ -124,6 +141,7 @@ namespace TransferController
                         transfers[0].recordNumber = BuildingControl.IncomingMask;
                         transfers[0].reason = TransferManager.TransferReason.None;
                         transfers[0].nextRecord = 0;
+                        transfers[0].spawnsVehicles = false;
                         return 1;
                     }
                     return 0;
@@ -138,6 +156,7 @@ namespace TransferController
                         transfers[0].recordNumber = BuildingControl.IncomingMask;
                         transfers[0].reason = powerPlantAI.m_resourceType;
                         transfers[0].nextRecord = 0;
+                        transfers[0].spawnsVehicles = false;
                         return 1;
                     }
                     return 0;
@@ -153,6 +172,7 @@ namespace TransferController
                         transfers[0].recordNumber = BuildingControl.IncomingMask;
                         transfers[0].reason = TransferManager.TransferReason.Crime;
                         transfers[0].nextRecord = 0;
+                        transfers[0].spawnsVehicles = true;
 
                         // Prison Helicopter Mod.
                         if ((buildingFlags & Building.Flags.Downgrading) == Building.Flags.None)
@@ -162,6 +182,7 @@ namespace TransferController
                             transfers[1].recordNumber = BuildingControl.IncomingMask + 1;
                             transfers[1].reason = (TransferManager.TransferReason)126;
                             transfers[1].nextRecord = 0;
+                            transfers[1].spawnsVehicles = true;
                             return 2;
                         }
 
@@ -177,6 +198,7 @@ namespace TransferController
                             transfers[0].recordNumber = BuildingControl.IncomingMask;
                             transfers[0].reason = TransferManager.TransferReason.CriminalMove;
                             transfers[0].nextRecord = 0;
+                            transfers[0].spawnsVehicles = true;
                             return 1;
                         }
                         else
@@ -187,11 +209,13 @@ namespace TransferController
                             transfers[0].recordNumber = BuildingControl.IncomingMask;
                             transfers[0].reason = TransferManager.TransferReason.Crime;
                             transfers[0].nextRecord = 0;
+                            transfers[0].spawnsVehicles = true;
                             transfers[1].panelTitle = Translations.Translate("TFC_POL_PMO"); // Prisoner transfer by van to prison
                             transfers[1].outsideText = null;
                             transfers[1].recordNumber = BuildingControl.OutgoingMask;
                             transfers[1].reason = TransferManager.TransferReason.CriminalMove;
                             transfers[1].nextRecord = 0;
+                            transfers[1].spawnsVehicles = true;
 
                             // Prison Helicopter Mod.
                             if (buildingInfo.m_buildingAI.GetType().Name.Equals("PrisonCopterPoliceStationAI"))
@@ -204,6 +228,7 @@ namespace TransferController
                                     transfers[2].recordNumber = BuildingControl.OutgoingMask + 1;
                                     transfers[2].reason = (TransferManager.TransferReason)125;
                                     transfers[2].nextRecord = 0;
+                                    transfers[2].spawnsVehicles = false;
                                     return 3;
                                 }
                                 // Big (central) police station
@@ -214,11 +239,13 @@ namespace TransferController
                                     transfers[2].recordNumber = BuildingControl.OutgoingMask + 1;
                                     transfers[2].reason = (TransferManager.TransferReason)126;
                                     transfers[2].nextRecord = 0;
+                                    transfers[2].spawnsVehicles = false;
                                     transfers[3].panelTitle = Translations.Translate("TFC_POL_PTI"); // transfer prisoners from local stations
                                     transfers[3].outsideText = null;
                                     transfers[3].recordNumber = BuildingControl.IncomingMask + 1;
                                     transfers[3].reason = (TransferManager.TransferReason)125;
                                     transfers[3].nextRecord = 0;
+                                    transfers[3].spawnsVehicles = false;
                                     return 4;
                                 }
                             }
@@ -235,12 +262,14 @@ namespace TransferController
                     transfers[0].recordNumber = BuildingControl.IncomingMask;
                     transfers[0].reason = TransferManager.TransferReason.None;
                     transfers[0].nextRecord = 0;
+                    transfers[0].spawnsVehicles = false;
                     transfers[1].panelTitle = Translations.Translate("TFC_GEN_SEL");
                     transfers[1].outsideText = Translations.Translate("TFC_BLD_EXP");
                     transfers[1].outsideTip = Translations.Translate("TFC_BLD_EXP_TIP");
                     transfers[1].recordNumber = BuildingControl.OutgoingMask;
                     transfers[1].reason = TransferManager.TransferReason.None;
                     transfers[1].nextRecord = 0;
+                    transfers[1].spawnsVehicles = true;
                     return 2;
 
                 case ItemClass.Service.PlayerIndustry: // industries dlc
@@ -252,6 +281,7 @@ namespace TransferController
                         transfers[0].recordNumber = BuildingControl.OutgoingMask;
                         transfers[0].reason = TransferManager.TransferReason.None;
                         transfers[0].nextRecord = 0;
+                        transfers[0].spawnsVehicles = true;
                         return 1;
                     }
                     else if (buildingInfo.m_buildingAI is ProcessingFacilityAI && buildingInfo.m_class.m_level < ItemClass.Level.Level5)
@@ -262,12 +292,14 @@ namespace TransferController
                         transfers[0].recordNumber = BuildingControl.IncomingMask;
                         transfers[0].reason = TransferManager.TransferReason.None;
                         transfers[0].nextRecord = 0;
+                        transfers[0].spawnsVehicles = false;
                         transfers[1].panelTitle = Translations.Translate("TFC_GEN_SEL");
                         transfers[1].outsideText = Translations.Translate("TFC_BLD_EXP");
                         transfers[1].outsideTip = Translations.Translate("TFC_BLD_EXP_TIP");
                         transfers[1].recordNumber = BuildingControl.OutgoingMask;
                         transfers[1].reason = TransferManager.TransferReason.None;
                         transfers[1].nextRecord = 0;
+                        transfers[1].spawnsVehicles = true;
                         return 2;
                     }
                     else if (buildingInfo.m_buildingAI is UniqueFactoryAI)
@@ -277,12 +309,14 @@ namespace TransferController
                         transfers[0].recordNumber = BuildingControl.IncomingMask;
                         transfers[0].reason = TransferManager.TransferReason.None;
                         transfers[0].nextRecord = 0;
+                        transfers[0].spawnsVehicles = false;
                         transfers[1].panelTitle = Translations.Translate("TFC_GEN_SEL");
                         transfers[1].outsideText = Translations.Translate("TFC_BLD_EXP");
                         transfers[1].outsideTip = Translations.Translate("TFC_BLD_EXP_TIP");
                         transfers[1].recordNumber = BuildingControl.OutgoingMask;
                         transfers[1].reason = TransferManager.TransferReason.LuxuryProducts;
                         transfers[1].nextRecord = 0;
+                        transfers[1].spawnsVehicles = true;
                         return 2;
                     }
                     else if (buildingInfo.m_buildingAI is WarehouseAI)
@@ -293,12 +327,14 @@ namespace TransferController
                         transfers[0].recordNumber = BuildingControl.IncomingMask;
                         transfers[0].reason = TransferManager.TransferReason.None;
                         transfers[0].nextRecord = 0;
+                        transfers[0].spawnsVehicles = false;
                         transfers[1].panelTitle = Translations.Translate("TFC_GEN_SEL");
                         transfers[1].outsideText = Translations.Translate("TFC_BLD_EXP");
                         transfers[1].outsideTip = Translations.Translate("TFC_BLD_EXP_TIP");
                         transfers[1].recordNumber = BuildingControl.OutgoingMask;
                         transfers[1].reason = TransferManager.TransferReason.None;
                         transfers[1].nextRecord = 0;
+                        transfers[1].spawnsVehicles = true;
                         return 2;
                     }
                     return 0;
@@ -313,6 +349,7 @@ namespace TransferController
                         transfers[0].recordNumber = BuildingControl.IncomingMask;
                         transfers[0].reason = TransferManager.TransferReason.None;
                         transfers[0].nextRecord = 0;
+                        transfers[0].spawnsVehicles = true;
                         return 1;
                     }
                     return 0;
@@ -329,24 +366,31 @@ namespace TransferController
                             transfers[0].recordNumber = BuildingControl.IncomingMask;
                             transfers[0].reason = TransferManager.TransferReason.Mail;
                             transfers[0].nextRecord = BuildingControl.IncomingMask + 1;
+                            transfers[0].spawnsVehicles = true;
 
+                            // Post offices send sorted mail out to other post offices.
                             transfers[1].panelTitle = Translations.Translate("TFC_MAI_OSD");
                             transfers[1].outsideText =  null;
                             transfers[1].recordNumber = BuildingControl.OutgoingMask;
                             transfers[1].reason = TransferManager.TransferReason.SortedMail;
                             transfers[1].nextRecord = BuildingControl.OutgoingMask + 1;
+                            transfers[1].spawnsVehicles = false;
 
+                            // Post offices send unsorted mail via their trucks.
                             transfers[2].panelTitle = Translations.Translate("TFC_MAI_OUN");
                             transfers[2].outsideText = Translations.Translate("TFC_BLD_EXP");
                             transfers[2].recordNumber = BuildingControl.OutgoingMask + 1;
                             transfers[2].reason = TransferManager.TransferReason.UnsortedMail;
                             transfers[2].nextRecord = 0;
+                            transfers[2].spawnsVehicles = true;
 
+                            // Post offices pick up sorted mail via their trucks.
                             transfers[3].panelTitle = Translations.Translate("TFC_MAI_IST");
                             transfers[3].outsideText = Translations.Translate("TFC_BLD_IMP");
                             transfers[3].recordNumber = BuildingControl.IncomingMask + 1;
                             transfers[3].reason = TransferManager.TransferReason.SortedMail;
                             transfers[3].nextRecord = 0;
+                            transfers[3].spawnsVehicles = true;
 
                             return 4;
                         }
@@ -357,24 +401,28 @@ namespace TransferController
                         transfers[0].recordNumber = BuildingControl.IncomingMask;
                         transfers[0].reason = TransferManager.TransferReason.UnsortedMail;
                         transfers[0].nextRecord = 0;
+                        transfers[0].spawnsVehicles = false;
 
                         transfers[1].panelTitle = Translations.Translate("TFC_MAI_OST");
                         transfers[1].outsideText = null;
                         transfers[1].recordNumber = BuildingControl.OutgoingMask;
                         transfers[1].reason = TransferManager.TransferReason.SortedMail;
                         transfers[1].nextRecord = 0;
+                        transfers[1].spawnsVehicles = true;
 
                         transfers[2].panelTitle = Translations.Translate("TFC_MAI_OGM");
                         transfers[2].outsideText = Translations.Translate("TFC_BLD_EXP");
                         transfers[2].recordNumber = BuildingControl.OutgoingMask + 1;
                         transfers[2].reason = TransferManager.TransferReason.OutgoingMail;
                         transfers[2].nextRecord = 0;
+                        transfers[2].spawnsVehicles = true;
 
                         transfers[3].panelTitle = Translations.Translate("TFC_MAI_ICM");
                         transfers[3].outsideText = Translations.Translate("TFC_BLD_IMP");
                         transfers[3].recordNumber = BuildingControl.IncomingMask + 1;
                         transfers[3].reason = TransferManager.TransferReason.IncomingMail;
                         transfers[3].nextRecord = 0;
+                        transfers[3].spawnsVehicles = false;
 
                         return 4;
                     }
@@ -383,74 +431,81 @@ namespace TransferController
                 case ItemClass.Service.Garbage:
                     if (buildingInfo.GetAI() is LandfillSiteAI landfillAI)
                     {
-                        // Incineration Plant
+                        // Incineration Plant.
                         if (buildingInfo.GetClassLevel() == ItemClass.Level.Level1 && landfillAI.m_electricityProduction != 0)
                         {
-                            // Garbage Collection
+                            // Garbage Collection.
                             transfers[0].panelTitle = Translations.Translate("TFC_GAR_ICO");
                             transfers[0].outsideText = null;
                             transfers[0].recordNumber = BuildingControl.IncomingMask;
                             transfers[0].reason = TransferManager.TransferReason.Garbage;
                             transfers[0].nextRecord = 0;
+                            transfers[0].spawnsVehicles = true;
 
                             return 1;
                         }
-                        // Recycling Center	
+                        // Recycling Center.
                         else if (buildingInfo.GetClassLevel() == ItemClass.Level.Level2 && landfillAI.m_materialProduction != 0)
                         {
-                            // Garbage Collection
+                            // Garbage Collection.
                             transfers[0].panelTitle = Translations.Translate("TFC_GAR_ICO");
                             transfers[0].outsideText = null;
                             transfers[0].recordNumber = BuildingControl.IncomingMask;
                             transfers[0].reason = TransferManager.TransferReason.Garbage;
                             transfers[0].nextRecord = 0;
+                            transfers[0].spawnsVehicles = true;
 
-                            // Recovered resources for sale
+                            // Recovered resources for sale.
                             transfers[1].panelTitle = Translations.Translate("TFC_GAR_ORR");
                             transfers[1].outsideText = Translations.Translate("TFC_BLD_EXP");
                             transfers[1].outsideTip = Translations.Translate("TFC_BLD_EXP_TIP");
                             transfers[1].recordNumber = BuildingControl.OutgoingMask;
                             transfers[1].reason = TransferManager.TransferReason.None;
                             transfers[1].nextRecord = 0;
+                            transfers[1].spawnsVehicles = false;
 
                             return 2;
                         }
-                        // Waste Transfer Facility and Landfill Site
+                        // Waste Transfer Facility and Landfill Site.
                         else if (buildingInfo.GetClassLevel() == ItemClass.Level.Level3 || buildingInfo.GetClassLevel() == ItemClass.Level.Level1 && landfillAI.m_electricityProduction == 0)
                         {
-                            // Garbage Collection
+                            // Garbage collection.
                             transfers[0].panelTitle = Translations.Translate("TFC_GAR_ICO");
                             transfers[0].outsideText = null;
                             transfers[0].recordNumber = BuildingControl.IncomingMask;
                             transfers[0].reason = TransferManager.TransferReason.Garbage;
                             transfers[0].nextRecord = 0;
+                            transfers[0].spawnsVehicles = true;
 
-                            // Garbage Transfer for proccessing in a Waste Processing Complex
+                            // Garbage Transfer for processing in a Waste Processing Complex.
                             transfers[1].panelTitle = Translations.Translate("TFC_GAR_OTF");
                             transfers[1].outsideText = null;
                             transfers[1].recordNumber = BuildingControl.OutgoingMask;
                             transfers[1].reason = TransferManager.TransferReason.GarbageTransfer;
                             transfers[1].nextRecord = 0;
+                            transfers[1].spawnsVehicles = false;
 
                             return 2;
                         }
-                        // Waste Processing Complex
+                        // Waste Processing Complex.
                         else if (buildingInfo.GetClassLevel() == ItemClass.Level.Level4)
                         {
-                            // Garbage Transfer for proccessing from Waste Transfer Facility and Landfill Site
+                            // Garbage Transfer for proccessing from Waste Transfer Facility and Landfill Site.
                             transfers[0].panelTitle = Translations.Translate("TFC_GAR_ITF");
                             transfers[0].outsideText = null;
                             transfers[0].recordNumber = BuildingControl.IncomingMask;
                             transfers[0].reason = TransferManager.TransferReason.GarbageTransfer;
                             transfers[0].nextRecord = 0;
+                            transfers[0].spawnsVehicles = true;
 
-                            // Recovered resources for sale
+                            // Recovered resources for sale.
                             transfers[1].panelTitle = Translations.Translate("TFC_GAR_ORR");
                             transfers[1].outsideText = Translations.Translate("TFC_BLD_EXP");
                             transfers[1].outsideTip = Translations.Translate("TFC_BLD_EXP_TIP");
                             transfers[1].recordNumber = BuildingControl.OutgoingMask;
                             transfers[1].reason = TransferManager.TransferReason.None;
                             transfers[1].nextRecord = 0;
+                            transfers[1].spawnsVehicles = false;
 
                             return 2;
                         }
