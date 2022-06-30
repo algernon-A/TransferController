@@ -138,7 +138,7 @@ namespace TransferController
 						// Keep iterating while offers are remaining in this incoming priority block.
 						while (incomingIndex < incomingCounts[priorityIndex])
 						{
-							MatchOffer(false, 0, reason, priority, incomingIndex++, incomingOffers, incomingCounts, outgoingOffers, outgoingCounts);
+							MatchOffer(true, 0, reason, priority, incomingIndex++, incomingOffers, incomingCounts, outgoingOffers, outgoingCounts);
 						}
 					}
 					break;
@@ -158,7 +158,7 @@ namespace TransferController
 						// Keep iterating while offers are remaining in this incoming priority block.
 						while (incomingIndex < incomingCounts[priorityIndex])
 						{
-							MatchOffer(false, 0, reason, priority, incomingIndex++, incomingOffers, incomingCounts, outgoingOffers, outgoingCounts);
+							MatchOffer(true, 0, reason, priority, incomingIndex++, incomingOffers, incomingCounts, outgoingOffers, outgoingCounts);
 						}
 					}
 
@@ -192,7 +192,7 @@ namespace TransferController
 						// Keep iterating while offers are remaining in this incoming priority block.
 						while (incomingIndex < incomingCounts[priorityIndex])
 						{
-							MatchOffer(false, 3, reason, priority, incomingIndex++, incomingOffers, incomingCounts, outgoingOffers, outgoingCounts);
+							MatchOffer(true, 3, reason, priority, incomingIndex++, incomingOffers, incomingCounts, outgoingOffers, outgoingCounts);
 						}
 					}
 
@@ -218,7 +218,7 @@ namespace TransferController
 						// Keep iterating while offers are remaining in this incoming priority block.
 						while (incomingIndex < incomingCounts[priorityIndex])
 						{
-							MatchOffer(false, 0, reason, priority, incomingIndex++, incomingOffers, incomingCounts, outgoingOffers, outgoingCounts);
+							MatchOffer(true, 0, reason, priority, incomingIndex++, incomingOffers, incomingCounts, outgoingOffers, outgoingCounts);
 						}
 					}
 

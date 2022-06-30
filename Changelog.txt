@@ -1,4 +1,9 @@
-﻿Version 0.6.2 -
+﻿Version 0.6.2.1 hotfix -
+
+- Fix intermittent bug with city service district restrictions
+
+
+Version 0.6.2 -
 
 - Tool can now select unsupported buildings (to see open offers and logging details)
 - Add special matching process for hearses
