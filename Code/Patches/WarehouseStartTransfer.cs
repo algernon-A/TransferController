@@ -74,7 +74,7 @@ namespace TransferController
         {
             // Get any custom vehicle list for this building.
             List<VehicleInfo> vehicleList = VehicleControl.GetVehicles(buildingID, TransferManager.TransferReason.None);
-            if (vehicleList.Count == 0)
+            if (vehicleList == null)
             {
                 // No custom vehicle selection - use game method.
                 return WarehouseAI.GetTransferVehicleService(material, level, ref randomizer);

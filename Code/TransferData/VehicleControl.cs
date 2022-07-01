@@ -18,7 +18,7 @@ namespace TransferController
         /// </summary>
         /// <param name="buildingID">Building ID</param>
         /// <param name="material">Transfer material</param>
-        /// <returns>List of selected vehicles (empty list if none)</returns>
+        /// <returns>List of selected vehicles (null if none)</returns>
         internal static List<VehicleInfo> GetVehicles(ushort buildingID, TransferManager.TransferReason material)
         {
             // Validity check.
@@ -40,7 +40,7 @@ namespace TransferController
             }
 
             // If we got here, no entry was found; return an empty new list.
-            return new List<VehicleInfo>();
+            return null;
         }
 
 

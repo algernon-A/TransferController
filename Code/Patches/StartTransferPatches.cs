@@ -97,7 +97,7 @@ namespace TransferController
         {
             // Get any custom vehicle list for this build
             List<VehicleInfo> vehicleList = VehicleControl.GetVehicles(buildingID, material);
-            if (vehicleList.Count == 0)
+            if (vehicleList == null)
             {
                 // No custom vehicle selection - use game method.
                 return vehicleManager.GetRandomVehicleInfo(ref r, service, subService, level);
@@ -127,7 +127,7 @@ namespace TransferController
         {
             // Get any custom vehicle list for this build
             List<VehicleInfo> vehicleList = VehicleControl.GetVehicles(buildingID, material);
-            if (vehicleList.Count == 0)
+            if (vehicleList == null)
             {
                 // No custom vehicle selection - use game method.
                 return vehicleManager.GetRandomVehicleInfo(ref r, service, subService, level, type);
