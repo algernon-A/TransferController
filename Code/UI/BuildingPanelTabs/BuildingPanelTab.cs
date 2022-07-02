@@ -4,26 +4,25 @@ using ColossalFramework.UI;
 
 namespace TransferController
 {
-    internal abstract class TransferPanelTab
+    /// <summary>
+    /// Building panel tab panel.
+    /// </summary>
+    internal abstract class BuildingPanelTab
     {
         // Layout constants.
         protected const float Margin = 5f;
         protected const float CheckMargin = 20f;
         protected const float CheckHeight = 20f;
         protected const float ButtonHeight = 28f;
-        protected const float EnabledCheckY = Margin;
-        protected const float SameDistrictCheckY = EnabledCheckY + CheckHeight;
-        protected const float ListTitleY = SameDistrictCheckY + CheckHeight;
-        protected const float ListY = ListTitleY + CheckHeight;
-        internal const float ListHeight = 10f * DistrictRow.DefaultRowHeight;
         internal const float ColumnWidth = 210f;
         protected const float ArrowSize = 32f;
         protected const float MidControlX = Margin + ColumnWidth + Margin;
         protected const float RightColumnX = MidControlX + ArrowSize + Margin;
+        internal const float BuildingColumnWidth = ColumnWidth * 2f;
+        protected const float BuildingButtonX = MidControlX + ColumnWidth;
         internal const float PanelWidth = RightColumnX + ColumnWidth + Margin;
-        internal const float PanelHeight = ListY + ListHeight + Margin;
 
-        // Current selections.
+        // Current selection.
         private ushort currentBuilding;
 
 
@@ -54,11 +53,8 @@ namespace TransferController
 
             set
             {
-                if (currentBuilding != value)
-                {
-                    currentBuilding = value;
-                    Refresh();
-                }
+                currentBuilding = value;
+                Refresh();
             }
         }
 
@@ -84,7 +80,6 @@ namespace TransferController
 
             // Appearance.
             newButton.atlas = atlas;
-
             newButton.normalFgSprite = "normal";
             newButton.focusedFgSprite = "normal";
             newButton.hoveredFgSprite = "hovered";

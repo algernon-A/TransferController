@@ -73,30 +73,10 @@ namespace TransferController
         /// <param name="buildingID">New building ID</param>
         internal static void SetTarget(ushort buildingID)
         {
-            if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID].Info.m_buildingAI is WarehouseAI)
+            // If no existing panel, create it.
+            if (Panel == null)
             {
-                if (Panel != null &&!(Panel is WarehouseInfoPanel))
-                    {
-                        Close();
-                    }
-
-                if (Panel == null)
-                {
-                    Create<WarehouseInfoPanel>();
-                }
-            }
-            else
-            {
-                if (Panel != null && Panel is WarehouseInfoPanel)
-                {
-                    Close();
-                }
-
-                // If no existing panel, create it.
-                if (Panel == null)
-                {
-                    Create<BuildingInfoPanel>();
-                }
+                Create<BuildingInfoPanel>();
             }
 
             // Set the target.

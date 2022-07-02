@@ -9,7 +9,7 @@ namespace TransferController
     /// </summary>
     public struct TransferStruct
     {
-        internal TransferPanel panel;
+        internal BuildingRestrictionsTab panel;
         public string panelTitle, outsideText, outsideTip;
         public TransferManager.TransferReason reason;
         public byte recordNumber;
@@ -67,25 +67,12 @@ namespace TransferController
 
                 // Fire.
                 case ItemClass.Service.FireDepartment:
-                    transfers[0].panelTitle = Translations.Translate("TFC_FIR_BUI");
+                    transfers[0].panelTitle = Translations.Translate("TFC_FIR_SER");
+                    transfers[0].reason = buildingInfo.GetAI() is HelicopterDepotAI ? TransferManager.TransferReason.Fire2 : TransferManager.TransferReason.Fire;
                     transfers[0].outsideText = null;
                     transfers[0].recordNumber = BuildingControl.IncomingMask;
-                    transfers[0].reason = TransferManager.TransferReason.Fire;
                     transfers[0].nextRecord = 0;
                     transfers[0].spawnsVehicles = true;
-
-                    // Second service for fire helicopters.
-                    if (buildingInfo.GetAI() is HelicopterDepotAI)
-                    {
-                        transfers[1].panelTitle = Translations.Translate("TFC_FIR_FOR");
-                        transfers[1].outsideText = null;
-                        transfers[1].recordNumber = BuildingControl.IncomingMask + 1;
-                        transfers[1].reason = TransferManager.TransferReason.Fire2;
-                        transfers[1].nextRecord = 0;
-                        transfers[1].spawnsVehicles = true;
-                        return 2;
-                    }
-
                     return 1;
 
                 case ItemClass.Service.Water:

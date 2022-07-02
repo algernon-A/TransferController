@@ -20,7 +20,7 @@ namespace TransferController
         protected VehicleInfo selectedVehicle;
 
         // Parent reference.
-        internal TransferVehicleTab ParentPanel { get; set; }
+        internal BuildingVehiclesTab ParentPanel { get; set; }
 
 
         /// <summary>
@@ -53,14 +53,14 @@ namespace TransferController
                 isVisible = true;
                 canFocus = true;
                 isInteractive = true;
-                width = TransferPanelTab.ColumnWidth;
-                height = TransferVehicleTab.VehicleListHeight;
+                width = BuildingVehiclesTab.ColumnWidth;
+                height = BuildingVehiclesTab.VehicleListHeight;
 
                 // Vehicle selection list.
                 vehicleList = UIVehicleFastList.Create<VehicleRow, UIVehicleFastList>(this);
                 vehicleList.backgroundSprite = "UnlockingPanel";
-                vehicleList.width = TransferPanelTab.ColumnWidth;
-                vehicleList.height = TransferVehicleTab.VehicleListHeight;
+                vehicleList.width = BuildingVehiclesTab.ColumnWidth;
+                vehicleList.height = BuildingVehiclesTab.VehicleListHeight;
                 vehicleList.canSelect = true;
                 vehicleList.rowHeight = VehicleRow.VehicleRowHeight;
                 vehicleList.autoHideScrollbar = true;
@@ -165,7 +165,7 @@ namespace TransferController
                         buildingSubService = ItemClass.SubService.IndustrialFarming;
                         break;
 
-                    // Animal products have thier own category.
+                    // Animal products have their own category.
                     case TransferManager.TransferReason.AnimalProducts:
                         buildingService = ItemClass.Service.PlayerIndustry;
                         buildingSubService = ItemClass.SubService.PlayerIndustryFarming;
@@ -200,7 +200,7 @@ namespace TransferController
                         (vehicle.m_class.m_level == buildingClass.m_level || buildingService == ItemClass.Service.PlayerIndustry) &&
                         !(vehicle.m_vehicleAI is CarTrailerAI) &&
                         !(vehicle.m_placementStyle == ItemClass.Placement.Procedural) &&
-                        !selectedList.Contains(vehicle))
+                        (selectedList == null || !selectedList.Contains(vehicle)))
                     {
                         // Check vehicle type, if applicable.
                         if (buildingInfo.m_buildingAI is PlayerBuildingAI playerBuildingAI)

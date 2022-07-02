@@ -86,6 +86,9 @@
     <Compile Include="Code\TransferData\WarehouseControl.cs" />
     <Compile Include="Code\TranslationFramework\TranslationFramework.cs" />
     <Compile Include="Code\TranslationFramework\TranslationXML.cs" />
+    <Compile Include="Code\UI\BuildingPanelTabs\BuildingPanelTab.cs" />
+    <Compile Include="Code\UI\BuildingPanelTabs\BuildingRestrictionsTab.cs" />
+    <Compile Include="Code\UI\BuildingPanelTabs\BuildingVehiclesTab.cs" />
     <Compile Include="Code\UI\CopyPaste.cs" />
     <Compile Include="Code\UI\LogPanel.cs" />
     <Compile Include="Code\UI\OffersPanel.cs" />
@@ -96,14 +99,8 @@
     <Compile Include="Code\UI\SelectionPanels\SelectedVehiclePanel.cs" />
     <Compile Include="Code\UI\SelectionPanels\VehicleSelectionPanel.cs" />
     <Compile Include="Code\UI\TCTool.cs" />
-    <Compile Include="Code\UI\TransferPanelTabs\TransferBuildingTab.cs" />
-    <Compile Include="Code\UI\TransferPanelTabs\TransferDistrictTab.cs" />
-    <Compile Include="Code\UI\TransferPanel.cs" />
     <Compile Include="Code\UI\BuildingInfoPanel.cs" />
     <Compile Include="Code\UI\BuildingPanelManager.cs" />
-    <Compile Include="Code\UI\TransferPanelTabs\TransferOutsideTab.cs" />
-    <Compile Include="Code\UI\TransferPanelTabs\TransferPanelTab.cs" />
-    <Compile Include="Code\UI\TransferPanelTabs\TransferVehicleTab.cs" />
     <Compile Include="Code\UI\UIFastList\BasicRow.cs" />
     <Compile Include="Code\UI\UIFastList\BuildingRow.cs" />
     <Compile Include="Code\UI\UIFastList\UIDistrictFastList.cs" />
@@ -113,7 +110,7 @@
     <Compile Include="Code\UI\UIFastList\UIFastList.cs" />
     <Compile Include="Code\UI\UIFastList\UIVehicleFastList.cs" />
     <Compile Include="Code\UI\UIFastList\VehicleRow.cs" />
-    <Compile Include="Code\UI\WarehouseInfoPanel.cs" />
+    <Compile Include="Code\UI\BuildingPanelTabs\WarehouseControls.cs" />
     <Compile Include="Code\Utils\FontUtils.cs" />
     <Compile Include="Code\Utils\Logging.cs" />
     <Compile Include="Code\Utils\ModUtils.cs" />

@@ -15,14 +15,19 @@ namespace TransferController
     {
         // Layout constants.
         protected const float Margin = 5f;
-        protected const float PanelWidth = TransferPanel.PanelWidth;
+        internal const float PanelWidth = BuildingPanelTab.PanelWidth + (Margin * 2f);
         private const float TitleHeight = 50f;
         private const float LabelHeight = 30f;
-        private const float ButtonHeight = 30f;
         private const float DistrictLabelY = TitleHeight + LabelHeight;
-        protected const float ControlY = DistrictLabelY + LabelHeight + Margin;
-        private const float PanelXOffset = -(TransferPanel.PanelWidth + Margin);
-        private const float PanelYOffset = TransferPanel.PanelHeight + Margin;
+        private const float DistrictLabelHeight = 20f;
+        private const float ButtonHeight = 30f;
+        private const float ButtonY = DistrictLabelY + DistrictLabelHeight;
+        private const float TabHeight = 30f;
+        private const float TabPanelWidth = BuildingPanelTab.PanelWidth;
+        private const float TabY = ButtonY + ButtonHeight + Margin;
+        private const float TabContentHeight = BuildingRestrictionsTab.PanelHeight;
+        private const float TabPanelHeight = TabHeight + TabContentHeight;
+        private const float PanelHeight = TabY + TabPanelHeight + Margin;
         private const float ButtonWidth = 150f;
 
         // Maximum number of supported transfers per building.
@@ -30,6 +35,8 @@ namespace TransferController
 
         // Panel components.
         private readonly UILabel buildingLabel, districtLabel;
+        private readonly UIPanel tabPanel;
+        private readonly UITabstrip tabStrip;
 
         // Current selection.
         private ushort currentBuilding;
@@ -37,16 +44,13 @@ namespace TransferController
 
         // Sub-panels.
         private readonly TransferStruct[] transfers = new TransferStruct[MaxTransfers];
+        private readonly BuildingVehiclesTab vehicleTab;
+        private readonly UIButton[] tabButtons = new UIButton[MaxTransfers + 1];
         private OffersPanel offersPanel;
         private LogPanel logPanel;
 
         // Event handling.
         private bool copyProcessing = false, pasteProcessing = false;
-
-
-        // Layout constants.
-        protected virtual float PanelHeight => ControlY + ButtonHeight + Margin;
-        private float Panel1Y => PanelHeight + Margin;
 
 
         // Dictionary getter.
@@ -113,10 +117,11 @@ namespace TransferController
                 isVisible = true;
                 canFocus = true;
                 isInteractive = true;
-                size = new Vector2(PanelWidth, PanelHeight);
+                width = PanelWidth;
+                height = PanelHeight;
 
                 // Default position - centre in screen.
-                relativePosition = new Vector2(Mathf.Floor((GetUIView().fixedWidth - width) / 2), Mathf.Floor((GetUIView().fixedHeight - height) / 2) - TransferPanel.PanelHeight);
+                relativePosition = new Vector2(Mathf.Floor((GetUIView().fixedWidth - PanelWidth) / 2), (GetUIView().fixedHeight - PanelHeight) / 2);
 
                 // Title label.
                 UILabel titleLabel = UIControls.AddLabel(this, 0f, 10f, Translations.Translate("TFC_NAM"), PanelWidth, 1.2f);
@@ -146,16 +151,47 @@ namespace TransferController
                 };
 
                 // Offers button.
-                UIButton offersButton = UIControls.AddSmallerButton(this, Margin, PanelHeight - ButtonHeight - Margin, Translations.Translate("TFC_OFF_TIT"), ButtonWidth);
+                UIButton offersButton = UIControls.AddSmallerButton(this, Margin, ButtonY, Translations.Translate("TFC_OFF_TIT"), ButtonWidth);
                 offersButton.eventClicked += ShowOffers;
 
                 // Log button.
-                UIButton logButton = UIControls.AddSmallerButton(this, Margin + ButtonWidth + Margin, PanelHeight - ButtonHeight - Margin, Translations.Translate("TFC_OFF_LOG"), ButtonWidth);
+                UIButton logButton = UIControls.AddSmallerButton(this, Margin + ButtonWidth + Margin, ButtonY, Translations.Translate("TFC_OFF_LOG"), ButtonWidth);
                 logButton.eventClicked += ShowLog;
 
                 // District label.
                 districtLabel = UIControls.AddLabel(this, 0f, DistrictLabelY, String.Empty, PanelWidth, 0.9f);
                 districtLabel.textAlignment = UIHorizontalAlignment.Center;
+
+                // Tab panel.
+                tabPanel = this.AddUIComponent<UIPanel>();
+                tabPanel.autoLayout = false;
+                tabPanel.autoSize = false;
+                tabPanel.relativePosition = new Vector2(0f, TabY);
+                tabPanel.width = TabPanelWidth;
+                tabPanel.height = TabPanelHeight;
+
+                // Tabstrip.
+                tabStrip = tabPanel.AddUIComponent<UITabstrip>();
+                tabStrip.relativePosition = new Vector2(Margin, 0f);
+                tabStrip.width = TabPanelWidth;
+                tabStrip.height = TabPanelHeight;
+                tabStrip.selectedIndex = -1;
+
+                // Tab container (the panels underneath each tab).
+                UITabContainer tabContainer = tabPanel.AddUIComponent<UITabContainer>();
+                tabContainer.relativePosition = new Vector2(Margin, TabHeight);
+                tabContainer.width = TabPanelWidth;
+                tabContainer.height = TabContentHeight;
+                tabStrip.tabPages = tabContainer;
+
+                // Add tabs.
+                int i = 0;
+                for (; i < MaxTransfers; ++i)
+                {
+                    transfers[i].panel = new BuildingRestrictionsTab(AddTextTab(tabStrip, String.Empty, i, out tabButtons[i]));
+                }
+                vehicleTab = new BuildingVehiclesTab(AddTextTab(tabStrip, Translations.Translate("TFC_TAB_VEH"), i, out tabButtons[MaxTransfers]));
+                tabStrip.selectedIndex = 0;
             }
             catch (Exception e)
             {
@@ -176,42 +212,81 @@ namespace TransferController
 
             // Update selected building ID.
             currentBuilding = buildingID;
-            thisBuildingInfo = Singleton<BuildingManager>.instance.m_buildings.m_buffer[currentBuilding].Info;
+            thisBuildingInfo = buildingManager.m_buildings.m_buffer[currentBuilding].Info;
             TCTool.Instance.CurrentBuilding = buildingID;
 
             // Maximum number of panels.
             int numPanels = TransferDataUtils.BuildingEligibility(buildingID, thisBuildingInfo, transfers);
+            int activeTabs = 0;
+            int vehicleReference = -1;
 
             // Set up used panels.
             for (int i = 0; i < numPanels; ++i)
             {
-                // Create panel instance if there isn't one already there.
-                if (transfers[i].panel == null)
-                {
-                    transfers[i].panel = this.AddUIComponent<TransferPanel>();
-                    transfers[i].panel.relativePosition = new Vector2(PanelXOffset * (i >> 1), Panel1Y + ((i % 2) * PanelYOffset));
-                }
-
                 // Set panel instance properties.
+                tabButtons[i].text = transfers[i].panelTitle;
+                tabButtons[i].Show();
                 transfers[i].panel.RecordNumber = transfers[i].recordNumber;
                 transfers[i].panel.NextRecord = transfers[i].nextRecord;
                 transfers[i].panel.TransferReason = transfers[i].reason;
                 transfers[i].panel.CurrentBuilding = currentBuilding;
-                transfers[i].panel.DirectionTitle = transfers[i].panelTitle;
                 transfers[i].panel.OutsideLabel = transfers[i].outsideText;
-                transfers[i].panel.OutsidePanel.OutsideTip = transfers[i].outsideTip;
-                transfers[i].panel.HasVehicles = transfers[i].spawnsVehicles;
+                transfers[i].panel.OutsideTip = transfers[i].outsideTip;
+                if (transfers[i].spawnsVehicles & vehicleReference < 0)
+                {
+                    vehicleReference = i;
+                }
+                ++activeTabs;
             }
 
-            // Destroy any unused panels.
+            // Hide any unused transfer panels.
             for (int i = numPanels; i < transfers.Length; ++i)
             {
-                if (transfers[i].panel != null)
+                tabButtons[i].Hide();
+            }
+
+            // Show/hide vehicle tab,
+            if (vehicleReference >= 0)
+            {
+                ++activeTabs;
+                vehicleTab.SelectionUpdated();
+                tabButtons[MaxTransfers].width = TabPanelWidth / activeTabs;
+                tabButtons[MaxTransfers].Show();
+
+                vehicleTab.RecordNumber = transfers[vehicleReference].recordNumber;
+                vehicleTab.TransferReason = transfers[vehicleReference].reason;
+                vehicleTab.CurrentBuilding = currentBuilding;
+            }
+            else
+            {
+                tabButtons[MaxTransfers].Hide();
+            }
+
+            // Resize tabs to fit.
+            for (int i = 0; i < activeTabs; ++i)
+            {
+               tabButtons[i].width = TabPanelWidth / activeTabs;
+            }
+
+            // Are any tabs visible?
+            if (numPanels == 0)
+            {
+                // If no tabs are visible, hide the entire tab panel.
+                tabStrip.selectedIndex = -1;
+                tabPanel.Hide();
+                height = TabY;
+            }
+            else
+            {
+                // Tabs are visible - if the currently selected tab indx is invalid, reset it to zero.
+                if (tabStrip.selectedIndex < 0 || !tabButtons[tabStrip.selectedIndex].isVisible)
                 {
-                    this.RemoveUIComponent(transfers[i].panel);
-                    GameObject.Destroy(transfers[i].panel);
-                    transfers[i].panel = null;
+                    tabStrip.selectedIndex = 0;
                 }
+
+                // Ensure tab panel visibility.
+                height = PanelHeight;
+                tabPanel.Show();
             }
 
             // Make sure we're visible if we're not already.
@@ -271,16 +346,7 @@ namespace TransferController
         {
             if (CopyPaste.Paste(CurrentBuilding, thisBuildingInfo))
             {
-                // Referesh panels if paste was successful.
-                for (int i = 0; i < transfers.Length; ++i)
-                {
-                    if (transfers[i].panel != null)
-                    {
-                        this.RemoveUIComponent(transfers[i].panel);
-                        GameObject.Destroy(transfers[i].panel);
-                        transfers[i].panel = null;
-                    }
-                }
+                // Update data via reset of target building.
                 SetTarget(CurrentBuilding);
             }
         }
@@ -340,6 +406,51 @@ namespace TransferController
 
             // Ensure offers panel is visible.
             logPanel.Show();
+        }
+
+
+        /// <summary>
+        /// Adds a text-based tab to a UI tabstrip.
+        /// </summary>
+        /// <param name="tabStrip">UIT tabstrip to add to</param>
+        /// <param name="tabName">Name of this tab</param>
+        /// <param name="tabIndex">Index number of this tab</param>
+        /// <param name="button">Tab button instance reference</param>
+        /// <param name="width">Tab width</param>
+        /// <returns>UIHelper instance for the new tab panel</returns>
+        private UIPanel AddTextTab(UITabstrip tabStrip, string tabName, int tabIndex, out UIButton button, float width = PanelWidth / 6f)
+        {
+            // Create tab.
+            UIButton tabButton = tabStrip.AddTab(tabName);
+            button = tabButton;
+
+            // Sprites.
+            tabButton.normalBgSprite = "SubBarButtonBase";
+            tabButton.disabledBgSprite = "SubBarButtonBaseDisabled";
+            tabButton.focusedBgSprite = "SubBarButtonBaseFocused";
+            tabButton.hoveredBgSprite = "SubBarButtonBaseHovered";
+            tabButton.pressedBgSprite = "SubBarButtonBasePressed";
+
+            // Tooltip.
+            tabButton.tooltip = tabName;
+
+            // Size and text formatting.
+            tabButton.height = TabHeight;
+            tabButton.width = width;
+            tabButton.textScale = 0.7f;
+            tabButton.wordWrap = true;
+            tabButton.verticalAlignment = UIVerticalAlignment.Middle;
+
+            // Get tab root panel.
+            UIPanel rootPanel = tabStrip.tabContainer.components[tabIndex] as UIPanel;
+
+            // Panel setup.
+            rootPanel.autoLayout = false;
+            rootPanel.autoLayoutDirection = LayoutDirection.Vertical;
+            rootPanel.autoLayoutPadding.top = 5;
+            rootPanel.autoLayoutPadding.left = 10;
+
+            return rootPanel;
         }
     }
 }

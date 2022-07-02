@@ -1,41 +1,43 @@
 ﻿using System;
 using UnityEngine;
+using ColossalFramework;
 using ColossalFramework.UI;
 
 
 namespace TransferController
 {
     /// <summary>
-    /// Transfer panel (setting restrictions for the given transfer).
+    /// Vehicles tab for buildings.
     /// </summary>
-    internal class TransferVehicleTab : TransferPanelTab
+    internal class BuildingVehiclesTab : BuildingPanelTab
     {
         // Layout constants.
-        private const float VehicleListY = 25f;
         internal const float VehicleListHeight = 240f;
-
+        private const float VehicleListY = 25f;
+        private const float ControlsY = VehicleListY + VehicleListHeight + 20f;
 
         // Panel components.
         private readonly UIButton addVehicleButton, removeVehicleButton;
         private VehicleSelectionPanel vehicleSelectionPanel;
         private SelectedVehiclePanel buildingVehicleSelectionPanel;
+        private WarehouseControls warehouseControls;
 
 
         /// <summary>
         /// Constructor - performs initial setup.
         /// </summary>
         /// <param name="parentPanel">Containing UI panel</param>
-        internal TransferVehicleTab(UIPanel parentPanel)
+        internal BuildingVehiclesTab(UIPanel parentPanel)
         {
             try
             {
                 // 'Add vehicle' button.
-                addVehicleButton = AddIconButton(parentPanel, MidControlX, ListY, ArrowSize, "TFC_VEH_ADD", TextureUtils.LoadSpriteAtlas("TC-ArrowPlus"));
+                addVehicleButton = AddIconButton(parentPanel, MidControlX, VehicleListY, ArrowSize, "TFC_VEH_ADD", TextureUtils.LoadSpriteAtlas("TC-ArrowPlus"));
                 addVehicleButton.isEnabled = false;
                 addVehicleButton.eventClicked += (control, clickEvent) => AddVehicle(vehicleSelectionPanel.SelectedVehicle);
 
                 // Remove vehicle button.
-                removeVehicleButton = AddIconButton(parentPanel, MidControlX, ListY + ArrowSize, ArrowSize, "TFC_VEH_SUB", TextureUtils.LoadSpriteAtlas("TC-ArrowMinus"));
+                removeVehicleButton = AddIconButton(parentPanel, MidControlX, VehicleListY + ArrowSize, ArrowSize, "TFC_VEH_SUB", TextureUtils.LoadSpriteAtlas("TC-ArrowMinus"));
                 removeVehicleButton.isEnabled = false;
                 removeVehicleButton.eventClicked += (control, clickEvent) => RemoveVehicle();
 
@@ -52,10 +54,15 @@ namespace TransferController
                 vehicleSelectionLabel.textAlignment = UIHorizontalAlignment.Center;
                 UILabel buildingDistrictSelectionLabel = UIControls.AddLabel(buildingVehicleSelectionPanel, 0f, -15f, Translations.Translate("TFC_VEH_SEL"), ColumnWidth, 0.8f);
                 buildingDistrictSelectionLabel.textAlignment = UIHorizontalAlignment.Center;
+
+                // Warehouse vehicle controls panel.
+                warehouseControls = parentPanel.AddUIComponent<WarehouseControls>();
+                warehouseControls.relativePosition = new Vector2(0f, ControlsY);
+
             }
             catch (Exception e)
             {
-                Logging.LogException(e, "exception setting up TransferVehicleTab");
+                Logging.LogException(e, "exception setting up BuildingVehiclesTab");
             }
         }
 
@@ -77,6 +84,16 @@ namespace TransferController
         {
             buildingVehicleSelectionPanel.RefreshList();
             vehicleSelectionPanel.RefreshList();
+
+            if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[CurrentBuilding].Info.m_buildingAI is WarehouseAI)
+            {
+                warehouseControls.SetTarget(CurrentBuilding);
+                warehouseControls.Show();
+            }
+            else
+            {
+                warehouseControls.Hide();
+            }
         }
 
 

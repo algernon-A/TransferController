@@ -17,7 +17,7 @@ namespace TransferController
     {
         // Layout constants.
         private const float Margin = 5f;
-        private const float PanelWidth = TransferPanel.PanelWidth;
+        private const float PanelWidth = BuildingVehiclesTab.PanelWidth;
         private const float TitleHeight = 50f;
         private const float ListY = TitleHeight + Margin;
         private const float ListHeight = DistrictRow.DefaultRowHeight * 20f;

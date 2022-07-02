@@ -18,7 +18,7 @@ namespace TransferController
 
 		// Building targets.
 		private bool pickMode = false;
-		private TransferBuildingTab transferBuildingTab;
+		private BuildingRestrictionsTab buildingRestrictionsTab;
 		private ushort currentBuilding;
 
 		// Transfer struct for eligibility checking.
@@ -239,7 +239,7 @@ namespace TransferController
 			if (pickMode)
 			{
 				// Linked building list.
-				HashSet<uint> hashSet = BuildingControl.GetBuildings(transferBuildingTab.CurrentBuilding, transferBuildingTab.RecordNumber);
+				HashSet<uint> hashSet = BuildingControl.GetBuildings(buildingRestrictionsTab.CurrentBuilding, buildingRestrictionsTab.RecordNumber);
 				if (hashSet != null && hashSet.Count > 0)
 				{
 					// Apply yellow overlay to each linked building.
@@ -309,7 +309,7 @@ namespace TransferController
 				{
 					// Yes - clear pick mode.
 					Instance.pickMode = false;
-					Instance.transferBuildingTab = null;
+					Instance.buildingRestrictionsTab = null;
 				}
 
 				// Activate default tool.
@@ -321,9 +321,9 @@ namespace TransferController
 		/// <summary>
 		/// Sets the tool to pick mode (selecting buildings).
 		/// </summary>
-		internal void SetPickMode(TransferBuildingTab callingTab)
+		internal void SetPickMode(BuildingRestrictionsTab callingTab)
         {
-			transferBuildingTab = callingTab;
+			buildingRestrictionsTab = callingTab;
 			pickMode = true;
 			currentCursorOn = pickCursorOn;
 			currentCursorOff = pickCursorOff;
@@ -337,7 +337,7 @@ namespace TransferController
 		internal void ClearPickMode()
 		{
 			pickMode = false;
-			transferBuildingTab = null;
+			buildingRestrictionsTab = null;
 			currentCursorOn = selectCursorOn;
 			currentCursorOff = selectCursorOff;
 		}
@@ -383,7 +383,7 @@ namespace TransferController
 					if (pickMode)
 					{
 						// Yes - communicate selection back to requesting panel and clear pick mode.
-						transferBuildingTab?.AddBuilding(building);
+						buildingRestrictionsTab?.AddBuilding(building);
 						ClearPickMode();
 					}
 					else

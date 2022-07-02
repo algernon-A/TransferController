@@ -6,40 +6,44 @@ using ColossalFramework.UI;
 namespace TransferController
 {
     /// <summary>
-    /// Warehouse info panel.
+    /// Warehouse vehicle controls.
     /// </summary>
-    internal class WarehouseInfoPanel : BuildingInfoPanel
+    internal class WarehouseControls : UIPanel
     {
         // Layout constants.
+        internal const float PanelHeight = SliderY + 45f;
+        private const float Margin = 5;
         private const float DoubleMargin = Margin + Margin;
         private const float CheckHeight = 25f;
-        private const float Check1Y = ControlY;
+        private const float Check1Y = Margin;
         private const float Check2Y = Check1Y + CheckHeight;
         private const float Check3Y = Check2Y + CheckHeight;
         private const float SliderY = Check3Y + CheckHeight;
-        private const float SliderWidth = PanelWidth - DoubleMargin - DoubleMargin;
+        private const float SliderWidth = BuildingInfoPanel.PanelWidth - DoubleMargin - DoubleMargin;
 
         // Default vehicle slider maximum.
         private const int MaxReservedVehicles = 16;
-
 
         // Panel components.
         private readonly UICheckBox reserveUniqueCheck, reserveOutsideCheck, reserveCityCheck;
         private readonly UISlider reservedVehiclesSlider;
 
+        // References.
+        private ushort currentBuilding;
+
         // Status flag.
         private bool ignoreEvents = false;
-
-
-        // Layout constants.
-        protected override float PanelHeight => base.PanelHeight + (CheckHeight * 3f) + 40f + Margin;
 
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        internal WarehouseInfoPanel()
+        internal WarehouseControls()
         {
+            // Set size.
+            this.height = PanelHeight;
+            this.width = BuildingInfoPanel.PanelWidth;
+
             // Add reserve vehicle checkboxes.
             reserveCityCheck = UIControls.LabelledCheckBox(this, Margin, Check1Y, Translations.Translate("TFC_WAR_RVI"), tooltip: Translations.Translate("TFC_WAR_RVI_TIP"));
             reserveCityCheck.tooltipBox = TooltipUtils.TooltipBox;
@@ -52,7 +56,7 @@ namespace TransferController
             reserveCityCheck.eventCheckChanged += ReserveCityCheckChanged;
 
             // Reserved vehicles slider.
-            reservedVehiclesSlider = AddVehicleSlider(this, DoubleMargin, SliderY, SliderWidth, WarehouseControl.GetReservedVehicles(CurrentBuilding));
+            reservedVehiclesSlider = AddVehicleSlider(this, DoubleMargin, SliderY, SliderWidth, WarehouseControl.GetReservedVehicles(currentBuilding));
         }
 
 
@@ -60,26 +64,26 @@ namespace TransferController
         /// Sets/changes the currently selected building.
         /// </summary>
         /// <param name="buildingID">New building ID</param>
-        internal override void SetTarget(ushort buildingID)
+        internal void SetTarget(ushort buildingID)
         {
-            base.SetTarget(buildingID);
-
             // Set checkbox states with event processing suspended.
             ignoreEvents = true;
 
             // Ensure valid building.
             if (buildingID != 0)
             {
+                currentBuilding = buildingID;
+
                 // Set checkboxes.
-                reserveCityCheck.isChecked = WarehouseControl.GetReserveCity(CurrentBuilding);
-                reserveUniqueCheck.isChecked = WarehouseControl.GetReserveUnique(CurrentBuilding);
-                reserveOutsideCheck.isChecked = WarehouseControl.GetReserveOutside(CurrentBuilding);
+                reserveCityCheck.isChecked = WarehouseControl.GetReserveCity(buildingID);
+                reserveUniqueCheck.isChecked = WarehouseControl.GetReserveUnique(buildingID);
+                reserveOutsideCheck.isChecked = WarehouseControl.GetReserveOutside(buildingID);
 
                 // Set reserved vehicles slider.
-                reservedVehiclesSlider.value = WarehouseControl.GetReservedVehicles(CurrentBuilding);
+                reservedVehiclesSlider.value = WarehouseControl.GetReservedVehicles(buildingID);
 
                 // Set vehicle slider maximum.
-                if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[CurrentBuilding].Info.m_buildingAI is WarehouseAI warehouseAI)
+                if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID].Info.m_buildingAI is WarehouseAI warehouseAI)
                 {
                     reservedVehiclesSlider.maxValue = System.Math.Min(warehouseAI.m_truckCount, MaxReservedVehicles);
                 }
@@ -117,11 +121,11 @@ namespace TransferController
                 // If this is checked, unchek the reserve vehicles for outside connections checkbox.
                 reserveOutsideCheck.isChecked = false;
                 reserveCityCheck.isChecked = false;
-                WarehouseControl.SetReserveUnique(CurrentBuilding);
+                WarehouseControl.SetReserveUnique(currentBuilding);
             }
             else
             {
-                WarehouseControl.ClearReserve(CurrentBuilding);
+                WarehouseControl.ClearReserve(currentBuilding);
             }
 
             // Resume event processing.
@@ -151,11 +155,11 @@ namespace TransferController
                 // If this is checked, unchek the reserve vehicles for unique factories checkbox.
                 reserveUniqueCheck.isChecked = false;
                 reserveCityCheck.isChecked = false;
-                WarehouseControl.SetReserveOutside(CurrentBuilding);
+                WarehouseControl.SetReserveOutside(currentBuilding);
             }
             else
             {
-                WarehouseControl.ClearReserve(CurrentBuilding);
+                WarehouseControl.ClearReserve(currentBuilding);
             }
 
             // Resume event processing.
@@ -185,11 +189,11 @@ namespace TransferController
                 // If this is checked, unchek the reserve vehicles for unique factories checkbox.
                 reserveOutsideCheck.isChecked = false;
                 reserveUniqueCheck.isChecked = false;
-                WarehouseControl.SetReserveCity(CurrentBuilding);
+                WarehouseControl.SetReserveCity(currentBuilding);
             }
             else
             {
-                WarehouseControl.ClearReserve(CurrentBuilding);
+                WarehouseControl.ClearReserve(currentBuilding);
             }
 
             // Resume event processing.
@@ -208,7 +212,7 @@ namespace TransferController
             if (component.objectUserData is UILabel valueLabel)
             {
                 valueLabel.text = value.RoundToNearest(1f).ToString("N0");
-            }    
+            }
 
             // Don't do anything further if we're ignoring events.
             if (ignoreEvents)
@@ -216,7 +220,7 @@ namespace TransferController
                 return;
             }
 
-            WarehouseControl.SetReservedVehicles(CurrentBuilding, (byte)(value.RoundToNearest(1f)));
+            WarehouseControl.SetReservedVehicles(currentBuilding, (byte)(value.RoundToNearest(1f)));
         }
 
 

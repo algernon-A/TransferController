@@ -20,7 +20,7 @@ namespace TransferController
         private int selectedDistrict;
 
         // Parent reference.
-        internal TransferDistrictTab ParentPanel { get; set; }
+        internal BuildingRestrictionsTab ParentPanel { get; set; }
         
         
         /// <summary>
@@ -59,14 +59,14 @@ namespace TransferController
                 isVisible = true;
                 canFocus = true;
                 isInteractive = true;
-                width = TransferPanelTab.ColumnWidth;
-                height = TransferPanelTab.ListHeight;
+                width = BuildingRestrictionsTab.ColumnWidth;
+                height = BuildingRestrictionsTab.ListHeight;
 
                 // District selection list.
                 districtList = UIDistrictFastList.Create<DistrictRow, UIDistrictFastList>(this);
                 districtList.backgroundSprite = "UnlockingPanel";
-                districtList.width = TransferPanelTab.ColumnWidth;
-                districtList.height = TransferPanelTab.ListHeight;
+                districtList.width = BuildingRestrictionsTab.ColumnWidth;
+                districtList.height = BuildingRestrictionsTab.ListHeight;
                 districtList.canSelect = true;
                 districtList.rowHeight = DistrictRow.DefaultRowHeight;
                 districtList.autoHideScrollbar = true;
