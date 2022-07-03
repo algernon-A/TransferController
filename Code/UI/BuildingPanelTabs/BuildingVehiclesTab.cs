@@ -82,18 +82,25 @@ namespace TransferController
         /// </summary>
         protected override void Refresh()
         {
-            buildingVehicleSelectionPanel.RefreshList();
-            vehicleSelectionPanel.RefreshList();
-
-            if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[CurrentBuilding].Info.m_buildingAI is WarehouseAI)
+            // Show/hide warewhouse panel as appropriate.
+            ref Building building = ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[CurrentBuilding];
+            if (building.Info.m_buildingAI is WarehouseAI warehouseAI)
             {
+                // Update warehouse panel before showing.
                 warehouseControls.SetTarget(CurrentBuilding);
+
+                // Also update material to reflect warehouses' current setting.
+                TransferReason = warehouseAI.GetActualTransferReason(CurrentBuilding, ref building);
+
                 warehouseControls.Show();
             }
             else
             {
                 warehouseControls.Hide();
             }
+
+            buildingVehicleSelectionPanel.RefreshList();
+            vehicleSelectionPanel.RefreshList();
         }
 
 
