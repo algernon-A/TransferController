@@ -57,32 +57,33 @@ namespace TransferController
 
                 // Healthcare.
                 case ItemClass.Service.HealthCare:
-                    bool isHelicopter = buildingInfo.m_buildingAI is HelicopterDepotAI;
-                    if (isHelicopter || buildingInfo.m_buildingAI is HospitalAI)
+                    if (buildingInfo.m_buildingAI is HospitalAI)
                     {
-                        // Hosptials, clinics, and medical helicopter depots.
-                        transfers[0].panelTitle = Translations.Translate("TFC_GEN_SER");
-                        transfers[0].outsideText = null;
-                        transfers[0].recordNumber = BuildingControl.IncomingMask;
-                        transfers[0].reason = isHelicopter ? TransferManager.TransferReason.Sick2 : TransferManager.TransferReason.Sick;
-                        transfers[0].nextRecord = 0;
-                        transfers[0].spawnsVehicles = true;
-                        return 1;
+                        transfers[0].reason = TransferManager.TransferReason.Sick;
+                    }
+                    else if (buildingInfo.m_buildingAI is HelicopterDepotAI)
+                    {
+                        transfers[0].reason = TransferManager.TransferReason.Sick2;
                     }
                     else if (buildingInfo.m_buildingAI is CemeteryAI)
                     {
                         // Deathcare.
-                        transfers[0].panelTitle = Translations.Translate("TFC_GEN_SER");
-                        transfers[0].outsideText = null;
-                        transfers[0].recordNumber = BuildingControl.IncomingMask;
                         transfers[0].reason = TransferManager.TransferReason.Dead;
-                        transfers[0].nextRecord = 0;
-                        transfers[0].spawnsVehicles = true;
-                        return 1;
+                    }
+                    else
+                    {
+                        // Any other healthcare buildings (e.g. SaunaAI) aren't supported.
+                        return 0;
                     }
 
-                    // Any other healthcare buildings (e.g. SaunaAI) aren't supported.
-                    return 0;
+                    transfers[0].panelTitle = Translations.Translate("TFC_GEN_SER");
+                    transfers[0].outsideText = null;
+                    transfers[0].recordNumber = BuildingControl.IncomingMask;
+                    transfers[0].nextRecord = 0;
+                    transfers[0].spawnsVehicles = true;
+
+                    return 1;
+
 
                 // Fire.
                 case ItemClass.Service.FireDepartment:
