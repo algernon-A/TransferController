@@ -179,23 +179,9 @@ namespace TransferController
 
 				// Deathcare - most efficent matching is from depot outwards.
 				// However, need to prioritise high prioirty requests first.
-				// Start by matching depot outwards for very high priorities (5+), then match remaining highest priority requests (7-3) to address any outstanding urgent requests.
+				// Start by matching highest priority outgoing requests (7-3).
 				// Then service lower priorities from depot outwards for greatest efficiency:
 				case TransferManager.TransferReason.Dead:
-
-					// Match incoming offers, but only for highest priorities (3 and above) - these will be serviced by depots from closest to depot to furthest.
-					for (int priority = 7; priority >= 0; --priority)
-					{
-						int priorityIndex = reasonBlock + priority;
-						int incomingIndex = 0;
-
-						// Keep iterating while offers are remaining in this incoming priority block.
-						while (incomingIndex < incomingCounts[priorityIndex])
-						{
-							MatchOffer(true, 3, reason, priority, incomingIndex++, incomingOffers, incomingCounts, outgoingOffers, outgoingCounts);
-						}
-					}
-
 					// Then match outgoing offers first from highest to lowest priority, down to priority 3, to service any urgent issues.
 					for (int priority = 7; priority >= 3; --priority)
 					{
