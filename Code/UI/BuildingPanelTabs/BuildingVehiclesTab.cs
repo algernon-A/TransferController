@@ -12,14 +12,11 @@ namespace TransferController
     internal class BuildingVehiclesTab : BuildingPanelTab
     {
         // Layout constants.
-        internal const float VehicleListHeight = 240f;
-        private const float VehicleListY = 25f;
-        private const float ControlsY = VehicleListY + VehicleListHeight + 20f;
+        private const float VehicleListY = 5f;
+        private const float ControlsY = VehicleListY + VehicleSelection.PanelHeight + 20f;
 
         // Panel components.
-        private readonly UIButton addVehicleButton, removeVehicleButton;
-        private VehicleSelectionPanel vehicleSelectionPanel;
-        private SelectedVehiclePanel buildingVehicleSelectionPanel;
+        private VehicleSelection vehicleSelection, secondaryVehicleSelection;
         private WarehouseControls warehouseControls;
 
 
@@ -31,29 +28,10 @@ namespace TransferController
         {
             try
             {
-                // 'Add vehicle' button.
-                addVehicleButton = AddIconButton(parentPanel, MidControlX, VehicleListY, ArrowSize, "TFC_VEH_ADD", TextureUtils.LoadSpriteAtlas("TC-ArrowPlus"));
-                addVehicleButton.isEnabled = false;
-                addVehicleButton.eventClicked += (control, clickEvent) => AddVehicle(vehicleSelectionPanel.SelectedVehicle);
-
-                // Remove vehicle button.
-                removeVehicleButton = AddIconButton(parentPanel, MidControlX, VehicleListY + ArrowSize, ArrowSize, "TFC_VEH_SUB", TextureUtils.LoadSpriteAtlas("TC-ArrowMinus"));
-                removeVehicleButton.isEnabled = false;
-                removeVehicleButton.eventClicked += (control, clickEvent) => RemoveVehicle();
-
-                // Vehicle selection panels.
-                buildingVehicleSelectionPanel = parentPanel.AddUIComponent<SelectedVehiclePanel>();
-                buildingVehicleSelectionPanel.relativePosition = new Vector2(Margin, VehicleListY);
-                buildingVehicleSelectionPanel.ParentPanel = this;
-                vehicleSelectionPanel = parentPanel.AddUIComponent<VehicleSelectionPanel>();
-                vehicleSelectionPanel.ParentPanel = this;
-                vehicleSelectionPanel.relativePosition = new Vector2(RightColumnX, VehicleListY);
-
-                // Vehicle selection panel labels.
-                UILabel vehicleSelectionLabel = UIControls.AddLabel(vehicleSelectionPanel, 0f, -15f, Translations.Translate("TFC_VEH_AVA"), ColumnWidth, 0.8f);
-                vehicleSelectionLabel.textAlignment = UIHorizontalAlignment.Center;
-                UILabel buildingDistrictSelectionLabel = UIControls.AddLabel(buildingVehicleSelectionPanel, 0f, -15f, Translations.Translate("TFC_VEH_SEL"), ColumnWidth, 0.8f);
-                buildingDistrictSelectionLabel.textAlignment = UIHorizontalAlignment.Center;
+                vehicleSelection = parentPanel.AddUIComponent<VehicleSelection>();
+                vehicleSelection.relativePosition = new Vector2(0f, VehicleListY);
+                secondaryVehicleSelection = parentPanel.AddUIComponent<VehicleSelection>();
+                secondaryVehicleSelection.relativePosition = new Vector2(0f, ControlsY);
 
                 // Warehouse vehicle controls panel.
                 warehouseControls = parentPanel.AddUIComponent<WarehouseControls>();
@@ -68,21 +46,11 @@ namespace TransferController
 
 
         /// <summary>
-        /// Update button states when district selections are updated.
-        /// </summary>
-        internal void SelectionUpdated()
-        {
-            addVehicleButton.isEnabled = vehicleSelectionPanel.SelectedVehicle != null;
-            removeVehicleButton.isEnabled = buildingVehicleSelectionPanel.SelectedVehicle != null;
-        }
-
-
-        /// <summary>
         /// Refreshes the controls with current data.
         /// </summary>
         protected override void Refresh()
         {
-            // Show/hide warewhouse panel as appropriate.
+            // Show/hide warehouse panel as appropriate.
             ref Building building = ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[CurrentBuilding];
             if (building.Info.m_buildingAI is WarehouseAI warehouseAI)
             {
@@ -99,44 +67,19 @@ namespace TransferController
                 warehouseControls.Hide();
             }
 
-            buildingVehicleSelectionPanel.RefreshList();
-            vehicleSelectionPanel.RefreshList();
-        }
+            // Set vehicle selection.
+            vehicleSelection.SetTarget(CurrentBuilding, TransferReason);
 
-
-        /// <summary>
-        /// Adds a vehicle to the list for this transfer.
-        /// </summary>
-        /// <param name="vehicle">Vehicle prefab to add</param>
-        private void AddVehicle(VehicleInfo vehicle)
-        {
-            // Add vehicle to building.
-            VehicleControl.AddVehicle(CurrentBuilding, TransferReason, vehicle);
-
-            // Update current selection.
-            buildingVehicleSelectionPanel.SelectedVehicle = vehicle;
-
-            // Update district lists.
-            buildingVehicleSelectionPanel.RefreshList();
-            vehicleSelectionPanel.RefreshList();
-        }
-
-
-        /// <summary>
-        /// Removes the currently selected district from the list for this building.
-        /// Should be called as base after district has been updated by child class.
-        /// </summary>
-        private void RemoveVehicle()
-        {
-            // Remove selected vehicle from building.
-            VehicleControl.RemoveVehicle(CurrentBuilding, TransferReason, buildingVehicleSelectionPanel.SelectedVehicle);
-
-            // Clear current selection.
-            buildingVehicleSelectionPanel.SelectedVehicle = null;
-
-            // Update vehicle lists.
-            buildingVehicleSelectionPanel.RefreshList();
-            vehicleSelectionPanel.RefreshList();
+            // Activate secondary vehicle selection if the primary reason is mail.
+            if (TransferReason == TransferManager.TransferReason.Mail)
+            {
+                secondaryVehicleSelection.SetTarget(CurrentBuilding, TransferManager.TransferReason.None);
+                secondaryVehicleSelection.Show();
+            }
+            else
+            {
+                secondaryVehicleSelection.Hide();
+            }
         }
     }
 }

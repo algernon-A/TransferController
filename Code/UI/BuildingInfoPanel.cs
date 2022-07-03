@@ -249,7 +249,6 @@ namespace TransferController
             if (vehicleReference >= 0)
             {
                 ++activeTabs;
-                vehicleTab.SelectionUpdated();
                 tabButtons[MaxTransfers].width = TabPanelWidth / activeTabs;
                 tabButtons[MaxTransfers].Show();
 

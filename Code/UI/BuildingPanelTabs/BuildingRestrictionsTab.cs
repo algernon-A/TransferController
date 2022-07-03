@@ -11,15 +11,16 @@ namespace TransferController
     internal class BuildingRestrictionsTab : BuildingPanelTab
     {
         // Layout constants.
+        internal const float PanelHeight = BuildingListY + ListHeight + Margin;
+        internal const float ListHeight = 10f * DistrictRow.DefaultRowHeight;
         private const float OutsideCheckY = Margin;
         private const float EnabledCheckY = OutsideCheckY + CheckHeight;
         private const float SameDistrictCheckY = EnabledCheckY + CheckHeight;
         private const float DistrictListTitleY = SameDistrictCheckY + CheckHeight;
         private const float DistrictListY = DistrictListTitleY + CheckHeight;
-        internal const float ListHeight = 10f * DistrictRow.DefaultRowHeight;
         private const float BuildingListTitleY = DistrictListY + ListHeight + Margin;
         private const float BuildingListY = BuildingListTitleY + CheckHeight;
-        internal const float PanelHeight = BuildingListY + ListHeight + Margin;
+        private const float BuildingButtonX = MidControlX + ColumnWidth;
 
 
         // Panel components.

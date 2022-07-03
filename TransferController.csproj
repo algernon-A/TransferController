@@ -90,6 +90,7 @@
     <Compile Include="Code\UI\BuildingPanelTabs\BuildingPanelTab.cs" />
     <Compile Include="Code\UI\BuildingPanelTabs\BuildingRestrictionsTab.cs" />
     <Compile Include="Code\UI\BuildingPanelTabs\BuildingVehiclesTab.cs" />
+    <Compile Include="Code\UI\BuildingPanelTabs\VehicleSelection.cs" />
     <Compile Include="Code\UI\CopyPaste.cs" />
     <Compile Include="Code\UI\LogPanel.cs" />
     <Compile Include="Code\UI\OffersPanel.cs" />

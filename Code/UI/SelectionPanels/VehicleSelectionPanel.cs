@@ -20,7 +20,7 @@ namespace TransferController
         protected VehicleInfo selectedVehicle;
 
         // Parent reference.
-        internal BuildingVehiclesTab ParentPanel { get; set; }
+        internal VehicleSelection ParentPanel { get; set; }
 
 
         /// <summary>
@@ -54,13 +54,13 @@ namespace TransferController
                 canFocus = true;
                 isInteractive = true;
                 width = BuildingVehiclesTab.ColumnWidth;
-                height = BuildingVehiclesTab.VehicleListHeight;
+                height = VehicleSelection.VehicleListHeight;
 
                 // Vehicle selection list.
                 vehicleList = UIVehicleFastList.Create<VehicleRow, UIVehicleFastList>(this);
                 vehicleList.backgroundSprite = "UnlockingPanel";
                 vehicleList.width = BuildingVehiclesTab.ColumnWidth;
-                vehicleList.height = BuildingVehiclesTab.VehicleListHeight;
+                vehicleList.height = VehicleSelection.VehicleListHeight;
                 vehicleList.canSelect = true;
                 vehicleList.rowHeight = VehicleRow.VehicleRowHeight;
                 vehicleList.autoHideScrollbar = true;
@@ -107,6 +107,7 @@ namespace TransferController
             ItemClass buildingClass = buildingInfo.m_class;
             ItemClass.Service buildingService = buildingClass.m_service;
             ItemClass.SubService buildingSubService = buildingClass.m_subService;
+            ItemClass.Level buildingLevel = buildingClass.m_level;
 
             List<VehicleItem> items = new List<VehicleItem>();
 
@@ -182,6 +183,11 @@ namespace TransferController
                         break;
                 }
             }
+            else if (buildingSubService == ItemClass.SubService.PublicTransportPost)
+            {
+                // Special treatement for post offices - post vans have level 2, others level 5.
+                buildingLevel = ParentPanel.TransferReason == TransferManager.TransferReason.Mail ? ItemClass.Level.Level2 : ItemClass.Level.Level5;
+            }
 
             // Get list of already-selected vehicles.
             List<VehicleInfo> selectedList = VehicleControl.GetVehicles(currentBuilding, ParentPanel.TransferReason);
@@ -197,7 +203,7 @@ namespace TransferController
                     // Ignore any procedural vehicles (e.g. fire helicopter buckets).
                     if (vehicle.m_class.m_service == buildingService &&
                         vehicle.m_class.m_subService == buildingSubService &&
-                        (vehicle.m_class.m_level == buildingClass.m_level || buildingService == ItemClass.Service.PlayerIndustry) &&
+                        (vehicle.m_class.m_level == buildingLevel || buildingService == ItemClass.Service.PlayerIndustry) &&
                         !(vehicle.m_vehicleAI is CarTrailerAI) &&
                         !(vehicle.m_placementStyle == ItemClass.Placement.Procedural) &&
                         (selectedList == null || !selectedList.Contains(vehicle)))

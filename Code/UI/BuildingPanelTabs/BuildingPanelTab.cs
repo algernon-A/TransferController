@@ -15,11 +15,10 @@ namespace TransferController
         protected const float CheckHeight = 20f;
         protected const float ButtonHeight = 28f;
         internal const float ColumnWidth = 210f;
-        protected const float ArrowSize = 32f;
-        protected const float MidControlX = Margin + ColumnWidth + Margin;
-        protected const float RightColumnX = MidControlX + ArrowSize + Margin;
+        internal const float ArrowSize = 32f;
+        internal const float MidControlX = Margin + ColumnWidth + Margin;
+        internal const float RightColumnX = MidControlX + ArrowSize + Margin;
         internal const float BuildingColumnWidth = ColumnWidth * 2f;
-        protected const float BuildingButtonX = MidControlX + ColumnWidth;
         internal const float PanelWidth = RightColumnX + ColumnWidth + Margin;
 
         // Current selection.
@@ -69,7 +68,7 @@ namespace TransferController
         /// <param name="tooltipKey">Tooltip translation key</param>
         /// <param name="atlas">Icon atlas</param>
         /// <returns>New UIButton</returns>
-        protected UIButton AddIconButton(UIComponent parent, float xPos, float yPos, float size, string tooltipKey, UITextureAtlas atlas)
+        internal static UIButton AddIconButton(UIComponent parent, float xPos, float yPos, float size, string tooltipKey, UITextureAtlas atlas)
         {
             UIButton newButton = parent.AddUIComponent<UIButton>();
 
