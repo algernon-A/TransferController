@@ -69,7 +69,18 @@ namespace TransferController
                         transfers[0].spawnsVehicles = true;
                         return 1;
                     }
-                    
+                    else if (buildingInfo.m_buildingAI is CemeteryAI)
+                    {
+                        // Deathcare.
+                        transfers[0].panelTitle = Translations.Translate("TFC_GEN_SER");
+                        transfers[0].outsideText = null;
+                        transfers[0].recordNumber = BuildingControl.IncomingMask;
+                        transfers[0].reason = TransferManager.TransferReason.Dead;
+                        transfers[0].nextRecord = 0;
+                        transfers[0].spawnsVehicles = true;
+                        return 1;
+                    }
+
                     // Any other healthcare buildings (e.g. SaunaAI) aren't supported.
                     return 0;
 
