@@ -73,7 +73,7 @@ namespace TransferController
         public static VehicleInfo ChooseVehicle(TransferManager.TransferReason material, ItemClass.Level level, ref Randomizer randomizer, ushort buildingID)
         {
             // Get any custom vehicle list for this building.
-            List<VehicleInfo> vehicleList = VehicleControl.GetVehicles(buildingID, TransferManager.TransferReason.None);
+            List<VehicleInfo> vehicleList = VehicleControl.GetVehicles(buildingID, material);
             if (vehicleList == null)
             {
                 // No custom vehicle selection - use game method.
