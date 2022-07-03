@@ -11,7 +11,7 @@ namespace TransferController
     {
         // Unique data ID.
         private readonly string dataID = "TransferController";
-        public const int DataVersion = 1;
+        public const int DataVersion = 2;
 
 
         /// <summary>
@@ -35,6 +35,9 @@ namespace TransferController
 
                     // Serialize warehouse data.
                     WarehouseControl.Serialize(writer);
+
+                    // Serialize vehicle data.
+                    VehicleControl.Serialize(writer);
 
                     // Write to savegame.
                     serializableDataManager.SaveData(dataID, stream.ToArray());
@@ -74,6 +77,12 @@ namespace TransferController
                         if (version > 0)
                         {
                             WarehouseControl.Deserialize(reader);
+                        }
+
+                        // Deserialize vehicle settings.
+                        if (version > 1)
+                        {
+                            VehicleControl.Deserialize(reader);
                         }
 
                         Logging.Message("read ", stream.Length);

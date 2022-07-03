@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.IO;
+using System.Collections.Generic;
 
 
 namespace TransferController
@@ -128,6 +129,94 @@ namespace TransferController
             foreach (uint key in removeList)
             {
                 vehicles.Remove(key);
+            }
+        }
+
+
+        /// <summary>
+        /// Serializes vehicle selection data.
+        /// </summary>
+        /// <param name="stream">Binary writer instance to serialize to</param>
+        internal static void Serialize(BinaryWriter writer)
+        {
+            Logging.Message("serializing vehicle data");
+
+            // Write length of dictionary.
+            writer.Write(vehicles.Count);
+
+            // Serialise each building entry.
+            foreach (KeyValuePair<uint, List<VehicleInfo>> entry in vehicles)
+            {
+                // Local reference.
+                List<VehicleInfo> vehicleList = entry.Value;
+
+                // Serialize key.
+                writer.Write(entry.Key);
+
+                // Serialize list (vehicle names).
+                writer.Write((ushort)vehicleList.Count);
+                foreach (VehicleInfo vehicle in vehicleList)
+                {
+                    writer.Write(vehicle.name);
+                }
+
+                Logging.Message("wrote entry ", entry.Key);
+            }
+        }
+
+
+        /// <summary>
+        /// Deserializes vehicle selection data.
+        /// </summary>
+        /// <param name="stream">Data memory stream to deserialize from</param>
+        internal static void Deserialize(BinaryReader reader)
+        {
+            Logging.Message("deserializing vehicle data");
+
+            // Clear dictionary.
+            vehicles.Clear();
+
+            // Iterate through each entry read.
+            int numEntries = reader.ReadInt32();
+            for (int i = 0; i < numEntries; ++i)
+            {
+                // Dictionary entry key.
+                uint key = reader.ReadUInt32();
+
+                // List length.
+                ushort numVehicles = reader.ReadUInt16();
+                if (numVehicles > 0)
+                {
+                    // Read list.
+                    List<VehicleInfo> vehicleList = new List<VehicleInfo>();
+                    for (int j = 0; j < numVehicles; ++j)
+                    {
+                        string vehicleName = reader.ReadString();
+                        if (!string.IsNullOrEmpty(vehicleName))
+                        {
+                            // Attempt to find matching prefab from saved vehicle name.
+                            VehicleInfo thisVehicle = PrefabCollection<VehicleInfo>.FindLoaded(vehicleName);
+
+                            // Make sure that vehicle is laoded before we add to list.
+                            if (thisVehicle != null)
+                            {
+                                vehicleList.Add(thisVehicle);
+                            }
+                        }
+                        else
+                        {
+                            Logging.Error("invalid vehicle name");
+                        }
+                    }
+
+                    // If at least one vehicle was recovered, add the entry to the dictionary.
+                    if (vehicleList.Count > 0)
+                    {
+                        vehicles.Add(key, vehicleList);
+                    }
+                }
+
+                Logging.Message("read entry ", key);
             }
         }
 
