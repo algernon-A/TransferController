@@ -69,7 +69,7 @@ namespace TransferController
                         transfers[0].spawnsVehicles = true;
                         return 1;
                     }
-
+                    
                     // Any other healthcare buildings (e.g. SaunaAI) aren't supported.
                     return 0;
 
@@ -268,18 +268,18 @@ namespace TransferController
                     return 2;
 
                 case ItemClass.Service.PlayerIndustry: // industries dlc
-                    if (buildingInfo.m_buildingAI is ExtractingFacilityAI)
+                    if (buildingInfo.m_buildingAI is ExtractingFacilityAI extractingAI)
                     {
                         transfers[0].panelTitle = Translations.Translate("TFC_GEN_SEL");
                         transfers[0].outsideText = Translations.Translate("TFC_BLD_EXP");
                         transfers[0].outsideTip = Translations.Translate("TFC_BLD_EXP_TIP");
                         transfers[0].recordNumber = BuildingControl.OutgoingMask;
-                        transfers[0].reason = TransferManager.TransferReason.None;
+                        transfers[0].reason = extractingAI.m_outputResource;
                         transfers[0].nextRecord = 0;
                         transfers[0].spawnsVehicles = true;
                         return 1;
                     }
-                    else if (buildingInfo.m_buildingAI is ProcessingFacilityAI && buildingInfo.m_class.m_level < ItemClass.Level.Level5)
+                    else if (buildingInfo.m_buildingAI is ProcessingFacilityAI processingAI && buildingInfo.m_class.m_level < ItemClass.Level.Level5)
                     {
                         transfers[0].panelTitle = Translations.Translate("TFC_GEN_BUY");
                         transfers[0].outsideText = Translations.Translate("TFC_BLD_IMP");
@@ -292,7 +292,7 @@ namespace TransferController
                         transfers[1].outsideText = Translations.Translate("TFC_BLD_EXP");
                         transfers[1].outsideTip = Translations.Translate("TFC_BLD_EXP_TIP");
                         transfers[1].recordNumber = BuildingControl.OutgoingMask;
-                        transfers[1].reason = TransferManager.TransferReason.None;
+                        transfers[1].reason = processingAI.m_outputResource;
                         transfers[1].nextRecord = 0;
                         transfers[1].spawnsVehicles = true;
                         return 2;
