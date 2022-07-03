@@ -18,7 +18,7 @@ TFC_VEH_ADD,Add this vehicle to the list of permitted vehicles
 TFC_VEH_SUB,Remove this vehicle from the list of permitted vehicles
 TFC_GEN_BUY,Goods in
 TFC_GEN_SEL,Goods out
-TFC_GEN_SER,Service delivery
+TFC_GEN_SER,Service area
 TFC_BLD_SDO,Always service same district
 TFC_BLD_SDO_TIP,"Enable to ensure that the building can always service the same district and/or area that it's in, even if the district or area later changes."
 TFC_BLD_IMP,Allow imports
