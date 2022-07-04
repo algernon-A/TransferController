@@ -29,15 +29,14 @@ TFC_BLD_EXP,Allow exports
 TFC_BLD_EXP_TIP,Permit this building to export to outside connections. This is not affected by district or building restrictions.
 TFC_BLD_NOD,No local district
 TFC_FIR_SER,Firefighting
-TFC_DIS_TRU,Disaster response trucks
-TFC_DIS_HEL,Disaster response helicopters
+TFC_DIS_TRU,Disaster trucks
+TFC_DIS_HEL,Disaster helicopters
 TFC_POL_PMO,Prisoner transfer
 TFC_POL_PHO,Prisoner transfer (helicopter)
-TFC_POL_PHI,Prisoner collection by helicopter
+TFC_POL_PHI,Prisoner collection (helicopter)
 TFC_POL_PTO,Prisoner transfer to a central police station
 TFC_POL_PTI,Prisoner transfer from local stations
-TFC_MAI_IML,Local mail collection
-TFC_MAI_OSD,Local mail delivery
+TFC_MAI_IML,Mail collection
 TFC_MAI_OUN,Outgoing unsorted mail
 TFC_MAI_IST,Incoming sorted mail
 TFC_MAI_IUN,Unsorted mail from post offices
@@ -45,8 +44,8 @@ TFC_MAI_OST,Sorted mail to post offices
 TFC_MAI_OGM,Outgoing mail
 TFC_MAI_ICM,Incoming mail
 TFC_GAR_ICO,Garbage collection
-TFC_GAR_ITF,Garbage transfer from collection
-TFC_GAR_OTF,Garbage transfer to processing
+TFC_GAR_ITF,Garbage in
+TFC_GAR_OTF,Garbage out
 TFC_GAR_ORR,Recovered resources for sale
 TFC_FIS_MKO,Fish delivery
 TFC_FIS_MKI,Fish delivery from harbor

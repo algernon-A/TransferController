@@ -200,7 +200,7 @@ namespace TransferController
                         // Prisons.
                         if (buildingInfo.m_class.m_level >= ItemClass.Level.Level4)
                         {
-                            transfers[0].panelTitle = Translations.Translate("TFC_GEN_SER");
+                            transfers[0].panelTitle = Translations.Translate("TFC_POL_PMO");
                             transfers[0].outsideText = null;
                             transfers[0].recordNumber = BuildingControl.IncomingMask;
                             transfers[0].reason = TransferManager.TransferReason.CriminalMove;
@@ -375,31 +375,23 @@ namespace TransferController
                             transfers[0].nextRecord = BuildingControl.IncomingMask + 1;
                             transfers[0].spawnsVehicles = true;
 
-                            // Post offices send sorted mail out to other post offices.
-                            transfers[1].panelTitle = Translations.Translate("TFC_MAI_OSD");
-                            transfers[1].outsideText = null;
-                            transfers[1].recordNumber = BuildingControl.OutgoingMask;
-                            transfers[1].reason = TransferManager.TransferReason.SortedMail;
-                            transfers[1].nextRecord = BuildingControl.OutgoingMask + 1;
-                            transfers[1].spawnsVehicles = false;
-
                             // Post offices send unsorted mail via their trucks.
-                            transfers[2].panelTitle = Translations.Translate("TFC_MAI_OUN");
-                            transfers[2].outsideText = Translations.Translate("TFC_BLD_EXP");
-                            transfers[2].recordNumber = BuildingControl.OutgoingMask + 1;
-                            transfers[2].reason = TransferManager.TransferReason.UnsortedMail;
+                            transfers[1].panelTitle = Translations.Translate("TFC_MAI_OUN");
+                            transfers[1].outsideText = Translations.Translate("TFC_BLD_EXP");
+                            transfers[1].recordNumber = BuildingControl.OutgoingMask;
+                            transfers[1].reason = TransferManager.TransferReason.UnsortedMail;
+                            transfers[1].nextRecord = 0;
+                            transfers[1].spawnsVehicles = true;
+
+                            // Post offices pick up sorted mail via their trucks.
+                            transfers[2].panelTitle = Translations.Translate("TFC_MAI_IST");
+                            transfers[2].outsideText = Translations.Translate("TFC_BLD_IMP");
+                            transfers[2].recordNumber = BuildingControl.IncomingMask + 1;
+                            transfers[2].reason = TransferManager.TransferReason.SortedMail;
                             transfers[2].nextRecord = 0;
                             transfers[2].spawnsVehicles = true;
 
-                            // Post offices pick up sorted mail via their trucks.
-                            transfers[3].panelTitle = Translations.Translate("TFC_MAI_IST");
-                            transfers[3].outsideText = Translations.Translate("TFC_BLD_IMP");
-                            transfers[3].recordNumber = BuildingControl.IncomingMask + 1;
-                            transfers[3].reason = TransferManager.TransferReason.SortedMail;
-                            transfers[3].nextRecord = 0;
-                            transfers[3].spawnsVehicles = true;
-
-                            return 4;
+                            return 3;
                         }
 
                         // Mail sorting facility.
