@@ -43,12 +43,12 @@ namespace TransferController
             this.width = BuildingPanel.PanelWidth;
 
             // 'Add vehicle' button.
-            addVehicleButton = BuildingPanelTab.AddIconButton(this, BuildingPanelTab.MidControlX, VehicleListY, BuildingPanelTab.ArrowSize, "TFC_VEH_ADD", TextureUtils.LoadSpriteAtlas("TC-ArrowPlus"));
+            addVehicleButton = BuildingPanel.AddIconButton(this, BuildingPanelTab.MidControlX, VehicleListY, BuildingPanelTab.ArrowSize, "TFC_VEH_ADD", TextureUtils.LoadSpriteAtlas("TC-ArrowPlus"));
             addVehicleButton.isEnabled = false;
             addVehicleButton.eventClicked += (control, clickEvent) => AddVehicle(vehicleSelectionPanel.SelectedVehicle);
 
             // Remove vehicle button.
-            removeVehicleButton = BuildingPanelTab.AddIconButton(this, BuildingPanelTab.MidControlX, VehicleListY + BuildingPanelTab.ArrowSize, BuildingPanelTab.ArrowSize, "TFC_VEH_SUB", TextureUtils.LoadSpriteAtlas("TC-ArrowMinus"));
+            removeVehicleButton = BuildingPanel.AddIconButton(this, BuildingPanelTab.MidControlX, VehicleListY + BuildingPanelTab.ArrowSize, BuildingPanelTab.ArrowSize, "TFC_VEH_SUB", TextureUtils.LoadSpriteAtlas("TC-ArrowMinus"));
             removeVehicleButton.isEnabled = false;
             removeVehicleButton.eventClicked += (control, clickEvent) => RemoveVehicle();
 

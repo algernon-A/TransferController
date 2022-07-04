@@ -147,6 +147,8 @@
     <Content Include="Resources\TC-CursorOn.png" />
     <Content Include="Resources\TC-CursorOff.png" />
     <Content Include="Resources\TC-CursorPickOff.png" />
+    <Content Include="Resources\TC-Logs.png" />
+    <Content Include="Resources\TC-OpenOffers.png" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

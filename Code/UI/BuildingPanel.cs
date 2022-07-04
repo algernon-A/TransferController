@@ -19,16 +19,16 @@ namespace TransferController
         private const float TitleHeight = 50f;
         private const float LabelHeight = 30f;
         private const float DistrictLabelY = TitleHeight + LabelHeight;
-        private const float DistrictLabelHeight = 20f;
-        private const float ButtonHeight = 30f;
-        private const float ButtonY = DistrictLabelY + DistrictLabelHeight;
         private const float TabHeight = 30f;
         private const float TabPanelWidth = BuildingPanelTab.PanelWidth;
-        private const float TabY = ButtonY + ButtonHeight + Margin;
+        private const float TabY = Button2Y + ButtonSize + Margin;
         private const float TabContentHeight = BuildingRestrictionsTab.PanelHeight;
         private const float TabPanelHeight = TabHeight + TabContentHeight;
         private const float PanelHeight = TabY + TabPanelHeight + Margin;
-        private const float ButtonWidth = 150f;
+        private const float ButtonSize = 30f;
+        private const float ButtonX = PanelWidth - ButtonSize - Margin;
+        private const float Button1Y = TitleHeight;
+        private const float Button2Y = Button1Y + ButtonSize + Margin;
 
         // Maximum number of supported transfers per building.
         internal const int MaxTransfers = 4;
@@ -150,17 +150,17 @@ namespace TransferController
                     BuildingPanelManager.Close();
                 };
 
-                // Offers button.
-                UIButton offersButton = UIControls.AddSmallerButton(this, Margin, ButtonY, Translations.Translate("TFC_OFF_TIT"), ButtonWidth);
-                offersButton.eventClicked += ShowOffers;
-
-                // Log button.
-                UIButton logButton = UIControls.AddSmallerButton(this, Margin + ButtonWidth + Margin, ButtonY, Translations.Translate("TFC_OFF_LOG"), ButtonWidth);
-                logButton.eventClicked += ShowLog;
-
                 // District label.
                 districtLabel = UIControls.AddLabel(this, 0f, DistrictLabelY, String.Empty, PanelWidth, 0.9f);
                 districtLabel.textAlignment = UIHorizontalAlignment.Center;
+
+                // Offers button.
+                UIButton offersButton = AddIconButton(this, ButtonX, Button1Y, ButtonSize, "TFC_OFF_TIT", TextureUtils.LoadSpriteAtlas("TC-OpenOffers"));
+                offersButton.eventClicked += ShowOffers;
+
+                // Log button.
+                UIButton logButton = AddIconButton(this, ButtonX, Button2Y, ButtonSize, "TFC_OFF_LOG", TextureUtils.LoadSpriteAtlas("TC-Logs"));
+                logButton.eventClicked += ShowLog;
 
                 // Tab panel.
                 tabPanel = this.AddUIComponent<UIPanel>();
@@ -449,6 +449,40 @@ namespace TransferController
             rootPanel.autoLayoutPadding.left = 10;
 
             return rootPanel;
+        }
+
+
+        /// <summary>
+        /// Adds an icon-style button to the specified component at the specified coordinates.
+        /// </summary>
+        /// <param name="parent">Parent UIComponent</param>
+        /// <param name="xPos">Relative X position</param>
+        /// <param name="yPos">Relative Y position</param>
+        /// <param name="size">Button size (square)</param>
+        /// <param name="tooltipKey">Tooltip translation key</param>
+        /// <param name="atlas">Icon atlas</param>
+        /// <returns>New UIButton</returns>
+        internal static UIButton AddIconButton(UIComponent parent, float xPos, float yPos, float size, string tooltipKey, UITextureAtlas atlas)
+        {
+            UIButton newButton = parent.AddUIComponent<UIButton>();
+
+            // Size and position.
+            newButton.relativePosition = new Vector2(xPos, yPos);
+            newButton.height = size;
+            newButton.width = size;
+
+            // Appearance.
+            newButton.atlas = atlas;
+            newButton.normalFgSprite = "normal";
+            newButton.focusedFgSprite = "normal";
+            newButton.hoveredFgSprite = "hovered";
+            newButton.disabledFgSprite = "disabled";
+            newButton.pressedFgSprite = "pressed";
+
+            // Tooltip.
+            newButton.tooltip = Translations.Translate(tooltipKey);
+
+            return newButton;
         }
     }
 }

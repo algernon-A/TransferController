@@ -53,40 +53,6 @@ namespace TransferController
 
 
         /// <summary>
-        /// Adds an icon-style button to the specified component at the specified coordinates.
-        /// </summary>
-        /// <param name="parent">Parent UIComponent</param>
-        /// <param name="xPos">Relative X position</param>
-        /// <param name="yPos">Relative Y position</param>
-        /// <param name="size">Button size (square)</param>
-        /// <param name="tooltipKey">Tooltip translation key</param>
-        /// <param name="atlas">Icon atlas</param>
-        /// <returns>New UIButton</returns>
-        internal static UIButton AddIconButton(UIComponent parent, float xPos, float yPos, float size, string tooltipKey, UITextureAtlas atlas)
-        {
-            UIButton newButton = parent.AddUIComponent<UIButton>();
-
-            // Size and position.
-            newButton.relativePosition = new Vector2(xPos, yPos);
-            newButton.height = size;
-            newButton.width = size;
-
-            // Appearance.
-            newButton.atlas = atlas;
-            newButton.normalFgSprite = "normal";
-            newButton.focusedFgSprite = "normal";
-            newButton.hoveredFgSprite = "hovered";
-            newButton.disabledFgSprite = "disabled";
-            newButton.pressedFgSprite = "pressed";
-
-            // Tooltip.
-            newButton.tooltip = Translations.Translate(tooltipKey);
-
-            return newButton;
-        }
-
-
-        /// <summary>
         /// Refreshes the controls with current data.
         /// </summary>
         protected abstract void Refresh();
