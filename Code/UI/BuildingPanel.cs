@@ -11,7 +11,7 @@ namespace TransferController
     /// <summary>
     /// Building info panel.
     /// </summary>
-    internal class BuildingInfoPanel : UIPanel
+    internal class BuildingPanel : UIPanel
     {
         // Layout constants.
         protected const float Margin = 5f;
@@ -106,7 +106,7 @@ namespace TransferController
         /// <summary>
         /// Constructor - performs initial setup.
         /// </summary>
-        internal BuildingInfoPanel()
+        internal BuildingPanel()
         {
             try
             {

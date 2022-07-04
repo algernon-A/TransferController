@@ -412,7 +412,7 @@ namespace TransferController
 
             // Remove all incoming records for this building.
             uint recordID = (uint)(buildingID | IncomingMask);
-            for (int i = 0; i < BuildingInfoPanel.MaxTransfers; ++i)
+            for (int i = 0; i < BuildingPanel.MaxTransfers; ++i)
             {
                 buildingRecords.Remove(recordID);
                 recordID += BuildingIncrement;
@@ -420,7 +420,7 @@ namespace TransferController
 
             // Remove all outgoing records for this building.
             recordID = (uint)(buildingID | OutgoingMask);
-            for (int i = 0; i < BuildingInfoPanel.MaxTransfers; ++i)
+            for (int i = 0; i < BuildingPanel.MaxTransfers; ++i)
             {
                 buildingRecords.Remove(recordID);
                 recordID += BuildingIncrement;

@@ -19,7 +19,7 @@ namespace TransferController
         private const float Check2Y = Check1Y + CheckHeight;
         private const float Check3Y = Check2Y + CheckHeight;
         private const float SliderY = Check3Y + CheckHeight;
-        private const float SliderWidth = BuildingInfoPanel.PanelWidth - DoubleMargin - DoubleMargin;
+        private const float SliderWidth = BuildingPanel.PanelWidth - DoubleMargin - DoubleMargin;
 
         // Default vehicle slider maximum.
         private const int MaxReservedVehicles = 16;
@@ -42,7 +42,7 @@ namespace TransferController
         {
             // Set size.
             this.height = PanelHeight;
-            this.width = BuildingInfoPanel.PanelWidth;
+            this.width = BuildingPanel.PanelWidth;
 
             // Add reserve vehicle checkboxes.
             reserveCityCheck = UIControls.LabelledCheckBox(this, Margin, Check1Y, Translations.Translate("TFC_WAR_RVI"), tooltip: Translations.Translate("TFC_WAR_RVI_TIP"));

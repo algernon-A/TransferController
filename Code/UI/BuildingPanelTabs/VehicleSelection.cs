@@ -40,7 +40,7 @@ namespace TransferController
         {
             // Set size.
             this.height = PanelHeight;
-            this.width = BuildingInfoPanel.PanelWidth;
+            this.width = BuildingPanel.PanelWidth;
 
             // 'Add vehicle' button.
             addVehicleButton = BuildingPanelTab.AddIconButton(this, BuildingPanelTab.MidControlX, VehicleListY, BuildingPanelTab.ArrowSize, "TFC_VEH_ADD", TextureUtils.LoadSpriteAtlas("TC-ArrowPlus"));

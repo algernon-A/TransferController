@@ -11,8 +11,8 @@ namespace TransferController
     {
         // Copy buffer.
         private static int bufferSize;
-        private static BuildingControl.BuildingRecord[] copyBuffer = new BuildingControl.BuildingRecord[BuildingInfoPanel.MaxTransfers];
-        private static byte[] copyRecordNumbers = new byte[BuildingInfoPanel.MaxTransfers];
+        private static BuildingControl.BuildingRecord[] copyBuffer = new BuildingControl.BuildingRecord[BuildingPanel.MaxTransfers];
+        private static byte[] copyRecordNumbers = new byte[BuildingPanel.MaxTransfers];
 
         // Copy buffer - warehouse extensions.
         private static bool isWarehouse = false;
@@ -20,7 +20,7 @@ namespace TransferController
 
 
         // Prevent heap allocations every time we copy.
-        private static TransferStruct[] transferBuffer = new TransferStruct[BuildingInfoPanel.MaxTransfers];
+        private static TransferStruct[] transferBuffer = new TransferStruct[BuildingPanel.MaxTransfers];
 
 
         /// <summary>

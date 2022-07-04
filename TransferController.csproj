@@ -102,7 +102,7 @@
     <Compile Include="Code\UI\SelectionPanels\SelectedVehiclePanel.cs" />
     <Compile Include="Code\UI\SelectionPanels\VehicleSelectionPanel.cs" />
     <Compile Include="Code\UI\TCTool.cs" />
-    <Compile Include="Code\UI\BuildingInfoPanel.cs" />
+    <Compile Include="Code\UI\BuildingPanel.cs" />
     <Compile Include="Code\UI\BuildingPanelManager.cs" />
     <Compile Include="Code\UI\UIFastList\BasicRow.cs" />
     <Compile Include="Code\UI\UIFastList\BuildingRow.cs" />

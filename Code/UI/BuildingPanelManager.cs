@@ -13,8 +13,8 @@ namespace TransferController
     {
         // Instance references.
         private static GameObject uiGameObject;
-        private static BuildingInfoPanel panel;
-        internal static BuildingInfoPanel Panel => panel;
+        private static BuildingPanel panel;
+        internal static BuildingPanel Panel => panel;
 
 
         // Components.
@@ -25,7 +25,7 @@ namespace TransferController
         /// Creates the panel object in-game and displays it.
         /// </summary>
         /// <param name="parent">Parent component</param>
-        internal static void Create<T>() where T : BuildingInfoPanel
+        internal static void Create<T>() where T : BuildingPanel
         {
             try
             {
@@ -76,7 +76,7 @@ namespace TransferController
             // If no existing panel, create it.
             if (Panel == null)
             {
-                Create<BuildingInfoPanel>();
+                Create<BuildingPanel>();
             }
 
             // Set the target.
