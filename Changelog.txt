@@ -1,5 +1,6 @@
 ﻿- Major new feature: vehicle selection by building
 - Overhaul UI
+- Add taxi support
 
 
 Version 0.6.2.1 hotfix -

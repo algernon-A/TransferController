@@ -170,6 +170,7 @@ namespace TransferController
 				case TransferManager.TransferReason.Snow:
 				case TransferManager.TransferReason.SnowMove:
 				case TransferManager.TransferReason.FloodWater:
+				case TransferManager.TransferReason.Taxi:
 				case (TransferManager.TransferReason)125:
 				case (TransferManager.TransferReason)126:
 					return true;

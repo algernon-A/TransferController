@@ -97,7 +97,7 @@ namespace TransferController
 
                 case ItemClass.Service.Water:
                     // Water pumping.
-                    if (buildingInfo.GetAI() is WaterFacilityAI waterFacilityAI && buildingInfo.m_class.m_level == ItemClass.Level.Level1 && waterFacilityAI.m_pumpingVehicles > 0)
+                    if (buildingInfo.m_buildingAI is WaterFacilityAI waterFacilityAI && buildingInfo.m_class.m_level == ItemClass.Level.Level1 && waterFacilityAI.m_pumpingVehicles > 0)
                     {
                         transfers[0].panelTitle = Translations.Translate("TFC_GEN_SER");
                         transfers[0].outsideText = null;
@@ -108,7 +108,7 @@ namespace TransferController
                         return 1;
                     }
                     // Boiler station - imports oil.
-                    else if (buildingInfo.GetAI() is HeatingPlantAI heatingPlantAI && buildingInfo.m_class.m_level == ItemClass.Level.Level2 && heatingPlantAI.m_resourceType == TransferManager.TransferReason.Oil)
+                    else if (buildingInfo.m_buildingAI is HeatingPlantAI heatingPlantAI && buildingInfo.m_class.m_level == ItemClass.Level.Level2 && heatingPlantAI.m_resourceType == TransferManager.TransferReason.Oil)
                     {
                         transfers[0].panelTitle = Translations.Translate("TFC_OIL_INC");
                         transfers[0].outsideText = Translations.Translate("TFC_BLD_IMP");
@@ -123,7 +123,7 @@ namespace TransferController
 
                 case ItemClass.Service.Disaster:
                     // Disaster response - trucks and helicopters.
-                    if(buildingInfo.GetAI() is DisasterResponseBuildingAI)
+                    if(buildingInfo.m_buildingAI is DisasterResponseBuildingAI)
                     {
                         transfers[0].panelTitle = Translations.Translate("TFC_DIS_TRU");
                         transfers[0].outsideText = null;
@@ -140,7 +140,7 @@ namespace TransferController
                         return 2;
                     }
                     // Sheters import goods (supplies).
-                    else if (buildingInfo.GetAI() is ShelterAI)
+                    else if (buildingInfo.m_buildingAI is ShelterAI)
                     {
                         transfers[0].panelTitle = Translations.Translate("TFC_SHT_INC");
                         transfers[0].outsideText = Translations.Translate("TFC_BLD_IMP");
@@ -154,8 +154,8 @@ namespace TransferController
                     return 0;
 
                 case ItemClass.Service.Electricity:
-                    // import oil and coal for power plants
-                    if(buildingInfo.GetAI() is PowerPlantAI powerPlantAI && powerPlantAI.m_resourceType != TransferManager.TransferReason.None)
+                    // Iimport oil and coal for power plants.
+                    if(buildingInfo.m_buildingAI is PowerPlantAI powerPlantAI && powerPlantAI.m_resourceType != TransferManager.TransferReason.None)
                     {
                         transfers[0].panelTitle = Translations.Translate("TFC_PWR_INC") + powerPlantAI.m_resourceType.ToString();
                         transfers[0].outsideText = Translations.Translate("TFC_BLD_IMP");
@@ -172,7 +172,7 @@ namespace TransferController
                     Building.Flags buildingFlags = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID].m_flags;
 
                     // Police helicopter depot.
-                    if (buildingInfo.GetAI() is HelicopterDepotAI)
+                    if (buildingInfo.m_buildingAI is HelicopterDepotAI)
                     {
                         transfers[0].panelTitle = Translations.Translate("TFC_GEN_SER");
                         transfers[0].outsideText = null;
@@ -362,7 +362,7 @@ namespace TransferController
                     return 0;
 
                 case ItemClass.Service.PublicTransport:
-                    if (buildingInfo.GetAI() is PostOfficeAI postOfficeAI)
+                    if (buildingInfo.m_buildingAI is PostOfficeAI postOfficeAI)
                     {
                         // Post office vs. mail sorting facility - post offices have vans.
                         if (postOfficeAI.m_postVanCount > 0)
@@ -377,7 +377,7 @@ namespace TransferController
 
                             // Post offices send sorted mail out to other post offices.
                             transfers[1].panelTitle = Translations.Translate("TFC_MAI_OSD");
-                            transfers[1].outsideText =  null;
+                            transfers[1].outsideText = null;
                             transfers[1].recordNumber = BuildingControl.OutgoingMask;
                             transfers[1].reason = TransferManager.TransferReason.SortedMail;
                             transfers[1].nextRecord = BuildingControl.OutgoingMask + 1;
@@ -433,10 +433,23 @@ namespace TransferController
 
                         return 4;
                     }
+                    else if (buildingInfo.m_class.m_subService == ItemClass.SubService.PublicTransportTaxi)
+                    {
+                        // Taxi depots.
+                        transfers[0].panelTitle = Translations.Translate("TFC_GEN_SER");
+                        transfers[0].outsideText = null;
+                        transfers[0].recordNumber = BuildingControl.OutgoingMask;
+                        transfers[0].reason = TransferManager.TransferReason.Taxi;
+                        transfers[0].nextRecord = 0;
+                        transfers[0].spawnsVehicles = true;
+                        return 1;
+                    }
+
+                    // Unsupported public transport type.
                     return 0;
 
                 case ItemClass.Service.Garbage:
-                    if (buildingInfo.GetAI() is LandfillSiteAI landfillAI)
+                    if (buildingInfo.m_buildingAI is LandfillSiteAI landfillAI)
                     {
                         // Incineration Plant.
                         if (buildingInfo.GetClassLevel() == ItemClass.Level.Level1 && landfillAI.m_electricityProduction != 0)

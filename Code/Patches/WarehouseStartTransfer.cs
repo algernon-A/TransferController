@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using ColossalFramework.Math;
@@ -26,7 +25,7 @@ namespace TransferController
         }
 
         /// <summary>
-        /// Harmony transpiler for building StartTransfer methods, replacing existign calls to WarehousAI.GetTransferVehicleService with a call to our custom replacement instead.
+        /// Harmony transpiler for building StartTransfer methods, replacing existing calls to WarehousAI.GetTransferVehicleService with a call to our custom replacement instead.
         /// </summary>
         /// <param name="instructions">Original ILCode</param>
         /// <param name="original">Method being transpiled</param>

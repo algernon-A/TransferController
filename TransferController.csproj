@@ -69,6 +69,7 @@
     <Compile Include="Code\Patches\AddOffers.cs" />
     <Compile Include="Code\Patches\BuildingWorldInfoPanel.cs" />
     <Compile Include="Code\Patches\Escape.cs" />
+    <Compile Include="Code\Patches\DepotStartTransfer.cs" />
     <Compile Include="Code\Patches\SetTransferReason.cs" />
     <Compile Include="Code\Patches\TransferManagerPatches.cs" />
     <Compile Include="Code\Patches\Patcher.cs" />
