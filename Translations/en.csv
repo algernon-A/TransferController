@@ -3,6 +3,8 @@ NAME,English
 TFC_NAM,Transfer Controller
 TFC_DESC,Enables control of goods transfer and service vehicle coverage.
 TFC_TAB_VEH,Vehicles
+TFC_RES_PLD,Prefer local district
+TFC_RES_PLD_TIP,"If this is selected, preference will be given to servicing locations within the same district and/or park area as this building"
 TFC_RES_ENA,Enable location restrictions
 TFC_RES_ENA_TIP,"If this is selected, service will be restricted to the districts and/or buildings listed below (and any permitted outside connections)."
 TFC_DIS_AVA,Available districts

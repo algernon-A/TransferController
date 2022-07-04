@@ -370,6 +370,9 @@ namespace TransferController
 			// Outside connection status.
 			bool offerIsOutside = offerBuildingAI is OutsideConnectionAI;
 
+			// Same-district modifier.
+			float offerSameDistrict = CheckPreferSameDistrict(offerBuilding, incoming, reason);
+
 			// Keep going until we've used up all the offer amount with matched transfers.
 			int outstandingAmount = offer.Amount;
 			do
@@ -488,13 +491,23 @@ namespace TransferController
 							}
 						}
 
+						// Apply prefer-same-district boost if applicatble.
+						byte candidateDistrict = districtManager.GetDistrict(candidatePosition);
+						byte candidatePark = districtManager.GetPark(candidatePosition);
+						if (candidateDistrict == offerDistrict | candidatePark == offerPark)
+						{
+							// Offer building modifier.
+							distanceModifier *= offerSameDistrict;
+
+							// Candidate building modifier.
+							distanceModifier *= CheckPreferSameDistrict(candidateBuilding, !incoming, reason);
+						}
+
 						// Calculate distance between positions - use original offer positions, not owning building positions.
 						float squaredDistance = Vector3.SqrMagnitude(offer.Position - candidate.Position) * distanceModifier;
 						if (squaredDistance < bestDistance)
 						{
 							// New nearest disance - apply checks.
-							byte candidateDistrict = districtManager.GetDistrict(candidatePosition);
-							byte candidatePark = districtManager.GetPark(candidatePosition);
 							if (incoming)
 							{
 								if (!ChecksPassed(incoming, (byte)priority, (byte)candidatePriority, offerBuilding, candidateBuilding, offerDistrict, candidateDistrict, offerPark, candidatePark, reason, offer.Exclude, candidate.Exclude, offer.Position, candidate.Position))
@@ -651,7 +664,6 @@ namespace TransferController
 		///  Applies incoming district and building filters.
 		/// </summary>
 		/// <param name="buildingID">Building ID to check</param>
-		/// <param name="priority">Offer priority</param
 		/// <param name="outgoingBuildingID">Building ID of outgoing building</param>
 		/// <param name="incomingDistrict">District of incoming offer</param>
 		/// <param name="outgoingDistrict">District of outgoing offer</param>
@@ -800,38 +812,11 @@ namespace TransferController
 					}
 				}
 
-				// Only block specified goods transfers where the 'None' wildcard is applied.
-				if (buildingRecord.reason == TransferManager.TransferReason.None)
+				// Where the 'None' wildcard is applied, only block outgoing cargo transfers.
+				if (buildingRecord.reason == TransferManager.TransferReason.None && !IsCargoReason(transferReason))
 				{
-					switch (transferReason)
-					{
-						case TransferManager.TransferReason.Oil:
-						case TransferManager.TransferReason.Ore:
-						case TransferManager.TransferReason.Logs:
-						case TransferManager.TransferReason.Grain:
-						case TransferManager.TransferReason.Goods:
-						case TransferManager.TransferReason.Coal:
-						case TransferManager.TransferReason.Food:
-						case TransferManager.TransferReason.Lumber:
-						case TransferManager.TransferReason.Flours:
-						case TransferManager.TransferReason.Paper:
-						case TransferManager.TransferReason.PlanedTimber:
-						case TransferManager.TransferReason.Petrol:
-						case TransferManager.TransferReason.Petroleum:
-						case TransferManager.TransferReason.Plastics:
-						case TransferManager.TransferReason.Glass:
-						case TransferManager.TransferReason.Metals:
-						case TransferManager.TransferReason.LuxuryProducts:
-						case TransferManager.TransferReason.Taxi:
-						case TransferManager.TransferReason.AnimalProducts:
-						case TransferManager.TransferReason.Fish:
-							// Legitimate transfer reason; resume normal outgoing district check.
-							break;
-
-						default:
-							// Not a recognised ougoing transfer; automatically permit the transfer.
-							return true;
-					}
+					// Not a recognised cargo transfer; automatically permit the transfer.
+					return true;
 				}
 
 				// Check outside connection.
@@ -891,6 +876,100 @@ namespace TransferController
 
 			// If we got here, we didn't get a record.
 			return false;
+		}
+
+
+		/// <summary>
+		/// /// Checks if the given building has an active "prefer same district" setting for the specified TransferReason and returns the appropriate multiplier.
+		/// </summary>
+		/// <param name="buildingID">Building ID to check</param>
+		/// <param name="incoming">True if this is an incoming offer, false otherwise</param
+		/// <param name="reason">Transfer reason</param>
+		/// <returns>0.1f if the given building has an active prefer same district setting, 1f otherwise</returns>
+		private static float CheckPreferSameDistrict(ushort buildingID, bool incoming, TransferManager.TransferReason reason)
+		{
+			// If outgoing transfer, the None wildcard only applies if it's a cargo reason.
+			if (!incoming & reason == TransferManager.TransferReason.None)
+			{
+				if (!IsCargoReason(reason))
+				{
+					// Not a valid cargo reason; return 1.
+					return 1f;
+				}
+			}
+
+			// Calculate building record ID.
+			uint mask = (uint)(incoming ? BuildingControl.IncomingMask : BuildingControl.OutgoingMask) << 24;
+			uint buildingRecordID = (uint)(buildingID + mask);
+
+			// Get building record.
+			if (BuildingControl.buildingRecords.TryGetValue(buildingRecordID, out BuildingControl.BuildingRecord buildingRecord))
+			{
+				// Record found - check for reason match.
+				if (reason == TransferManager.TransferReason.None | reason == buildingRecord.reason)
+				{
+					// Matching reason - check flag.
+					if ((buildingRecord.flags & BuildingControl.RestrictionFlags.PreferSameDistrict) != 0)
+					{
+						// Found matching flag; return 0.1.
+						return 0.1f;
+					}
+				}
+				// No matching reason - check next record if available.
+				else if (buildingRecord.nextRecord != 0)
+				{
+					if (BuildingControl.buildingRecords.TryGetValue(buildingID | (uint)(buildingRecord.nextRecord << 24), out buildingRecord))
+					{
+						if (reason == TransferManager.TransferReason.None | reason == buildingRecord.reason & ((buildingRecord.flags & BuildingControl.RestrictionFlags.PreferSameDistrict) != 0))
+						{
+							// Found matching flag in the secondary record; return 0.1.
+							return 0.1f;
+						}
+					}
+				}
+			}
+
+			// If we got here, no record was found; return 1.
+			return 1f;
+		}
+
+
+
+		/// <summary>
+		/// Checks if the given TransferReason is a valid cargo transfer type.
+		/// </summary>
+		/// <param name="transferReason">TransferReason to check</param>
+		/// <returns>True if the given reason is a cargo type, false otherwise</returns>
+		private static bool IsCargoReason(TransferManager.TransferReason transferReason)
+		{
+			switch (transferReason)
+			{
+				case TransferManager.TransferReason.Oil:
+				case TransferManager.TransferReason.Ore:
+				case TransferManager.TransferReason.Logs:
+				case TransferManager.TransferReason.Grain:
+				case TransferManager.TransferReason.Goods:
+				case TransferManager.TransferReason.Coal:
+				case TransferManager.TransferReason.Food:
+				case TransferManager.TransferReason.Lumber:
+				case TransferManager.TransferReason.Flours:
+				case TransferManager.TransferReason.Paper:
+				case TransferManager.TransferReason.PlanedTimber:
+				case TransferManager.TransferReason.Petrol:
+				case TransferManager.TransferReason.Petroleum:
+				case TransferManager.TransferReason.Plastics:
+				case TransferManager.TransferReason.Glass:
+				case TransferManager.TransferReason.Metals:
+				case TransferManager.TransferReason.LuxuryProducts:
+				case TransferManager.TransferReason.AnimalProducts:
+				case TransferManager.TransferReason.Fish:
+					// Recognised cargo transfer type.
+					return true;
+
+				default:
+					// Not a recognised cargo transfer.
+					return false;
+			}
 		}
 	}
 }

@@ -18,7 +18,8 @@ namespace TransferController
             DistrictEnabled = 0x01,
             BlockSameDistrict = 0x02,
             BlockOutsideConnection = 0x04,
-            BuildingEnabled = 0x08
+            BuildingEnabled = 0x08,
+            PreferSameDistrict = 0x10
         }
 
         internal const byte IncomingMask = 0x00;
@@ -267,6 +268,17 @@ namespace TransferController
         /// <param name="transferReason">Transfer reason</param>
         /// <param name="nextRecordMask">Next record mask</param>
         internal static void SetSameDistrict(uint buildingID, byte recordID, bool status, TransferManager.TransferReason transferReason, byte nextRecordMask) => SetFlag(buildingID, recordID, status, RestrictionFlags.BlockSameDistrict, transferReason, nextRecordMask);
+        
+        
+        /// <summary>
+        /// Sets the prefer-same-district status of the given building record.
+        /// </summary>
+        /// <param name="buildingID">ID of building to set</param>
+        /// <param name="recordID">Building record number to set</param>
+        /// <param name="status">Same-district status to set</param>
+        /// <param name="transferReason">Transfer reason</param>
+        /// <param name="nextRecordMask">Next record mask</param>
+        internal static void SetPreferSameDistrict(uint buildingID, byte recordID, bool status, TransferManager.TransferReason transferReason, byte nextRecordMask) => SetFlag(buildingID, recordID, status, RestrictionFlags.PreferSameDistrict, transferReason, nextRecordMask);
 
 
         /// <summary>
@@ -278,7 +290,6 @@ namespace TransferController
         /// <param name="transferReason">Transfer reason</param>
         /// <param name="nextRecordMask">Next record mask</param>
         internal static void SetOutsideConnection(uint buildingID, byte recordID, bool status, TransferManager.TransferReason transferReason, byte nextRecordMask) => SetFlag(buildingID, recordID, status, RestrictionFlags.BlockOutsideConnection, transferReason, nextRecordMask);
-
 
 
         /// <summary>
@@ -308,6 +319,15 @@ namespace TransferController
         /// <param name="recordID">Building record number to check</param>
         /// <returns>True if building is limited to same-district-only, false otherwise</returns>
         internal static bool GetSameDistrict(uint buildingID, byte recordID) => GetFlags(buildingID, recordID, RestrictionFlags.BlockSameDistrict);
+
+
+        /// <summary>
+        /// Returns the current prefer-same-district status of the given building record.
+        /// </summary>
+        /// <param name="buildingID">ID of building to check</param>
+        /// <param name="recordID">Building record number to check</param>
+        /// <returns>True if building is limited to same-district-only, false otherwise</returns>
+        internal static bool GetPreferSameDistrict(uint buildingID, byte recordID) => GetFlags(buildingID, recordID, RestrictionFlags.PreferSameDistrict);
 
 
         /// <summary>

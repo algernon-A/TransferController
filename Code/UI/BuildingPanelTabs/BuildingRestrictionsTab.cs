@@ -14,7 +14,8 @@ namespace TransferController
         internal const float PanelHeight = BuildingListY + ListHeight + Margin;
         internal const float ListHeight = 10f * DistrictRow.DefaultRowHeight;
         private const float OutsideCheckY = Margin;
-        private const float EnabledCheckY = OutsideCheckY + CheckHeight;
+        private const float PreferCheckY = OutsideCheckY + CheckHeight;
+        private const float EnabledCheckY = PreferCheckY + CheckHeight;
         private const float SameDistrictCheckY = EnabledCheckY + CheckHeight;
         private const float DistrictListTitleY = SameDistrictCheckY + CheckHeight;
         private const float DistrictListY = DistrictListTitleY + CheckHeight;
@@ -24,7 +25,7 @@ namespace TransferController
 
 
         // Panel components.
-        private readonly UICheckBox enabledCheck, sameDistrictCheck, outsideCheck;
+        private readonly UICheckBox enabledCheck, preferSameCheck, sameDistrictCheck, outsideCheck;
         private readonly UIButton addDistrictButton, removeDistrictButton;
         private DistrictSelectionPanel districtSelectionPanel;
         private SelectedDistrictPanel buildingDistrictSelectionPanel;
@@ -65,6 +66,26 @@ namespace TransferController
 
 
         /// <summary>
+        /// Outside connection setting.
+        /// </summary>
+        private bool OutsideConnection
+        {
+            get => BuildingControl.GetOutsideConnection(CurrentBuilding, RecordNumber);
+            set => BuildingControl.SetOutsideConnection(CurrentBuilding, RecordNumber, value, TransferReason, NextRecord);
+        }
+
+
+        /// <summary>
+        /// Prefer same district setting.
+        /// </summary>
+        private bool PreferSameDistrict
+        {
+            get => BuildingControl.GetPreferSameDistrict(CurrentBuilding, RecordNumber);
+            set => BuildingControl.SetPreferSameDistrict(CurrentBuilding, RecordNumber, value, TransferReason, NextRecord);
+        }
+
+
+        /// <summary>
         /// Enabled setting.
         /// </summary>
         private bool Enabled
@@ -89,16 +110,6 @@ namespace TransferController
 
 
         /// <summary>
-        /// Outside connection setting.
-        /// </summary>
-        private bool OutsideConnection
-        {
-            get => BuildingControl.GetOutsideConnection(CurrentBuilding, RecordNumber);
-            set => BuildingControl.SetOutsideConnection(CurrentBuilding, RecordNumber, value, TransferReason, NextRecord);
-        }
-
-
-        /// <summary>
         /// Constructor - performs initial setup.
         /// </summary>
         /// <param name="parentPanel">Containing UI panel</param>
@@ -115,6 +126,17 @@ namespace TransferController
                     if (!disableEvents)
                     {
                         OutsideConnection = !isChecked;
+                    }
+                };
+
+                // Prefer same district checkbox.
+                preferSameCheck = UIControls.LabelledCheckBox(parentPanel, CheckMargin, PreferCheckY, Translations.Translate("TFC_RES_PLD"), tooltip: Translations.Translate("TFC_RES_PLD_TIP"));
+                preferSameCheck.isChecked = PreferSameDistrict;
+                preferSameCheck.eventCheckChanged += (control, isChecked) =>
+                {
+                    if (!disableEvents)
+                    {
+                        PreferSameDistrict = isChecked;
                     }
                 };
 
@@ -241,6 +263,7 @@ namespace TransferController
             // Disable events while we update controls to avoid recursively triggering event handler.
             disableEvents = true;
             outsideCheck.isChecked = !OutsideConnection;
+            preferSameCheck.isChecked = PreferSameDistrict;
             enabledCheck.isChecked = Enabled;
             sameDistrictCheck.isChecked = !SameDistrict;
             disableEvents = false;
