@@ -94,7 +94,7 @@ namespace TransferController
         private void PopulateList()
         {
             // Get building hashset for this building.
-            HashSet<uint> hashSet = BuildingControl.GetBuildings(ParentPanel.CurrentBuilding, ParentPanel.RecordNumber);
+            HashSet<uint> hashSet = BuildingControl.GetBuildings(ParentPanel.CurrentBuilding, ParentPanel.IsIncoming, ParentPanel.TransferReason);
 
             // If no building hashset was recovered, clear list and selection and exit.
             if (hashSet == null)

@@ -10,9 +10,11 @@ namespace TransferController
     public static class CopyPaste
     {
         // Copy buffer.
+        private static bool isCopied = false;
         private static int bufferSize;
         private static BuildingControl.BuildingRecord[] copyBuffer = new BuildingControl.BuildingRecord[BuildingPanel.MaxTransfers];
-        private static byte[] copyRecordNumbers = new byte[BuildingPanel.MaxTransfers];
+        private static bool[] copyIncoming = new bool[BuildingPanel.MaxTransfers];
+        private static TransferManager.TransferReason[] copyReason = new TransferManager.TransferReason[BuildingPanel.MaxTransfers];
 
         // Copy buffer - warehouse extensions.
         private static bool isWarehouse = false;
@@ -39,28 +41,32 @@ namespace TransferController
                 return;
             }
 
-            // Number of records to copy - make sure there's at least one before pre.
+            // Number of records to copy - make sure there's at least one before proceeding.
             int length = TransferDataUtils.BuildingEligibility(buildingID, buildingInfo, transferBuffer);
             bufferSize = length;
 
             // Make sure there's at least one tranfer before proceeding.
             if (length > 0)
             {
+                // Clear copied flag (it will be set later if valid data was copied).
+                isCopied = false;
+
                 // Copy warehouse settings, if any.
                 isWarehouse = buildingInfo.m_buildingAI is WarehouseAI && WarehouseControl.TryGetRecord(buildingID, out warehouseRecord);
+
 
                 // Copy records from source building to buffer.
                 for (int i = 0; i < length; ++i)
                 {
                     // Calculate building record ID.
-                    uint mask = (uint)transferBuffer[i].recordNumber << 24;
-                    uint buildingRecordID = (uint)(buildingID | mask);
+                    uint buildingRecordID = BuildingControl.CalculateEntryKey(buildingID, transferBuffer[i].isIncoming, transferBuffer[i].reason);
 
                     // Try to get valid entry, outputting to the copy buffer.
                     if (BuildingControl.buildingRecords.TryGetValue(buildingRecordID, out copyBuffer[i]))
                     {
-                        // Set record mask.
-                        copyRecordNumbers[i] = transferBuffer[i].recordNumber;
+                        // Set data.
+                        copyIncoming[i] = transferBuffer[i].isIncoming;
+                        copyReason[i] = transferBuffer[i].reason;
 
                         // Copy district and building buffers to new HashSets, otherwise the old ones will be shared.
                         if (copyBuffer[i].districts != null)
@@ -71,12 +77,12 @@ namespace TransferController
                         {
                             copyBuffer[i].buildings = new HashSet<uint>(copyBuffer[i].buildings);
                         }
+                        isCopied = true;
                     }
                     else
                     {
                         // If no valid entry for this record, clear the buffer entry.
                         copyBuffer[i] = default;
-                        copyRecordNumbers[i] = 0;
                     }
                 }
             }
@@ -95,8 +101,15 @@ namespace TransferController
         /// </summary>
         /// <param name="buildingID">Source building ID</param>
         /// <param name="buildingInfo">Source building info</param>
+        /// <returns>True if copy was successful, false otherwise</returns>
         internal static bool Paste(ushort buildingID, BuildingInfo buildingInfo)
         {
+            // Don't do anything if there's no active copy data.
+            if (!isCopied)
+            {
+                return false;
+            }
+
             Logging.Message("pasting to building ", buildingID);
 
             // Saftey checks.
@@ -116,15 +129,15 @@ namespace TransferController
                 return false;
             }
 
-            // Check for record type (incoming/outoging) match between buffer and target.
-            /*for (int i = 0; i < length; ++i)
+            // Check for record type (incoming/outoging) and reason match between buffer and target.
+            for (int i = 0; i < length; ++i)
             {
-                if (transferBuffer[i].recordNumber != copyRecordNumbers[i])
+                if (transferBuffer[i].isIncoming != copyIncoming[i])
                 {
-                    Logging.Message("copy-paste record type mismatch between ", transferBuffer[i].recordNumber, " and ", copyRecordNumbers[i]);
+                    Logging.Message("copy-paste direction mismatch");
                     return false;
                 }
-            }*/
+            }
 
             // All checks passed - copy records from buffer to building.
             for (int i = 0; i < length; ++i)
@@ -132,13 +145,13 @@ namespace TransferController
                 // Create new building entry from copied data and update dictionary.
                 BuildingControl.BuildingRecord newRecord = new BuildingControl.BuildingRecord
                 {
-                    nextRecord = transferBuffer[i].nextRecord,
                     flags = copyBuffer[i].flags,
-                    reason = transferBuffer[i].reason,
                     districts = copyBuffer[i].districts,
                     buildings = copyBuffer[i].buildings
                 };
-                BuildingControl.UpdateRecord(buildingID, transferBuffer[i].recordNumber, ref newRecord);
+
+                // Apply pasted data.
+                BuildingControl.UpdateRecord(buildingID, copyIncoming[i], copyReason[i], ref newRecord);
             }
 
             // Paste warehouse info, if applicable.

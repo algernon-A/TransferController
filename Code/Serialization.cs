@@ -11,7 +11,7 @@ namespace TransferController
     {
         // Unique data ID.
         private readonly string dataID = "TransferController";
-        public const int DataVersion = 2;
+        public const int DataVersion = 3;
 
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace TransferController
                         int version = reader.ReadInt32();
 
                         // Deserialise building settings.
-                        BuildingControl.Deserialize(reader);
+                        BuildingControl.Deserialize(reader, version);
 
                         // Deserialize warehouse settings.
                         if (version > 0)

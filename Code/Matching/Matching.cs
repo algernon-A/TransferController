@@ -674,92 +674,68 @@ namespace TransferController
 		private static bool IncomingChecksPassed(ushort buildingID, ushort outgoingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason transferReason)
 		{
 			// Calculate building record ID.
-			uint mask = BuildingControl.IncomingMask << 24;
-			uint buildingRecordID = (uint)(buildingID + mask);
-
+			uint buildingRecordID = BuildingControl.CalculateEntryKey(buildingID, true, transferReason);
 
 			// Get building record.
-			if (BuildingControl.buildingRecords.TryGetValue(buildingRecordID, out BuildingControl.BuildingRecord buildingRecord))
+			if (!BuildingControl.buildingRecords.TryGetValue(buildingRecordID, out BuildingControl.BuildingRecord buildingRecord))
 			{
-				// Check for transfer reason match.
-				if (buildingRecord.reason != TransferManager.TransferReason.None && buildingRecord.reason != transferReason)
+				// No record found; try TransferReason.None wildcard.
+				buildingRecordID = BuildingControl.CalculateEntryKey(buildingID, false, TransferManager.TransferReason.None);
+				if (!BuildingControl.buildingRecords.TryGetValue(buildingRecordID, out buildingRecord))
 				{
-					// Transfer reason didn't match; try secondary record
-					if (buildingRecord.nextRecord == 0)
-					{
-						// No secondary record; no relevant restrictions.
-						return true;
-					}
-
-					// Get secondary record. 
-					if (!BuildingControl.buildingRecords.TryGetValue(buildingID | (uint)(buildingRecord.nextRecord << 24), out buildingRecord))
-					{
-						// No secondary record in dictionary; no relevant restrictions.
-						return true;
-					}
-
-					// Check secondary transfer reason match.
-					if (buildingRecord.reason != TransferManager.TransferReason.None && buildingRecord.reason != transferReason)
-					{
-						// No secondary transfer reason match; no relevant restrictions.
-						return true;
-					}
+					// No record found, therefore no restrictions.
+					return true;
 				}
+			}
 
-				// Check outside connection.
-				if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[outgoingBuildingID].Info.m_buildingAI is OutsideConnectionAI)
+			// Check outside connection.
+			if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[outgoingBuildingID].Info.m_buildingAI is OutsideConnectionAI)
+			{
+				if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BlockOutsideConnection) == 0)
 				{
-					if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BlockOutsideConnection) == 0)
-					{
-						return true;
-					}
+					return true;
 				}
-				else if ((buildingRecord.flags & (BuildingControl.RestrictionFlags.DistrictEnabled | BuildingControl.RestrictionFlags.BuildingEnabled)) == 0)
+			}
+			else if ((buildingRecord.flags & (BuildingControl.RestrictionFlags.DistrictEnabled | BuildingControl.RestrictionFlags.BuildingEnabled)) == 0)
+			{
+				// If not an outside connection, transfer is permitted if no restrictions are enabled.
+				return true;
+			}
+
+
+			// Check district settings.
+			if ((buildingRecord.flags & BuildingControl.RestrictionFlags.DistrictEnabled) != 0)
+			{
+				// Check same-district setting.
+				if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BlockSameDistrict) == 0 && (outgoingDistrict != 0 && incomingDistrict == outgoingDistrict || (outgoingPark != 0 && incomingPark == outgoingPark)))
 				{
-					// If not an outside connection, transfer is permitted if no restrictions are enabled.
+					// Same district match - permitted.
 					return true;
 				}
 
-
-				// Check district settings.
-				if ((buildingRecord.flags & BuildingControl.RestrictionFlags.DistrictEnabled) != 0)
+				// Check permitted districts.
+				if (buildingRecord.districts != null)
 				{
-					// Check same-district setting.
-					if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BlockSameDistrict) == 0 && (outgoingDistrict != 0 && incomingDistrict == outgoingDistrict || (outgoingPark != 0 && incomingPark == outgoingPark)))
+					if (buildingRecord.districts.Contains(outgoingDistrict) || buildingRecord.districts.Contains(-outgoingPark))
 					{
-						// Same district match - permitted.
+						// Permitted district.
 						return true;
-					}
-
-					// Check permitted districts.
-					if (buildingRecord.districts != null)
-					{
-						if (buildingRecord.districts.Contains(outgoingDistrict) || buildingRecord.districts.Contains(-outgoingPark))
-						{
-							// Permitted district.
-							return true;
-						}
-					}
-				}
-
-				// Check building settings.
-				if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BuildingEnabled) != 0)
-				{
-					// Check permitted buildings.
-					if (buildingRecord.buildings != null)
-					{
-						if (buildingRecord.buildings.Contains(outgoingBuildingID))
-						{
-							// Permitted building.
-							return true;
-						}
 					}
 				}
 			}
-			else
+
+			// Check building settings.
+			if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BuildingEnabled) != 0)
 			{
-				// No record means no restrictions.
-				return true;
+				// Check permitted buildings.
+				if (buildingRecord.buildings != null)
+				{
+					if (buildingRecord.buildings.Contains(outgoingBuildingID))
+					{
+						// Permitted building.
+						return true;
+					}
+				}
 			}
 
 			// If we got here, we found a record but no permitted match was found; return false.
@@ -781,97 +757,75 @@ namespace TransferController
 		private static bool OutgoingChecksPassed(ushort buildingID, ushort incomingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason transferReason)
 		{
 			// Calculate building record ID.
-			uint mask = (uint)BuildingControl.OutgoingMask << 24;
-			uint buildingRecordID = (uint)(buildingID + mask);
+			uint buildingRecordID = BuildingControl.CalculateEntryKey(buildingID, false, transferReason);
 
-			// Get building record.
-			if (BuildingControl.buildingRecords.TryGetValue(buildingRecordID, out BuildingControl.BuildingRecord buildingRecord))
+			// Try to get building record.
+			if (!BuildingControl.buildingRecords.TryGetValue(buildingRecordID, out BuildingControl.BuildingRecord buildingRecord))
 			{
-				// Check for transfer reason match.
-				if (buildingRecord.reason != TransferManager.TransferReason.None && buildingRecord.reason != transferReason)
+				// No record found; if this is a cargo transfer, try none.
+				if (IsCargoReason(transferReason))
 				{
-					// Transfer reason didn't match; try secondary record
-					if (buildingRecord.nextRecord == 0)
+					buildingRecordID = BuildingControl.CalculateEntryKey(buildingID, false, TransferManager.TransferReason.None);
+					if (!BuildingControl.buildingRecords.TryGetValue(buildingRecordID, out buildingRecord))
 					{
-						// No secondary record; no relevant restrictions.
-						return true;
-					}
-
-					// Get secondary record. 
-					if (!BuildingControl.buildingRecords.TryGetValue(buildingID | (uint)(buildingRecord.nextRecord << 24), out buildingRecord))
-					{
-						// No secondary record in dictionary; no relevant restrictions.
-						return true;
-					}
-
-					// Check secondary transfer reason match.
-					if (buildingRecord.reason != TransferManager.TransferReason.None && buildingRecord.reason != transferReason)
-					{
-						// No secondary transfer reason match; no relevant restrictions.
+						// No record found, therefore no restrictions.
 						return true;
 					}
 				}
-
-				// Where the 'None' wildcard is applied, only block outgoing cargo transfers.
-				if (buildingRecord.reason == TransferManager.TransferReason.None && !IsCargoReason(transferReason))
+				else
 				{
-					// Not a recognised cargo transfer; automatically permit the transfer.
+					// No relevant reason found, therefore no restrictions.
+					return true;
+				}
+			}
+
+			// Check outside connection.
+			if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[incomingBuildingID].Info.m_buildingAI is OutsideConnectionAI)
+			{
+				if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BlockOutsideConnection) == 0)
+				{
+					return true;
+				}
+			}
+			else if ((buildingRecord.flags & (BuildingControl.RestrictionFlags.DistrictEnabled | BuildingControl.RestrictionFlags.BuildingEnabled)) == 0)
+			{
+				// If not an outside connection, transfer is permitted if no restrictions are enabled.
+				return true;
+			}
+
+			// Check district settings.
+			if ((buildingRecord.flags & BuildingControl.RestrictionFlags.DistrictEnabled) != 0)
+			{
+				// Check same-district setting.
+				if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BlockSameDistrict) == BuildingControl.RestrictionFlags.None && (incomingDistrict != 0 && incomingDistrict == outgoingDistrict || (incomingPark != 0 && incomingPark == outgoingPark)))
+				{
+					// Same district match - permitted.
 					return true;
 				}
 
-				// Check outside connection.
-				if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[incomingBuildingID].Info.m_buildingAI is OutsideConnectionAI)
+				// Check permitted districts.
+				if (buildingRecord.districts != null)
 				{
-					if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BlockOutsideConnection) == 0)
+					if (buildingRecord.districts.Contains(incomingDistrict) || buildingRecord.districts.Contains(-incomingPark))
 					{
+						// Permitted district.
 						return true;
-					}
-				}
-				else if ((buildingRecord.flags & (BuildingControl.RestrictionFlags.DistrictEnabled | BuildingControl.RestrictionFlags.BuildingEnabled)) == 0)
-				{
-					// If not an outside connection, transfer is permitted if no restrictions are enabled.
-					return true;
-				}
-
-				// Check district settings.
-				if ((buildingRecord.flags & BuildingControl.RestrictionFlags.DistrictEnabled) != 0)
-				{
-					// Check same-district setting.
-					if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BlockSameDistrict) == BuildingControl.RestrictionFlags.None && (incomingDistrict != 0 && incomingDistrict == outgoingDistrict || (incomingPark != 0 && incomingPark == outgoingPark)))
-					{
-						// Same district match - permitted.
-						return true;
-					}
-
-					// Check permitted districts.
-					if ((buildingRecord.reason == TransferManager.TransferReason.None || buildingRecord.reason == transferReason) && buildingRecord.districts != null)
-					{
-						if (buildingRecord.districts.Contains(incomingDistrict) || buildingRecord.districts.Contains(-incomingPark))
-						{
-							// Permitted district.
-							return true;
-						}
-					}
-				}
-
-				// Check building settings.
-				if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BuildingEnabled) != 0)
-				{
-					// Check permitted buildings.
-					if (buildingRecord.buildings != null)
-					{
-						if (buildingRecord.buildings.Contains(incomingBuildingID))
-						{
-							// Permitted building.
-							return true;
-						}
 					}
 				}
 			}
-			else
+
+			// Check building settings.
+			if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BuildingEnabled) != 0)
 			{
-				// No record means no restrictions.
-				return true;
+				// Check permitted buildings.
+				if (buildingRecord.buildings != null)
+				{
+					if (buildingRecord.buildings.Contains(incomingBuildingID))
+					{
+						// Permitted building.
+						return true;
+					}
+				}
 			}
 
 			// If we got here, we didn't get a record.
@@ -899,33 +853,16 @@ namespace TransferController
 			}
 
 			// Calculate building record ID.
-			uint mask = (uint)(incoming ? BuildingControl.IncomingMask : BuildingControl.OutgoingMask) << 24;
-			uint buildingRecordID = (uint)(buildingID + mask);
+			uint buildingRecordID = BuildingControl.CalculateEntryKey(buildingID, incoming, reason);
 
 			// Get building record.
 			if (BuildingControl.buildingRecords.TryGetValue(buildingRecordID, out BuildingControl.BuildingRecord buildingRecord))
 			{
-				// Record found - check for reason match.
-				if (reason == TransferManager.TransferReason.None | reason == buildingRecord.reason)
+				// Record found - check flag.
+				if ((buildingRecord.flags & BuildingControl.RestrictionFlags.PreferSameDistrict) != 0)
 				{
-					// Matching reason - check flag.
-					if ((buildingRecord.flags & BuildingControl.RestrictionFlags.PreferSameDistrict) != 0)
-					{
-						// Found matching flag; return 0.1.
-						return 0.1f;
-					}
-				}
-				// No matching reason - check next record if available.
-				else if (buildingRecord.nextRecord != 0)
-				{
-					if (BuildingControl.buildingRecords.TryGetValue(buildingID | (uint)(buildingRecord.nextRecord << 24), out buildingRecord))
-					{
-						if (reason == TransferManager.TransferReason.None | reason == buildingRecord.reason & ((buildingRecord.flags & BuildingControl.RestrictionFlags.PreferSameDistrict) != 0))
-						{
-							// Found matching flag in the secondary record; return 0.1.
-							return 0.1f;
-						}
-					}
+					// Found matching flag; return 0.1.
+					return 0.1f;
 				}
 			}
 

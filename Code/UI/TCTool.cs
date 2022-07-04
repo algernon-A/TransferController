@@ -239,7 +239,7 @@ namespace TransferController
 			if (pickMode)
 			{
 				// Linked building list.
-				HashSet<uint> hashSet = BuildingControl.GetBuildings(buildingRestrictionsTab.CurrentBuilding, buildingRestrictionsTab.RecordNumber);
+				HashSet<uint> hashSet = BuildingControl.GetBuildings(buildingRestrictionsTab.CurrentBuilding, buildingRestrictionsTab.IsIncoming, buildingRestrictionsTab.TransferReason);
 				if (hashSet != null && hashSet.Count > 0)
 				{
 					// Apply yellow overlay to each linked building.
@@ -257,12 +257,6 @@ namespace TransferController
 				Color magenta = new Color(1f, 0f, 1f, 0.75f);
 				foreach (uint key in BuildingControl.buildingRecords.Keys)
 				{
-					// Skip any secondary records.
-					if ((key & (BuildingControl.NextRecordMask << 24)) != 0)
-					{
-						continue;
-					}
-
 					// Apply overlay.
 					ushort buildingID = (ushort)(key & 0x0000FFFF);
 

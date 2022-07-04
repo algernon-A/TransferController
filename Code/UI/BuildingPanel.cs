@@ -226,8 +226,7 @@ namespace TransferController
                 // Set panel instance properties.
                 tabButtons[i].text = transfers[i].panelTitle;
                 tabButtons[i].Show();
-                transfers[i].panel.RecordNumber = transfers[i].recordNumber;
-                transfers[i].panel.NextRecord = transfers[i].nextRecord;
+                transfers[i].panel.IsIncoming = transfers[i].isIncoming;
                 transfers[i].panel.TransferReason = transfers[i].reason;
                 transfers[i].panel.CurrentBuilding = currentBuilding;
                 transfers[i].panel.OutsideLabel = transfers[i].outsideText;
@@ -252,7 +251,7 @@ namespace TransferController
                 tabButtons[MaxTransfers].width = TabPanelWidth / activeTabs;
                 tabButtons[MaxTransfers].Show();
 
-                vehicleTab.RecordNumber = transfers[vehicleReference].recordNumber;
+                vehicleTab.IsIncoming = transfers[vehicleReference].isIncoming;
                 vehicleTab.TransferReason = transfers[vehicleReference].reason;
                 vehicleTab.CurrentBuilding = currentBuilding;
             }

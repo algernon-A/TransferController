@@ -70,8 +70,8 @@ namespace TransferController
         /// </summary>
         private bool OutsideConnection
         {
-            get => BuildingControl.GetOutsideConnection(CurrentBuilding, RecordNumber);
-            set => BuildingControl.SetOutsideConnection(CurrentBuilding, RecordNumber, value, TransferReason, NextRecord);
+            get => BuildingControl.GetOutsideConnection(CurrentBuilding, IsIncoming, TransferReason);
+            set => BuildingControl.SetOutsideConnection(CurrentBuilding, IsIncoming, TransferReason, value);
         }
 
 
@@ -80,8 +80,8 @@ namespace TransferController
         /// </summary>
         private bool PreferSameDistrict
         {
-            get => BuildingControl.GetPreferSameDistrict(CurrentBuilding, RecordNumber);
-            set => BuildingControl.SetPreferSameDistrict(CurrentBuilding, RecordNumber, value, TransferReason, NextRecord);
+            get => BuildingControl.GetPreferSameDistrict(CurrentBuilding, IsIncoming, TransferReason);
+            set => BuildingControl.SetPreferSameDistrict(CurrentBuilding, IsIncoming, TransferReason, value);
         }
 
 
@@ -90,11 +90,11 @@ namespace TransferController
         /// </summary>
         private bool Enabled
         {
-            get => BuildingControl.GetDistrictEnabled(CurrentBuilding, RecordNumber) || BuildingControl.GetBuildingEnabled(CurrentBuilding, RecordNumber);
+            get => BuildingControl.GetDistrictEnabled(CurrentBuilding, IsIncoming, TransferReason) || BuildingControl.GetBuildingEnabled(CurrentBuilding, IsIncoming, TransferReason);
             set
             {
-                BuildingControl.SetDistrictEnabled(CurrentBuilding, RecordNumber, value, TransferReason, NextRecord);
-                BuildingControl.SetBuildingEnabled(CurrentBuilding, RecordNumber, value, TransferReason, NextRecord);
+                BuildingControl.SetDistrictEnabled(CurrentBuilding, IsIncoming, TransferReason, value);
+                BuildingControl.SetBuildingEnabled(CurrentBuilding, IsIncoming, TransferReason, value);
             }
         }
 
@@ -104,8 +104,8 @@ namespace TransferController
         /// </summary>
         private bool SameDistrict
         {
-            get => BuildingControl.GetSameDistrict(CurrentBuilding, RecordNumber);
-            set => BuildingControl.SetSameDistrict(CurrentBuilding, RecordNumber, value, TransferReason, NextRecord);
+            get => BuildingControl.GetSameDistrict(CurrentBuilding, IsIncoming, TransferReason);
+            set => BuildingControl.SetSameDistrict(CurrentBuilding, IsIncoming, TransferReason, value);
         }
 
 
@@ -241,7 +241,7 @@ namespace TransferController
         internal void AddBuilding(ushort buildingID)
         {
             // Add district to building.
-            BuildingControl.AddBuilding(CurrentBuilding, RecordNumber, buildingID, TransferReason, NextRecord);
+            BuildingControl.AddBuilding(CurrentBuilding, IsIncoming, TransferReason, buildingID);
 
             // Update current selection.
             selectedBuildingPanel.SelectedBuilding = buildingID;
@@ -278,7 +278,7 @@ namespace TransferController
         private void AddDistrict(int districtID)
         {
             // Add district to building.
-            BuildingControl.AddDistrict(CurrentBuilding, RecordNumber, districtID, TransferReason, NextRecord);
+            BuildingControl.AddDistrict(CurrentBuilding, IsIncoming, TransferReason, districtID);
 
             // Update current selection.
             buildingDistrictSelectionPanel.SelectedDistrict = districtID;
@@ -296,7 +296,7 @@ namespace TransferController
         private void RemoveDistrict()
         {
             // Remove selected district from building.
-            BuildingControl.RemoveDistrict(CurrentBuilding, RecordNumber, buildingDistrictSelectionPanel.SelectedDistrict);
+            BuildingControl.RemoveDistrict(CurrentBuilding, IsIncoming, TransferReason, buildingDistrictSelectionPanel.SelectedDistrict);
 
             // Clear current selection.
             buildingDistrictSelectionPanel.SelectedDistrict = 0;
@@ -314,7 +314,7 @@ namespace TransferController
         private void RemoveBuilding()
         {
             // Remove selected district from building.
-            BuildingControl.RemoveBuilding(CurrentBuilding, RecordNumber, selectedBuildingPanel.SelectedBuilding);
+            BuildingControl.RemoveBuilding(CurrentBuilding, IsIncoming, TransferReason, selectedBuildingPanel.SelectedBuilding);
 
             // Clear current selection.
             selectedBuildingPanel.SelectedBuilding = 0;

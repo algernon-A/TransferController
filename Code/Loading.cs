@@ -126,6 +126,9 @@ namespace TransferController
                 // Add building info panel buttons.
                 BuildingPanelManager.AddInfoPanelButtons();
 
+                // Convert any legacy records.
+                BuildingControl.ConvertLegacyRecords();
+
                 // Set loaded status flag.
                 isLoaded = true;
 

@@ -26,15 +26,9 @@ namespace TransferController
 
 
         /// <summary>
-        /// Current record number.
+        /// True if this is an incoming transfer, false if outgoing.
         /// </summary>
-        internal byte RecordNumber { get; set; }
-
-
-        /// <summary>
-        /// Other record flag.
-        /// </summary>
-        internal byte NextRecord { get; set; }
+        internal bool IsIncoming { get; set; }
 
 
         /// <summary>

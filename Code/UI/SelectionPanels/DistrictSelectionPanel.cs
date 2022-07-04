@@ -26,7 +26,7 @@ namespace TransferController
         /// <summary>
         /// HashSet of currently selected districts for the currently selected building.
         /// </summary>
-        protected HashSet<int> DistrictSettingsList => BuildingControl.GetDistricts(ParentPanel.CurrentBuilding, ParentPanel.RecordNumber);
+        protected HashSet<int> DistrictSettingsList => BuildingControl.GetDistricts(ParentPanel.CurrentBuilding, ParentPanel.IsIncoming, ParentPanel.TransferReason);
 
 
         /// <summary>
