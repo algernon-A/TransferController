@@ -31,8 +31,8 @@ TFC_BLD_NOD,No local district
 TFC_FIR_SER,Firefighting
 TFC_DIS_TRU,Disaster response trucks
 TFC_DIS_HEL,Disaster response helicopters
-TFC_POL_PMO,Prisoner transfer by van to prison
-TFC_POL_PHO,Prisoner transfer by helicopter to prison
+TFC_POL_PMO,Prisoner transfer
+TFC_POL_PHO,Prisoner transfer (helicopter)
 TFC_POL_PHI,Prisoner collection by helicopter
 TFC_POL_PTO,Prisoner transfer to a central police station
 TFC_POL_PTI,Prisoner transfer from local stations
