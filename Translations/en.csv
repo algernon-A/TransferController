@@ -18,6 +18,7 @@ TFC_VEH_AVA,Available vehicles
 TFC_VEH_SEL,Permitted vehicles
 TFC_VEH_ADD,Add this vehicle to the list of permitted vehicles
 TFC_VEH_SUB,Remove this vehicle from the list of permitted vehicles
+TFC_VEH_ANY,Any
 TFC_GEN_BUY,Goods in
 TFC_GEN_SEL,Goods out
 TFC_GEN_SER,Service area
