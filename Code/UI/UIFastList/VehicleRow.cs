@@ -69,7 +69,7 @@ namespace TransferController
 		// Layout constants.
 		public const float VehicleRowHeight = 40f;
 		private const float TextScale = 0.8f;
-		private const float LeftMargin = 5f;
+		private const float Margin = 5f;
 		private const float VehicleSpriteSize = 40f;
 
 		// Vehicle name label.
@@ -111,7 +111,7 @@ namespace TransferController
 				vehicleNameLabel = AddUIComponent<UILabel>();
 				vehicleNameLabel.autoSize = false;
 				vehicleNameLabel.height = VehicleSpriteSize;
-				vehicleNameLabel.width = this.width - VehicleSpriteSize - LeftMargin;
+				vehicleNameLabel.width = this.width - VehicleSpriteSize - Margin - Margin;
 				vehicleNameLabel.verticalAlignment = UIVerticalAlignment.Middle;
 				vehicleNameLabel.wordWrap = true;
 				vehicleNameLabel.textScale = TextScale;
@@ -155,7 +155,7 @@ namespace TransferController
 
 			if (vehicleNameLabel != null)
 			{
-				vehicleNameLabel.relativePosition = new Vector2(VehicleSpriteSize, 0f);
+				vehicleNameLabel.relativePosition = new Vector2(VehicleSpriteSize + Margin, 0f);
 			}
 
 			if (vehicleSprite != null)
