@@ -8,6 +8,30 @@ using ColossalFramework.UI;
 
 namespace TransferController
 {
+    // Custom button class for persistent state.
+    public class TCPanelButton : UIButton
+    {
+        /// <summary>
+        /// Set to true to ignore any button state changes.
+        /// </summary>
+        public bool ignoreStateChanges = false;
+
+
+        /// <summary>
+        /// Called when the button state is attempted to be changed.
+        /// </summary>
+        /// <param name="value">New button state</param>
+        protected override void OnButtonStateChanged(ButtonState value)
+        {
+            // Don't do anything if we're ignoring state changes.
+            if (!ignoreStateChanges)
+            {
+                base.OnButtonStateChanged(value);
+            }
+        }
+    }
+
+
     /// <summary>
     /// Building info panel.
     /// </summary>
@@ -37,6 +61,7 @@ namespace TransferController
         private readonly UILabel buildingLabel, districtLabel;
         private readonly UIPanel tabPanel;
         private readonly UITabstrip tabStrip;
+        private readonly TCPanelButton offersButton, logButton;
 
         // Current selection.
         private ushort currentBuilding;
@@ -155,11 +180,11 @@ namespace TransferController
                 districtLabel.textAlignment = UIHorizontalAlignment.Center;
 
                 // Offers button.
-                UIButton offersButton = AddIconButton(this, ButtonX, Button1Y, ButtonSize, "TFC_OFF_TIT", TextureUtils.LoadSpriteAtlas("TC-OpenOffers"));
+                offersButton = AddIconButton(this, ButtonX, Button1Y, ButtonSize, "TFC_OFF_TIT", TextureUtils.LoadSpriteAtlas("TC-OpenOffers"));
                 offersButton.eventClicked += ShowOffers;
 
                 // Log button.
-                UIButton logButton = AddIconButton(this, ButtonX, Button2Y, ButtonSize, "TFC_OFF_LOG", TextureUtils.LoadSpriteAtlas("TC-Logs"));
+                logButton = AddIconButton(this, ButtonX, Button2Y, ButtonSize, "TFC_OFF_LOG", TextureUtils.LoadSpriteAtlas("TC-Logs"));
                 logButton.eventClicked += ShowLog;
 
                 // Tab panel.
@@ -351,6 +376,18 @@ namespace TransferController
 
 
         /// <summary>
+        /// Clears button states (after sub-panel is closed).
+        /// </summary>
+        internal void ResetButtons()
+        {
+            offersButton.ignoreStateChanges = false;
+            logButton.ignoreStateChanges = false;
+            offersButton.state = UIButton.ButtonState.Normal;
+            logButton.state = UIButton.ButtonState.Normal;
+        }
+
+
+        /// <summary>
         /// Event handler for show offers button.
         /// </summary>
         /// <param name="component">Calling component (unused)</param>
@@ -363,6 +400,7 @@ namespace TransferController
                 RemoveUIComponent(logPanel);
                 GameObject.Destroy(logPanel);
                 logPanel = null;
+                ResetButtons();
             }
 
             // Create offers panel if it isn't already created.
@@ -377,6 +415,10 @@ namespace TransferController
 
             // Ensure offers panel is visible.
             offersPanel.Show();
+
+            // Enforce button state while panel is open.
+            offersButton.state = UIButton.ButtonState.Pressed;
+            offersButton.ignoreStateChanges = true;
         }
 
 
@@ -393,6 +435,7 @@ namespace TransferController
                 RemoveUIComponent(offersPanel);
                 GameObject.Destroy(offersPanel);
                 offersPanel = null;
+                ResetButtons();
             }
 
             // Create log panel if it isn't already created.
@@ -404,6 +447,10 @@ namespace TransferController
 
             // Ensure offers panel is visible.
             logPanel.Show();
+
+            // Enforce button state while panel is open.
+            logButton.state = UIButton.ButtonState.Pressed;
+            logButton.ignoreStateChanges = true;
         }
 
 
@@ -462,9 +509,9 @@ namespace TransferController
         /// <param name="tooltipKey">Tooltip translation key</param>
         /// <param name="atlas">Icon atlas</param>
         /// <returns>New UIButton</returns>
-        internal static UIButton AddIconButton(UIComponent parent, float xPos, float yPos, float size, string tooltipKey, UITextureAtlas atlas)
+        private static TCPanelButton AddIconButton(UIComponent parent, float xPos, float yPos, float size, string tooltipKey, UITextureAtlas atlas)
         {
-            UIButton newButton = parent.AddUIComponent<UIButton>();
+            TCPanelButton newButton = parent.AddUIComponent<TCPanelButton>();
 
             // Size and position.
             newButton.relativePosition = new Vector2(xPos, yPos);

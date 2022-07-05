@@ -64,6 +64,7 @@ namespace TransferController
                 // Close button event handler.
                 closeButton.eventClick += (component, clickEvent) =>
                 {
+                    BuildingPanelManager.Panel?.ResetButtons();
                     Hide();
                 };
 
