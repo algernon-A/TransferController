@@ -24,6 +24,15 @@ namespace TransferController
         // Current selection.
         private ushort currentBuilding;
 
+        // Building panel reference.
+        protected UIPanel panel;
+
+
+        /// <summary>
+        /// Current content height.
+        /// </summary>
+        internal abstract float ContentHeight { get; }
+
 
         /// <summary>
         /// True if this is an incoming transfer, false if outgoing.
@@ -49,6 +58,17 @@ namespace TransferController
                 currentBuilding = value;
                 Refresh();
             }
+        }
+
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="parentPanel">Parent UI panel</param>
+        internal BuildingPanelTab(UIPanel parentPanel)
+        {
+            // Set panel reference.
+            panel = parentPanel;
         }
 
 

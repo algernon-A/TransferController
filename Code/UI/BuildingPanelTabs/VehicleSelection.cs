@@ -10,7 +10,7 @@ namespace TransferController
     internal class VehicleSelection : UIPanel
     {
         // Layout constants.
-        internal const float PanelHeight = Margin + VehicleListHeight + Margin;
+        internal const float PanelHeight = VehicleListY + VehicleListHeight + Margin;
         internal const float VehicleListHeight = 240f;
         private const float Margin = 5f;
         private const float VehicleListY = 25f;

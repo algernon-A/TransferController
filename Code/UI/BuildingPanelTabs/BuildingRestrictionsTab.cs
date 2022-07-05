@@ -36,6 +36,13 @@ namespace TransferController
         private bool disableEvents = false;
 
 
+
+        /// <summary>
+        /// Current content height.
+        /// </summary>
+        internal override float ContentHeight => enabledCheck.isChecked ? PanelHeight : DistrictListTitleY;
+
+
         /// <summary>
         /// Sets the outside connection checkbox label text.
         /// </summary>
@@ -113,7 +120,7 @@ namespace TransferController
         /// Constructor - performs initial setup.
         /// </summary>
         /// <param name="parentPanel">Containing UI panel</param>
-        internal BuildingRestrictionsTab(UIPanel parentPanel)
+        internal BuildingRestrictionsTab(UIPanel parentPanel) : base(parentPanel)
         {
             try
             {
@@ -267,6 +274,9 @@ namespace TransferController
             enabledCheck.isChecked = Enabled;
             sameDistrictCheck.isChecked = !SameDistrict;
             disableEvents = false;
+
+            // Resize panel.
+            panel.height = ContentHeight;
         }
 
 
@@ -337,6 +347,9 @@ namespace TransferController
             addBuildingButton.isVisible = enabledCheck.isChecked;
             removeBuildingButton.isVisible = enabledCheck.isChecked;
             selectedBuildingPanel.isVisible = enabledCheck.isChecked;
+
+            // Resize parent panel.
+            BuildingPanelManager.Panel?.RecalculateHeight();
         }
     }
 }

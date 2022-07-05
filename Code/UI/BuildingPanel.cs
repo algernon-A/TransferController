@@ -47,8 +47,9 @@ namespace TransferController
         private const float TabPanelWidth = BuildingPanelTab.PanelWidth;
         private const float TabY = Button2Y + ButtonSize + Margin;
         private const float TabContentHeight = BuildingRestrictionsTab.PanelHeight;
+        private const float TabContentY = TabY + TabHeight;
         private const float TabPanelHeight = TabHeight + TabContentHeight;
-        private const float PanelHeight = TabY + TabPanelHeight + Margin;
+        private const float PanelHeight = TabContentY + TabContentHeight + Margin;
         private const float ButtonSize = 30f;
         private const float ButtonX = PanelWidth - ButtonSize - Margin;
         private const float Button1Y = TitleHeight;
@@ -214,8 +215,11 @@ namespace TransferController
                 for (; i < MaxTransfers; ++i)
                 {
                     transfers[i].panel = new BuildingRestrictionsTab(AddTextTab(tabStrip, String.Empty, i, out tabButtons[i]));
+                    tabStrip.tabs[i].objectUserData = transfers[i].panel;
                 }
                 vehicleTab = new BuildingVehiclesTab(AddTextTab(tabStrip, Translations.Translate("TFC_TAB_VEH"), i, out tabButtons[MaxTransfers]));
+                tabStrip.tabs[i].objectUserData = vehicleTab;
+                tabStrip.eventSelectedIndexChanged += (UIComponent component, int index) => RecalculateHeight(index);
                 tabStrip.selectedIndex = 0;
             }
             catch (Exception e)
@@ -310,6 +314,9 @@ namespace TransferController
                 // Ensure tab panel visibility.
                 height = PanelHeight;
                 tabPanel.Show();
+
+                // Resize panel to match content.
+                RecalculateHeight();
             }
 
             // Make sure we're visible if we're not already.
@@ -371,6 +378,29 @@ namespace TransferController
             {
                 // Update data via reset of target building.
                 SetTarget(CurrentBuilding);
+            }
+        }
+
+
+        /// <summary>
+        /// Recalculates the panel height based on the currently selected tab.
+        /// </summary>
+        internal void RecalculateHeight() => RecalculateHeight(tabStrip.selectedIndex);
+
+
+        /// <summary>
+        /// Recalculates the panel height based on the specified tab.
+        /// </summary>
+        /// <param name="tabIndex">Tab index</param>
+        internal void RecalculateHeight(int tabIndex)
+        {
+            if (tabStrip.tabs[tabIndex].objectUserData is BuildingPanelTab tab)
+            {
+                float contentHeight = tab.ContentHeight;
+                height = contentHeight + TabContentY + Margin;
+                tabStrip.tabPages.height = contentHeight;
+                tabPanel.height = contentHeight;
+                tabStrip.height = contentHeight;
             }
         }
 
@@ -491,9 +521,6 @@ namespace TransferController
 
             // Panel setup.
             rootPanel.autoLayout = false;
-            rootPanel.autoLayoutDirection = LayoutDirection.Vertical;
-            rootPanel.autoLayoutPadding.top = 5;
-            rootPanel.autoLayoutPadding.left = 10;
 
             return rootPanel;
         }
