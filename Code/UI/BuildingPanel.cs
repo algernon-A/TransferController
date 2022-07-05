@@ -45,15 +45,15 @@ namespace TransferController
         private const float DistrictLabelY = TitleHeight + LabelHeight;
         private const float TabHeight = 30f;
         private const float TabPanelWidth = BuildingPanelTab.PanelWidth;
-        private const float TabY = Button2Y + ButtonSize + Margin;
+        private const float TabY = DistrictLabelY + LabelHeight;
         private const float TabContentHeight = BuildingRestrictionsTab.PanelHeight;
         private const float TabContentY = TabY + TabHeight;
         private const float TabPanelHeight = TabHeight + TabContentHeight;
         private const float PanelHeight = TabContentY + TabContentHeight + Margin;
         private const float ButtonSize = 30f;
-        private const float ButtonX = PanelWidth - ButtonSize - Margin;
-        private const float Button1Y = TitleHeight;
-        private const float Button2Y = Button1Y + ButtonSize + Margin;
+        private const float Button1X = Margin;
+        private const float Button2X = Button1X + ButtonSize + Margin;
+        private const float ButtonY = Margin;
 
         // Maximum number of supported transfers per building.
         internal const int MaxTransfers = 4;
@@ -181,11 +181,11 @@ namespace TransferController
                 districtLabel.textAlignment = UIHorizontalAlignment.Center;
 
                 // Offers button.
-                offersButton = AddIconButton(this, ButtonX, Button1Y, ButtonSize, "TFC_OFF_TIT", TextureUtils.LoadSpriteAtlas("TC-OpenOffers"));
+                offersButton = AddIconButton(this, Button1X, ButtonY, ButtonSize, "TFC_OFF_TIT", TextureUtils.LoadSpriteAtlas("TC-OpenOffers"));
                 offersButton.eventClicked += ShowOffers;
 
                 // Log button.
-                logButton = AddIconButton(this, ButtonX, Button2Y, ButtonSize, "TFC_OFF_LOG", TextureUtils.LoadSpriteAtlas("TC-Logs"));
+                logButton = AddIconButton(this, Button2X, ButtonY, ButtonSize, "TFC_OFF_LOG", TextureUtils.LoadSpriteAtlas("TC-Logs"));
                 logButton.eventClicked += ShowLog;
 
                 // Tab panel.
