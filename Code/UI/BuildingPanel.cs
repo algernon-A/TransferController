@@ -40,20 +40,23 @@ namespace TransferController
         // Layout constants.
         protected const float Margin = 5f;
         internal const float PanelWidth = BuildingPanelTab.PanelWidth + (Margin * 2f);
-        private const float TitleHeight = 50f;
-        private const float LabelHeight = 30f;
-        private const float DistrictLabelY = TitleHeight + LabelHeight;
+        private const float TitleHeight = 40f;
+        private const float NameLabelY = TitleHeight + Margin;
+        private const float NameLabelHeight = 30f;
+        private const float AreaLabelHeight = 20f;
+        private const float AreaLabel1Y = TitleHeight + NameLabelHeight;
+        private const float AreaLabel2Y = AreaLabel1Y + AreaLabelHeight;
         private const float TabHeight = 30f;
         private const float TabPanelWidth = BuildingPanelTab.PanelWidth;
-        private const float TabY = DistrictLabelY + LabelHeight;
+        private const float TabY = Button2Y + ButtonSize + Margin;
         private const float TabContentHeight = BuildingRestrictionsTab.PanelHeight;
         private const float TabContentY = TabY + TabHeight;
         private const float TabPanelHeight = TabHeight + TabContentHeight;
         private const float PanelHeight = TabContentY + TabContentHeight + Margin;
         private const float ButtonSize = 30f;
-        private const float Button1X = Margin;
-        private const float Button2X = Button1X + ButtonSize + Margin;
-        private const float ButtonY = Margin;
+        private const float ButtonX = PanelWidth - ButtonSize - Margin;
+        private const float Button1Y = TitleHeight + Margin;
+        private const float Button2Y = Button1Y + ButtonSize + Margin;
         private const float StatusSpriteSize = 13f;
 
         // Maximum number of supported transfers per building.
@@ -62,7 +65,7 @@ namespace TransferController
         private const int VehicleTab = MaxTransfers;
 
         // Panel components.
-        private readonly UILabel buildingLabel, districtLabel;
+        private readonly UILabel buildingLabel, areaLabel1, areaLabel2;
         private readonly UIPanel tabPanel;
         private readonly UITabstrip tabStrip;
         private readonly TCPanelButton offersButton, logButton;
@@ -158,7 +161,7 @@ namespace TransferController
                 titleLabel.textAlignment = UIHorizontalAlignment.Center;
 
                 // Building label.
-                buildingLabel = UIControls.AddLabel(this, 0f, TitleHeight, String.Empty, PanelWidth);
+                buildingLabel = UIControls.AddLabel(this, 0f, NameLabelY, String.Empty, PanelWidth);
                 buildingLabel.textAlignment = UIHorizontalAlignment.Center;
 
                 // Drag handle.
@@ -180,16 +183,18 @@ namespace TransferController
                     BuildingPanelManager.Close();
                 };
 
-                // District label.
-                districtLabel = UIControls.AddLabel(this, 0f, DistrictLabelY, String.Empty, PanelWidth, 0.9f);
-                districtLabel.textAlignment = UIHorizontalAlignment.Center;
+                // Area labels.
+                areaLabel1 = UIControls.AddLabel(this, 0f, AreaLabel1Y, String.Empty, PanelWidth, 0.9f);
+                areaLabel1.textAlignment = UIHorizontalAlignment.Center;
+                areaLabel2 = UIControls.AddLabel(this, 0f, AreaLabel2Y, String.Empty, PanelWidth, 0.9f);
+                areaLabel2.textAlignment = UIHorizontalAlignment.Center;
 
                 // Offers button.
-                offersButton = AddIconButton(this, Button1X, ButtonY, ButtonSize, "TFC_OFF_TIT", TextureUtils.LoadSpriteAtlas("TC-OpenOffers"));
+                offersButton = AddIconButton(this, ButtonX, Button1Y, ButtonSize, "TFC_OFF_TIT", TextureUtils.LoadSpriteAtlas("TC-OpenOffers"));
                 offersButton.eventClicked += ShowOffers;
 
                 // Log button.
-                logButton = AddIconButton(this, Button2X, ButtonY, ButtonSize, "TFC_OFF_LOG", TextureUtils.LoadSpriteAtlas("TC-Logs"));
+                logButton = AddIconButton(this, ButtonX, Button2Y, ButtonSize, "TFC_OFF_LOG", TextureUtils.LoadSpriteAtlas("TC-Logs"));
                 logButton.eventClicked += ShowLog;
 
                 // Tab panel.
@@ -381,15 +386,39 @@ namespace TransferController
                 districtText.Append(districtManager.GetParkName(currentPark));
             }
 
-            // If no current district or park, then display no district message.
+            // If no current district or park, then display no area message.
             if (currentDistrict == 0 && currentPark == 0)
             {
-                districtLabel.text = Translations.Translate("TFC_BLD_NOD");
+                areaLabel1.text = Translations.Translate("TFC_BLD_NOD");
+                areaLabel2.Hide();
             }
             else
             {
-                // Current district or park - display generated text.
-                districtLabel.text = districtText.ToString();
+                // Current district and/or park - display generated text.
+                if (currentDistrict != 0)
+                {
+                    // District label.
+                    areaLabel1.text = districtManager.GetDistrictName(currentDistrict);
+
+                    // Is there also a park area?
+                    if (currentPark != 0)
+                    {
+                        // Yes - set second label text and show.
+                        areaLabel2.text = districtManager.GetParkName(currentPark);
+                        areaLabel2.Show();
+                    }
+                    else
+                    {
+                        // Just the district - hide second area label.
+                        areaLabel2.Hide();
+                    }
+                }
+                else if (currentPark != 0)
+                {
+                    // No district, but a park - set first area label text and hide the second label.
+                    areaLabel1.text = districtManager.GetParkName(currentPark);
+                    areaLabel2.Hide();
+                }
             }
 
             // Update target for offer panel, if open.
