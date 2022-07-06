@@ -76,7 +76,7 @@ namespace TransferController
         private LogPanel logPanel;
 
         // Event handling.
-        private bool copyProcessing = false, pasteProcessing = false;
+        private bool ignoreTabChange = true, copyProcessing = false, pasteProcessing = false;
 
 
         // Dictionary getter.
@@ -201,6 +201,7 @@ namespace TransferController
                 tabStrip.relativePosition = new Vector2(Margin, 0f);
                 tabStrip.width = TabPanelWidth;
                 tabStrip.height = TabPanelHeight;
+                tabStrip.startSelectedIndex = -1;
                 tabStrip.selectedIndex = -1;
 
                 // Tab container (the panels underneath each tab).
@@ -219,8 +220,14 @@ namespace TransferController
                 }
                 vehicleTab = new BuildingVehiclesTab(AddTextTab(tabStrip, Translations.Translate("TFC_TAB_VEH"), i, out tabButtons[MaxTransfers]));
                 tabStrip.tabs[i].objectUserData = vehicleTab;
-                tabStrip.eventSelectedIndexChanged += (UIComponent component, int index) => RecalculateHeight(index);
-                tabStrip.selectedIndex = 0;
+                tabStrip.eventSelectedIndexChanged += (UIComponent component, int index) =>
+                {
+                    // Don't do anything if ignoring tab index changes.
+                    if (!ignoreTabChange)
+                    {
+                        RecalculateHeight(index);
+                    }
+                };
             }
             catch (Exception e)
             {
@@ -235,6 +242,9 @@ namespace TransferController
         /// <param name="buildingID">New building ID</param>
         internal virtual void SetTarget(ushort buildingID)
         {
+            // Suspend tab change event handling.
+            ignoreTabChange = true;
+
             // Local references.
             BuildingManager buildingManager = Singleton<BuildingManager>.instance;
             DistrictManager districtManager = Singleton<DistrictManager>.instance;
@@ -296,12 +306,10 @@ namespace TransferController
             }
 
             // Are any tabs visible?
-            if (numPanels == 0)
+            if (activeTabs == 0)
             {
-                // If no tabs are visible, hide the entire tab panel.
+                // If no tabs are visible, hide the entire tab panel by setting index to -1.
                 tabStrip.selectedIndex = -1;
-                tabPanel.Hide();
-                height = TabY;
             }
             else
             {
@@ -309,15 +317,23 @@ namespace TransferController
                 if (tabStrip.selectedIndex < 0 || !tabButtons[tabStrip.selectedIndex].isVisible)
                 {
                     tabStrip.selectedIndex = 0;
+
+                    // Set start index to 0 to avoid race condition on initial setup before tabStrip.Start() is called.
+                    tabStrip.startSelectedIndex = 0;
+                }
+
+                // If only one tab is visible, hide the tab button.
+                if (activeTabs == 1)
+                {
+                    tabButtons[0].Hide();
                 }
 
                 // Ensure tab panel visibility.
-                height = PanelHeight;
                 tabPanel.Show();
-
-                // Resize panel to match content.
-                RecalculateHeight();
             }
+
+            // Resize panel to match content.
+            RecalculateHeight();
 
             // Make sure we're visible if we're not already.
             Show();
@@ -360,6 +376,9 @@ namespace TransferController
 
             // Update target for offer panel, if open.
             offersPanel?.SetTarget(buildingID);
+
+            // Resume tab change event handling.
+            ignoreTabChange = false;
         }
 
 
@@ -394,7 +413,13 @@ namespace TransferController
         /// <param name="tabIndex">Tab index</param>
         internal void RecalculateHeight(int tabIndex)
         {
-            if (tabStrip.tabs[tabIndex].objectUserData is BuildingPanelTab tab)
+            // If the provided tab selection is invalid, hide the tab display entirely.
+            if (tabIndex < 0 || tabIndex >= tabStrip.tabCount)
+            {
+                tabPanel.Hide();
+                height = TabY;
+            }
+            else if (tabStrip.tabs[tabIndex].objectUserData is BuildingPanelTab tab)
             {
                 float contentHeight = tab.ContentHeight;
                 height = contentHeight + TabContentY + Margin;
