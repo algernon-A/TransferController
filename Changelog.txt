@@ -1,4 +1,6 @@
-﻿- Major new feature: vehicle selection by building
+﻿Version 0.7 -
+
+- Major new feature: vehicle selection by building
 - Overhaul UI; many changes
 - Add taxi support
 - Add 'prefer same district' option for buildings
