@@ -187,7 +187,7 @@ namespace TransferController
                         // Prisons.
                         if (buildingInfo.m_class.m_level >= ItemClass.Level.Level4)
                         {
-                            transfers[0].panelTitle = Translations.Translate("TFC_POL_PMO");
+                            transfers[0].panelTitle = Translations.Translate("TFC_POL_PMI");
                             transfers[0].outsideText = null;
                             transfers[0].isIncoming = true;
                             transfers[0].reason = TransferManager.TransferReason.CriminalMove;
@@ -229,7 +229,7 @@ namespace TransferController
                                     transfers[2].isIncoming = false;
                                     transfers[2].reason = (TransferManager.TransferReason)126;
                                     transfers[2].spawnsVehicles = false;
-                                    transfers[3].panelTitle = Translations.Translate("TFC_POL_PTI"); // transfer prisoners from local stations
+                                    transfers[3].panelTitle = Translations.Translate("TFC_POL_PMI"); // transfer prisoners from local stations
                                     transfers[3].outsideText = null;
                                     transfers[3].isIncoming = true;
                                     transfers[3].reason = (TransferManager.TransferReason)125;
