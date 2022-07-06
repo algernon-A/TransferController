@@ -54,9 +54,12 @@ namespace TransferController
         private const float Button1X = Margin;
         private const float Button2X = Button1X + ButtonSize + Margin;
         private const float ButtonY = Margin;
+        private const float StatusSpriteSize = 13f;
 
         // Maximum number of supported transfers per building.
         internal const int MaxTransfers = 4;
+        private const int NumTabs = MaxTransfers + 1;
+        private const int VehicleTab = MaxTransfers;
 
         // Panel components.
         private readonly UILabel buildingLabel, districtLabel;
@@ -70,8 +73,9 @@ namespace TransferController
 
         // Sub-panels.
         private readonly TransferStruct[] transfers = new TransferStruct[MaxTransfers];
-        private readonly BuildingVehiclesTab vehicleTab;
-        private readonly UIButton[] tabButtons = new UIButton[MaxTransfers + 1];
+        private readonly BuildingPanelTab[] tabs = new BuildingPanelTab[NumTabs];
+        private readonly UIButton[] tabButtons = new UIButton[NumTabs];
+        private readonly UISprite[] tabSprites = new UISprite[NumTabs];
         private OffersPanel offersPanel;
         private LogPanel logPanel;
 
@@ -212,14 +216,23 @@ namespace TransferController
                 tabStrip.tabPages = tabContainer;
 
                 // Add tabs.
-                int i = 0;
-                for (; i < MaxTransfers; ++i)
+                for (int i = 0; i < NumTabs; ++i)
                 {
-                    transfers[i].panel = new BuildingRestrictionsTab(AddTextTab(tabStrip, String.Empty, i, out tabButtons[i]));
-                    tabStrip.tabs[i].objectUserData = transfers[i].panel;
+                    // Last tab is vehicles.
+                    if (i == VehicleTab)
+                    {
+                        tabs[i] = new BuildingVehiclesTab(AddTextTabWithSprite(tabStrip, Translations.Translate("TFC_TAB_VEH"), i, out tabButtons[i], out tabSprites[i]), tabSprites[i]);
+                    }
+                    else
+                    {
+                        // Otherwie, just add a building restrictions tab.
+                        tabs[i] = new BuildingRestrictionsTab(AddTextTabWithSprite(tabStrip, String.Empty, i, out tabButtons[i], out tabSprites[i]), tabSprites[i]);
+                    }
+
+                    // Set tab reference as tabstrip tab user data.
+                    tabStrip.tabs[i].objectUserData = tabs[i];
                 }
-                vehicleTab = new BuildingVehiclesTab(AddTextTab(tabStrip, Translations.Translate("TFC_TAB_VEH"), i, out tabButtons[MaxTransfers]));
-                tabStrip.tabs[i].objectUserData = vehicleTab;
+
                 tabStrip.eventSelectedIndexChanged += (UIComponent component, int index) =>
                 {
                     // Don't do anything if ignoring tab index changes.
@@ -265,15 +278,20 @@ namespace TransferController
                 // Set panel instance properties.
                 tabButtons[i].text = transfers[i].panelTitle;
                 tabButtons[i].Show();
-                transfers[i].panel.IsIncoming = transfers[i].isIncoming;
-                transfers[i].panel.TransferReason = transfers[i].reason;
-                transfers[i].panel.CurrentBuilding = currentBuilding;
-                transfers[i].panel.OutsideLabel = transfers[i].outsideText;
-                transfers[i].panel.OutsideTip = transfers[i].outsideTip;
-                if (transfers[i].spawnsVehicles & vehicleReference < 0)
+
+                if (tabs[i] is BuildingRestrictionsTab restrictionsTab)
                 {
-                    vehicleReference = i;
+                    restrictionsTab.IsIncoming = transfers[i].isIncoming;
+                    restrictionsTab.TransferReason = transfers[i].reason;
+                    restrictionsTab.CurrentBuilding = currentBuilding;
+                    restrictionsTab.OutsideLabel = transfers[i].outsideText;
+                    restrictionsTab.OutsideTip = transfers[i].outsideTip;
+                    if (transfers[i].spawnsVehicles & vehicleReference < 0)
+                    {
+                        vehicleReference = i;
+                    }
                 }
+
                 ++activeTabs;
             }
 
@@ -290,13 +308,13 @@ namespace TransferController
                 tabButtons[MaxTransfers].width = TabPanelWidth / activeTabs;
                 tabButtons[MaxTransfers].Show();
 
-                vehicleTab.IsIncoming = transfers[vehicleReference].isIncoming;
-                vehicleTab.TransferReason = transfers[vehicleReference].reason;
-                vehicleTab.CurrentBuilding = currentBuilding;
+                tabs[VehicleTab].IsIncoming = transfers[vehicleReference].isIncoming;
+                tabs[VehicleTab].TransferReason = transfers[vehicleReference].reason;
+                tabs[VehicleTab].CurrentBuilding = currentBuilding;
             }
             else
             {
-                tabButtons[MaxTransfers].Hide();
+                tabButtons[VehicleTab].Hide();
             }
 
             // Resize tabs to fit.
@@ -510,19 +528,19 @@ namespace TransferController
 
 
         /// <summary>
-        /// Adds a text-based tab to a UI tabstrip.
+        /// Adds a text-based tab with a status sprite to a UI tabstrip.
         /// </summary>
         /// <param name="tabStrip">UIT tabstrip to add to</param>
         /// <param name="tabName">Name of this tab</param>
         /// <param name="tabIndex">Index number of this tab</param>
         /// <param name="button">Tab button instance reference</param>
+        /// <param name="sprite">Tab status sprite instance reference</param>
         /// <param name="width">Tab width</param>
         /// <returns>UIHelper instance for the new tab panel</returns>
-        private UIPanel AddTextTab(UITabstrip tabStrip, string tabName, int tabIndex, out UIButton button, float width = PanelWidth / 6f)
+        private UIPanel AddTextTabWithSprite(UITabstrip tabStrip, string tabName, int tabIndex, out UIButton button, out UISprite sprite, float width = PanelWidth / 6f)
         {
             // Create tab.
             UIButton tabButton = tabStrip.AddTab(tabName);
-            button = tabButton;
 
             // Sprites.
             tabButton.normalBgSprite = "SubBarButtonBase";
@@ -541,12 +559,29 @@ namespace TransferController
             tabButton.wordWrap = true;
             tabButton.verticalAlignment = UIVerticalAlignment.Middle;
 
+            // Add status sprite.
+            UISprite tabSprite = tabButton.AddUIComponent<UISprite>();
+            tabSprite.atlas = TextureUtils.InGameAtlas;
+            tabSprite.autoSize = false;
+            tabSprite.height = StatusSpriteSize;
+            tabSprite.width = StatusSpriteSize;
+            tabSprite.relativePosition = new Vector2(Margin, (TabHeight - StatusSpriteSize) / 2f);
+            tabSprite.spriteName = "AchievementCheckedFalse";
+
+            // Adjust button text layout to accomodate sprite.
+            tabButton.textPadding.left = (int)(StatusSpriteSize + Margin + Margin);
+            tabButton.textPadding.top = 3;
+            tabButton.textHorizontalAlignment = UIHorizontalAlignment.Left;
+
             // Get tab root panel.
             UIPanel rootPanel = tabStrip.tabContainer.components[tabIndex] as UIPanel;
 
             // Panel setup.
             rootPanel.autoLayout = false;
 
+            // Return new instances.
+            button = tabButton;
+            sprite = tabSprite;
             return rootPanel;
         }
 

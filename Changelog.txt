@@ -1,7 +1,8 @@
 ﻿- Major new feature: vehicle selection by building
-- Overhaul UI
+- Overhaul UI; many changes
 - Add taxi support
 - Add 'prefer same district' option for buildings
+- Adjust city service vehicle matching order
 - Refactor data format
 
 

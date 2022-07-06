@@ -78,7 +78,12 @@ namespace TransferController
         private bool OutsideConnection
         {
             get => BuildingControl.GetOutsideConnection(CurrentBuilding, IsIncoming, TransferReason);
-            set => BuildingControl.SetOutsideConnection(CurrentBuilding, IsIncoming, TransferReason, value);
+            
+            set
+            {
+                BuildingControl.SetOutsideConnection(CurrentBuilding, IsIncoming, TransferReason, value);
+                SetSprite();
+            }
         }
 
 
@@ -88,7 +93,12 @@ namespace TransferController
         private bool PreferSameDistrict
         {
             get => BuildingControl.GetPreferSameDistrict(CurrentBuilding, IsIncoming, TransferReason);
-            set => BuildingControl.SetPreferSameDistrict(CurrentBuilding, IsIncoming, TransferReason, value);
+            
+            set
+            {
+                BuildingControl.SetPreferSameDistrict(CurrentBuilding, IsIncoming, TransferReason, value);
+                SetSprite();
+            }
         }
 
 
@@ -98,10 +108,12 @@ namespace TransferController
         private bool Enabled
         {
             get => BuildingControl.GetDistrictEnabled(CurrentBuilding, IsIncoming, TransferReason) || BuildingControl.GetBuildingEnabled(CurrentBuilding, IsIncoming, TransferReason);
+            
             set
             {
                 BuildingControl.SetDistrictEnabled(CurrentBuilding, IsIncoming, TransferReason, value);
                 BuildingControl.SetBuildingEnabled(CurrentBuilding, IsIncoming, TransferReason, value);
+                SetSprite();
             }
         }
 
@@ -112,7 +124,12 @@ namespace TransferController
         private bool SameDistrict
         {
             get => BuildingControl.GetSameDistrict(CurrentBuilding, IsIncoming, TransferReason);
-            set => BuildingControl.SetSameDistrict(CurrentBuilding, IsIncoming, TransferReason, value);
+            
+            set
+            {
+                BuildingControl.SetSameDistrict(CurrentBuilding, IsIncoming, TransferReason, value);
+                SetSprite();
+            }
         }
 
 
@@ -120,7 +137,8 @@ namespace TransferController
         /// Constructor - performs initial setup.
         /// </summary>
         /// <param name="parentPanel">Containing UI panel</param>
-        internal BuildingRestrictionsTab(UIPanel parentPanel) : base(parentPanel)
+        /// <param name="tabSprite">Tab status sprite</param>
+        internal BuildingRestrictionsTab(UIPanel parentPanel, UISprite tabSprite) : base(parentPanel, tabSprite)
         {
             try
             {
@@ -277,6 +295,9 @@ namespace TransferController
 
             // Resize panel.
             panel.height = ContentHeight;
+
+            // Set tab sprite status.
+            SetSprite();
         }
 
 
@@ -351,5 +372,11 @@ namespace TransferController
             // Resize parent panel.
             BuildingPanelManager.Panel?.RecalculateHeight();
         }
+
+
+        /// <summary>
+        /// Sets the tab status sprite to the correct state according to current settings.
+        /// </summary>
+        private void SetSprite() => statusSprite.spriteName = BuildingControl.HasRecord(CurrentBuilding, IsIncoming, TransferReason) ? "AchievementCheckedTrue" : "AchievementCheckedFalse";
     }
 }

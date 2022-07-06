@@ -36,6 +36,12 @@ namespace TransferController
 
 
         /// <summary>
+        /// Parent reference.
+        /// </summary>
+        internal BuildingVehiclesTab ParentPanel { get; set; }
+
+
+        /// <summary>
         /// Constructor.
         /// </summary>
         internal WarehouseControls()
@@ -94,6 +100,9 @@ namespace TransferController
                 }
             }
 
+            // Update component visibility.
+            SetVisibility();
+
             // Resume event processing.
             ignoreEvents = false;
         }
@@ -118,7 +127,7 @@ namespace TransferController
             // Set warehouse status to reflect current state.
             if (isChecked)
             {
-                // If this is checked, unchek the reserve vehicles for outside connections checkbox.
+                // If this is checked, unchek the other checkboxes.
                 reserveOutsideCheck.isChecked = false;
                 reserveCityCheck.isChecked = false;
                 WarehouseControl.SetReserveUnique(currentBuilding);
@@ -127,6 +136,9 @@ namespace TransferController
             {
                 WarehouseControl.ClearReserve(currentBuilding);
             }
+
+            // Update component visibility.
+            SetVisibility();
 
             // Resume event processing.
             ignoreEvents = false;
@@ -152,7 +164,7 @@ namespace TransferController
             // Set warehouse status to reflect current state.
             if (isChecked)
             {
-                // If this is checked, unchek the reserve vehicles for unique factories checkbox.
+                // If this is checked, unchek the other checkboxes.
                 reserveUniqueCheck.isChecked = false;
                 reserveCityCheck.isChecked = false;
                 WarehouseControl.SetReserveOutside(currentBuilding);
@@ -161,6 +173,9 @@ namespace TransferController
             {
                 WarehouseControl.ClearReserve(currentBuilding);
             }
+
+            // Update component visibility.
+            SetVisibility();
 
             // Resume event processing.
             ignoreEvents = false;
@@ -186,7 +201,7 @@ namespace TransferController
             // Set warehouse status to reflect current state.
             if (isChecked)
             {
-                // If this is checked, unchek the reserve vehicles for unique factories checkbox.
+                // If this is checked, unchek the other checkboxes.
                 reserveOutsideCheck.isChecked = false;
                 reserveUniqueCheck.isChecked = false;
                 WarehouseControl.SetReserveCity(currentBuilding);
@@ -195,6 +210,9 @@ namespace TransferController
             {
                 WarehouseControl.ClearReserve(currentBuilding);
             }
+
+            // Update component visibility.
+            SetVisibility();
 
             // Resume event processing.
             ignoreEvents = false;
@@ -221,6 +239,23 @@ namespace TransferController
             }
 
             WarehouseControl.SetReservedVehicles(currentBuilding, (byte)(value.RoundToNearest(1f)));
+
+            // Update component visibility.
+            SetVisibility();
+        }
+
+
+        /// <summary>
+        /// Sets component visibilities based on current status.
+        /// </summary>
+        private void SetVisibility()
+        {
+            reservedVehiclesSlider.isVisible = reserveUniqueCheck.isChecked ||
+                reserveOutsideCheck.isChecked ||
+                reserveCityCheck.isChecked;
+
+            // Update tab sprite.
+            ParentPanel.SetSprite();
         }
 
 
@@ -273,7 +308,7 @@ namespace TransferController
 
             // Set initial values.
             newSlider.stepSize = 1f;
-            newSlider.minValue = 0f;
+            newSlider.minValue = 1f;
 
             return newSlider;
         }

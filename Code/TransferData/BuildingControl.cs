@@ -44,6 +44,16 @@ namespace TransferController
 
 
         /// <summary>
+        /// Checks to see if the specified building has an entry for the given transfer.
+        /// </summary>
+        /// <param name="buildingID">Building ID</param>
+        /// <param name="incoming">True if this is an incoming transfer record, false if outgoing</param>
+        /// <param name="transferReason">Transfer reason</param>
+        /// <returns>True if a custom record exists, false otherwise</returns>
+        internal static bool HasRecord(ushort buildingID, bool incoming, TransferManager.TransferReason transferReason) => buildingRecords.ContainsKey(CalculateEntryKey(buildingID, incoming, transferReason));
+
+
+        /// <summary>
         /// Calculates the building dictionary key for the given parameters.
         /// </summary>
         /// <param name="buildingID">Building ID</param>

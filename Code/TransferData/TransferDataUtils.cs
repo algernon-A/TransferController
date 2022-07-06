@@ -9,7 +9,6 @@ namespace TransferController
     /// </summary>
     public struct TransferStruct
     {
-        internal BuildingRestrictionsTab panel;
         public string panelTitle, outsideText, outsideTip;
         public bool isIncoming;
         public TransferManager.TransferReason reason;

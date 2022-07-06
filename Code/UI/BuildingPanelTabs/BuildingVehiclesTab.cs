@@ -52,18 +52,23 @@ namespace TransferController
         /// <summary>
         /// Constructor - performs initial setup.
         /// </summary>
+        /// <param name="tabSprite">Tab status sprite</param>
         /// <param name="parentPanel">Containing UI panel</param>
-        internal BuildingVehiclesTab(UIPanel parentPanel) : base(parentPanel)
+        internal BuildingVehiclesTab(UIPanel parentPanel, UISprite tabSprite) : base(parentPanel, tabSprite)
         {
             try
             {
+                // Vehicle selection panels.
                 vehicleSelection = parentPanel.AddUIComponent<VehicleSelection>();
+                vehicleSelection.ParentPanel = this;
                 vehicleSelection.relativePosition = new Vector2(0f, VehicleListY);
                 secondaryVehicleSelection = parentPanel.AddUIComponent<VehicleSelection>();
+                secondaryVehicleSelection.ParentPanel = this;
                 secondaryVehicleSelection.relativePosition = new Vector2(0f, SecondaryHeight);
 
                 // Warehouse vehicle controls panel.
                 warehouseControls = parentPanel.AddUIComponent<WarehouseControls>();
+                warehouseControls.ParentPanel = this;
                 warehouseControls.relativePosition = new Vector2(0f, SecondaryHeight);
 
             }
@@ -71,6 +76,19 @@ namespace TransferController
             {
                 Logging.LogException(e, "exception setting up BuildingVehiclesTab");
             }
+        }
+
+
+        /// <summary>
+        /// Sets the tab status sprite to the correct state according to current settings.
+        /// </summary>
+        internal void SetSprite()
+        {
+            bool hasRecord = VehicleControl.HasRecord(CurrentBuilding, TransferReason) ||
+                (HasSecondVehicleType && VehicleControl.HasRecord(CurrentBuilding, TransferManager.TransferReason.None)) ||
+                WarehouseControl.HasRecord(CurrentBuilding);
+
+            statusSprite.spriteName = hasRecord ? "AchievementCheckedTrue" : "AchievementCheckedFalse";
         }
 
 
@@ -112,6 +130,9 @@ namespace TransferController
 
             // Resize panel.
             panel.height = ContentHeight;
+
+            // Set sprite status.
+            SetSprite();
         }
     }
 }

@@ -22,6 +22,12 @@ namespace TransferController
 
 
         /// <summary>
+        /// Parent reference.
+        /// </summary>
+        internal BuildingVehiclesTab ParentPanel { get; set; }
+
+
+        /// <summary>
         /// Current transfer reason.
         /// </summary>
         internal TransferManager.TransferReason TransferReason { get; private set; }
@@ -88,7 +94,7 @@ namespace TransferController
 
 
         /// <summary>
-        /// Update button states when district selections are updated.
+        /// Update button states when vehicle selections are updated.
         /// </summary>
         internal void SelectionUpdated()
         {
@@ -112,6 +118,9 @@ namespace TransferController
             // Update district lists.
             buildingVehicleSelectionPanel.RefreshList();
             vehicleSelectionPanel.RefreshList();
+
+            // Update tab sprite.
+            ParentPanel.SetSprite();
         }
 
 
@@ -130,6 +139,9 @@ namespace TransferController
             // Update vehicle lists.
             buildingVehicleSelectionPanel.RefreshList();
             vehicleSelectionPanel.RefreshList();
+
+            // Update tab sprite.
+            ParentPanel.SetSprite();
         }
     }
 }

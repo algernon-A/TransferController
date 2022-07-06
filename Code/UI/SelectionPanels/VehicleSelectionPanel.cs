@@ -19,7 +19,10 @@ namespace TransferController
         // Current selection.
         protected VehicleInfo selectedVehicle;
 
-        // Parent reference.
+
+        /// <summary>
+        /// Parent reference.
+        /// </summary>
         internal VehicleSelection ParentPanel { get; set; }
 
 

@@ -39,6 +39,14 @@ namespace TransferController
 
 
         /// <summary>
+        /// Checks to see if the specified building has a warehouse record.
+        /// </summary>
+        /// <param name="buildingID">Building ID</param>
+        /// <returns>True if a custom record exists, false otherwise</returns>
+        internal static bool HasRecord(ushort buildingID) => warehouseRecords.ContainsKey(buildingID);
+
+
+        /// <summary>
         /// Attempts to retrieve a warehouse record from the dictionary.
         /// </summary>
         /// <param name="buildingID">Warehouse building ID to retrieve</param>
@@ -110,40 +118,48 @@ namespace TransferController
         /// Sets the warehouse to reserve vehicles for unique factories.
         /// </summary>
         /// <param name="buildingID">Warehouse builidng ID</param>
-        internal static void SetReserveUnique(uint buildingID)
-        {
-            SetFlags(buildingID, false, WarehouseFlags.AllReserveFlags);
-            SetFlags(buildingID, true, WarehouseFlags.ReserveUnique);
-        }
+        internal static void SetReserveUnique(uint buildingID) => SetReserveFlag(buildingID, WarehouseFlags.ReserveUnique);
 
 
         /// <summary>
         /// Sets the warehouse to reserve vehicles for outside connections.
         /// </summary>
         /// <param name="buildingID">Warehouse builidng ID</param>
-        internal static void SetReserveOutside(uint buildingID)
-        {
-            SetFlags(buildingID, false, WarehouseFlags.AllReserveFlags);
-            SetFlags(buildingID, true, WarehouseFlags.ReserveOutside);
-        }
+        internal static void SetReserveOutside(uint buildingID) => SetReserveFlag(buildingID, WarehouseFlags.ReserveOutside);
 
 
         /// <summary>
         /// Sets the warehouse to reserve vehicles for the city.
         /// </summary>
         /// <param name="buildingID">Warehouse builidng ID</param>
-        internal static void SetReserveCity(uint buildingID)
-        {
-            SetFlags(buildingID, false, WarehouseFlags.AllReserveFlags);
-            SetFlags(buildingID, true, WarehouseFlags.ReserveCity);
-        }
+        internal static void SetReserveCity(uint buildingID) => SetReserveFlag(buildingID, WarehouseFlags.ReserveCity);
 
 
         /// <summary>
         /// Clears the reserved vehicle state for the specified warehouse.
         /// </summary>
         /// <param name="buildingID">Warehouse builidng ID</param>
-        internal static void ClearReserve(uint buildingID) => SetFlags(buildingID, false, WarehouseFlags.AllReserveFlags);
+        internal static void ClearReserve(uint buildingID)
+        {
+            // Don't do anything if there's no current record.
+            if (warehouseRecords.TryGetValue(buildingID, out WarehouseRecord warehouseRecord))
+            {
+                // Calculate updated flags.
+                warehouseRecord.flags &= ~WarehouseFlags.AllReserveFlags;
+
+                // Remove entry if no other data remains.
+                if (warehouseRecord.flags == 0 && warehouseRecord.priority == 0)
+                {
+                    warehouseRecords.Remove(buildingID);
+                }
+                else
+                {
+                    // Some valid data remains; update the record with our changes.
+                    warehouseRecord.reserveVehicles = 0;
+                    warehouseRecords[buildingID] = warehouseRecord;
+                }
+            }
+        }
 
 
         /// <summary>
@@ -236,7 +252,7 @@ namespace TransferController
             {
                 // Setting reserved vehicles to zero and there's an existing entry for this warehouse (just do nothing if no existing entry).
                 // If no other data either, remove entire dictionary entry.
-                if (warehouseRecord.reserveVehicles == 0 && warehouseRecord.priority == 0)
+                if (warehouseRecord.flags == 0 && warehouseRecord.reserveVehicles == 0 && warehouseRecord.priority == 0)
                 {
                     warehouseRecords.Remove(buildingID);
                 }
@@ -425,6 +441,27 @@ namespace TransferController
             {
                 // No dictionary entry, therefore no same-district setting.
                 return false;
+            }
+        }
+
+
+        /// <summary>
+        /// Enables the given reserved flag for the given building.
+        /// </summary>
+        /// <param name="buildingID"></param>
+        /// <param name="flag"></param>
+        private static void SetReserveFlag(uint buildingID, WarehouseFlags flag)
+        {
+            // Clear all other reserve flags first.
+            SetFlags(buildingID, false, WarehouseFlags.AllReserveFlags);
+
+            // Set this flag.
+            SetFlags(buildingID, true, flag);
+
+            // Ensure minimum vehicle count of one.
+            if (GetReservedVehicles(buildingID) == 0)
+            {
+                SetReservedVehicles(buildingID, 1);
             }
         }
     }

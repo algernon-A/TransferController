@@ -26,6 +26,7 @@ namespace TransferController
 
         // Building panel reference.
         protected UIPanel panel;
+        protected UISprite statusSprite;
 
 
         /// <summary>
@@ -65,10 +66,12 @@ namespace TransferController
         /// Constructor.
         /// </summary>
         /// <param name="parentPanel">Parent UI panel</param>
-        internal BuildingPanelTab(UIPanel parentPanel)
+        /// <param name="tabSprite">Tab status sprite</param>
+        internal BuildingPanelTab(UIPanel parentPanel, UISprite tabSprite)
         {
-            // Set panel reference.
+            // Set references.
             panel = parentPanel;
+            statusSprite = tabSprite;
         }
 
 
