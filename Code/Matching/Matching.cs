@@ -144,45 +144,16 @@ namespace TransferController
 					break;
 
 				// Basic city services - most efficent matching is from depot outwards.
+				// However, need to prioritise high prioirty requests first.
+				// Start by matching highest priority outgoing requests (7-3).
+				// Then service lower priorities from depot outwards for greatest efficiency:
 				case TransferManager.TransferReason.Garbage:
 				case TransferManager.TransferReason.Mail:
 				case TransferManager.TransferReason.RoadMaintenance:
 				case TransferManager.TransferReason.ParkMaintenance:
 				case TransferManager.TransferReason.Snow:
-					// Match offers incoming-first (from depots outwards).
-					for (int priority = 7; priority >= 0; --priority)
-					{
-						int priorityIndex = reasonBlock + priority;
-						int incomingIndex = 0;
-
-						// Keep iterating while offers are remaining in this incoming priority block.
-						while (incomingIndex < incomingCounts[priorityIndex])
-						{
-							MatchOffer(true, 0, reason, priority, incomingIndex++, incomingOffers, incomingCounts, outgoingOffers, outgoingCounts);
-						}
-					}
-
-					// Match any remaining outgoing offers.
-					for (int priority = 7; priority >= 0; --priority)
-					{
-						int priorityIndex = reasonBlock + priority;
-						int outgoingIndex = 0;
-
-						// Keep iterating while offers are remaining in this outgoing priority block.
-						while (outgoingIndex < outgoingCounts[priorityIndex])
-						{
-							MatchOffer(false, 0, reason, priority, outgoingIndex++, outgoingOffers, outgoingCounts, incomingOffers, incomingCounts);
-						}
-					}
-					break;
-
-
-				// Deathcare - most efficent matching is from depot outwards.
-				// However, need to prioritise high prioirty requests first.
-				// Start by matching highest priority outgoing requests (7-3).
-				// Then service lower priorities from depot outwards for greatest efficiency:
 				case TransferManager.TransferReason.Dead:
-					// Then match outgoing offers first from highest to lowest priority, down to priority 3, to service any urgent issues.
+					// Match outgoing offers first from highest to lowest priority, down to priority 3, to service any urgent issues.
 					for (int priority = 7; priority >= 3; --priority)
 					{
 						int priorityIndex = reasonBlock + priority;
