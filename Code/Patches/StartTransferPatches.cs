@@ -27,6 +27,13 @@ namespace TransferController
             yield return typeof(PostOfficeAI).GetMethod(nameof(PostOfficeAI.StartTransfer));
             yield return typeof(LandfillSiteAI).GetMethod(nameof(LandfillSiteAI.StartTransfer));
             yield return typeof(FireStationAI).GetMethod(nameof(FireStationAI.StartTransfer));
+
+            // Prison helicopter mod, if avaialble.
+            MethodInfo prisonHeliAI = Type.GetType("PrisonHelicopter.AI.PrisonCopterPoliceStationAI,PrisonHelicopter", false)?.GetMethod("StartTransfer");
+            if (prisonHeliAI != null)
+            {
+                yield return prisonHeliAI;
+            }
         }
 
         /// <summary>
