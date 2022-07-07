@@ -651,7 +651,7 @@ namespace TransferController
 			if (!BuildingControl.buildingRecords.TryGetValue(buildingRecordID, out BuildingControl.BuildingRecord buildingRecord))
 			{
 				// No record found; try TransferReason.None wildcard.
-				buildingRecordID = BuildingControl.CalculateEntryKey(buildingID, false, TransferManager.TransferReason.None);
+				buildingRecordID = BuildingControl.CalculateEntryKey(buildingID, true, TransferManager.TransferReason.None);
 				if (!BuildingControl.buildingRecords.TryGetValue(buildingRecordID, out buildingRecord))
 				{
 					// No record found, therefore no restrictions.
@@ -840,7 +840,6 @@ namespace TransferController
 			// If we got here, no record was found; return 1.
 			return 1f;
 		}
-
 
 
 		/// <summary>

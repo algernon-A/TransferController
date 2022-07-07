@@ -11,7 +11,7 @@ namespace TransferController
     public class TransferControllerMod : IUserMod
     {
         public static string ModName => "Transfer Controller";
-        public static string Version => "0.7";
+        public static string Version => "0.7.0.1";
 
         public string Name => ModName + " " + Version;
         public string Description => Translations.Translate("TFC_DESC");

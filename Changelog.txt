@@ -1,4 +1,9 @@
-﻿Version 0.7 -
+﻿Version 0.7.0.1 hotfix -
+
+- Fix bug in legacy settings fallback incoming offer checks
+
+
+Version 0.7 -
 
 - Major new feature: vehicle selection by building
 - Overhaul UI; many changes
