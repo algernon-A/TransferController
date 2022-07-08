@@ -11,7 +11,7 @@ namespace TransferController
     {
         // Unique data ID.
         private readonly string dataID = "TransferController";
-        public const int DataVersion = 3;
+        public const int DataVersion = 4;
 
 
         /// <summary>

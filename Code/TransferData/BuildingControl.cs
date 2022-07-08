@@ -522,7 +522,7 @@ namespace TransferController
 
                 BuildingRecord buildingRecord;
 
-                if (dataVersion <= 2)
+                if (dataVersion <= 3)
                 {
                     // Legacy dataversion - set flag.
                     oldDataVersion = true;
@@ -538,6 +538,7 @@ namespace TransferController
                     // Convert key to new format.
                     ushort oldBuildingID = (ushort)(key & 0xFFFF);
                     bool isIncoming = (key & 0x80000000) == 0;
+                    Logging.Message("found old building entry for building ", oldBuildingID, " with record mask ", (key & 0xFF000000) >> 24);
                     TransferManager.TransferReason transferReason = (TransferManager.TransferReason)reader.ReadInt32();
                     key = CalculateEntryKey(oldBuildingID, isIncoming, transferReason);
                 }
@@ -591,7 +592,7 @@ namespace TransferController
                 if (!buildingRecords.ContainsKey(key))
                 {
                     buildingRecords.Add(key, buildingRecord);
-                    Logging.Message("read entry for building ", key & 0x0000FFFF, " incoming ", (key & 0x00FF0000) == 0, " and reason ", (TransferManager.TransferReason)((key & 0xFF000000) >> 24));
+                    Logging.Message("read entry for building ", key & 0x0000FFFF, " incoming ", (key & NewOutgoingMask) == 0, " and reason ", (TransferManager.TransferReason)((key & 0xFF000000) >> 24));
                 }
                 else
                 {
@@ -635,7 +636,7 @@ namespace TransferController
             {
                 // Extract data from key.
                 ushort buildingID = (ushort)(oldEntry & 0x0000FFFF);
-                bool isIncoming = (oldEntry & 0x80000000) != 0;
+                bool isIncoming = (oldEntry & NewOutgoingMask) == 0;
 
                 // Local references.
                 BuildingInfo buildingInfo = buildingBuffer[buildingID].Info;
@@ -678,10 +679,27 @@ namespace TransferController
                 if (newReason != TransferManager.TransferReason.None)
                 {
                     // Yes - remove old record and add new replacement.
-                    Logging.Message("converting old TransferType.None record for building ", buildingID, " to new record with transferType ", newReason);
+                    Logging.Message("converting old TransferType.None ", isIncoming ? "incoming" : "outgoing" , " record for building ", buildingID, " to new record with transferType ", newReason);
                     BuildingRecord oldRecord = buildingRecords[oldEntry];
                     buildingRecords.Remove(oldEntry);
-                    buildingRecords.Add(CalculateEntryKey(buildingID, isIncoming, newReason), oldRecord);
+
+                    // Calculate new key and check that it's unique.
+                    uint newEntry = CalculateEntryKey(buildingID, isIncoming, newReason);
+                    if (buildingRecords.ContainsKey(newEntry))
+                    {
+                        // Duplicate key - log and drop.
+                        Logging.Error("duplicate new key for building ", buildingID, "; skipping");
+                    }
+                    else
+                    {
+                        // Add new entry.
+                        buildingRecords.Add(CalculateEntryKey(buildingID, isIncoming, newReason), oldRecord);
+                    }
+                }
+                else
+                {
+                    // No change made.
+                    Logging.Message("leaving building ID ", buildingID, " with ", isIncoming ? "incoming" : "outgoing", " TransferReason.None");
                 }
             }
         }

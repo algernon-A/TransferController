@@ -1,4 +1,9 @@
-﻿Version 0.7.0.1 hotfix -
+﻿Version 0.7.0.2 hotfix -
+
+- Fix occasional issues with legacy TransferReason conversion
+
+
+Version 0.7.0.1 hotfix -
 
 - Fix bug in legacy settings fallback incoming offer checks
 
