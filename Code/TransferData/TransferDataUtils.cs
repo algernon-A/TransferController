@@ -360,7 +360,7 @@ namespace TransferController
                             // Post offices pick up sorted mail via their trucks.
                             transfers[2].panelTitle = Translations.Translate("TFC_MAI_IST");
                             transfers[2].outsideText = Translations.Translate("TFC_BLD_IMP");
-                            transfers[0].isIncoming = true;
+                            transfers[2].isIncoming = true;
                             transfers[2].reason = TransferManager.TransferReason.SortedMail;
                             transfers[2].spawnsVehicles = true;
 
@@ -376,19 +376,19 @@ namespace TransferController
 
                         transfers[1].panelTitle = Translations.Translate("TFC_MAI_OST");
                         transfers[1].outsideText = null;
-                        transfers[0].isIncoming = false;
+                        transfers[1].isIncoming = false;
                         transfers[1].reason = TransferManager.TransferReason.SortedMail;
                         transfers[1].spawnsVehicles = true;
 
                         transfers[2].panelTitle = Translations.Translate("TFC_MAI_OGM");
                         transfers[2].outsideText = Translations.Translate("TFC_BLD_EXP");
-                        transfers[0].isIncoming = false;
+                        transfers[2].isIncoming = false;
                         transfers[2].reason = TransferManager.TransferReason.OutgoingMail;
                         transfers[2].spawnsVehicles = true;
 
                         transfers[3].panelTitle = Translations.Translate("TFC_MAI_ICM");
                         transfers[3].outsideText = Translations.Translate("TFC_BLD_IMP");
-                        transfers[0].isIncoming = true;
+                        transfers[3].isIncoming = true;
                         transfers[3].reason = TransferManager.TransferReason.IncomingMail;
                         transfers[3].spawnsVehicles = false;
 
@@ -437,7 +437,7 @@ namespace TransferController
                             transfers[1].panelTitle = Translations.Translate("TFC_GAR_ORR");
                             transfers[1].outsideText = Translations.Translate("TFC_BLD_EXP");
                             transfers[1].outsideTip = Translations.Translate("TFC_BLD_EXP_TIP");
-                            transfers[0].isIncoming = false;
+                            transfers[1].isIncoming = false;
                             transfers[1].reason = TransferManager.TransferReason.None;
                             transfers[1].spawnsVehicles = false;
 
@@ -456,7 +456,7 @@ namespace TransferController
                             // Garbage Transfer for processing in a Waste Processing Complex.
                             transfers[1].panelTitle = Translations.Translate("TFC_GAR_OTF");
                             transfers[1].outsideText = null;
-                            transfers[0].isIncoming = false;
+                            transfers[1].isIncoming = false;
                             transfers[1].reason = TransferManager.TransferReason.GarbageTransfer;
                             transfers[1].spawnsVehicles = false;
 
@@ -476,7 +476,7 @@ namespace TransferController
                             transfers[1].panelTitle = Translations.Translate("TFC_GAR_ORR");
                             transfers[1].outsideText = Translations.Translate("TFC_BLD_EXP");
                             transfers[1].outsideTip = Translations.Translate("TFC_BLD_EXP_TIP");
-                            transfers[0].isIncoming = false;
+                            transfers[1].isIncoming = false;
                             transfers[1].reason = TransferManager.TransferReason.None;
                             transfers[1].spawnsVehicles = false;
 
@@ -515,7 +515,7 @@ namespace TransferController
                         transfers[1].panelTitle = Translations.Translate("TFC_FIS_CFO");
                         transfers[1].outsideText = Translations.Translate("TFC_BLD_EXP");
                         transfers[1].outsideTip = Translations.Translate("TFC_BLD_EXP_TIP");
-                        transfers[0].isIncoming = false;
+                        transfers[1].isIncoming = false;
                         transfers[1].reason = TransferManager.TransferReason.Goods;
                         return 2;
                     }
