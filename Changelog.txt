@@ -1,4 +1,9 @@
-﻿Version 0.7.0.3 hotfix -
+﻿Version 0.7.0.4 hotfix -
+
+- Add checks for invalid data left over from older mod versions
+
+
+Version 0.7.0.3 hotfix -
 
 - Fix transfer direction assignment for some garbage, mail, and fish transfers
 

@@ -510,6 +510,9 @@ namespace TransferController
         {
             Logging.Message("deserializing building data");
 
+            // Local reference.
+            Building[] buildingBuffer = Singleton<BuildingManager>.instance.m_buildings.m_buffer;
+
             // Clear dictionary.
             buildingRecords.Clear();
 
@@ -522,11 +525,15 @@ namespace TransferController
 
                 BuildingRecord buildingRecord;
 
-                if (dataVersion <= 3)
+                // Check older data versions.
+                if (dataVersion <= 4)
                 {
-                    // Legacy dataversion - set flag.
                     oldDataVersion = true;
+                }
 
+                // Legacy dataversion.
+                if (dataVersion <= 2)
+                {
                     // Discard old recordnumber byte.
                     byte nextRecord = reader.ReadByte();
 
@@ -551,7 +558,7 @@ namespace TransferController
                     };
                 }
 
-                Logging.Message("read flags for entry ", key);
+                Logging.Message("read flags ", buildingRecord.flags, " for entry ", key);
 
                 // Deserialize district entries for this building.
                 int districtCount = reader.ReadInt32();
@@ -588,15 +595,51 @@ namespace TransferController
                     }
                 }
 
+                // Extract details from key.
+                TransferManager.TransferReason reason = (TransferManager.TransferReason)((key & 0xFF000000) >> 24);
+                bool incoming = (key & NewOutgoingMask) == 0;
+                ushort buildingID = (ushort)(key & 0x0000FFFF);
+
+                // Fix for invalidly recorded transfers.
+                if (!incoming)
+                {
+                    if (reason == TransferManager.TransferReason.Garbage ||
+                        reason == TransferManager.TransferReason.Crime ||
+                        reason == TransferManager.TransferReason.Dead ||
+                        reason == TransferManager.TransferReason.Sick ||
+                        reason == TransferManager.TransferReason.Sick2 ||
+                        reason == TransferManager.TransferReason.Fire ||
+                        reason == TransferManager.TransferReason.Fire2 ||
+                        reason == TransferManager.TransferReason.Mail)
+                    {
+                        Logging.Message("invalid incoming state for ", reason, "; correcting");
+                        key = CalculateEntryKey(buildingID, true, reason);
+                    }
+                }
+
+                // Drop any entries for invalid buildings.
+                if ((buildingBuffer[buildingID].m_flags & Building.Flags.Created) == 0)
+                {
+                    Logging.Message("dropping entry for invalid building ", buildingID);
+                    continue;
+                }
+
+                // Drop any empty entries.
+                if (buildingRecord.flags == 0 && buildingRecord.buildings.Count == 0 && buildingRecord.districts.Count == 0)
+                {
+                    Logging.Message("dropping empty entry for building ", buildingID);
+                    continue;
+                }
+
                 // Add completed entry to dictionary.
                 if (!buildingRecords.ContainsKey(key))
                 {
                     buildingRecords.Add(key, buildingRecord);
-                    Logging.Message("read entry for building ", key & 0x0000FFFF, " incoming ", (key & NewOutgoingMask) == 0, " and reason ", (TransferManager.TransferReason)((key & 0xFF000000) >> 24));
+                    Logging.Message("read entry for building ", buildingID, " incoming ", (key & NewOutgoingMask) == 0, " and reason ", reason);
                 }
                 else
                 {
-                    Logging.Error("duplicate buildingRecord key for building ", key & 0x0000FFFF, " incoming ", (key & 0x00FF0000) == 0, " and reason ", (TransferManager.TransferReason)((key & 0xFF000000) >> 24));
+                    Logging.Error("duplicate buildingRecord key for building ", buildingID, " incoming ", (key & 0x00FF0000) == 0, " and reason ", reason);
                 }
             }
         }
@@ -637,6 +680,7 @@ namespace TransferController
                 // Extract data from key.
                 ushort buildingID = (ushort)(oldEntry & 0x0000FFFF);
                 bool isIncoming = (oldEntry & NewOutgoingMask) == 0;
+                TransferManager.TransferReason transferReason = (TransferManager.TransferReason)((oldEntry & 0xFF000000) >> 24);
 
                 // Local references.
                 BuildingInfo buildingInfo = buildingBuffer[buildingID].Info;
@@ -679,7 +723,7 @@ namespace TransferController
                 if (newReason != TransferManager.TransferReason.None)
                 {
                     // Yes - remove old record and add new replacement.
-                    Logging.Message("converting old TransferType.None ", isIncoming ? "incoming" : "outgoing" , " record for building ", buildingID, " to new record with transferType ", newReason);
+                    Logging.Message("converting old TransferType.None ", isIncoming ? "incoming" : "outgoing", " record for building ", buildingID, " to new record with transferType ", newReason);
                     BuildingRecord oldRecord = buildingRecords[oldEntry];
                     buildingRecords.Remove(oldEntry);
 
@@ -699,7 +743,7 @@ namespace TransferController
                 else
                 {
                     // No change made.
-                    Logging.Message("leaving building ID ", buildingID, " with ", isIncoming ? "incoming" : "outgoing", " TransferReason.None");
+                    Logging.Message("leaving building ID ", buildingID, " with ", isIncoming ? "incoming " : "outgoing ", transferReason);
                 }
             }
         }

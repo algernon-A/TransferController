@@ -69,6 +69,7 @@ namespace TransferController
                     {
                         // Read version.
                         int version = reader.ReadInt32();
+                        Logging.Message("found data version ", version);
 
                         // Deserialise building settings.
                         BuildingControl.Deserialize(reader, version);
