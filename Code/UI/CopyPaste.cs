@@ -61,13 +61,13 @@ namespace TransferController
                     // Calculate building record ID.
                     uint buildingRecordID = BuildingControl.CalculateEntryKey(buildingID, transferBuffer[i].isIncoming, transferBuffer[i].reason);
 
+                    // Set data.
+                    copyIncoming[i] = transferBuffer[i].isIncoming;
+                    copyReason[i] = transferBuffer[i].reason;
+
                     // Try to get valid entry, outputting to the copy buffer.
                     if (BuildingControl.buildingRecords.TryGetValue(buildingRecordID, out copyBuffer[i]))
                     {
-                        // Set data.
-                        copyIncoming[i] = transferBuffer[i].isIncoming;
-                        copyReason[i] = transferBuffer[i].reason;
-
                         // Copy district and building buffers to new HashSets, otherwise the old ones will be shared.
                         if (copyBuffer[i].districts != null)
                         {
