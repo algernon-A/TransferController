@@ -153,9 +153,9 @@ namespace TransferController
 		}
 
 
-		/// Updates current replacement selection when this item is selected.
+		/// Updates current district selection when this item is selected.
 		/// </summary>
-		protected override void UpdateSelection()
+		protected override void Selected()
 		{
 			UIPanel parentPanel = this.parent as UIPanel;
 			UIFastList parentFastList = parentPanel?.parent as UIFastList;

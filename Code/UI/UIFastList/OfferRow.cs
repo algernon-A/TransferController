@@ -108,9 +108,9 @@ namespace TransferController
 
 
 		/// <summary>
-		/// Updates current replacement selection when this item is selected.
+		/// Zooms to target building when this item is selected.
 		/// </summary>
-		protected override void UpdateSelection()
+		protected override void Selected()
 		{
 			if (buildingID != 0)
 			{

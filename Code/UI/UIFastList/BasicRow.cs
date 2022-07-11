@@ -58,14 +58,39 @@ namespace TransferController
         protected override void OnClick(UIMouseEventParameter p)
         {
             base.OnClick(p);
-            UpdateSelection();
+            Selected();
         }
 
 
         /// <summary>
-        /// Updates current replacement selection when this item is selected.
+        /// Adds a text label to the current UIComponent.
         /// </summary>
-        protected abstract void UpdateSelection();
+        /// <param name="xPos">Label relative x-position</param>
+        /// <param name="width">Label width</param>
+        /// <param name="textScale">Text scale</param>
+        /// <param name="wordWrap">Wordwrap status (true to enable, false to disable)</param>
+        /// <returns>New UILabel</returns>
+        protected UILabel AddLabel(float xPos, float width, float textScale = 0.8f, bool wordWrap = false)
+        {
+            UILabel newLabel = AddUIComponent<UILabel>();
+            newLabel.autoSize = false;
+            newLabel.height = rowHeight;
+            newLabel.width = width;
+            newLabel.verticalAlignment = UIVerticalAlignment.Middle;
+            newLabel.clipChildren = true;
+            newLabel.wordWrap = wordWrap;
+            newLabel.padding.top = 1;
+            newLabel.textScale = textScale;
+            newLabel.font = FontUtils.Regular;
+            newLabel.relativePosition = new Vector2(xPos, 0f);
+            return newLabel;
+        }
+
+
+        /// <summary>
+        /// Performs actions when this item is selected.
+        /// </summary>
+        protected virtual void Selected() {}
 
 
         /// <summary>

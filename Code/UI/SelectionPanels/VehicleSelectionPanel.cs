@@ -60,12 +60,12 @@ namespace TransferController
                 height = VehicleSelection.VehicleListHeight;
 
                 // Vehicle selection list.
-                vehicleList = UIVehicleFastList.Create<VehicleRow, UIVehicleFastList>(this);
+                vehicleList = UIVehicleFastList.Create<VehicleSelectionRow, UIVehicleFastList>(this);
                 vehicleList.backgroundSprite = "UnlockingPanel";
                 vehicleList.width = BuildingVehiclesTab.ColumnWidth;
                 vehicleList.height = VehicleSelection.VehicleListHeight;
                 vehicleList.canSelect = true;
-                vehicleList.rowHeight = VehicleRow.VehicleRowHeight;
+                vehicleList.rowHeight = VehicleSelectionRow.VehicleRowHeight;
                 vehicleList.autoHideScrollbar = true;
                 vehicleList.relativePosition = Vector2.zero;
                 vehicleList.rowsData = new FastList<object>();

@@ -35,28 +35,8 @@ namespace TransferController
 				vehicleInfo = value;
 
 				// Set display name.
-				name = GetDisplayName(value);
+				name = TextUtils.GetDisplayName(value);
 			}
-		}
-
-
-		/// <summary>
-		/// Sanitises a raw prefab name for display.
-		/// </summary>
-		/// <param name="prefab">Original (raw) prefab</param>
-		/// <returns>Cleaned display name</returns>
-		private string GetDisplayName(PrefabInfo prefab)
-		{
-			// Null check.
-			if (prefab?.name == null)
-			{
-				return "null";
-			}
-
-			// Otherwise, try getting any localized name, omit any package number, and trim off any trailing _Data.
-			string localizedName = prefab.GetUncheckedLocalizedTitle();
-			int index = localizedName.IndexOf('.');
-			return localizedName.Substring(index + 1).Replace("_Data", "");
 		}
 	}
 
@@ -64,7 +44,7 @@ namespace TransferController
 	/// <summary>
 	/// UI fastlist item for vehicles.
 	/// </summary>
-	public class VehicleRow : UIBasicRow
+	public class VehicleSelectionRow : UIBasicRow
 	{
 		// Layout constants.
 		public const float VehicleRowHeight = 40f;
@@ -85,7 +65,7 @@ namespace TransferController
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		public VehicleRow()
+		public VehicleSelectionRow()
 		{
 			rowHeight = VehicleRowHeight;
 		}
@@ -164,10 +144,11 @@ namespace TransferController
 			}
 		}
 
-
+		
+		/// <summary>
 		/// Updates current replacement selection when this item is selected.
 		/// </summary>
-		protected override void UpdateSelection()
+		protected override void Selected()
 		{
 			UIPanel parentPanel = this.parent as UIPanel;
 			UIFastList parentFastList = parentPanel?.parent as UIFastList;

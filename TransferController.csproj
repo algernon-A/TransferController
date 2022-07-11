@@ -112,12 +112,15 @@
     <Compile Include="Code\UI\UIFastList\UIBuildingFastList.cs" />
     <Compile Include="Code\UI\UIFastList\UIFastList.cs" />
     <Compile Include="Code\UI\UIFastList\UIVehicleFastList.cs" />
-    <Compile Include="Code\UI\UIFastList\VehicleRow.cs" />
+    <Compile Include="Code\UI\UIFastList\VehicleSelectionRow.cs" />
     <Compile Include="Code\UI\BuildingPanelTabs\WarehouseControls.cs" />
+    <Compile Include="Code\UI\UIFastList\VehicleStatusRow.cs" />
+    <Compile Include="Code\UI\VehicleStatusPanel.cs" />
     <Compile Include="Code\Utils\FontUtils.cs" />
     <Compile Include="Code\Utils\Logging.cs" />
     <Compile Include="Code\Utils\ModUtils.cs" />
     <Compile Include="Code\Utils\TextureUtils.cs" />
+    <Compile Include="Code\Utils\TextUtils.cs" />
     <Compile Include="Code\Utils\TooltipUtils.cs" />
     <Compile Include="Code\Utils\UIControls.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

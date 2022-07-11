@@ -20,7 +20,7 @@ namespace TransferController
         private const float PanelWidth = BuildingVehiclesTab.PanelWidth;
         private const float TitleHeight = 50f;
         private const float ListY = TitleHeight + Margin;
-        private const float ListHeight = DistrictRow.DefaultRowHeight * 20f;
+        private const float ListHeight = DistrictRow.DefaultRowHeight * 8f;
         private const float PanelHeight = ListY + ListHeight + Margin;
 
 
@@ -32,7 +32,7 @@ namespace TransferController
 
         // Timer.
         private float ticks;
-
+        VehicleStatusPanel vehicleStatusPanel;
 
         /// <summary>
         /// Constructor - performs initial setup.
@@ -80,6 +80,9 @@ namespace TransferController
                 offersList.rowsData = new FastList<object>();
                 offersList.selectedIndex = -1;
 
+                // Vehicle status panel.
+                vehicleStatusPanel = this.AddUIComponent<VehicleStatusPanel>();
+                vehicleStatusPanel.relativePosition = new Vector2(0f, PanelHeight + Margin);
             }
             catch (Exception e)
             {
@@ -116,6 +119,8 @@ namespace TransferController
             // Set target building and regenerate the list.
             currentBuilding = buildingID;
             PopulateList();
+
+            vehicleStatusPanel.SetTarget(buildingID);
         }
 
 

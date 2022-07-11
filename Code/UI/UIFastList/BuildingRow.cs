@@ -84,11 +84,8 @@ namespace TransferController
 				width = parent.width;
 				height = rowHeight;
 
-				// Add object name label.
-				buildingNameLabel = AddUIComponent<UILabel>();
-				buildingNameLabel.width = this.width - 10f;
-				buildingNameLabel.textScale = TextScale;
-				buildingNameLabel.font = FontUtils.Regular;
+				// Add building name label.
+				buildingNameLabel = AddLabel(this.width - 10f, 0f);
 			}
 
 			// Get building ID and set name label.
@@ -127,7 +124,7 @@ namespace TransferController
 
 		/// Updates current replacement selection when this item is selected.
 		/// </summary>
-		protected override void UpdateSelection()
+		protected override void Selected()
 		{
 			UIPanel parentPanel = this.parent as UIPanel;
 			UIFastList parentFastList = parentPanel?.parent as UIFastList;

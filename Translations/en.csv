@@ -81,6 +81,14 @@ TFC_LOG_ALW,Allowed
 TFC_LOG_BLK,Blocked
 TFC_LOG_INC,Incoming
 TFC_LOG_OUT,Outgoing
+TFC_VSP_TIT,Vehicle status
+TFC_VSP_RET,Returning
+TFC_VSP_VEH,Vehicle
+TFC_VSP_TAR,Destination
+TFC_VSP_MAT,Material
+TFC_VSP_AMT,Amount
+TFC_VSP_ZTB,Zoom to building
+TFC_VSP_ZTV,Zoom to vehicle
 TRN_CHOICE,Set language
 TRN_SYS,Use game language
 KEY_KEY,Hotkey
