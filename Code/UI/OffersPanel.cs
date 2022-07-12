@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using System.Collections.Generic;
 using UnityEngine;
 using ColossalFramework;
@@ -18,9 +17,9 @@ namespace TransferController
         // Layout constants.
         private const float Margin = 5f;
         private const float PanelWidth = BuildingVehiclesTab.PanelWidth;
-        private const float TitleHeight = 50f;
-        private const float ListY = TitleHeight + Margin;
-        private const float ListHeight = DistrictRow.DefaultRowHeight * 8f;
+        private const float ListHeaderY = 45f;
+        private const float ListY = ListHeaderY + 15f;
+        private const float ListHeight = StatusRow.RowHeight * 8f;
         private const float PanelHeight = ListY + ListHeight + Margin;
 
 
@@ -67,6 +66,10 @@ namespace TransferController
                     BuildingPanelManager.Panel?.ResetButtons();
                     Hide();
                 };
+
+                // Header labels.
+                UIControls.AddLabel(this, OfferRow.ReasonX + Margin, ListHeaderY, Translations.Translate("TFC_LOG_MAT"), textScale: 0.7f);
+                UIControls.AddLabel(this, OfferRow.PriorityX + Margin, ListHeaderY, Translations.Translate("TFC_LOG_PRI"), textScale: 0.7f);
 
                 // Offers list.
                 offersList = UIFastList.Create<OfferRow>(this);
@@ -144,42 +147,20 @@ namespace TransferController
             {
                 // Calculate reason and priority blocks.
                 TransferManager.TransferReason thisReason = (TransferManager.TransferReason)((i & 0xFFFFF800) >> 11);
-                int priority = (i & 0x0700) >> 8;
+                byte priority =(byte)((i & 0x0700) >> 8);
 
                 // Incoming offers.
                 if (incomingOffers[i].Building == currentBuilding)
                 {
-                    // Generate offer text.
-                    StringBuilder offerText = new StringBuilder();
-                    offerText.Append("Incoming ");
-                    offerText.Append(thisReason);
-                    offerText.Append(' ');
-                    offerText.Append(priority);
-                    if (incomingOffers[i].Exclude)
-                    {
-                        offerText.Append('W');
-                    }
-                    
                     // Add to list.
-                    offerList.Add(new OfferData(offerText.ToString(), 0, incomingOffers[i].Position));
+                    offerList.Add(new OfferData(thisReason, priority, true));
                 }
 
                 // Outgoing offers.
                 if (outgoingOffers[i].Building == currentBuilding)
                 {
-                    // Generate offer text.
-                    StringBuilder offerText = new StringBuilder();
-                    offerText.Append("Outgoing ");
-                    offerText.Append(thisReason);
-                    offerText.Append(' ');
-                    offerText.Append(priority);
-                    if (outgoingOffers[i].Exclude)
-                    {
-                        offerText.Append('W');
-                    }
-
                     // Add to list.
-                    offerList.Add(new OfferData(offerText.ToString(), 0, outgoingOffers[i].Position));
+                    offerList.Add(new OfferData(thisReason, priority, false));
                 }
             }
 

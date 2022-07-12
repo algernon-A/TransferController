@@ -77,6 +77,9 @@ TFC_OPT_PAT_TIP,Prevents offers from being matched if there's been a vehicle pat
 TFC_OFF_TIT,Open offers
 TFC_OFF_LOG,Transfer log
 TFC_LOG_BLD,This building only
+TFC_LOG_MAT,Reason
+TFC_LOG_PRI,Priority
+TFC_LOG_TAR,Target
 TFC_LOG_ALW,Allowed
 TFC_LOG_BLK,Blocked
 TFC_LOG_INC,Incoming
@@ -84,7 +87,6 @@ TFC_LOG_OUT,Outgoing
 TFC_VSP_TIT,Vehicle status
 TFC_VSP_RET,Returning
 TFC_VSP_VEH,Vehicle
-TFC_VSP_TAR,Target
 TFC_VSP_MAT,Cargo
 TFC_VSP_AMT,Load
 TFC_VSP_ZTB,Zoom to building

@@ -1,51 +1,44 @@
-﻿using UnityEngine;
-using ColossalFramework;
-using ColossalFramework.UI;
+﻿using ColossalFramework.UI;
 
 
 namespace TransferController
 {
 	/// <summary>
-	/// Class to hold offer data for logging offers.
+	/// Class to hold match data for logging offers.
 	/// </summary>
 	public class OfferData
-    {
-		public string text;
-		public ushort buildingID;
-		public Vector3 position;
+	{
+		public TransferManager.TransferReason reason;
+		public byte priority;
+		public bool incoming;
+
 
 		/// <summary>
-		/// Constructor
+		/// Constructor.
 		/// </summary>
-		/// <param name="displayText">Text to display</param>
-		/// <param name="building">Target building ID (0 for none)</param>
-		public OfferData(string displayText, ushort building, Vector3 offerPos)
-        {
-			text = displayText;
-			buildingID = building;
-			position = offerPos;
-        }
-    }
+		/// <param name="reason">Transfer reason</param>
+		/// <param name="priority">Offer priority</param>
+		/// <param name="incoming">Incoming status</param>
+		public OfferData(TransferManager.TransferReason reason, byte priority, bool incoming)
+		{
+			this.reason = reason;
+			this.priority = priority;
+			this.incoming = incoming;
+		}
+	}
 
 
 	/// <summary>
 	/// UI fastlist item for districts.
 	/// </summary>
-	public class OfferRow : UIBasicRow
+	public class OfferRow : StatusRow
 	{
 		// Layout constants.
-		private const float TextScale = 0.8f;
-		private const float LeftMargin = 5f;
-		private const float PaddingY = 3f;
+		internal const float RowWidth = PriorityX + PriorityWidth + Margin;
 
-		// District name label.
-		private UILabel logLine;
 
-		// Building ID.
-		private ushort buildingID;
-
-		// Transfer position.
-		private Vector3 transferPos;
+		// Components.
+		private UILabel reasonLabel, directionLabel, priorityLabel;
 
 
 		/// <summary>
@@ -56,74 +49,38 @@ namespace TransferController
 		public override void Display(object data, bool isRowOdd)
 		{
 			/// Perform initial setup for new rows.
-			if (logLine == null)
+			if (reasonLabel == null)
 			{
 				isVisible = true;
 				canFocus = true;
 				isInteractive = true;
-				width = parent.width;
+				width = RowWidth;
 				height = rowHeight;
 
-				// Add logging name label.
-				logLine = AddUIComponent<UILabel>();
-				logLine.width = this.width - 10f;
-				logLine.textScale = TextScale;
-				logLine.font = FontUtils.Regular;
+				// Add text labels.
+				directionLabel = AddLabel(DirectionX, DirectionWidth);
+				reasonLabel = AddLabel(ReasonX, ReasonWidth);
+				priorityLabel = AddLabel(PriorityX, PriorityWidth);
 			}
 
-			// Update text and building ID.
-			if (data is OfferData offerData)
+			// Check for valid data.
+			if (data is OfferData thisOffer)
 			{
-				logLine.text = offerData.text.ToString();
-				buildingID = offerData.buildingID;
-				transferPos = offerData.position;
+				// Set text.
+				directionLabel.text = thisOffer.incoming ? "In" : "Out";
+				reasonLabel.text = thisOffer.reason.ToString();
+				priorityLabel.text = thisOffer.priority.ToString();
 			}
 			else
-            {
-				// Clear building ID and text if no valid data.
-				logLine.text = string.Empty;
-				buildingID = 0;
-            }
-
-			// Call OnSizeChanged to set label position.
-			OnSizeChanged();
+			{
+				// Just in case (no valid offer record).
+				directionLabel.text = string.Empty;
+				reasonLabel.text = string.Empty;
+				priorityLabel.text = string.Empty;
+			}
 
 			// Set initial background as deselected state.
 			Deselect(isRowOdd);
-		}
-
-
-		/// <summary>
-		/// Called when dimensions are changed, including as part of initial setup (required to set correct relative position of label).
-		/// </summary>
-		protected override void OnSizeChanged()
-		{
-			base.OnSizeChanged();
-
-			if (logLine != null)
-			{
-				logLine.relativePosition = new Vector2(LeftMargin, PaddingY);
-			}
-		}
-
-
-		/// <summary>
-		/// Zooms to target building when this item is selected.
-		/// </summary>
-		protected override void Selected()
-		{
-			if (buildingID != 0)
-			{
-				// Go to target building if available.
-				InstanceID instance = default;
-				instance.Building = buildingID;
-				ToolsModifierControl.cameraController.SetTarget(instance, Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID].m_position, zoomIn: true);
-			}
-			else if (transferPos != Vector3.zero)
-			{
-				// Move camera target position.
-				ToolsModifierControl.cameraController.m_targetPosition = transferPos;
-			}
 		}
 	}
 }

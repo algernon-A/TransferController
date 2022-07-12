@@ -13,15 +13,18 @@ namespace TransferController
     {
         // Layout constants.
         private const float Margin = 5f;
-        private const float PanelWidth = BuildingVehiclesTab.PanelWidth;
+        private const float ScrollBarWidth = 20f;
+        private const float ListWidth = MatchRow.RowWidth + ScrollBarWidth;
+        private const float PanelWidth = ListWidth + Margin + Margin;
         private const float TitleHeight = 50f;
         private const float FilterY = TitleHeight + Margin;
         private const float FilterRowHeight = 20f;
         private const float FilterRow1 = FilterY;
         private const float FilterRow2 = FilterRow1 + FilterRowHeight;
         private const float FilterRow3 = FilterRow2 + FilterRowHeight;
-        private const float ListY = FilterRow3 + FilterRowHeight + Margin;
-        private const float ListHeight = DistrictRow.DefaultRowHeight * 20f;
+        private const float ListHeaderY = FilterRow3 + FilterRowHeight + Margin;
+        private const float ListY = ListHeaderY + 15f;
+        private const float ListHeight = StatusRow.RowHeight * 20f;
         private const float PanelHeight = ListY + ListHeight + Margin;
         private const float FilterColumn1 = Margin;
         private const float FilterColumn2 = 200f;
@@ -87,10 +90,18 @@ namespace TransferController
                 outCheck.isChecked = true;
                 outCheck.eventCheckChanged += (control, isChecked) => PopulateList();
 
+                // Header labels.
+                UIControls.AddLabel(this, MatchRow.ReasonX + Margin, ListHeaderY, Translations.Translate("TFC_LOG_MAT"), textScale: 0.7f);
+                UILabel priorityLabel = UIControls.AddLabel(this, MatchRow.PriorityX + Margin, ListHeaderY, Translations.Translate("TFC_LOG_PRI"), textScale: 0.7f);
+                priorityLabel.relativePosition = new Vector2(MatchRow.OtherPriorityX + MatchRow.PriorityWidth - priorityLabel.width, ListHeaderY);
+                UIControls.AddLabel(this, MatchRow.TargetX + Margin, ListHeaderY, Translations.Translate("TFC_LOG_TAR"), textScale: 0.7f);
+                UILabel allowedLabel = UIControls.AddLabel(this, MatchRow.AllowedX + Margin, ListHeaderY, Translations.Translate("TFC_LOG_ALW"), MatchRow.AllowedWidth, textScale: 0.7f);
+                allowedLabel.textAlignment = UIHorizontalAlignment.Center;
+
                 // Log list.
-                logList = UIFastList.Create<OfferRow>(this);
+                logList = UIFastList.Create<MatchRow>(this);
                 logList.backgroundSprite = "UnlockingPanel";
-                logList.width = width - 10f;
+                logList.width = ListWidth;
                 logList.height = ListHeight;
                 logList.canSelect = true;
                 logList.rowHeight = DistrictRow.DefaultRowHeight;
@@ -132,7 +143,7 @@ namespace TransferController
         private void PopulateList()
         {
             // Get filtered log list.
-            List<OfferData> displayList = TransferLogging.EntryList(thisBuildingCheck.isChecked ? BuildingPanelManager.Panel.CurrentBuilding : (ushort)0, blockedCheck.isChecked, allowedCheck.isChecked, inCheck.isChecked, outCheck.isChecked);
+            List<MatchData> displayList = TransferLogging.EntryList(thisBuildingCheck.isChecked ? BuildingPanelManager.Panel.CurrentBuilding : (ushort)0, blockedCheck.isChecked, allowedCheck.isChecked, inCheck.isChecked, outCheck.isChecked);
 
             // Set fastlist items, without changing the display.
             logList.rowsData.m_buffer = displayList.ToArray();

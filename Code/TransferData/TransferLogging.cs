@@ -1,6 +1,4 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 
 namespace TransferController
@@ -64,7 +62,7 @@ namespace TransferController
 
 
         /// <summary>
-        /// Returns a list of OfferData instances representing the current log, applying specified filters.
+        /// Returns a list of MatchData instances representing the current log, applying specified filters.
         /// </summary>
         /// </summary>
         /// <param name="buildingID">Building ID to match (0 for none)</param>
@@ -72,10 +70,10 @@ namespace TransferController
         /// <param name="showAllowed">True to show allowed transfers</param>
         /// <param name="showIn">True to show incoming transfers</param>
         /// <param name="showOut">True to show outgoing transfers</param>
-        /// <returns>List of OfferData instances representing the current log, filtered by parameters</returns>
-        internal static List<OfferData> EntryList(ushort buildingID, bool showBlocked, bool showAllowed, bool showIn, bool showOut)
+        /// <returns>List of MatchData instances representing the current log, filtered by parameters</returns>
+        internal static List<MatchData> EntryList(ushort buildingID, bool showBlocked, bool showAllowed, bool showIn, bool showOut)
         {
-            List<OfferData> returnList = new List<OfferData>(log.Length);
+            List<MatchData> returnList = new List<MatchData>(log.Length);
 
             // Iterate through log starting at current position and wrapping around.
             for (ushort i = (ushort)(logIndex + 1); i != logIndex; ++i)
@@ -88,60 +86,8 @@ namespace TransferController
                     && ((showBlocked & !thisEntry.allowed) | (showAllowed & thisEntry.allowed))
                     && ((showIn & thisBuildingIn) | (showOut & !thisBuildingIn)))
                 {
-                    ushort otherBuilding;
-                    UnityEngine.Vector3 thisPos;
-
-                    // Format display string.
-                    StringBuilder displayText = new StringBuilder();
-                    displayText.Append(thisEntry.reason);
-                    if (thisBuildingIn)
-                    {
-                        displayText.Append(" in");
-                        if (thisEntry.incoming)
-                        {
-                            displayText.Append('*');
-                        }
-                    }
-                    else
-                    {
-                        displayText.Append(" out");
-                        if (!thisEntry.incoming)
-                        {
-                            displayText.Append('*');
-                        }
-                    }
-                    displayText.Append(' ');
-                    displayText.Append(thisEntry.priorityIn);
-                    displayText.Append('-');
-
-                    // Warehouse flags (excluded flag).
-                    if (thisEntry.inExcluded)
-                    {
-                        displayText.Append('W');
-                    }
-                    displayText.Append(thisEntry.priorityOut);
-                    if (thisEntry.outExcluded)
-                    {
-                        displayText.Append('W');
-                    }
-
-                    displayText.Append(": ");
-                    if (thisBuildingIn)
-                    {
-                        otherBuilding = thisEntry.outBuilding;
-                        thisPos = thisEntry.outgoingPos;
-                    }
-                    else
-                    {
-                        otherBuilding = thisEntry.inBuilding;
-                        thisPos = thisEntry.incomingPos;
-                    }
-                    displayText.Append(otherBuilding);
-                    displayText.Append(": ");
-                    displayText.Append(thisEntry.allowed ? "Allowed" : "Blocked");
-
                     // Add entry to list.
-                    returnList.Add(new OfferData(displayText.ToString(), otherBuilding, thisPos));
+                    returnList.Add(new MatchData(buildingID, thisEntry.reason, thisEntry.priorityIn, thisEntry.priorityOut, thisEntry.inExcluded, thisEntry.outExcluded, thisEntry.inBuilding, thisEntry.outBuilding, thisEntry.incomingPos, thisEntry.outgoingPos, thisEntry.allowed));
                 }
             }
 

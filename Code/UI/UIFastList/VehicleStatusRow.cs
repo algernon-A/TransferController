@@ -35,10 +35,9 @@ namespace TransferController
 	/// <summary>
 	/// UI fastlist item for vehicles.
 	/// </summary>
-	public class VehicleStatusRow : UIBasicRow
+	public class VehicleStatusRow : StatusRow
 	{
 		// Layout constants.
-		public const float RowHeight = 20f;
 		internal const float VehicleNameWidth = 150f;
 		internal const float TargetBuildingWidth = 160f;
 		internal const float TransferReasonWidth = 115f;
@@ -50,7 +49,6 @@ namespace TransferController
 		internal const float RowWidth = TransferAmountX + TransferAmountWidth + Margin;
 		private const float VehicleZoomX = Margin;
 		private const float BuildingZoomX = VehicleNameX + VehicleNameWidth + Margin;
-		private const float ButtonSize = 16f;
 
 
 		// Components.
@@ -58,7 +56,7 @@ namespace TransferController
 		private UIButton vehicleZoomButton, buildingZoomButton;
 
 		// Target IDs.
-		protected ushort vehicleID, buildingID;
+		private ushort vehicleID;
 
 
 		/// <summary>
@@ -83,11 +81,11 @@ namespace TransferController
 				isVisible = true;
 				canFocus = true;
 				isInteractive = true;
-				width = parent.width;
+				width = RowWidth;
 				height = rowHeight;
 
 				// Add text labels.
-				vehicleNameLabel = AddLabel(VehicleNameX, VehicleNameWidth, 0.7f);
+				vehicleNameLabel = AddLabel(VehicleNameX, VehicleNameWidth);
 				targetBuildingLabel = AddLabel(TargetBuildingX, TargetBuildingWidth);
 				transferReasonLabel = AddLabel(TransferReasonX, TransferReasonWidth);
 				transferAmountLabel = AddLabel(TransferAmountX, TransferAmountWidth);
@@ -97,7 +95,7 @@ namespace TransferController
 				vehicleZoomButton = AddZoomButton(this, VehicleZoomX, "TFC_VSP_ZTV");
 				buildingZoomButton = AddZoomButton(this, BuildingZoomX, "TFC_VSP_ZTB");
 				vehicleZoomButton.eventClicked += ZoomToVehicle;
-				buildingZoomButton.eventClicked += ZoomToBuilding;
+				buildingZoomButton.eventClicked += (c, p) => ZoomToBuilding();
 			}
 
 			// Check for valid data.
@@ -149,54 +147,6 @@ namespace TransferController
 				instance.Vehicle = vehicleID;
 				ToolsModifierControl.cameraController.SetTarget(instance, Singleton<VehicleManager>.instance.m_vehicles.m_buffer[vehicleID].GetLastFramePosition(), zoomIn: true);
 			}
-		}
-
-
-		/// <summary>
-		/// Zoom to building button event handler.
-		/// </summary>
-		/// <param name="control">Calling component</param>
-		/// <param name="clickEvent">Event parameter</param>
-		private void ZoomToBuilding(UIComponent control, UIMouseEventParameter clickEvent)
-		{
-			if (buildingID != 0)
-			{
-				// Go to target building if available.
-				InstanceID instance = default;
-				instance.Building = buildingID;
-				ToolsModifierControl.cameraController.SetTarget(instance, Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID].m_position, zoomIn: true);
-			}
-		}
-
-
-		/// <summary>
-		/// Adds an zoom icon button.
-		/// </summary>
-		/// <param name="parent">Parent UIComponent</param>
-		/// <param name="xPos">Relative X position</param>
-		/// <param name="tooltipKey">Tooltip translation key</param>
-		/// <returns>New UIButton</returns>
-		private  UIButton AddZoomButton(UIComponent parent, float xPos, string tooltipKey)
-		{
-			UIButton newButton = parent.AddUIComponent<UIButton>();
-
-			// Size and position.
-			newButton.relativePosition = new Vector2(xPos, (RowHeight - ButtonSize) / 2f);
-			newButton.height = ButtonSize;
-			newButton.width = ButtonSize;
-
-			// Appearance.
-			newButton.atlas = TextureUtils.InGameAtlas;
-			newButton.normalFgSprite = "LineDetailButton";
-			newButton.focusedFgSprite = "LineDetailButtonFocused";
-			newButton.hoveredFgSprite = "LineDetailButtonHovered";
-			newButton.disabledFgSprite = "LineDetailButtonDisabled";
-			newButton.pressedFgSprite = "LineDetailButtonPressed";
-
-			// Tooltip.
-			newButton.tooltip = Translations.Translate(tooltipKey);
-
-			return newButton;
 		}
 	}
 }
