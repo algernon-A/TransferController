@@ -49,7 +49,6 @@ namespace TransferController
 		// Layout constants.
 		public const float VehicleRowHeight = 40f;
 		private const float TextScale = 0.8f;
-		private const float Margin = 5f;
 		private const float VehicleSpriteSize = 40f;
 
 		// Vehicle name label.
@@ -88,19 +87,13 @@ namespace TransferController
 				height = VehicleRowHeight;
 
 				// Add object name label.
-				vehicleNameLabel = AddUIComponent<UILabel>();
-				vehicleNameLabel.autoSize = false;
-				vehicleNameLabel.height = VehicleSpriteSize;
-				vehicleNameLabel.width = this.width - VehicleSpriteSize - Margin - Margin;
-				vehicleNameLabel.verticalAlignment = UIVerticalAlignment.Middle;
-				vehicleNameLabel.wordWrap = true;
-				vehicleNameLabel.textScale = TextScale;
-				vehicleNameLabel.font = FontUtils.Regular;
+				vehicleNameLabel = AddLabel(VehicleSpriteSize + Margin, parent.width - Margin - Margin, wordWrap: true);
 
 				// Add preview sprite image.
 				vehicleSprite = AddUIComponent<UISprite>();
 				vehicleSprite.height = VehicleSpriteSize;
 				vehicleSprite.width = VehicleSpriteSize;
+				vehicleSprite.relativePosition = Vector2.zero;
 			}
 
 			// Get building ID and set name label.
@@ -111,9 +104,6 @@ namespace TransferController
 
 				vehicleSprite.atlas = info?.m_Atlas;
 				vehicleSprite.spriteName = info?.m_Thumbnail;
-
-				// Call OnSizeChanged to set label position.
-				OnSizeChanged();
 			}
 			else
 			{
@@ -123,25 +113,6 @@ namespace TransferController
 
 			// Set initial background as deselected state.
 			Deselect(isRowOdd);
-		}
-
-
-		/// <summary>
-		/// Called when dimensions are changed, including as part of initial setup (required to set correct relative position of label).
-		/// </summary>
-		protected override void OnSizeChanged()
-		{
-			base.OnSizeChanged();
-
-			if (vehicleNameLabel != null)
-			{
-				vehicleNameLabel.relativePosition = new Vector2(VehicleSpriteSize + Margin, 0f);
-			}
-
-			if (vehicleSprite != null)
-			{
-				vehicleSprite.relativePosition = new Vector2(0f, 0f);
-			}
 		}
 
 		

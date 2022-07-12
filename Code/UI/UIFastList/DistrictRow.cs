@@ -74,7 +74,6 @@ namespace TransferController
 	{
 		// Layout constants.
 		private const float TextScale = 0.8f;
-		private const float LeftMargin = 5f;
 		private const float PaddingY = 3f;
 
 		// District name label.
@@ -99,11 +98,8 @@ namespace TransferController
 				width = parent.width;
 				height = rowHeight;
 
-				// Add object name label.
-				districtNameLabel = AddUIComponent<UILabel>();
-				districtNameLabel.width = this.width - 10f;
-				districtNameLabel.textScale = TextScale;
-				districtNameLabel.font = FontUtils.Regular;
+				// Add district name label.
+				districtNameLabel = AddLabel(Margin, parent.width - Margin - Margin);
 			}
 
 			// Get district ID and set name label according to district type.
@@ -124,9 +120,6 @@ namespace TransferController
 				
 				// Set label color.
 				districtNameLabel.textColor = thisItem.displayColor;
-
-				// Call OnSizeChanged to set label position.
-				OnSizeChanged();
 			}
 			else
             {
@@ -136,20 +129,6 @@ namespace TransferController
 
 			// Set initial background as deselected state.
 			Deselect(isRowOdd);
-		}
-
-
-		/// <summary>
-		/// Called when dimensions are changed, including as part of initial setup (required to set correct relative position of label).
-		/// </summary>
-		protected override void OnSizeChanged()
-		{
-			base.OnSizeChanged();
-
-			if (districtNameLabel != null)
-			{
-				districtNameLabel.relativePosition = new Vector2(LeftMargin, PaddingY);
-			}
 		}
 
 

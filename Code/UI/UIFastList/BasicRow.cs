@@ -12,6 +12,7 @@ namespace TransferController
     {
         // Layout constants.
         public const float DefaultRowHeight = 20f;
+        protected const float Margin = 5f;
 
         // Row height.
         public float rowHeight = DefaultRowHeight;

@@ -57,11 +57,6 @@ namespace TransferController
 	/// </summary>
 	public class BuildingRow : UIBasicRow
 	{
-		// Layout constants.
-		private const float TextScale = 0.8f;
-		private const float LeftMargin = 5f;
-		private const float PaddingY = 3f;
-
 		// Building name label.
 		private UILabel buildingNameLabel;
 
@@ -85,7 +80,7 @@ namespace TransferController
 				height = rowHeight;
 
 				// Add building name label.
-				buildingNameLabel = AddLabel(this.width - 10f, 0f);
+				buildingNameLabel = AddLabel(Margin, parent.width - Margin - Margin);
 			}
 
 			// Get building ID and set name label.
@@ -93,9 +88,6 @@ namespace TransferController
 			{
 				buildingID = thisItem.ID;
 				buildingNameLabel.text = thisItem.name;
-
-				// Call OnSizeChanged to set label position.
-				OnSizeChanged();
 			}
 			else
 			{
@@ -105,20 +97,6 @@ namespace TransferController
 
 			// Set initial background as deselected state.
 			Deselect(isRowOdd);
-		}
-
-
-		/// <summary>
-		/// Called when dimensions are changed, including as part of initial setup (required to set correct relative position of label).
-		/// </summary>
-		protected override void OnSizeChanged()
-		{
-			base.OnSizeChanged();
-
-			if (buildingNameLabel != null)
-			{
-				buildingNameLabel.relativePosition = new Vector2(LeftMargin, PaddingY);
-			}
 		}
 
 

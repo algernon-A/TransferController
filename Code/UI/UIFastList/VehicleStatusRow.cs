@@ -39,10 +39,10 @@ namespace TransferController
 	{
 		// Layout constants.
 		public const float RowHeight = 20f;
-		internal const float VehicleNameWidth = 140f;
+		internal const float VehicleNameWidth = 150f;
 		internal const float TargetBuildingWidth = 160f;
-		internal const float TransferReasonWidth = 120f;
-		internal const float TransferAmountWidth = 60f;
+		internal const float TransferReasonWidth = 115f;
+		internal const float TransferAmountWidth = 50f;
 		internal const float VehicleNameX = VehicleZoomX + ButtonSize + Margin;
 		internal const float TargetBuildingX = BuildingZoomX + ButtonSize + Margin;
 		internal const float TransferReasonX = TargetBuildingX + TargetBuildingWidth + Margin;
@@ -50,7 +50,6 @@ namespace TransferController
 		internal const float RowWidth = TransferAmountX + TransferAmountWidth + Margin;
 		private const float VehicleZoomX = Margin;
 		private const float BuildingZoomX = VehicleNameX + VehicleNameWidth + Margin;
-		private const float Margin = 5f;
 		private const float ButtonSize = 16f;
 
 
@@ -117,9 +116,6 @@ namespace TransferController
 				// Set button visibility.
 				vehicleZoomButton.Show();
 				buildingZoomButton.isVisible = buildingID != 0;
-
-				// Call OnSizeChanged to set label position.
-				OnSizeChanged();
 			}
 			else
 			{

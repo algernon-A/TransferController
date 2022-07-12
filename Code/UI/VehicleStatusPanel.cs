@@ -17,7 +17,8 @@ namespace TransferController
     {
         // Layout constants.
         private const float Margin = 5f;
-        private const float PanelWidth = VehicleStatusRow.RowWidth + Margin + Margin;
+        private const float ScrollBarWidth = 20f;
+        private const float PanelWidth = VehicleStatusRow.RowWidth + ScrollBarWidth + Margin + Margin;
         private const float ListTitleY = 45f;
         private const float ListY = ListTitleY + 15f;
         private const float ListHeight = DistrictRow.DefaultRowHeight * 10f;
@@ -69,15 +70,15 @@ namespace TransferController
                 };
 
                 // Vehicle list.
-                UIControls.AddLabel(this, VehicleStatusRow.VehicleNameX, ListY - 15f, Translations.Translate("TFC_VSP_VEH"), VehicleStatusRow.VehicleNameWidth + Margin, 0.7f);
-                UIControls.AddLabel(this, VehicleStatusRow.TargetBuildingX, ListY - 15f, Translations.Translate("TFC_VSP_TAR"), VehicleStatusRow.TargetBuildingWidth + Margin, 0.7f);
-                UIControls.AddLabel(this, VehicleStatusRow.TransferReasonX, ListY - 15f, Translations.Translate("TFC_VSP_MAT"), VehicleStatusRow.TransferReasonWidth + Margin, 0.7f);
+                UIControls.AddLabel(this, VehicleStatusRow.VehicleNameX + Margin, ListY - 15f, Translations.Translate("TFC_VSP_VEH"), VehicleStatusRow.VehicleNameWidth, 0.7f);
+                UIControls.AddLabel(this, VehicleStatusRow.TargetBuildingX + Margin, ListY - 15f, Translations.Translate("TFC_VSP_TAR"), VehicleStatusRow.TargetBuildingWidth, 0.7f);
+                UIControls.AddLabel(this, VehicleStatusRow.TransferReasonX + Margin, ListY - 15f, Translations.Translate("TFC_VSP_MAT"), VehicleStatusRow.TransferReasonWidth, 0.7f);
                 UILabel amountLabel = UIControls.AddLabel(this, VehicleStatusRow.TransferAmountX, ListY - 15f, Translations.Translate("TFC_VSP_AMT"), VehicleStatusRow.TransferAmountWidth + Margin, 0.7f);
                 amountLabel.textAlignment = UIHorizontalAlignment.Right;
 
                 vehiclesList = UIFastList.Create<VehicleStatusRow>(this);
                 vehiclesList.backgroundSprite = "UnlockingPanel";
-                vehiclesList.width = VehicleStatusRow.RowWidth;
+                vehiclesList.width = VehicleStatusRow.RowWidth + ScrollBarWidth;
                 vehiclesList.height = ListHeight;
                 vehiclesList.canSelect = true;
                 vehiclesList.rowHeight = DistrictRow.DefaultRowHeight;
