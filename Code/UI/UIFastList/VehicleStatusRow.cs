@@ -92,8 +92,8 @@ namespace TransferController
 				transferAmountLabel.textAlignment = UIHorizontalAlignment.Right;
 
 				// Add zoom buttons.
-				vehicleZoomButton = AddZoomButton(this, VehicleZoomX, "TFC_VSP_ZTV");
-				buildingZoomButton = AddZoomButton(this, BuildingZoomX, "TFC_VSP_ZTB");
+				vehicleZoomButton = AddZoomButton(this, VehicleZoomX, "TFC_STA_ZTV");
+				buildingZoomButton = AddZoomButton(this, BuildingZoomX, "TFC_STA_ZTB");
 				vehicleZoomButton.eventClicked += ZoomToVehicle;
 				buildingZoomButton.eventClicked += (c, p) => ZoomToBuilding();
 			}
@@ -107,7 +107,7 @@ namespace TransferController
 
 				// Set text.
 				vehicleNameLabel.text = thisItem.vehicleName;
-				targetBuildingLabel.text = buildingID == 0 ? Translations.Translate("TFC_VSP_RET") : Singleton<BuildingManager>.instance.GetBuildingName(buildingID, InstanceID.Empty);
+				targetBuildingLabel.text = buildingID == 0 ? Translations.Translate("TFC_STA_RET") : Singleton<BuildingManager>.instance.GetBuildingName(buildingID, InstanceID.Empty);
 				transferReasonLabel.text = thisItem.material.ToString();
 				transferAmountLabel.text = thisItem.amount.ToString("N0");
 

@@ -79,7 +79,7 @@ namespace TransferController
         private readonly BuildingPanelTab[] tabs = new BuildingPanelTab[NumTabs];
         private readonly UIButton[] tabButtons = new UIButton[NumTabs];
         private readonly UISprite[] tabSprites = new UISprite[NumTabs];
-        private OffersPanel offersPanel;
+        private StatusPanel statusPanel;
         private LogPanel logPanel;
 
         // Event handling.
@@ -421,8 +421,9 @@ namespace TransferController
                 }
             }
 
-            // Update target for offer panel, if open.
-            offersPanel?.SetTarget(buildingID);
+            // Update target for status and log panels, if open.
+            statusPanel?.SetTarget(buildingID);
+            logPanel?.SetTarget(buildingID);
 
             // Resume tab change event handling.
             ignoreTabChange = false;
@@ -505,18 +506,18 @@ namespace TransferController
                 ResetButtons();
             }
 
-            // Create offers panel if it isn't already created.
-            if (offersPanel == null)
+            // Create status panel if it isn't already created.
+            if (statusPanel == null)
             {
-                offersPanel = this.AddUIComponent<OffersPanel>();
-                offersPanel.relativePosition = new Vector2(PanelWidth + Margin, 0f);
+                statusPanel = this.AddUIComponent<StatusPanel>();
+                statusPanel.relativePosition = new Vector2(PanelWidth + Margin, 0f);
             }
 
-            // Set the offer panel target building to match the current one.
-            offersPanel.SetTarget(currentBuilding);
+            // Set the status panel target building to match the current one.
+            statusPanel.SetTarget(currentBuilding);
 
-            // Ensure offers panel is visible.
-            offersPanel.Show();
+            // Ensure status panel is visible.
+            statusPanel.Show();
 
             // Enforce button state while panel is open.
             offersButton.state = UIButton.ButtonState.Pressed;
@@ -531,12 +532,12 @@ namespace TransferController
         /// <param name="clickEvent">Click event (unused)</param>
         private void ShowLog(UIComponent component, UIMouseEventParameter clickEvent)
         {
-            // Close offers panel if it's open.
-            if (offersPanel != null)
+            // Close status panel if it's open.
+            if (statusPanel != null)
             {
-                RemoveUIComponent(offersPanel);
-                GameObject.Destroy(offersPanel);
-                offersPanel = null;
+                RemoveUIComponent(statusPanel);
+                GameObject.Destroy(statusPanel);
+                statusPanel = null;
                 ResetButtons();
             }
 
