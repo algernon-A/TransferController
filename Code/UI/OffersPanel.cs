@@ -123,7 +123,36 @@ namespace TransferController
             currentBuilding = buildingID;
             PopulateList();
 
-            vehicleStatusPanel.SetTarget(buildingID);
+            // Set vehicle status panel visibility based on building type and vehicle count.
+            BuildingAI buildingAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID].Info.m_buildingAI;
+            if (buildingAI is IndustrialBuildingAI ||
+                buildingAI is IndustrialExtractorAI ||
+                (buildingAI is ExtractingFacilityAI extractingAI && extractingAI.m_outputVehicleCount > 0) ||
+                (buildingAI is ProcessingFacilityAI processingAI && processingAI.m_outputVehicleCount > 0) ||
+                (buildingAI is WarehouseAI warehouseAI && warehouseAI.m_truckCount > 0) ||
+                (buildingAI is FishFarmAI fishFarmAI && fishFarmAI.m_outputVehicleCount > 0) ||
+                (buildingAI is FishingHarborAI fishHarborAI && fishHarborAI.m_outputVehicleCount > 0) ||
+                (buildingAI is FireStationAI fireStationAI && fireStationAI.m_fireTruckCount > 0) ||
+                (buildingAI is PoliceStationAI policeStationAI && policeStationAI.m_policeCarCount > 0) ||
+                (buildingAI is HospitalAI hospitalAI && hospitalAI.m_ambulanceCount > 0) ||
+                (buildingAI is CemeteryAI cemeteryAI && cemeteryAI.m_hearseCount > 0) ||
+                (buildingAI is LandfillSiteAI landfillSiteAI && landfillSiteAI.m_garbageTruckCount > 0) ||
+                (buildingAI is PostOfficeAI postOfficeAI && postOfficeAI.m_postTruckCount + postOfficeAI.m_postVanCount > 0) ||
+                (buildingAI is MaintenanceDepotAI depotAI && depotAI.m_maintenanceTruckCount > 0) ||
+                (buildingAI is HelicopterDepotAI heliAI && heliAI.m_helicopterCount > 0) ||
+                (buildingAI is SnowDumpAI snowDumpAI && snowDumpAI.m_snowTruckCount > 0) ||
+                (buildingAI is DisasterResponseBuildingAI disasterAI && disasterAI.m_vehicleCount > 0)
+                )
+            {
+                // Has outgoing vehicles - show vehicle status panel.
+                vehicleStatusPanel.SetTarget(buildingID);
+                vehicleStatusPanel.Show();
+            }
+            else
+            {
+                // No supported outgoing vehicles - hide vehicle status panel.
+                vehicleStatusPanel.Hide();
+            }
         }
 
 
