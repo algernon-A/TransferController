@@ -152,7 +152,6 @@ namespace TransferController
 				case TransferManager.TransferReason.RoadMaintenance:
 				case TransferManager.TransferReason.ParkMaintenance:
 				case TransferManager.TransferReason.Snow:
-				case TransferManager.TransferReason.Dead:
 					// Match outgoing offers first from highest to lowest priority, down to priority 3, to service any urgent issues.
 					for (int priority = 7; priority >= 3; --priority)
 					{
@@ -194,6 +193,7 @@ namespace TransferController
 					break;
 
 				// Default treatment is to match incoming then outgoing by descending priority level (i.e. incoming 7, outgoing 7, incoming 6, outgoing 6, etc.)
+				case TransferManager.TransferReason.Dead:
 				default:
 					// Match by priority within this reason, descending.
 					for (int priority = 7; priority >= 0; --priority)
