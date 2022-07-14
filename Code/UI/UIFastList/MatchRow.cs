@@ -176,7 +176,7 @@ namespace TransferController
 
 			if (buildingID != 0)
 			{
-				ZoomToBuilding();
+				BuildingPanel.ZoomToBuilding(buildingID);
 			}
 			else if (transferPos != Vector3.zero)
 			{

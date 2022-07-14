@@ -95,7 +95,7 @@ namespace TransferController
 				vehicleZoomButton = AddZoomButton(this, VehicleZoomX, "TFC_STA_ZTV");
 				buildingZoomButton = AddZoomButton(this, BuildingZoomX, "TFC_STA_ZTB");
 				vehicleZoomButton.eventClicked += ZoomToVehicle;
-				buildingZoomButton.eventClicked += (c, p) => ZoomToBuilding();
+				buildingZoomButton.eventClicked += (c, p) => BuildingPanel.ZoomToBuilding(buildingID);
 			}
 
 			// Check for valid data.

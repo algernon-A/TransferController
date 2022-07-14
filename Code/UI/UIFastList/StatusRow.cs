@@ -35,48 +35,12 @@ namespace TransferController
 
 
 		/// <summary>
-		/// Zoom to building button event handler.
-		/// </summary>
-		protected void ZoomToBuilding()
-		{
-			// Go to target building if available.
-			if (buildingID != 0)
-			{
-				InstanceID instance = default;
-				instance.Building = buildingID;
-				ToolsModifierControl.cameraController.SetTarget(instance, Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID].m_position, zoomIn: true);
-			}
-		}
-
-
-		/// <summary>
 		/// Adds an zoom icon button.
 		/// </summary>
 		/// <param name="parent">Parent UIComponent</param>
 		/// <param name="xPos">Relative X position</param>
 		/// <param name="tooltipKey">Tooltip translation key</param>
 		/// <returns>New UIButton</returns>
-		protected UIButton AddZoomButton(UIComponent parent, float xPos, string tooltipKey)
-		{
-			UIButton newButton = parent.AddUIComponent<UIButton>();
-
-			// Size and position.
-			newButton.relativePosition = new Vector2(xPos, (RowHeight - ButtonSize) / 2f);
-			newButton.height = ButtonSize;
-			newButton.width = ButtonSize;
-
-			// Appearance.
-			newButton.atlas = TextureUtils.InGameAtlas;
-			newButton.normalFgSprite = "LineDetailButton";
-			newButton.focusedFgSprite = "LineDetailButtonFocused";
-			newButton.hoveredFgSprite = "LineDetailButtonHovered";
-			newButton.disabledFgSprite = "LineDetailButtonDisabled";
-			newButton.pressedFgSprite = "LineDetailButtonPressed";
-
-			// Tooltip.
-			newButton.tooltip = Translations.Translate(tooltipKey);
-
-			return newButton;
-		}
+		protected UIButton AddZoomButton(UIComponent parent, float xPos, string tooltipKey) => BuildingPanel.AddZoomButton(parent, xPos, (RowHeight - ButtonSize) / 2f, ButtonSize, tooltipKey);
 	}
 }

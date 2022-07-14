@@ -189,6 +189,10 @@ namespace TransferController
                 areaLabel2 = UIControls.AddLabel(this, 0f, AreaLabel2Y, String.Empty, PanelWidth, 0.9f);
                 areaLabel2.textAlignment = UIHorizontalAlignment.Center;
 
+                // Zoom to building button.
+                UIButton zoomButton = AddZoomButton(this, Margin, Margin, 30f, "TFC_STA_ZTB");
+                zoomButton.eventClicked += (c, p) => ZoomToBuilding(currentBuilding);
+
                 // Offers button.
                 offersButton = AddIconButton(this, ButtonX, Button1Y, ButtonSize, "TFC_OFF_TIT", TextureUtils.LoadSpriteAtlas("TC-OpenOffers"));
                 offersButton.eventClicked += ShowOffers;
@@ -250,6 +254,57 @@ namespace TransferController
             catch (Exception e)
             {
                 Logging.LogException(e, "exception setting up building panel");
+            }
+        }
+
+
+        /// <summary>
+        /// Adds an zoom icon button.
+        /// </summary>
+        /// <param name="parent">Parent UIComponent</param>
+        /// <param name="xPos">Relative X position</param>
+        /// <param name="yPos">Relative Y position</param>
+        /// <param name="size">Button size</param>
+        /// <param name="tooltipKey">Tooltip translation key</param>
+        /// <returns>New UIButton</returns>
+        internal static UIButton AddZoomButton(UIComponent parent, float xPos, float yPos, float size, string tooltipKey)
+        {
+            UIButton newButton = parent.AddUIComponent<UIButton>();
+
+            // Size and position.
+            newButton.relativePosition = new Vector2(xPos, yPos);
+            newButton.height = size;
+            newButton.width = size;
+
+            // Appearance.
+            newButton.atlas = TextureUtils.InGameAtlas;
+            newButton.normalFgSprite = "LineDetailButtonHovered";
+            newButton.focusedFgSprite = "LineDetailButtonFocused";
+            newButton.hoveredFgSprite = "LineDetailButton";
+            newButton.disabledFgSprite = "LineDetailButtonDisabled";
+            newButton.pressedFgSprite = "LineDetailButtonPressed";
+
+            // Tooltip.
+            newButton.tooltip = Translations.Translate(tooltipKey);
+
+            return newButton;
+        }
+
+
+        /// <summary>
+        /// Zooms to the specified building
+        /// </summary>
+        internal static void ZoomToBuilding(ushort buildingID)
+        {
+            // Go to target building if available.
+            if (buildingID != 0)
+            {
+                // Clear existing target fist to force a re-zoom-in if required.
+                ToolsModifierControl.cameraController.ClearTarget();
+
+                InstanceID instance = default;
+                instance.Building = buildingID;
+                ToolsModifierControl.cameraController.SetTarget(instance, Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID].m_position, zoomIn: true);
             }
         }
 
@@ -626,7 +681,7 @@ namespace TransferController
         /// <param name="tooltipKey">Tooltip translation key</param>
         /// <param name="atlas">Icon atlas</param>
         /// <returns>New UIButton</returns>
-        private static TCPanelButton AddIconButton(UIComponent parent, float xPos, float yPos, float size, string tooltipKey, UITextureAtlas atlas)
+        private TCPanelButton AddIconButton(UIComponent parent, float xPos, float yPos, float size, string tooltipKey, UITextureAtlas atlas)
         {
             TCPanelButton newButton = parent.AddUIComponent<TCPanelButton>();
 
