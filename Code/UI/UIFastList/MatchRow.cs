@@ -15,7 +15,7 @@ namespace TransferController
 		public bool incoming, incomingExcluded, outgoingExcluded;
 		public ushort buildingID, incomingBuildingID, outgoingBuildingID;
 		public Vector3 incomingPos, outgoingPos;
-		public bool allowed;
+		public MatchStatus status;
 
 
 		/// <summary>
@@ -31,8 +31,8 @@ namespace TransferController
 		/// <param name="outgoingBuildingID">Incoming building ID</param>
 		/// <param name="incomingPos">Incoming offer position</param>
 		/// <param name="outgoingPos">Incoming offer position</param>
-		/// <param name="allowed">True if match was permitted, false otherwise</param>
-		public MatchData(ushort buildingID, TransferManager.TransferReason reason, byte incomingPriority, byte outgoingPriority, bool incomingExcluded, bool outgoingExcluded, ushort incomingBuildingID, ushort outgoingBuildingID, Vector3 incomingPos, Vector3 outgoingPos, bool allowed)
+		/// <param name="status">Match status</param>
+		public MatchData(ushort buildingID, TransferManager.TransferReason reason, byte incomingPriority, byte outgoingPriority, bool incomingExcluded, bool outgoingExcluded, ushort incomingBuildingID, ushort outgoingBuildingID, Vector3 incomingPos, Vector3 outgoingPos, MatchStatus status)
         {
 			this.buildingID = buildingID;
             this.reason = reason;
@@ -44,7 +44,7 @@ namespace TransferController
             this.outgoingBuildingID = outgoingBuildingID;
 			this.incomingPos = incomingPos;
 			this.outgoingPos = outgoingPos;
-			this.allowed = allowed;
+			this.status = status;
         }
     }
 
@@ -56,16 +56,16 @@ namespace TransferController
 	{
 		// Layout constants.
 		internal const float TargetWidth = 150f;
-		internal const float AllowedWidth = 60f;
+		internal const float StatusWidth = 80f;
 		internal const float ThisPriorityX = ReasonX + ReasonWidth + Margin;
 		internal const float OtherPriorityX = ThisPriorityX + PriorityWidth + Margin;
 		internal const float TargetX = OtherPriorityX + PriorityWidth + Margin;
 		internal const float AllowedX = TargetX + TargetWidth + Margin;
-		internal const float RowWidth = AllowedX + AllowedWidth + Margin;
+		internal const float RowWidth = AllowedX + StatusWidth + Margin;
 
 
 		// Components.
-		private UILabel directionLabel, reasonLabel, thisPriorityLabel, otherPriorityLabel, targetLabel, allowedLabel;
+		private UILabel directionLabel, reasonLabel, thisPriorityLabel, otherPriorityLabel, targetLabel, statusLabel;
 
 		// Transfer position.
 		private Vector3 transferPos;
@@ -93,8 +93,8 @@ namespace TransferController
 				thisPriorityLabel = AddLabel(ThisPriorityX, PriorityWidth);
 				otherPriorityLabel = AddLabel(OtherPriorityX, PriorityWidth);
 				targetLabel = AddLabel(TargetX, TargetWidth);
-                allowedLabel = AddLabel(AllowedX, AllowedWidth);
-				allowedLabel.textAlignment = UIHorizontalAlignment.Center;
+				statusLabel = AddLabel(AllowedX, StatusWidth);
+				statusLabel.textAlignment = UIHorizontalAlignment.Center;
             }
 
             // Check for valid data.
@@ -148,7 +148,25 @@ namespace TransferController
 
 				// Set other text.
 				reasonLabel.text = thisMatch.reason.ToString();
-				allowedLabel.text = thisMatch.allowed ? "Y" : "N";
+
+				switch (thisMatch.status)
+				{
+					case MatchStatus.Blocked:
+						statusLabel.text = Translations.Translate("TFC_LOG_BLK");
+						break;
+					case MatchStatus.NoVehicle:
+						statusLabel.text = Translations.Translate("TFC_LOG_NOV");
+						break;
+					case MatchStatus.Eligible:
+						statusLabel.text = Translations.Translate("TFC_LOG_ELI");
+                        break;
+					case MatchStatus.Selected:
+						statusLabel.text = Translations.Translate("TFC_LOG_SEL");
+						break;
+					default:
+						statusLabel.text = string.Empty;
+						break;
+				}
 			}
 			else
 			{
@@ -158,7 +176,7 @@ namespace TransferController
 				thisPriorityLabel.text = string.Empty;
 				otherPriorityLabel.text = string.Empty;
 				targetLabel.text = string.Empty;
-				allowedLabel.text = string.Empty;
+				statusLabel.text = string.Empty;
 			}
 
 			// Set initial background as deselected state.

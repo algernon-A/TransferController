@@ -80,10 +80,13 @@ TFC_LOG_BLD,This building only
 TFC_LOG_MAT,Reason
 TFC_LOG_PRI,Priority
 TFC_LOG_TAR,Target
-TFC_LOG_ALW,Allowed
 TFC_LOG_BLK,Blocked
+TFC_LOG_NOV,No vehicle
+TFC_LOG_ELI,Eligible
+TFC_LOG_SEL,Selected
 TFC_LOG_INC,Incoming
 TFC_LOG_OUT,Outgoing
+TFC_LOG_STA,Result
 TFC_STA_TIT,Building status
 TFC_STA_TIG,Incoming vehicles
 TFC_STA_TIO,Outgoing vehicles

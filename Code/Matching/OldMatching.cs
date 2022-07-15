@@ -174,6 +174,7 @@ namespace TransferController
 
 							/// ---- Start code insert
 							float closestDistance = float.MaxValue;
+							ushort matchedBuilding = 0;
 							/// ---- End code insert
 
 							// num14 = currentIncomingIndex
@@ -266,6 +267,7 @@ namespace TransferController
 											// Outgoing candidate is warehouse (but this incoming one isn't) - check vehicle quotas.
 											if (!WarehouseControl.CheckVehicleQuota(outgoingWarehouseAI, outCandidateBuilding, ref buildingBuffer[outCandidateBuilding], material, incomingAI))
 											{
+												TransferLogging.AddEntry(material, true, thisPriority, otherPriority, incomingBuilding, outCandidateBuilding, MatchStatus.NoVehicle, incomingOfferToMatch.Exclude, outgoingOfferCandidate.Exclude, incomingOfferToMatch.Position, outgoingOfferCandidate.Position);
 												continue;
 											}
 
@@ -307,8 +309,9 @@ namespace TransferController
 										// Position of incoming building (source building or vehicle source building)
 										Vector3 outCandidatePosition = outCandidateBuilding == 0 ? outgoingOfferCandidate.Position : buildingBuffer[outCandidateBuilding].m_position;
 
-										if (!Matching.ChecksPassed(true, (byte)thisPriority, (byte)otherPriority, incomingBuilding, outCandidateBuilding, incomingDistrict, districtManager.GetDistrict(outCandidatePosition), incomingPark, districtManager.GetPark(outCandidatePosition), material, incomingOfferToMatch.Exclude, outgoingOfferCandidate.Exclude, incomingOfferToMatch.Position, outgoingOfferCandidate.Position))
+										if (!Matching.ChecksPassed(incomingBuilding, outCandidateBuilding, incomingDistrict, districtManager.GetDistrict(outCandidatePosition), incomingPark, districtManager.GetPark(outCandidatePosition), material))
 										{
+											TransferLogging.AddEntry(material, true, thisPriority, otherPriority, incomingBuilding, outCandidateBuilding, MatchStatus.Blocked, incomingOfferToMatch.Exclude, outgoingOfferCandidate.Exclude, incomingOfferToMatch.Position, outgoingOfferCandidate.Position);
 											continue;
 										}
 									}
@@ -324,6 +327,7 @@ namespace TransferController
 										matchedPriority = otherPriority;
 										matchedIndex = candidateIndex;
 										closestDistance = squaredDistance;
+										matchedBuilding = outCandidateBuilding;
 									}
 									else
 									{
@@ -373,6 +377,7 @@ namespace TransferController
 							int transferAmount = Mathf.Min(incomingOfferAmount, matchedOutgoingAmount);
 							if (transferAmount != 0)
 							{
+								TransferLogging.AddEntry(material, true, thisPriority, matchedPriority, incomingBuilding, matchedBuilding, MatchStatus.Selected, incomingOfferToMatch.Exclude, matchedOutgoingOffer.Exclude, incomingOfferToMatch.Position, matchedOutgoingOffer.Position);
 								Matching.StartTransfer(__instance, material, matchedOutgoingOffer, incomingOfferToMatch, transferAmount);
 							}
 							incomingOfferAmount -= transferAmount;
@@ -497,6 +502,7 @@ namespace TransferController
 
 						/// ---- Start code insert
 						float closestDistance = float.MaxValue;
+						ushort matchedBuilding = 0;
 						/// ---- End code insert
 
 						// num30 = currentOutgoingIndex
@@ -570,6 +576,7 @@ namespace TransferController
 										// Outgoing building is warehouse - check vehicle quotas.
 										if (!WarehouseControl.CheckVehicleQuota(outgoingWarehouseAI, outgoingBuilding, ref buildingBuffer[outgoingBuilding], material, candidateAI))
 										{
+											TransferLogging.AddEntry(material, false, otherPriority, thisPriority, inCandidateBuilding, outgoingBuilding, MatchStatus.NoVehicle, incomingOfferCandidate.Exclude, outgoingOfferToMatch.Exclude, incomingOfferCandidate.Position, outgoingOfferToMatch.Position);
 											continue;
 										}
 
@@ -631,8 +638,9 @@ namespace TransferController
 									// Position of incoming building (source building or vehicle source building)
 									Vector3 inCandidatePosition = inCandidateBuilding == 0 ? incomingOfferCandidate.Position : buildingBuffer[inCandidateBuilding].m_position;
 
-									if (!Matching.ChecksPassed(false, (byte)otherPriority, (byte)thisPriority, inCandidateBuilding, outgoingBuilding, districtManager.GetDistrict(inCandidatePosition), outgoingDistrict, districtManager.GetPark(inCandidatePosition), outgoingPark, material, incomingOfferCandidate.Exclude, outgoingOfferToMatch.Exclude, incomingOfferCandidate.Position, outgoingOfferToMatch.Position))
+									if (!Matching.ChecksPassed( inCandidateBuilding, outgoingBuilding, districtManager.GetDistrict(inCandidatePosition), outgoingDistrict, districtManager.GetPark(inCandidatePosition), outgoingPark, material))
 									{
+										TransferLogging.AddEntry(material, false, otherPriority, thisPriority, inCandidateBuilding, outgoingBuilding, MatchStatus.Blocked, incomingOfferCandidate.Exclude, outgoingOfferToMatch.Exclude, incomingOfferCandidate.Position, outgoingOfferToMatch.Position);
 										continue;
 									}
 								}
@@ -659,6 +667,7 @@ namespace TransferController
 										matchedPriority = otherPriority;
 										matchedIndex = candidateIndex;
 										bestDistanceValue = distanceValue;
+										matchedBuilding = inCandidateBuilding;
 
 										// Automatically accept offers within the optimal distance.
 										if (squaredDistance < optimalDistanceSquared)
@@ -689,6 +698,7 @@ namespace TransferController
 						int transferAmount = Mathf.Min(outgoingAmount, incomingAmount);
 						if (transferAmount != 0)
 						{
+							TransferLogging.AddEntry(material, false, matchedPriority, thisPriority, matchedBuilding, outgoingBuilding, MatchStatus.Selected, matchedIncomingOffer.Exclude, outgoingOfferToMatch.Exclude, matchedIncomingOffer.Position, outgoingOfferToMatch.Position);
 							Matching.StartTransfer(__instance, material, outgoingOfferToMatch, matchedIncomingOffer, transferAmount);
 						}
 						outgoingAmount -= transferAmount;

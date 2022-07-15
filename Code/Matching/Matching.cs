@@ -351,6 +351,7 @@ namespace TransferController
 				// Iterate through candidate buffer, from highest to lowest priority.
 				float bestDistance = float.MaxValue;
 				int matchedPriority = -1, matchedIndex = -1;
+				ushort matchedBuilding = 0;
 				for (int candidatePriority = 7; candidatePriority >= lowerPriorityBound; --candidatePriority)
 				{
 					int candidateBlock = reasonBlock + candidatePriority;
@@ -481,27 +482,31 @@ namespace TransferController
 							// New nearest disance - apply checks.
 							if (incoming)
 							{
-								if (!ChecksPassed(incoming, (byte)priority, (byte)candidatePriority, offerBuilding, candidateBuilding, offerDistrict, candidateDistrict, offerPark, candidatePark, reason, offer.Exclude, candidate.Exclude, offer.Position, candidate.Position))
+								if (!ChecksPassed(offerBuilding, candidateBuilding, offerDistrict, candidateDistrict, offerPark, candidatePark, reason))
 								{
+									TransferLogging.AddEntry(reason, incoming, priority, candidatePriority, offerBuilding, candidateBuilding, MatchStatus.Blocked, offer.Exclude, candidate.Exclude, offerPosition, candidatePosition);
 									continue;
 								}
 
 								// If candidate (outgoing) building is a warehouse, check quota.
 								if (candidate.Exclude && !WarehouseControl.CheckVehicleQuota(candidateBuildingAI, candidateBuilding, ref buildingBuffer[candidateBuilding], reason, offerBuildingAI))
 								{
+									TransferLogging.AddEntry(reason, incoming, priority, candidatePriority, offerBuilding, candidateBuilding, MatchStatus.NoVehicle, offer.Exclude, candidate.Exclude, offerPosition, candidatePosition);
 									continue;
 								}
 							}
 							else
 							{
-								if (!ChecksPassed(incoming, (byte)candidatePriority, (byte)priority, candidateBuilding, offerBuilding, candidateDistrict, offerDistrict, candidatePark, offerPark, reason, candidate.Exclude, offer.Exclude, candidate.Position, offer.Position))
+								if (!ChecksPassed(candidateBuilding, offerBuilding, candidateDistrict, offerDistrict, candidatePark, offerPark, reason))
 								{
+									TransferLogging.AddEntry(reason, incoming, candidatePriority, priority, candidateBuilding, offerBuilding, MatchStatus.Blocked, candidate.Exclude, offer.Exclude, candidatePosition, offerPosition);
 									continue;
 								}
 
 								// Otherwise, if the offer building is a warehouse and is the outgoing party, check quota there.
 								if (offer.Exclude && !WarehouseControl.CheckVehicleQuota(offerBuildingAI, offerBuilding, ref buildingBuffer[offerBuilding], reason, candidateBuildingAI))
 								{
+									TransferLogging.AddEntry(reason, incoming, candidatePriority, priority, candidateBuilding, offerBuilding, MatchStatus.NoVehicle, candidate.Exclude, offer.Exclude, candidatePosition, offerPosition);
 									continue;
 								}
 							}
@@ -510,6 +515,17 @@ namespace TransferController
 							bestDistance = squaredDistance;
 							matchedPriority = candidatePriority;
 							matchedIndex = candidateIndex;
+							matchedBuilding = candidateBuilding;
+
+							// Log eligible match.
+							if (incoming)
+							{
+								TransferLogging.AddEntry(reason, incoming, priority, candidatePriority, offerBuilding, candidateBuilding, MatchStatus.Eligible, offer.Exclude, candidate.Exclude, offerPosition, candidatePosition);
+							}
+							else
+							{
+								TransferLogging.AddEntry(reason, incoming, candidatePriority, priority, candidateBuilding, offerBuilding, MatchStatus.Eligible, candidate.Exclude, offer.Exclude, candidatePosition, offerPosition);
+							}
 
 							// TODO: break if distance is less than minimum.
 						}
@@ -535,10 +551,12 @@ namespace TransferController
 				// Start the transfer.
 				if (incoming)
 				{
+					TransferLogging.AddEntry(reason, incoming, priority, matchedPriority, offerBuilding, matchedBuilding, MatchStatus.Selected, offer.Exclude, matchedOffer.Exclude, offerPosition, matchedOffer.Position);
 					StartTransfer(Singleton<TransferManager>.instance, reason, matchedOffer, offer, transferAmount);
 				}
 				else
 				{
+					TransferLogging.AddEntry(reason, incoming, matchedPriority, priority, matchedBuilding, offerBuilding, MatchStatus.Selected, matchedOffer.Exclude, offer.Exclude, matchedOffer.Position, offerPosition);
 					StartTransfer(Singleton<TransferManager>.instance, reason, offer, matchedOffer, transferAmount);
 				}
 
@@ -603,9 +621,6 @@ namespace TransferController
 		/// <summary>
 		/// Checks against district and building filters, both incoming and outgoing.
 		/// </summary>
-		/// <param name="incoming">True if this is an incoming offer, false otherwise</param
-		/// <param name="priorityIn">Incoming offer priority</param
-		/// <param name="priorityOut">Outgoing offer priority</param
 		/// <param name="incomingBuildingID">Building ID to check</param
 		/// <param name="outgoingBuildingID">Building ID to check</param>
 		/// <param name="incomingDistrict">District of incoming offer</param>
@@ -614,19 +629,16 @@ namespace TransferController
 		/// <param name="outgoingPark">Park area of outgoing offer</param>
 		/// <param name="reason">Transfer reason</param>
 		/// <returns>True if the transfer is permitted, false if prohibited</returns>
-		internal static bool ChecksPassed(bool incoming, byte priorityIn, byte priorityOut, ushort incomingBuildingID, ushort outgoingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason reason, bool incomingExcluded, bool outgoingExcluded, Vector3 incomingPos, Vector3 outgoingPos)
+		internal static bool ChecksPassed(ushort incomingBuildingID, ushort outgoingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason reason)
 		{
 			// First, check for incoming restrictions.
 			if (IncomingChecksPassed(incomingBuildingID, outgoingBuildingID, incomingDistrict, outgoingDistrict, incomingPark, outgoingPark, reason))
 			{
-				// Then, outgoing.
-				bool result = OutgoingChecksPassed(outgoingBuildingID, incomingBuildingID, incomingDistrict, outgoingDistrict, incomingPark, outgoingPark, reason);
-				TransferLogging.AddEntry(reason, incoming, priorityIn, priorityOut, incomingBuildingID, outgoingBuildingID, result, incomingExcluded, outgoingExcluded, incomingPos, outgoingPos);
-				return result;
+				// Then, outgoing
+				return OutgoingChecksPassed(outgoingBuildingID, incomingBuildingID, incomingDistrict, outgoingDistrict, incomingPark, outgoingPark, reason);
 			}
 
 			// Failed incoming district restrictions - return false.
-			TransferLogging.AddEntry(reason, incoming, priorityIn, priorityOut, incomingBuildingID, outgoingBuildingID, false, incomingExcluded, outgoingExcluded, incomingPos, outgoingPos);
 			return false;
 		}
 

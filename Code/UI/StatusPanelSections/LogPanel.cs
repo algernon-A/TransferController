@@ -25,11 +25,12 @@ namespace TransferController
         private const float LogListY = LogListHeaderY + 15f;
         private const float PanelHeight = LogListY + ListHeight + Margin;
         private const float FilterColumn1 = Margin;
-        private const float FilterColumn2 = 200f;
+        private const float FilterColumn2 = 180f;
+        private const float FilterColumn3 = 360f;
 
 
         // Panel components.
-        private readonly UICheckBox thisBuildingCheck, blockedCheck, allowedCheck, inCheck, outCheck;
+        private readonly UICheckBox thisBuildingCheck, blockedCheck, noVehicleCheck, eligibleCheck, selectedCheck, inCheck, outCheck;
         private readonly UIFastList logList;
 
 
@@ -56,13 +57,20 @@ namespace TransferController
                 blockedCheck = UIControls.LabelledCheckBox(this, FilterColumn1, FilterRow2, Translations.Translate("TFC_LOG_BLK"));
                 blockedCheck.isChecked = true;
                 blockedCheck.eventCheckChanged += (control, isChecked) => UpdateContent();
-                allowedCheck = UIControls.LabelledCheckBox(this, FilterColumn1, FilterRow3, Translations.Translate("TFC_LOG_ALW"));
-                allowedCheck.isChecked = true;
-                allowedCheck.eventCheckChanged += (control, isChecked) => UpdateContent();
-                inCheck = UIControls.LabelledCheckBox(this, FilterColumn2, FilterRow2, Translations.Translate("TFC_LOG_INC"));
+                blockedCheck.eventCheckChanged += (control, isChecked) => UpdateContent();
+                noVehicleCheck = UIControls.LabelledCheckBox(this, FilterColumn1, FilterRow3, Translations.Translate("TFC_LOG_NOV"));
+                noVehicleCheck.isChecked = true;
+                noVehicleCheck.eventCheckChanged += (control, isChecked) => UpdateContent();
+                eligibleCheck = UIControls.LabelledCheckBox(this, FilterColumn2, FilterRow2, Translations.Translate("TFC_LOG_ELI"));
+                eligibleCheck.isChecked = false;
+                eligibleCheck.eventCheckChanged += (control, isChecked) => UpdateContent();
+                selectedCheck = UIControls.LabelledCheckBox(this, FilterColumn2, FilterRow3, Translations.Translate("TFC_LOG_SEL"));
+                selectedCheck.isChecked = true;
+                selectedCheck.eventCheckChanged += (control, isChecked) => UpdateContent();
+                inCheck = UIControls.LabelledCheckBox(this, FilterColumn3, FilterRow2, Translations.Translate("TFC_LOG_INC"));
                 inCheck.isChecked = true;
                 inCheck.eventCheckChanged += (control, isChecked) => UpdateContent();
-                outCheck = UIControls.LabelledCheckBox(this, FilterColumn2, FilterRow3, Translations.Translate("TFC_LOG_OUT"));
+                outCheck = UIControls.LabelledCheckBox(this, FilterColumn3, FilterRow3, Translations.Translate("TFC_LOG_OUT"));
                 outCheck.isChecked = true;
                 outCheck.eventCheckChanged += (control, isChecked) => UpdateContent();
 
@@ -71,14 +79,14 @@ namespace TransferController
                 UILabel priorityLabel = UIControls.AddLabel(this, MatchRow.PriorityX + Margin, LogListHeaderY, Translations.Translate("TFC_LOG_PRI"), textScale: 0.7f);
                 priorityLabel.relativePosition = new Vector2(MatchRow.OtherPriorityX + MatchRow.PriorityWidth - priorityLabel.width, LogListHeaderY);
                 UIControls.AddLabel(this, MatchRow.TargetX + Margin, LogListHeaderY, Translations.Translate("TFC_LOG_TAR"), textScale: 0.7f);
-                UILabel allowedLabel = UIControls.AddLabel(this, MatchRow.AllowedX + Margin, LogListHeaderY, Translations.Translate("TFC_LOG_ALW"), MatchRow.AllowedWidth, textScale: 0.7f);
-                allowedLabel.textAlignment = UIHorizontalAlignment.Center;
+                UILabel statusLabel = UIControls.AddLabel(this, MatchRow.AllowedX + Margin, LogListHeaderY, Translations.Translate("TFC_LOG_STA"), MatchRow.StatusWidth, textScale: 0.7f);
+                statusLabel.textAlignment = UIHorizontalAlignment.Center;
 
                 // Log list.
                 logList = AddList<MatchRow>(LogListY, ListWidth, ListHeight);
 
                 // Populate initial data.
-                //UpdateContent();
+                UpdateContent();
             }
             catch (Exception e)
             {
@@ -93,7 +101,7 @@ namespace TransferController
         protected override void UpdateContent()
         {
             // Get filtered log list.
-            List<MatchData> displayList = TransferLogging.EntryList(thisBuildingCheck.isChecked ? BuildingPanelManager.Panel.CurrentBuilding : (ushort)0, blockedCheck.isChecked, allowedCheck.isChecked, inCheck.isChecked, outCheck.isChecked);
+            List<MatchData> displayList = TransferLogging.EntryList(thisBuildingCheck.isChecked ? BuildingPanelManager.Panel.CurrentBuilding : (ushort)0, blockedCheck.isChecked, noVehicleCheck.isChecked, eligibleCheck.isChecked, selectedCheck.isChecked, inCheck.isChecked, outCheck.isChecked);
 
             // Set fastlist items, without changing the display.
             logList.rowsData.m_buffer = displayList.ToArray();
