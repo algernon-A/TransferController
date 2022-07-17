@@ -112,6 +112,7 @@ namespace TransferController
                 )
             {
                 // Has outgoing vehicles - show vehicle status panel.
+                this.height = PanelHeight;
                 ownedVehiclesPanel.SetTarget(buildingID);
                 ownedVehiclesPanel.Show();
             }
@@ -119,6 +120,7 @@ namespace TransferController
             {
                 // No supported outgoing vehicles - hide vehicle status panel.
                 ownedVehiclesPanel.Hide();
+                this.height = OwnedVehiclesY;
             }
         }
     }
