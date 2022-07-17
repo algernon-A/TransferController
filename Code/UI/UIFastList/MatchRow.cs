@@ -154,6 +154,9 @@ namespace TransferController
 					case MatchStatus.Blocked:
 						statusLabel.text = Translations.Translate("TFC_LOG_BLK");
 						break;
+					case MatchStatus.PathFailure:
+						statusLabel.text = Translations.Translate("TFC_LOG_PFL");
+						break;
 					case MatchStatus.NoVehicle:
 						statusLabel.text = Translations.Translate("TFC_LOG_NOV");
 						break;

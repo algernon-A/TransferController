@@ -237,6 +237,7 @@ namespace TransferController
 										// Check for pathfinding fails.
 										if (PathFindFailure.HasFailure(incomingBuilding, outCandidateBuilding))
 										{
+											TransferLogging.AddEntry(material, true, thisPriority, otherPriority, incomingBuilding, outCandidateBuilding, MatchStatus.PathFailure, incomingOfferToMatch.Exclude, outgoingOfferCandidate.Exclude, incomingOfferToMatch.Position, outgoingOfferCandidate.Position);
 											continue;
 										}
 
@@ -565,6 +566,7 @@ namespace TransferController
 									// Check for pathfinding fails.
 									if (PathFindFailure.HasFailure(inCandidateBuilding, outgoingBuilding))
 									{
+										TransferLogging.AddEntry(material, false, otherPriority, thisPriority, inCandidateBuilding, outgoingBuilding, MatchStatus.PathFailure, incomingOfferCandidate.Exclude, outgoingOfferToMatch.Exclude, incomingOfferCandidate.Position, outgoingOfferToMatch.Position);
 										continue;
 									}
 

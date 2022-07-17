@@ -30,7 +30,7 @@ namespace TransferController
 
 
         // Panel components.
-        private readonly UICheckBox thisBuildingCheck, blockedCheck, noVehicleCheck, eligibleCheck, selectedCheck, inCheck, outCheck;
+        private readonly UICheckBox thisBuildingCheck, blockedCheck, pathFailCheck, noVehicleCheck, eligibleCheck, selectedCheck, inCheck, outCheck;
         private readonly UIFastList logList;
 
 
@@ -61,6 +61,9 @@ namespace TransferController
                 noVehicleCheck = UIControls.LabelledCheckBox(this, FilterColumn1, FilterRow3, Translations.Translate("TFC_LOG_NOV"));
                 noVehicleCheck.isChecked = true;
                 noVehicleCheck.eventCheckChanged += (control, isChecked) => UpdateContent();
+                pathFailCheck = UIControls.LabelledCheckBox(this, FilterColumn2, FilterRow1, Translations.Translate("TFC_LOG_PFL"));
+                pathFailCheck.isChecked = true;
+                pathFailCheck.eventCheckChanged += (control, isChecked) => UpdateContent();
                 eligibleCheck = UIControls.LabelledCheckBox(this, FilterColumn2, FilterRow2, Translations.Translate("TFC_LOG_ELI"));
                 eligibleCheck.isChecked = false;
                 eligibleCheck.eventCheckChanged += (control, isChecked) => UpdateContent();
@@ -101,7 +104,14 @@ namespace TransferController
         protected override void UpdateContent()
         {
             // Get filtered log list.
-            List<MatchData> displayList = TransferLogging.EntryList(thisBuildingCheck.isChecked ? BuildingPanelManager.Panel.CurrentBuilding : (ushort)0, blockedCheck.isChecked, noVehicleCheck.isChecked, eligibleCheck.isChecked, selectedCheck.isChecked, inCheck.isChecked, outCheck.isChecked);
+            List<MatchData> displayList = TransferLogging.EntryList(thisBuildingCheck.isChecked ? BuildingPanelManager.Panel.CurrentBuilding : (ushort)0,
+                blockedCheck.isChecked,
+                pathFailCheck.isChecked,
+                noVehicleCheck.isChecked,
+                eligibleCheck.isChecked,
+                selectedCheck.isChecked,
+                inCheck.isChecked,
+                outCheck.isChecked);
 
             // Set fastlist items, without changing the display.
             logList.rowsData.m_buffer = displayList.ToArray();

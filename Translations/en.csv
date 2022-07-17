@@ -86,6 +86,7 @@ TFC_LOG_ELI,Eligible
 TFC_LOG_SEL,Selected
 TFC_LOG_INC,Incoming
 TFC_LOG_OUT,Outgoing
+TFC_LOG_PFL,Path fail
 TFC_LOG_STA,Result
 TFC_STA_TIT,Building status
 TFC_STA_TIG,Incoming vehicles

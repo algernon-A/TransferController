@@ -432,8 +432,16 @@ namespace TransferController
 						}
 
 						// Check for pathfinding fails.
-						if (PathFindFailure.HasFailure(offerBuilding, candidateBuilding))
+						if ((offer.Active && PathFindFailure.HasFailure(offerBuilding, candidateBuilding)) || candidate.Active && PathFindFailure.HasFailure(candidateBuilding, offerBuilding))
 						{
+							if (incoming)
+							{
+								TransferLogging.AddEntry(reason, incoming, priority, candidatePriority, offerBuilding, candidateBuilding, MatchStatus.PathFailure, offer.Exclude, candidate.Exclude, offerPosition, candidatePosition);
+							}
+							else
+							{
+								TransferLogging.AddEntry(reason, incoming, candidatePriority, priority, candidateBuilding, offerBuilding, MatchStatus.PathFailure, candidate.Exclude, offer.Exclude, candidatePosition, offerPosition);
+							}
 							continue;
 						}
 

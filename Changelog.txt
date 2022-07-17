@@ -1,4 +1,7 @@
-﻿- Pasting settings now works with cursor hover (again)
+﻿- Replace 'Open Offers' panel with new integrated building status panel, including vehicle status
+- Overhaul transfer logging recording and display
+- Add 'zoom to building' button to building panels
+- Pasting settings now works with cursor hover (again)
 
 
 Version 0.7.0.4 hotfix -

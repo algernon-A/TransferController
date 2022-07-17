@@ -10,6 +10,7 @@ namespace TransferController
     {
         None = 0,
         Blocked,
+        PathFailure,
         NoVehicle,
         Eligible,
         Selected
@@ -80,13 +81,14 @@ namespace TransferController
         /// </summary>
         /// <param name="buildingID">Building ID to match (0 for none)</param>
         /// <param name="showBlocked">True to show blocked transfers</param>
+        /// <param name="showPathFail">True to show transfers blocked due to recent pathfinding fail</param>
         /// <param name="showNoVehicles">True to show transfers with no available vehicles</param>
         /// <param name="showEligibile">True to show eligible transfers</param>
         /// <param name="showSelected">True to show selected transfers</param>
         /// <param name="showIn">True to show incoming transfers</param>
         /// <param name="showOut">True to show outgoing transfers</param>
         /// <returns>List of MatchData instances representing the current log, filtered by parameters</returns>
-        internal static List<MatchData> EntryList(ushort buildingID, bool showBlocked, bool showNoVehicles, bool showEligibile,  bool showSelected, bool showIn, bool showOut)
+        internal static List<MatchData> EntryList(ushort buildingID, bool showBlocked, bool showPathFail, bool showNoVehicles, bool showEligibile,  bool showSelected, bool showIn, bool showOut)
         {
             List<MatchData> returnList = new List<MatchData>(log.Length);
 
@@ -98,7 +100,11 @@ namespace TransferController
                 bool thisBuildingIn = buildingID == 0 ? thisEntry.incoming : thisEntry.inBuilding == buildingID;
                 if ((thisEntry.inBuilding != 0 | thisEntry.outBuilding != 0)
                     && (buildingID == 0 | thisEntry.inBuilding == buildingID | thisEntry.outBuilding == buildingID)
-                    && ((showBlocked & thisEntry.status == MatchStatus.Blocked) | (showNoVehicles & thisEntry.status == MatchStatus.NoVehicle) | (showEligibile & thisEntry.status == MatchStatus.Eligible) | (showSelected & thisEntry.status == MatchStatus.Selected))
+                    && ((showBlocked & thisEntry.status == MatchStatus.Blocked) |
+                        (showPathFail & thisEntry.status == MatchStatus.PathFailure) |
+                        (showNoVehicles & thisEntry.status == MatchStatus.NoVehicle) |
+                        (showEligibile & thisEntry.status == MatchStatus.Eligible) |
+                        (showSelected & thisEntry.status == MatchStatus.Selected))
                     && ((showIn & thisBuildingIn) | (showOut & !thisBuildingIn)))
                 {
                     // Add entry to list.

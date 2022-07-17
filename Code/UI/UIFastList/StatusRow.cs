@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-using ColossalFramework;
-using ColossalFramework.UI;
+﻿using ColossalFramework.UI;
 
 
 namespace TransferController
