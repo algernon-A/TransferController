@@ -47,7 +47,7 @@ namespace TransferController
                 height = PanelHeight;
 
                 // Title.
-                UILabel titleLabel = UIControls.AddLabel(this, 0f, Margin, Translations.Translate("TFC_STA_TIT"), PanelWidth, 1.2f);
+                UILabel titleLabel = UIControls.AddLabel(this, 0f, 10f, Translations.Translate("TFC_STA_TIT"), PanelWidth, 1.2f);
                 titleLabel.textAlignment = UIHorizontalAlignment.Center;
 
                 // Close button.

@@ -30,7 +30,7 @@ namespace TransferController
 
 
         // Panel components.
-        private readonly UICheckBox thisBuildingCheck, blockedCheck, pathFailCheck, noVehicleCheck, eligibleCheck, selectedCheck, inCheck, outCheck;
+        private readonly UICheckBox blockedCheck, pathFailCheck, noVehicleCheck, eligibleCheck, selectedCheck, inCheck, outCheck;
         private readonly UIFastList logList;
 
 
@@ -51,29 +51,33 @@ namespace TransferController
                 titleLabel.textAlignment = UIHorizontalAlignment.Center;
 
                 // Filter checkboxes.
-                thisBuildingCheck = UIControls.LabelledCheckBox(this, FilterColumn1, FilterRow1, Translations.Translate("TFC_LOG_BLD"));
-                thisBuildingCheck.isChecked = true;
-                thisBuildingCheck.eventCheckChanged += (control, isChecked) => UpdateContent();
-                blockedCheck = UIControls.LabelledCheckBox(this, FilterColumn1, FilterRow2, Translations.Translate("TFC_LOG_BLK"));
+                blockedCheck = UIControls.LabelledCheckBox(this, FilterColumn1, FilterRow1, Translations.Translate("TFC_LOG_BLK"));
+                blockedCheck.tooltip = Translations.Translate("TFC_LOG_BLK_TIP");
                 blockedCheck.isChecked = true;
                 blockedCheck.eventCheckChanged += (control, isChecked) => UpdateContent();
                 blockedCheck.eventCheckChanged += (control, isChecked) => UpdateContent();
-                noVehicleCheck = UIControls.LabelledCheckBox(this, FilterColumn1, FilterRow3, Translations.Translate("TFC_LOG_NOV"));
-                noVehicleCheck.isChecked = true;
-                noVehicleCheck.eventCheckChanged += (control, isChecked) => UpdateContent();
-                pathFailCheck = UIControls.LabelledCheckBox(this, FilterColumn2, FilterRow1, Translations.Translate("TFC_LOG_PFL"));
+                pathFailCheck = UIControls.LabelledCheckBox(this, FilterColumn1, FilterRow2, Translations.Translate("TFC_LOG_PFL"));
+                pathFailCheck.tooltip = Translations.Translate("TFC_LOG_PFL_TIP");
                 pathFailCheck.isChecked = true;
                 pathFailCheck.eventCheckChanged += (control, isChecked) => UpdateContent();
+                noVehicleCheck = UIControls.LabelledCheckBox(this, FilterColumn1, FilterRow3, Translations.Translate("TFC_LOG_NOV"));
+                noVehicleCheck.tooltip = Translations.Translate("TFC_LOG_NOV_TIP");
+                noVehicleCheck.isChecked = true;
+                noVehicleCheck.eventCheckChanged += (control, isChecked) => UpdateContent();
                 eligibleCheck = UIControls.LabelledCheckBox(this, FilterColumn2, FilterRow2, Translations.Translate("TFC_LOG_ELI"));
+                eligibleCheck.tooltip = Translations.Translate("TFC_LOG_ELI_TIP");
                 eligibleCheck.isChecked = false;
                 eligibleCheck.eventCheckChanged += (control, isChecked) => UpdateContent();
                 selectedCheck = UIControls.LabelledCheckBox(this, FilterColumn2, FilterRow3, Translations.Translate("TFC_LOG_SEL"));
+                selectedCheck.tooltip = Translations.Translate("TFC_LOG_SEL_TIP");
                 selectedCheck.isChecked = true;
                 selectedCheck.eventCheckChanged += (control, isChecked) => UpdateContent();
                 inCheck = UIControls.LabelledCheckBox(this, FilterColumn3, FilterRow2, Translations.Translate("TFC_LOG_INC"));
+                inCheck.tooltip = Translations.Translate("TFC_LOG_INC_TIP");
                 inCheck.isChecked = true;
                 inCheck.eventCheckChanged += (control, isChecked) => UpdateContent();
                 outCheck = UIControls.LabelledCheckBox(this, FilterColumn3, FilterRow3, Translations.Translate("TFC_LOG_OUT"));
+                outCheck.tooltip = Translations.Translate("TFC_LOG_OUT_TIP");
                 outCheck.isChecked = true;
                 outCheck.eventCheckChanged += (control, isChecked) => UpdateContent();
 
@@ -104,7 +108,7 @@ namespace TransferController
         protected override void UpdateContent()
         {
             // Get filtered log list.
-            List<MatchData> displayList = TransferLogging.EntryList(thisBuildingCheck.isChecked ? BuildingPanelManager.Panel.CurrentBuilding : (ushort)0,
+            List<MatchData> displayList = TransferLogging.EntryList(BuildingPanelManager.Panel.CurrentBuilding,
                 blockedCheck.isChecked,
                 pathFailCheck.isChecked,
                 noVehicleCheck.isChecked,
