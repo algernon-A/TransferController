@@ -147,8 +147,6 @@ namespace TransferController
 				// However, need to prioritise high prioirty requests first.
 				// Start by matching highest priority outgoing requests (7-3).
 				// Then service lower priorities from depot outwards for greatest efficiency:
-				case TransferManager.TransferReason.Garbage:
-				case TransferManager.TransferReason.Mail:
 				case TransferManager.TransferReason.RoadMaintenance:
 				case TransferManager.TransferReason.ParkMaintenance:
 				case TransferManager.TransferReason.Snow:
@@ -193,7 +191,6 @@ namespace TransferController
 					break;
 
 				// Default treatment is to match incoming then outgoing by descending priority level (i.e. incoming 7, outgoing 7, incoming 6, outgoing 6, etc.)
-				case TransferManager.TransferReason.Dead:
 				default:
 					// Match by priority within this reason, descending.
 					for (int priority = 7; priority >= 0; --priority)
