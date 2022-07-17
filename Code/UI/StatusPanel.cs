@@ -22,6 +22,7 @@ namespace TransferController
 
         // Components.
         private OffersPanel offersPanel;
+        private BuildingStatsPanel statsPanel;
         private OwnedVehiclesPanel ownedVehiclesPanel;
         private GuestVehiclesPanel guestVehiclesPanel;
 
@@ -67,6 +68,8 @@ namespace TransferController
                 // Status panels.
                 offersPanel = this.AddUIComponent<OffersPanel>();
                 offersPanel.relativePosition = new Vector2(0f, OffersY);
+                statsPanel = this.AddUIComponent<BuildingStatsPanel>();
+                statsPanel.relativePosition = new Vector2(PanelWidth - BuildingStatsPanel.PanelWidth, OffersY);
                 guestVehiclesPanel = this.AddUIComponent<GuestVehiclesPanel>();
                 guestVehiclesPanel.relativePosition = new Vector2(0f, GuestVehiclesY);
                 ownedVehiclesPanel = this.AddUIComponent<OwnedVehiclesPanel>();
@@ -88,6 +91,7 @@ namespace TransferController
             // Set target building.
             currentBuilding = buildingID;
             offersPanel.SetTarget(buildingID);
+            statsPanel.SetTarget(buildingID);
             guestVehiclesPanel.SetTarget(buildingID);
 
             // Set vehicle status panel visibility based on building type and vehicle count.

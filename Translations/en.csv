@@ -104,6 +104,13 @@ TFC_STA_MAT,Cargo
 TFC_STA_AMT,Load
 TFC_STA_ZTB,Zoom to building
 TFC_STA_ZTV,Zoom to vehicle
+TFC_BST_TIT,Building stats
+TFC_BST_MAI,Mail
+TFC_BST_GAR,Garbage
+TFC_BST_CRI,Crime
+TFC_BST_FIR,Fire
+TFC_BST_SIC,Sick
+TFC_BST_DEA,Dead
 TRN_CHOICE,Set language
 TRN_SYS,Use game language
 KEY_KEY,Hotkey

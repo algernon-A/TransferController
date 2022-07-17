@@ -40,7 +40,8 @@ namespace TransferController
 
                 // Header labels.
                 UIControls.AddLabel(this, OfferRow.ReasonX + Margin, ListHeaderY, Translations.Translate("TFC_LOG_MAT"), textScale: 0.7f);
-                UIControls.AddLabel(this, OfferRow.PriorityX + Margin, ListHeaderY, Translations.Translate("TFC_LOG_PRI"), textScale: 0.7f);
+                UILabel priorityLabel = UIControls.AddLabel(this, OfferRow.PriorityX + Margin, ListHeaderY, Translations.Translate("TFC_LOG_PRI"), textScale: 0.7f);
+                priorityLabel.relativePosition = new Vector2(PanelWidth - priorityLabel.width - Margin, ListHeaderY);
 
                 // Offers list.
                 offersList = AddList<OfferRow>(ListY, width - 10f, ListHeight);

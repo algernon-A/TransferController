@@ -61,6 +61,7 @@ namespace TransferController
 				directionLabel = AddLabel(DirectionX, DirectionWidth);
 				reasonLabel = AddLabel(ReasonX, ReasonWidth);
 				priorityLabel = AddLabel(PriorityX, PriorityWidth);
+				priorityLabel.textAlignment = UIHorizontalAlignment.Center;
 			}
 
 			// Check for valid data.
