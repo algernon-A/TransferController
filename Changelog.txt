@@ -1,4 +1,6 @@
-﻿- Replace 'Open Offers' panel with new integrated building status panel, including vehicle status
+﻿Version 0.7.1 -
+
+- Replace 'Open Offers' panel with new integrated building status panel, including vehicle status
 - Overhaul transfer logging recording and display
 - Add 'zoom to building' button to building panels
 - Adjust matching for hearses, mail, and garbage

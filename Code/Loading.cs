@@ -65,7 +65,7 @@ namespace TransferController
             if (!isModEnabled)
             {
                 isModEnabled = true;
-                Logging.KeyMessage("v " + TransferControllerMod.Version + " loading");
+                Logging.KeyMessage("v " + ModUtils.CurrentVersion + " loading");
             }
         }
 

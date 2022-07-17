@@ -1,9 +1,10 @@
-﻿using System.IO;
+﻿using ICities;
+using ColossalFramework.Plugins;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Collections.Generic;
-using ICities;
-using ColossalFramework.Plugins;
 
 
 namespace TransferController
@@ -15,6 +16,31 @@ namespace TransferController
     {
         // List of conflcting mod names.
         internal static List<string> conflictingModNames;
+
+
+        /// <summary>
+        /// Returns the current mod version as a string, leaving off any trailing zero versions for build and revision.
+        /// </summary>
+        internal static string CurrentVersion
+        {
+            get
+            {
+                Version currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
+
+                if (currentVersion.Revision != 0)
+                {
+                    return currentVersion.ToString(4);
+                }
+                else if (currentVersion.Build != 0)
+                {
+                    return currentVersion.ToString(3);
+                }
+                else
+                {
+                    return currentVersion.ToString(2);
+                }
+            }
+        }
 
 
         /// <summary>
