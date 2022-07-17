@@ -1,5 +1,5 @@
-﻿using ICities;
-using ColossalFramework.Plugins;
+﻿using ColossalFramework.Plugins;
+using ICities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,6 +16,9 @@ namespace TransferController
     {
         // List of conflcting mod names.
         internal static List<string> conflictingModNames;
+
+        // Mod assembly path cache.
+        private static string assemblyPath = null;
 
 
         /// <summary>
@@ -39,6 +42,51 @@ namespace TransferController
                 {
                     return currentVersion.ToString(2);
                 }
+            }
+        }
+
+
+        /// <summary>
+        /// Returns the filepath of the current mod assembly.
+        /// </summary>
+        /// <returns>Mod assembly filepath</returns>
+        internal static string AssemblyPath
+        {
+            get
+            {
+                // Return cached path if it exists.
+                if (assemblyPath != null)
+                {
+                    return assemblyPath;
+                }
+
+                // No path cached - get list of currently active plugins.
+                IEnumerable<PluginManager.PluginInfo> plugins = PluginManager.instance.GetPluginsInfo();
+
+                // Iterate through list.
+                foreach (PluginManager.PluginInfo plugin in plugins)
+                {
+                    try
+                    {
+                        // Get all (if any) mod instances from this plugin.
+                        IUserMod[] mods = plugin.GetInstances<IUserMod>();
+
+                        // Check to see if the primary instance is this mod.
+                        if (mods.FirstOrDefault() is TransferControllerMod)
+                        {
+                            // Found it! Return path.
+                            return plugin.modPath;
+                        }
+                    }
+                    catch
+                    {
+                        // Don't care.
+                    }
+                }
+
+                // If we got here, then we didn't find the assembly.
+                Logging.Error("assembly path not found");
+                throw new FileNotFoundException(TransferControllerMod.ModName + ": assembly path not found!");
             }
         }
 

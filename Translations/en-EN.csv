@@ -1,5 +1,4 @@
-﻿CODE,en
-NAME,English
+﻿LANGUAGE,English
 TFC_NAM,Transfer Controller
 TFC_DESC,Enables control of goods transfer and service vehicle coverage.
 TFC_TAB_VEH,Vehicles

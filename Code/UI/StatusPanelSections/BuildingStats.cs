@@ -35,7 +35,9 @@ namespace TransferController
 
                 // Stats panel.
                 statsPanel = this.AddUIComponent<StatsPanel>();
-                statsPanel.relativePosition = new Vector2(Margin, PanelHeight - StatsPanel.PanelHeight - Margin);
+
+                // Align bottom with bottom of offers panel.
+                statsPanel.relativePosition = new Vector2(Margin, 27f);
             }
             catch (Exception e)
             {

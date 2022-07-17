@@ -86,8 +86,9 @@
     <Compile Include="Code\TransferData\TransferLogging.cs" />
     <Compile Include="Code\TransferData\VehicleControl.cs" />
     <Compile Include="Code\TransferData\WarehouseControl.cs" />
-    <Compile Include="Code\TranslationFramework\TranslationFramework.cs" />
-    <Compile Include="Code\TranslationFramework\TranslationXML.cs" />
+    <Compile Include="Code\TranslationFramework\Language.cs" />
+    <Compile Include="Code\TranslationFramework\Translations.cs" />
+    <Compile Include="Code\TranslationFramework\Translator.cs" />
     <Compile Include="Code\UI\BuildingPanelTabs\BuildingPanelTab.cs" />
     <Compile Include="Code\UI\BuildingPanelTabs\BuildingRestrictionsTab.cs" />
     <Compile Include="Code\UI\BuildingPanelTabs\BuildingVehiclesTab.cs" />
@@ -135,7 +136,7 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="Translations\de-DE.csv" />
-    <None Include="Translations\en.csv" />
+    <None Include="Translations\en-EN.csv" />
     <None Include="Translations\es-ES.csv" />
     <None Include="Translations\fr-FR.csv" />
     <None Include="Translations\ja-JP.csv" />
