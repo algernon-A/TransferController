@@ -1,183 +1,35 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{03F24424-1A13-4C98-BAFF-2C8384F8D235}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TransferController</RootNamespace>
-    <AssemblyName>TransferController</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Cities_Skylines\Cities_Data\Managed\Assembly-CSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="CitiesHarmony.API, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\CitiesHarmony.API.2.1.0\lib\net35\CitiesHarmony.API.dll</HintPath>
-    </Reference>
-    <Reference Include="CitiesHarmony.Harmony, Version=2.0.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\CitiesHarmony.Harmony.2.2.0\lib\net35\CitiesHarmony.Harmony.dll</HintPath>
-    </Reference>
-    <Reference Include="ColossalManaged">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Cities_Skylines\Cities_Data\Managed\ColossalManaged.dll</HintPath>
-    </Reference>
-    <Reference Include="ICities">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Cities_Skylines\Cities_Data\Managed\ICities.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="UnifiedUILib, Version=2.2.9.20126, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\UnifiedUILib.2.2.9\lib\net35\UnifiedUILib.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Cities_Skylines\Cities_Data\Managed\UnityEngine.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Code\Loading.cs" />
-    <Compile Include="Code\Matching\OldMatching.cs" />
-    <Compile Include="Code\Matching\Matching.cs" />
-    <Compile Include="Code\MessageBox\ListMessageBox.cs" />
-    <Compile Include="Code\MessageBox\MessageBoxBase.cs" />
-    <Compile Include="Code\Mod.cs" />
-    <Compile Include="Code\Patches\AddOffers.cs" />
-    <Compile Include="Code\Patches\BuildingWorldInfoPanel.cs" />
-    <Compile Include="Code\Patches\Escape.cs" />
-    <Compile Include="Code\Patches\DepotStartTransfer.cs" />
-    <Compile Include="Code\Patches\SetTransferReason.cs" />
-    <Compile Include="Code\Patches\TransferManagerPatches.cs" />
-    <Compile Include="Code\Patches\Patcher.cs" />
-    <Compile Include="Code\Patches\PathfindFailure.cs" />
-    <Compile Include="Code\Patches\WarehouseStartTransfer.cs" />
-    <Compile Include="Code\Serialization.cs" />
-    <Compile Include="Code\Settings\OptionsKeymapping.cs" />
-    <Compile Include="Code\Settings\OptionsPanel.cs" />
-    <Compile Include="Code\Settings\OptionsPanelManager.cs" />
-    <Compile Include="Code\TransferData\BuildingExtension.cs" />
-    <Compile Include="Code\TransferData\BuildingControl.cs" />
-    <Compile Include="Code\Settings\ModSettings.cs" />
-    <Compile Include="Code\TransferData\TransferDataUtils.cs" />
-    <Compile Include="Code\TransferData\TransferLogging.cs" />
-    <Compile Include="Code\TransferData\VehicleControl.cs" />
-    <Compile Include="Code\TransferData\WarehouseControl.cs" />
-    <Compile Include="Code\TranslationFramework\Language.cs" />
-    <Compile Include="Code\TranslationFramework\Translations.cs" />
-    <Compile Include="Code\TranslationFramework\Translator.cs" />
-    <Compile Include="Code\UI\BuildingPanelTabs\BuildingPanelTab.cs" />
-    <Compile Include="Code\UI\BuildingPanelTabs\BuildingRestrictionsTab.cs" />
-    <Compile Include="Code\UI\BuildingPanelTabs\BuildingVehiclesTab.cs" />
-    <Compile Include="Code\UI\BuildingPanelTabs\VehicleSelection.cs" />
-    <Compile Include="Code\UI\CopyPaste.cs" />
-    <Compile Include="Code\UI\StatsPanels\StatsPanel.cs" />
-    <Compile Include="Code\UI\StatusPanel.cs" />
-    <Compile Include="Code\UI\StatusPanelSections\BuildingStats.cs" />
-    <Compile Include="Code\UI\StatusPanelSections\GuestVehiclesPanel.cs" />
-    <Compile Include="Code\UI\StatusPanelSections\LogPanel.cs" />
-    <Compile Include="Code\UI\StatusPanelSections\OffersPanel.cs" />
-    <Compile Include="Code\UI\SelectionPanels\DistrictSelectionPanel.cs" />
-    <Compile Include="Code\Patches\StartTransferPatches.cs" />
-    <Compile Include="Code\UI\SelectionPanels\SelectedBuildingPanel.cs" />
-    <Compile Include="Code\UI\SelectionPanels\SelectedDistrictPanel.cs" />
-    <Compile Include="Code\UI\SelectionPanels\SelectedVehiclePanel.cs" />
-    <Compile Include="Code\UI\SelectionPanels\VehicleSelectionPanel.cs" />
-    <Compile Include="Code\UI\StatusPanelSections\StatusPanelSection.cs" />
-    <Compile Include="Code\UI\TCTool.cs" />
-    <Compile Include="Code\UI\BuildingPanel.cs" />
-    <Compile Include="Code\UI\BuildingPanelManager.cs" />
-    <Compile Include="Code\UI\UIFastList\BasicRow.cs" />
-    <Compile Include="Code\UI\UIFastList\BuildingRow.cs" />
-    <Compile Include="Code\UI\UIFastList\OfferRow.cs" />
-    <Compile Include="Code\UI\UIFastList\StatusRow.cs" />
-    <Compile Include="Code\UI\UIFastList\UIDistrictFastList.cs" />
-    <Compile Include="Code\UI\UIFastList\DistrictRow.cs" />
-    <Compile Include="Code\UI\UIFastList\MatchRow.cs" />
-    <Compile Include="Code\UI\UIFastList\UIBuildingFastList.cs" />
-    <Compile Include="Code\UI\UIFastList\UIFastList.cs" />
-    <Compile Include="Code\UI\UIFastList\UIVehicleFastList.cs" />
-    <Compile Include="Code\UI\UIFastList\VehicleSelectionRow.cs" />
-    <Compile Include="Code\UI\BuildingPanelTabs\WarehouseControls.cs" />
-    <Compile Include="Code\UI\UIFastList\VehicleStatusRow.cs" />
-    <Compile Include="Code\UI\StatusPanelSections\OwnedVehiclesPanel.cs" />
-    <Compile Include="Code\Utils\FontUtils.cs" />
-    <Compile Include="Code\Utils\Logging.cs" />
-    <Compile Include="Code\Utils\ModUtils.cs" />
-    <Compile Include="Code\Utils\TextureUtils.cs" />
-    <Compile Include="Code\Utils\TextUtils.cs" />
-    <Compile Include="Code\Utils\TooltipUtils.cs" />
-    <Compile Include="Code\Utils\UIControls.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-    <None Include="Translations\de-DE.csv" />
-    <None Include="Translations\en-EN.csv" />
-    <None Include="Translations\es-ES.csv" />
-    <None Include="Translations\fr-FR.csv" />
-    <None Include="Translations\ja-JP.csv" />
-    <None Include="Translations\nl-NL.csv" />
-    <None Include="Translations\pt-BR.csv" />
-    <None Include="Translations\ru-RU.csv" />
-    <None Include="Translations\zh-CN.csv" />
-    <None Include="Translations\zh-TW.csv" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Changelog.txt" />
-    <Content Include="License.txt" />
-    <Content Include="Resources\TC-RoundMinus.png" />
-    <Content Include="Resources\TC-RoundPlus.png" />
-    <Content Include="Resources\TC-ArrowMinus.png" />
-    <Content Include="Resources\TC-ArrowPlus.png" />
-    <Content Include="Resources\TC-CursorPickOn.png" />
-    <Content Include="Resources\TC-UUI.png" />
-    <Content Include="Images\PreviewImage.png" />
-    <Content Include="Resources\TC-CursorOn.png" />
-    <Content Include="Resources\TC-CursorOff.png" />
-    <Content Include="Resources\TC-CursorPickOff.png" />
-    <Content Include="Resources\TC-Logs.png" />
-    <Content Include="Resources\TC-OpenOffers.png" />
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>mkdir "%25LOCALAPPDATA%25\Colossal Order\Cities_Skylines\Addons\Mods\$(ProjectName)"
-del "%25LOCALAPPDATA%25\Colossal Order\Cities_Skylines\Addons\Mods\$(ProjectName)\*.dll"
-xcopy /y "$(TargetPath)" "%25LOCALAPPDATA%25\Colossal Order\Cities_Skylines\Addons\Mods\$(ProjectName)"
-
-xcopy /y "$(SolutionDir)packages\CitiesHarmony.API.2.1.0\lib\net35\CitiesHarmony.API.dll" "%25LOCALAPPDATA%25\Colossal Order\Cities_Skylines\Addons\Mods\$(ProjectName)"
-xcopy /y "$(SolutionDir)\packages\UnifiedUILib.2.2.9\lib\net35\UnifiedUILib.dll" "%25LOCALAPPDATA%25\Colossal Order\Cities_Skylines\Addons\Mods\$(ProjectName)"
-
-mkdir "$(LOCALAPPDATA)\Colossal Order\Cities_Skylines\Addons\Mods\$(ProjectName)\Translations"
-del "%25LOCALAPPDATA%25\Colossal Order\Cities_Skylines\Addons\Mods\$(ProjectName)\Translations\*.csv"
-xcopy /y "$(ProjectDir)\Translations\" "$(LOCALAPPDATA)\Colossal Order\Cities_Skylines\Addons\Mods\$(ProjectName)\Translations" /s /e
-
-mkdir "$(LOCALAPPDATA)\Colossal Order\Cities_Skylines\Addons\Mods\$(ProjectName)\Resources"
-del "%25LOCALAPPDATA%25\Colossal Order\Cities_Skylines\Addons\Mods\$(ProjectName)\Resources\*.png"
-xcopy /y "$(ProjectDir)\Resources\" "$(LOCALAPPDATA)\Colossal Order\Cities_Skylines\Addons\Mods\$(ProjectName)\Resources" /s /e</PostBuildEvent>
-  </PropertyGroup>
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net35</TargetFramework>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<Description>A Cities: Skylines mod.</Description>
+		<Version>0.7.1</Version>
+		<ManagedDLLPath>$(MSBuildProgramFiles32)/Steam/steamapps/common/Cities_Skylines/Cities_Data/Managed</ManagedDLLPath>
+		<AssemblySearchPaths>
+			$(AssemblySearchPaths);
+			$(ManagedDLLPath)
+		</AssemblySearchPaths>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="CitiesHarmony.API" Version="2.1.0" />
+		<PackageReference Include="UnifiedUILib" Version="2.2.9" />
+		<Reference Include="Assembly-CSharp" />
+		<Reference Include="ColossalManaged" />
+		<Reference Include="ICities" />
+		<Reference Include="UnityEngine" />
+	</ItemGroup>
+	<ItemGroup>
+		<_Translations Include="$(ProjectDir)/Translations/*.csv" />
+		<_Resources Include="$(ProjectDir)/Resources/*.*" />
+	</ItemGroup>
+	<Target Name="DeployToModDirectory" AfterTargets="Build">
+		<PropertyGroup>
+			<DeployDir>$(LOCALAPPDATA)/Colossal Order/Cities_Skylines/Addons/Mods/$(SolutionName)/</DeployDir>
+		</PropertyGroup>
+		<Copy SourceFiles="$(TargetPath)" DestinationFolder="$(DeployDir)" />
+		<Copy SourceFiles="$(TargetDir)/CitiesHarmony.API.dll" DestinationFolder="$(DeployDir)" />
+		<Copy SourceFiles="$(TargetDir)/UnifiedUILib.dll" DestinationFolder="$(DeployDir)" />
+		<Copy SourceFiles="@(_Translations)" DestinationFolder="$(DeployDir)/Translations" />
+		<Copy SourceFiles="@(_Resources)" DestinationFolder="$(DeployDir)/Resources" />
+	</Target>
 </Project>
