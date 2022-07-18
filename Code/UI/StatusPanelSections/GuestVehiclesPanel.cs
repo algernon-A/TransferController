@@ -65,7 +65,7 @@ namespace TransferController
             ref Building building = ref buildingBuffer[currentBuilding];
 
             // List of owned vehicles
-            List<VehicleStatusItem> vehicleList = new List<VehicleStatusItem>();
+            List<VehicleStatusItem> guestVehicles = new List<VehicleStatusItem>();
 
             // Iterate through building vehicles and add to owned vehicle list.
             uint vehicleID = building.m_guestVehicles;
@@ -76,17 +76,15 @@ namespace TransferController
                 // Skip vehicles without defined source building (imports that haven't yet been properly allocated).
                 if (thisVehicle.m_sourceBuilding != 0)
                 {
-                    vehicleList.Add(new VehicleStatusItem((ushort)vehicleID, thisVehicle.Info, thisVehicle.m_sourceBuilding, thisVehicle.m_transferType, thisVehicle.m_transferSize));
+                    guestVehicles.Add(new VehicleStatusItem((ushort)vehicleID, thisVehicle.Info, thisVehicle.m_sourceBuilding, thisVehicle.m_transferType, thisVehicle.m_transferSize));
                 }
                 vehicleID = vehicleBuffer[vehicleID].m_nextGuestVehicle;
             }
 
-            // Set fastlist items.
-            vehiclesList.rowsData = new FastList<object>
-            {
-                m_buffer = vehicleList.ToArray(),
-                m_size = vehicleList.Count
-            };
+            // Set fastlist items, without changing the display.
+            vehiclesList.rowsData.m_buffer = guestVehicles.ToArray();
+            vehiclesList.rowsData.m_size = guestVehicles.Count;
+            vehiclesList.Refresh();
         }
     }
 }

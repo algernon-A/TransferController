@@ -58,7 +58,7 @@ namespace TransferController
         /// </summary>
         protected override void UpdateContent()
         {
-            List<OfferData> offerList = new List<OfferData>();
+            List<OfferData> selectedOffers = new List<OfferData>();
 
             TransferManager tManager = Singleton<TransferManager>.instance;
 
@@ -79,23 +79,21 @@ namespace TransferController
                 if (incomingOffers[i].Building == currentBuilding)
                 {
                     // Add to list.
-                    offerList.Add(new OfferData(thisReason, priority, true));
+                    selectedOffers.Add(new OfferData(thisReason, priority, true));
                 }
 
                 // Outgoing offers.
                 if (outgoingOffers[i].Building == currentBuilding)
                 {
                     // Add to list.
-                    offerList.Add(new OfferData(thisReason, priority, false));
+                    selectedOffers.Add(new OfferData(thisReason, priority, false));
                 }
             }
 
-            // Set fastlist items.
-            offersList.rowsData = new FastList<object>
-            {
-                m_buffer = offerList.ToArray(),
-                m_size = offerList.Count
-            };
+            // Set fastlist items, without changing the display.
+            offersList.rowsData.m_buffer = selectedOffers.ToArray();
+            offersList.rowsData.m_size = selectedOffers.Count;
+            offersList.Refresh();
         }
     }
 }
