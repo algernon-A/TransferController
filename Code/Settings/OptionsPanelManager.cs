@@ -1,7 +1,8 @@
-﻿using System;
-using UnityEngine;
-using ICities;
+﻿using ColossalFramework.Globalization;
 using ColossalFramework.UI;
+using ICities;
+using System;
+using UnityEngine;
 
 
 namespace TransferController
@@ -63,6 +64,9 @@ namespace TransferController
                         Close();
                     }
                 };
+
+                // Recreate panel on system locale change.
+                LocaleManager.eventLocaleChanged += LocaleChanged;
             }
         }
 
