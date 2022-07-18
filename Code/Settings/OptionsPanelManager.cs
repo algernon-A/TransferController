@@ -78,8 +78,6 @@ namespace TransferController
         {
             if (gameOptionsPanel != null && gameOptionsPanel.isVisible)
             {
-                Logging.KeyMessage("changing locale");
-
                 Close();
                 Create();
             }
