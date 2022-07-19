@@ -72,7 +72,7 @@
 "TFC_OPT_OSP","Outside shipping connection priority boost"
 "TFC_OPT_OSP_TIP",""Use this to encourage the algorithm to give higher priority to transfers to and from outside shipping connections (over other available options for the same type of cargo).  0 (no priority) is the default"," for the same behavior as the unmodded game; 4 gives a very high priority for outside connection shipping transfers."
 "TFC_OPT_PAT","Block offers with recent pathfind failures"
-"TFC_OPT_PAT_TIP","Prevents offers from being matched if there's been a vehicle pathfinding failure between the two buildings in the past five minutes
+"TFC_OPT_PAT_TIP","Prevents offers from being matched if there's been a vehicle pathfinding failure between the two buildings in the past five minutes"
 "TFC_OFF_TIT","Open offers"
 "TFC_OFF_LOG","Transfer log"
 "TFC_LOG_MAT","Reason"
