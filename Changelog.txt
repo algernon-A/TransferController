@@ -1,4 +1,7 @@
-﻿Version 0.7.1 -
+﻿- Update translation framework
+
+
+Version 0.7.1 -
 
 - Replace 'Open Offers' panel with new integrated building status panel, including vehicle status
 - Overhaul transfer logging recording and display
