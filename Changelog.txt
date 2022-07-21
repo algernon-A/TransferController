@@ -1,4 +1,5 @@
-﻿- Update translation framework
+﻿- Fix support for heating plants
+- Update translation framework
 
 
 Version 0.7.1 -

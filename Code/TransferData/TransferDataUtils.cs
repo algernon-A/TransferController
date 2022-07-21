@@ -102,13 +102,13 @@ namespace TransferController
                         return 1;
                     }
                     // Boiler station - imports oil.
-                    else if (buildingInfo.m_buildingAI is HeatingPlantAI heatingPlantAI && buildingInfo.m_class.m_level == ItemClass.Level.Level2 && heatingPlantAI.m_resourceType == TransferManager.TransferReason.Oil)
+                    else if (buildingInfo.m_buildingAI is HeatingPlantAI heatingPlantAI && heatingPlantAI.m_resourceType != TransferManager.TransferReason.None)
                     {
                         transfers[0].panelTitle = Translations.Translate("TFC_OIL_INC");
                         transfers[0].outsideText = Translations.Translate("TFC_BLD_IMP");
                         transfers[0].outsideTip = Translations.Translate("TFC_BLD_IMP_TIP");
                         transfers[0].isIncoming = true;
-                        transfers[0].reason = TransferManager.TransferReason.Oil;
+                        transfers[0].reason = heatingPlantAI.m_resourceType;
                         transfers[0].spawnsVehicles = false;
                         return 1;
                     }
