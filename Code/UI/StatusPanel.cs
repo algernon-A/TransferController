@@ -112,7 +112,8 @@ namespace TransferController
                 (buildingAI is MaintenanceDepotAI depotAI && depotAI.m_maintenanceTruckCount > 0) ||
                 (buildingAI is HelicopterDepotAI heliAI && heliAI.m_helicopterCount > 0) ||
                 (buildingAI is SnowDumpAI snowDumpAI && snowDumpAI.m_snowTruckCount > 0) ||
-                (buildingAI is DisasterResponseBuildingAI disasterAI && disasterAI.m_vehicleCount > 0)
+                (buildingAI is DisasterResponseBuildingAI disasterAI && disasterAI.m_vehicleCount > 0) ||
+                buildingAI.GetType().Name.Equals("PrisonCopterPoliceStationAI")
                 )
             {
                 // Has outgoing vehicles - show vehicle status panel.

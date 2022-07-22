@@ -23,7 +23,22 @@ namespace TransferController
         /// <summary>
         /// Whether or not a secondary vehicle selection is required.
         /// </summary>
-        private bool HasSecondVehicleType => TransferReason == TransferManager.TransferReason.Mail;
+        private bool HasSecondVehicleType
+        {
+            get
+            {
+                // Post offices have secondary vehile type.
+                if (TransferReason == TransferManager.TransferReason.Mail)
+                {
+                    return true;
+                }
+
+                // Check for Prison Helicopter big (central) police stations - these send police cars and prison vans.
+                // Big stations are marked by the 'downgrading' flag being clear.
+                ref Building thisBuilding = ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[CurrentBuilding];
+                return thisBuilding.Info.m_buildingAI.GetType().Name.Equals("PrisonCopterPoliceStationAI") && (thisBuilding.m_flags & Building.Flags.Downgrading) == Building.Flags.None;
+            }
+        }
 
 
         /// <summary>
@@ -85,8 +100,10 @@ namespace TransferController
         internal void SetSprite()
         {
             bool hasRecord = VehicleControl.HasRecord(CurrentBuilding, TransferReason) ||
-                (HasSecondVehicleType && VehicleControl.HasRecord(CurrentBuilding, TransferManager.TransferReason.None)) ||
-                WarehouseControl.HasRecord(CurrentBuilding);
+                WarehouseControl.HasRecord(CurrentBuilding) ||
+                (HasSecondVehicleType &&
+                    (VehicleControl.HasRecord(CurrentBuilding, TransferManager.TransferReason.None) ||
+                    VehicleControl.HasRecord(CurrentBuilding, (TransferManager.TransferReason)125)));
 
             statusSprite.spriteName = hasRecord ? "AchievementCheckedTrue" : "AchievementCheckedFalse";
         }
@@ -120,7 +137,9 @@ namespace TransferController
             // Activate secondary vehicle selection if the primary reason is mail.
             if (HasSecondVehicleType)
             {
-                secondaryVehicleSelection.SetTarget(CurrentBuilding, TransferManager.TransferReason.None);
+                // Secondary transfer reason is 125 (if Prison Helicopter big police station), or otherwise 'none'.
+                secondaryVehicleSelection.SetTarget(CurrentBuilding,
+                    TransferReason == TransferManager.TransferReason.Crime ? (TransferManager.TransferReason)125 : TransferManager.TransferReason.None);
                 secondaryVehicleSelection.Show();
             }
             else

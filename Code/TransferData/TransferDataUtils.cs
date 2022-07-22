@@ -197,16 +197,19 @@ namespace TransferController
                         else
                         {
                             // Normal police station.
-                            transfers[0].panelTitle = Translations.Translate("TFC_GEN_SER"); // police service restrictions
+                            // Police service.
+                            transfers[0].panelTitle = Translations.Translate("TFC_GEN_SER");
                             transfers[0].outsideText = null;
                             transfers[0].isIncoming = true;
                             transfers[0].reason = TransferManager.TransferReason.Crime;
                             transfers[0].spawnsVehicles = true;
-                            transfers[1].panelTitle = Translations.Translate("TFC_POL_PMO"); // Prisoner transfer by van to prison
+
+                            // Prisoner transfer to prison (collected by prison van).
+                            transfers[1].panelTitle = Translations.Translate("TFC_POL_PMO");
                             transfers[1].outsideText = null;
                             transfers[1].isIncoming = false;
                             transfers[1].reason = TransferManager.TransferReason.CriminalMove;
-                            transfers[1].spawnsVehicles = true;
+                            transfers[1].spawnsVehicles = false;
 
                             // Prison Helicopter Mod.
                             if (buildingInfo.m_buildingAI.GetType().Name.Equals("PrisonCopterPoliceStationAI"))
@@ -214,7 +217,8 @@ namespace TransferController
                                 // Small (local) police station
                                 if ((buildingFlags & Building.Flags.Downgrading) != Building.Flags.None)
                                 {
-                                    transfers[2].panelTitle = Translations.Translate("TFC_POL_PTO"); // send prisoners to a central station
+                                    // Send prisoners to bigg police station (collected by prison van sent from big station).
+                                    transfers[2].panelTitle = Translations.Translate("TFC_POL_PTO");
                                     transfers[2].outsideText = null;
                                     transfers[2].isIncoming = false;
                                     transfers[2].reason = (TransferManager.TransferReason)125;
@@ -224,16 +228,19 @@ namespace TransferController
                                 // Big (central) police station
                                 else
                                 {
-                                    transfers[2].panelTitle = Translations.Translate("TFC_POL_PHO"); // transfer prisoners by helicopter to prison
+                                    // Prisoner transfer to prison by helicopter.
+                                    transfers[2].panelTitle = Translations.Translate("TFC_POL_PHO");
                                     transfers[2].outsideText = null;
                                     transfers[2].isIncoming = false;
                                     transfers[2].reason = (TransferManager.TransferReason)126;
                                     transfers[2].spawnsVehicles = false;
-                                    transfers[3].panelTitle = Translations.Translate("TFC_POL_PMI"); // transfer prisoners from local stations
+
+                                    // Collect prisoners from smaller stations by sending a prison van.
+                                    transfers[3].panelTitle = Translations.Translate("TFC_POL_PMI");
                                     transfers[3].outsideText = null;
                                     transfers[3].isIncoming = true;
                                     transfers[3].reason = (TransferManager.TransferReason)125;
-                                    transfers[3].spawnsVehicles = false;
+                                    transfers[3].spawnsVehicles = true;
                                     return 4;
                                 }
                             }

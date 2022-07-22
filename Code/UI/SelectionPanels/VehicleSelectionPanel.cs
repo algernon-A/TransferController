@@ -191,6 +191,11 @@ namespace TransferController
                 // Special treatement for post offices - post vans have level 2, others level 5.
                 buildingLevel = ParentPanel.TransferReason == TransferManager.TransferReason.Mail ? ItemClass.Level.Level2 : ItemClass.Level.Level5;
             }
+            else if (ParentPanel.TransferReason == (TransferManager.TransferReason)125)
+            {
+                // Prison helicopter mod big police station sends prison vans.
+                buildingLevel = ItemClass.Level.Level4;
+            }
 
             // Get list of already-selected vehicles.
             List<VehicleInfo> selectedList = VehicleControl.GetVehicles(currentBuilding, ParentPanel.TransferReason);
