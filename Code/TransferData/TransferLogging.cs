@@ -38,8 +38,8 @@ namespace TransferController
     internal static class TransferLogging
     {
         /// Log is a circular buffer of logentries.
-        internal static LogEntry[] log = new LogEntry[65536];
-        internal static ushort logIndex = 0;
+        internal static LogEntry[] log = new LogEntry[131072];
+        internal static uint logIndex = 0;
 
 
         /// <summary>
@@ -73,6 +73,13 @@ namespace TransferController
                 incomingPos = inPos,
                 outgoingPos = outPos
             };
+
+            // Reset log index if we've reached the end of the buffer.
+            if (logIndex >= log.Length)
+            {
+                logIndex = 0;
+                Logging.Message("logging buffer wrapped");
+            }
         }
 
 
@@ -93,8 +100,14 @@ namespace TransferController
             List<MatchData> returnList = new List<MatchData>(log.Length);
 
             // Iterate through log starting at current position and wrapping around.
-            for (ushort i = (ushort)(logIndex + 1); i != logIndex; ++i)
+            for (uint i = logIndex + 1; i != logIndex; ++i)
             {
+                // Check for index wrap.
+                if (i >= log.Length)
+                {
+                    i = 0;
+                }
+
                 // Apply filters.
                 LogEntry thisEntry = log[i];
                 bool thisBuildingIn = buildingID == 0 ? thisEntry.incoming : thisEntry.inBuilding == buildingID;
