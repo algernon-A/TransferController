@@ -599,7 +599,7 @@ namespace TransferController
                 TransferManager.TransferReason reason = (TransferManager.TransferReason)((key & 0xFF000000) >> 24);
                 bool incoming = (key & NewOutgoingMask) == 0;
                 ushort buildingID = (ushort)(key & 0x0000FFFF);
-
+                
                 // Fix for invalidly recorded transfers.
                 if (!incoming)
                 {
@@ -667,8 +667,9 @@ namespace TransferController
             // Iterate through building record dictionary looking for eligible records.
             foreach (KeyValuePair<uint, BuildingRecord> entry in buildingRecords)
             {
-                // Interested in any records with the 'None' transfer reason.
-                if ((entry.Key & 0xFF000000) >> 24 == (uint)TransferManager.TransferReason.None)
+                // Interested in any records with the 'None' or 'Oil' transfer reasons.
+                TransferManager.TransferReason reason = (TransferManager.TransferReason)((entry.Key & 0xFF000000) >> 24);
+                if (reason == TransferManager.TransferReason.None | reason == TransferManager.TransferReason.Oil)
                 {
                     candidateEntries.Add(entry.Key);
                 }
@@ -689,34 +690,42 @@ namespace TransferController
                 // New transfer reason.
                 TransferManager.TransferReason newReason = TransferManager.TransferReason.None;
 
-                // Incoming or outgoing?
-                if (isIncoming)
+                if (transferReason == TransferManager.TransferReason.None)
                 {
-                    // Incoming transfer updates from TransferReason.None.
-                    if (buildingAI is HospitalAI)
+                    // Incoming or outgoing?
+                    if (isIncoming)
                     {
-                        newReason = TransferManager.TransferReason.Sick;
+                        // Incoming transfer updates from TransferReason.None.
+                        if (buildingAI is HospitalAI)
+                        {
+                            newReason = TransferManager.TransferReason.Sick;
+                        }
+                        else if (buildingAI is CemeteryAI)
+                        {
+                            newReason = TransferManager.TransferReason.Dead;
+                        }
+                        else if (buildingAI is HelicopterDepotAI && buildingInfo.m_class.m_service == ItemClass.Service.HealthCare)
+                        {
+                            newReason = TransferManager.TransferReason.Sick2;
+                        }
                     }
-                    else if (buildingAI is CemeteryAI)
+                    else
                     {
-                        newReason = TransferManager.TransferReason.Dead;
-                    }
-                    else if (buildingAI is HelicopterDepotAI && buildingInfo.m_class.m_service == ItemClass.Service.HealthCare)
-                    {
-                        newReason = TransferManager.TransferReason.Sick2;
+                        // Outgoing transfer updates from TransferReason.None.
+                        if (buildingAI is ExtractingFacilityAI extractingAI)
+                        {
+                            newReason = extractingAI.m_outputResource;
+                        }
+                        else if (buildingAI is ProcessingFacilityAI processingAI)
+                        {
+                            newReason = processingAI.m_outputResource;
+                        }
                     }
                 }
-                else
+                else if (transferReason == TransferManager.TransferReason.Oil && buildingAI is HeatingPlantAI heatingAI)
                 {
-                    // Outgoing transfer updates from TransferReason.None.
-                    if (buildingAI is ExtractingFacilityAI extractingAI)
-                    {
-                        newReason = extractingAI.m_outputResource;
-                    }
-                    else if (buildingAI is ProcessingFacilityAI processingAI)
-                    {
-                        newReason = processingAI.m_outputResource;
-                    }
+                    // Conversion for records for boiler stations from oil to petrol.
+                    newReason = heatingAI.m_resourceType;
                 }
 
                 // Did we end up with an updated reason?
