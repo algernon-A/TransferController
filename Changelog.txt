@@ -1,4 +1,6 @@
-﻿- Add secondary vehicle selection for Prison Helicopter mod central police stations
+﻿Version 0.7.2 -
+
+- Add secondary vehicle selection for Prison Helicopter mod central police stations
 - Fix support for heating plants
 - Increase logging buffer size
 - Update translation framework
