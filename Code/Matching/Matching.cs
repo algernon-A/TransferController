@@ -487,9 +487,9 @@ namespace TransferController
 							// New nearest disance - apply checks.
 							if (incoming)
 							{
-								if (!ChecksPassed(offerBuilding, candidateBuilding, offerDistrict, candidateDistrict, offerPark, candidatePark, reason))
+								if (!ChecksPassed(offerBuilding, candidateBuilding, offerDistrict, candidateDistrict, offerPark, candidatePark, reason, out MatchStatus result))
 								{
-									TransferLogging.AddEntry(reason, incoming, priority, candidatePriority, offerBuilding, candidateBuilding, MatchStatus.Blocked, offer.Exclude, candidate.Exclude, offerPosition, candidatePosition);
+									TransferLogging.AddEntry(reason, incoming, priority, candidatePriority, offerBuilding, candidateBuilding, result, offer.Exclude, candidate.Exclude, offerPosition, candidatePosition);
 									continue;
 								}
 
@@ -502,9 +502,9 @@ namespace TransferController
 							}
 							else
 							{
-								if (!ChecksPassed(candidateBuilding, offerBuilding, candidateDistrict, offerDistrict, candidatePark, offerPark, reason))
+								if (!ChecksPassed(candidateBuilding, offerBuilding, candidateDistrict, offerDistrict, candidatePark, offerPark, reason, out MatchStatus result))
 								{
-									TransferLogging.AddEntry(reason, incoming, candidatePriority, priority, candidateBuilding, offerBuilding, MatchStatus.Blocked, candidate.Exclude, offer.Exclude, candidatePosition, offerPosition);
+									TransferLogging.AddEntry(reason, incoming, candidatePriority, priority, candidateBuilding, offerBuilding, result, candidate.Exclude, offer.Exclude, candidatePosition, offerPosition);
 									continue;
 								}
 
@@ -632,15 +632,16 @@ namespace TransferController
 		/// <param name="outgoingDistrict">District of outgoing offer</param>
 		/// <param name="incomingPark">Park area of incoming offer</param>
 		/// <param name="outgoingPark">Park area of outgoing offer</param>
-		/// <param name="reason">Transfer reason</param>
+		/// <param name="reason">Transfer reason</param
+		/// <param name="result">Matching result check</param>
 		/// <returns>True if the transfer is permitted, false if prohibited</returns>
-		internal static bool ChecksPassed(ushort incomingBuildingID, ushort outgoingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason reason)
+		internal static bool ChecksPassed(ushort incomingBuildingID, ushort outgoingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason reason, out MatchStatus result)
 		{
 			// First, check for incoming restrictions.
-			if (IncomingChecksPassed(incomingBuildingID, outgoingBuildingID, incomingDistrict, outgoingDistrict, incomingPark, outgoingPark, reason))
+			if (IncomingChecksPassed(incomingBuildingID, outgoingBuildingID, incomingDistrict, outgoingDistrict, incomingPark, outgoingPark, reason, out result))
 			{
-				// Then, outgoing
-				return OutgoingChecksPassed(outgoingBuildingID, incomingBuildingID, incomingDistrict, outgoingDistrict, incomingPark, outgoingPark, reason);
+				// Then, outgoing.
+				return OutgoingChecksPassed(outgoingBuildingID, incomingBuildingID, incomingDistrict, outgoingDistrict, incomingPark, outgoingPark, reason, out result);
 			}
 
 			// Failed incoming district restrictions - return false.
@@ -658,8 +659,9 @@ namespace TransferController
 		/// <param name="incomingPark">Park area of incoming offer</param>
 		/// <param name="outgoingPark">Park area of outgoing offer</param>
 		/// <param name="transferReason">Transfer reason</param>
+		/// <param name="result">Matching result check</param>
 		/// <returns>True if the transfer is permitted, false if prohibited</returns>
-		private static bool IncomingChecksPassed(ushort buildingID, ushort outgoingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason transferReason)
+		private static bool IncomingChecksPassed(ushort buildingID, ushort outgoingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason transferReason, out MatchStatus result)
 		{
 			// Calculate building record ID.
 			uint buildingRecordID = BuildingControl.CalculateEntryKey(buildingID, true, transferReason);
@@ -672,6 +674,7 @@ namespace TransferController
 				if (!BuildingControl.buildingRecords.TryGetValue(buildingRecordID, out buildingRecord))
 				{
 					// No record found, therefore no restrictions.
+					result = MatchStatus.Eligible;
 					return true;
 				}
 			}
@@ -681,12 +684,21 @@ namespace TransferController
 			{
 				if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BlockOutsideConnection) == 0)
 				{
+					// Outside connection permitted.
+					result = MatchStatus.Eligible;
 					return true;
+				}
+				else
+				{
+					// Outside connection blocked.
+					result = MatchStatus.ImportBlocked;
+					return false;
 				}
 			}
 			else if ((buildingRecord.flags & (BuildingControl.RestrictionFlags.DistrictEnabled | BuildingControl.RestrictionFlags.BuildingEnabled)) == 0)
 			{
 				// If not an outside connection, transfer is permitted if no restrictions are enabled.
+				result = MatchStatus.Eligible;
 				return true;
 			}
 
@@ -698,6 +710,7 @@ namespace TransferController
 				if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BlockSameDistrict) == 0 && (outgoingDistrict != 0 && incomingDistrict == outgoingDistrict || (outgoingPark != 0 && incomingPark == outgoingPark)))
 				{
 					// Same district match - permitted.
+					result = MatchStatus.Eligible;
 					return true;
 				}
 
@@ -707,6 +720,7 @@ namespace TransferController
 					if (buildingRecord.districts.Contains(outgoingDistrict) || buildingRecord.districts.Contains(-outgoingPark))
 					{
 						// Permitted district.
+						result = MatchStatus.Eligible;
 						return true;
 					}
 				}
@@ -721,12 +735,14 @@ namespace TransferController
 					if (buildingRecord.buildings.Contains(outgoingBuildingID))
 					{
 						// Permitted building.
+						result = MatchStatus.Eligible;
 						return true;
 					}
 				}
 			}
 
 			// If we got here, we found a record but no permitted match was found; return false.
+			result = MatchStatus.NotPermittedIn;
 			return false;
 		}
 
@@ -741,8 +757,9 @@ namespace TransferController
 		/// <param name="outgoingPark">Park area of outgoing offer</param>
 		/// <param name="outgoingDistrict">District of outgoing offer</param>
 		/// <param name="transferReason">Transfer reason</param>
+		/// <param name="result">Matching result check</param>
 		/// <returns>True if the transfer is permitted, false if prohibited</returns>
-		private static bool OutgoingChecksPassed(ushort buildingID, ushort incomingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason transferReason)
+		private static bool OutgoingChecksPassed(ushort buildingID, ushort incomingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason transferReason, out MatchStatus result)
 		{
 			// Calculate building record ID.
 			uint buildingRecordID = BuildingControl.CalculateEntryKey(buildingID, false, transferReason);
@@ -757,12 +774,14 @@ namespace TransferController
 					if (!BuildingControl.buildingRecords.TryGetValue(buildingRecordID, out buildingRecord))
 					{
 						// No record found, therefore no restrictions.
+						result = MatchStatus.Eligible;
 						return true;
 					}
 				}
 				else
 				{
 					// No relevant reason found, therefore no restrictions.
+					result = MatchStatus.Eligible;
 					return true;
 				}
 			}
@@ -772,12 +791,22 @@ namespace TransferController
 			{
 				if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BlockOutsideConnection) == 0)
 				{
+					// Outside connection permitted.
+					result = MatchStatus.Eligible;
 					return true;
 				}
+				else
+				{
+					// Outside connection blocked.
+					result = MatchStatus.ExportBlocked;
+					return false;
+				}
+
 			}
 			else if ((buildingRecord.flags & (BuildingControl.RestrictionFlags.DistrictEnabled | BuildingControl.RestrictionFlags.BuildingEnabled)) == 0)
 			{
 				// If not an outside connection, transfer is permitted if no restrictions are enabled.
+				result = MatchStatus.Eligible;
 				return true;
 			}
 
@@ -788,6 +817,7 @@ namespace TransferController
 				if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BlockSameDistrict) == BuildingControl.RestrictionFlags.None && (incomingDistrict != 0 && incomingDistrict == outgoingDistrict || (incomingPark != 0 && incomingPark == outgoingPark)))
 				{
 					// Same district match - permitted.
+					result = MatchStatus.Eligible;
 					return true;
 				}
 
@@ -797,6 +827,7 @@ namespace TransferController
 					if (buildingRecord.districts.Contains(incomingDistrict) || buildingRecord.districts.Contains(-incomingPark))
 					{
 						// Permitted district.
+						result = MatchStatus.Eligible;
 						return true;
 					}
 				}
@@ -811,12 +842,14 @@ namespace TransferController
 					if (buildingRecord.buildings.Contains(incomingBuildingID))
 					{
 						// Permitted building.
+						result = MatchStatus.Eligible;
 						return true;
 					}
 				}
 			}
 
 			// If we got here, we didn't get a record.
+			result = MatchStatus.NotPermittedOut;
 			return false;
 		}
 

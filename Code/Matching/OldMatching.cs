@@ -310,9 +310,9 @@ namespace TransferController
 										// Position of incoming building (source building or vehicle source building)
 										Vector3 outCandidatePosition = outCandidateBuilding == 0 ? outgoingOfferCandidate.Position : buildingBuffer[outCandidateBuilding].m_position;
 
-										if (!Matching.ChecksPassed(incomingBuilding, outCandidateBuilding, incomingDistrict, districtManager.GetDistrict(outCandidatePosition), incomingPark, districtManager.GetPark(outCandidatePosition), material))
+										if (!Matching.ChecksPassed(incomingBuilding, outCandidateBuilding, incomingDistrict, districtManager.GetDistrict(outCandidatePosition), incomingPark, districtManager.GetPark(outCandidatePosition), material, out MatchStatus result))
 										{
-											TransferLogging.AddEntry(material, true, thisPriority, otherPriority, incomingBuilding, outCandidateBuilding, MatchStatus.Blocked, incomingOfferToMatch.Exclude, outgoingOfferCandidate.Exclude, incomingOfferToMatch.Position, outgoingOfferCandidate.Position);
+											TransferLogging.AddEntry(material, true, thisPriority, otherPriority, incomingBuilding, outCandidateBuilding, result, incomingOfferToMatch.Exclude, outgoingOfferCandidate.Exclude, incomingOfferToMatch.Position, outgoingOfferCandidate.Position);
 											continue;
 										}
 									}
@@ -640,9 +640,9 @@ namespace TransferController
 									// Position of incoming building (source building or vehicle source building)
 									Vector3 inCandidatePosition = inCandidateBuilding == 0 ? incomingOfferCandidate.Position : buildingBuffer[inCandidateBuilding].m_position;
 
-									if (!Matching.ChecksPassed( inCandidateBuilding, outgoingBuilding, districtManager.GetDistrict(inCandidatePosition), outgoingDistrict, districtManager.GetPark(inCandidatePosition), outgoingPark, material))
+									if (!Matching.ChecksPassed(inCandidateBuilding, outgoingBuilding, districtManager.GetDistrict(inCandidatePosition), outgoingDistrict, districtManager.GetPark(inCandidatePosition), outgoingPark, material, out MatchStatus result))
 									{
-										TransferLogging.AddEntry(material, false, otherPriority, thisPriority, inCandidateBuilding, outgoingBuilding, MatchStatus.Blocked, incomingOfferCandidate.Exclude, outgoingOfferToMatch.Exclude, incomingOfferCandidate.Position, outgoingOfferToMatch.Position);
+										TransferLogging.AddEntry(material, false, otherPriority, thisPriority, inCandidateBuilding, outgoingBuilding, result, incomingOfferCandidate.Exclude, outgoingOfferToMatch.Exclude, incomingOfferCandidate.Position, outgoingOfferToMatch.Position);
 										continue;
 									}
 								}

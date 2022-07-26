@@ -1,4 +1,9 @@
-﻿Version 0.7.2 -
+﻿- Add additional 'blocked' match logging statuses (blocked in/blocked out/import blocked/export blocked)
+- Add tooltips to match states in the log panel
+- Fix vehicle slider maximum value check when changing building selection between warehouses with vehicle tab open
+
+
+Version 0.7.2 -
 
 - Add secondary vehicle selection for Prison Helicopter mod central police stations
 - Fix support for heating plants

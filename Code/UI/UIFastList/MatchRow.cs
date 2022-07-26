@@ -56,7 +56,7 @@ namespace TransferController
 	{
 		// Layout constants.
 		internal const float TargetWidth = 150f;
-		internal const float StatusWidth = 80f;
+		internal const float StatusWidth = 120f;
 		internal const float ThisPriorityX = ReasonX + ReasonWidth + Margin;
 		internal const float OtherPriorityX = ThisPriorityX + PriorityWidth + Margin;
 		internal const float TargetX = OtherPriorityX + PriorityWidth + Margin;
@@ -151,23 +151,41 @@ namespace TransferController
 
 				switch (thisMatch.status)
 				{
-					case MatchStatus.Blocked:
-						statusLabel.text = Translations.Translate("TFC_LOG_BLK");
+					case MatchStatus.NotPermittedIn:
+						statusLabel.text = Translations.Translate("TFC_LOG_BLI");
+						statusLabel.tooltip = Translations.Translate("TFC_LOG_BLI_TIP");
+						break;
+					case MatchStatus.NotPermittedOut:
+						statusLabel.text = Translations.Translate("TFC_LOG_BLO");
+						statusLabel.tooltip = Translations.Translate("TFC_LOG_BLO_TIP");
+						break;
+					case MatchStatus.ImportBlocked:
+						statusLabel.text = Translations.Translate("TFC_LOG_BXI");
+						statusLabel.tooltip = Translations.Translate("TFC_LOG_BXI_TIP");
+						break;
+					case MatchStatus.ExportBlocked:
+						statusLabel.text = Translations.Translate("TFC_LOG_BXO");
+						statusLabel.tooltip = Translations.Translate("TFC_LOG_BXO_TIP");
 						break;
 					case MatchStatus.PathFailure:
 						statusLabel.text = Translations.Translate("TFC_LOG_PFL");
+						statusLabel.tooltip = Translations.Translate("TFC_LOG_PFM_TIP");
 						break;
 					case MatchStatus.NoVehicle:
 						statusLabel.text = Translations.Translate("TFC_LOG_NOV");
+						statusLabel.tooltip = Translations.Translate("TFC_LOG_NOM_TIP");
 						break;
 					case MatchStatus.Eligible:
 						statusLabel.text = Translations.Translate("TFC_LOG_ELI");
-                        break;
+						statusLabel.tooltip = Translations.Translate("TFC_LOG_ELM_TIP");
+						break;
 					case MatchStatus.Selected:
 						statusLabel.text = Translations.Translate("TFC_LOG_SEL");
+						statusLabel.tooltip = Translations.Translate("TFC_LOG_SEM_TIP");
 						break;
 					default:
 						statusLabel.text = string.Empty;
+						statusLabel.tooltip = null;
 						break;
 				}
 			}

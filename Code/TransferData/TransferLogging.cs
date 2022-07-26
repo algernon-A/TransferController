@@ -9,7 +9,10 @@ namespace TransferController
     public enum MatchStatus : byte
     {
         None = 0,
-        Blocked,
+        NotPermittedIn,
+        NotPermittedOut,
+        ExportBlocked,
+        ImportBlocked,
         PathFailure,
         NoVehicle,
         Eligible,
@@ -101,14 +104,14 @@ namespace TransferController
 
             // Iterate through log starting at current position and wrapping around.
             uint i = logIndex + 1;
-            do
+            while (i != logIndex)
             {
                 // Apply filters.
                 LogEntry thisEntry = log[i];
                 bool thisBuildingIn = buildingID == 0 ? thisEntry.incoming : thisEntry.inBuilding == buildingID;
                 if ((thisEntry.inBuilding != 0 | thisEntry.outBuilding != 0)
                     && (buildingID == 0 | thisEntry.inBuilding == buildingID | thisEntry.outBuilding == buildingID)
-                    && ((showBlocked & thisEntry.status == MatchStatus.Blocked) |
+                    && ((showBlocked & (thisEntry.status == MatchStatus.NotPermittedOut | thisEntry.status == MatchStatus.NotPermittedIn | thisEntry.status == MatchStatus.ExportBlocked | thisEntry.status == MatchStatus.ImportBlocked)) |
                         (showPathFail & thisEntry.status == MatchStatus.PathFailure) |
                         (showNoVehicles & thisEntry.status == MatchStatus.NoVehicle) |
                         (showEligibile & thisEntry.status == MatchStatus.Eligible) |
@@ -129,7 +132,6 @@ namespace TransferController
                     i = 0;
                 }
             }
-            while (i != logIndex);
 
             return returnList;
         }
