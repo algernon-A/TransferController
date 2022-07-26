@@ -1,4 +1,5 @@
-﻿- Add additional 'blocked' match logging statuses (blocked in/blocked out/import blocked/export blocked)
+﻿- Add recent pathfinding fails list to building status panel
+- Add additional 'blocked' match logging statuses (blocked in/blocked out/import blocked/export blocked)
 - Add tooltips to match states in the log panel
 - Fix vehicle slider maximum value check when changing building selection between warehouses with vehicle tab open
 

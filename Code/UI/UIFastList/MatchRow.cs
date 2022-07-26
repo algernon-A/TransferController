@@ -1,6 +1,6 @@
-﻿using UnityEngine;
-using ColossalFramework;
+﻿using ColossalFramework;
 using ColossalFramework.UI;
+using UnityEngine;
 
 
 namespace TransferController
@@ -50,7 +50,7 @@ namespace TransferController
 
 
 	/// <summary>
-	/// UI fastlist item for districts.
+	/// UI fastlist item for match records.
 	/// </summary>
 	public class MatchRow : StatusRow
 	{
@@ -203,7 +203,6 @@ namespace TransferController
 			// Set initial background as deselected state.
 			Deselect(isRowOdd);
 		}
-
 
 
 		/// <summary>

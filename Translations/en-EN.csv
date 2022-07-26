@@ -105,6 +105,7 @@
 "TFC_LOG_BXO","Export blocked"
 "TFC_LOG_BXO_TIP","This match was blocked by export restrictions"
 "TFC_LOG_STA","Result"
+"TFC_PFF_TIT","Recent pathfinding failures"
 "TFC_STA_TIT","Building status"
 "TFC_STA_TIG","Incoming vehicles"
 "TFC_STA_TIO","Outgoing vehicles"

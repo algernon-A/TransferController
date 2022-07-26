@@ -1,6 +1,6 @@
-﻿using System;
+﻿using HarmonyLib;
+using System;
 using System.Collections.Generic;
-using HarmonyLib;
 
 
 namespace TransferController
@@ -88,6 +88,35 @@ namespace TransferController
 
 
         /// <summary>
+        /// Checks to see if a pathfinding failure has been recorded involving the given building within the past 5 minutes.
+        /// </summary>
+        /// <param name="buildingID">Building ID</param>
+        /// <returns>True if a pathfinding failure affecting this building has been registered in the past five minutes, false otherwise</returns>
+        internal static bool HasFailure(ushort buildingID)
+        {
+            // Only entries newer than this are valid.
+            long expiryTick = DateTime.Now.Ticks - Timeout;
+
+            // Iterate through dictionary looking for matching records.
+            foreach (KeyValuePair<BuildingPair, long> entry in pathFails)
+            {
+                if (entry.Key.sourceBuilding == buildingID | entry.Key.targetBuilding == buildingID)
+                {
+                    // Found a record referring to the building - check timestamp.
+                    if (entry.Value > expiryTick)
+                    {
+                        // Timestamp is valid; return true.
+                        return true;
+                    }
+                }
+            }
+
+            // If we got here, no recent failure was recorded.
+            return false;
+        }
+
+
+        /// <summary>
         /// Checks to see if a pathfinding failure has been recorded between the given building pairs within the past 5 minutes.
         /// </summary>
         /// <param name="sourceBuilding">Source building ID</param>
@@ -95,6 +124,9 @@ namespace TransferController
         /// <returns>True if a pathfinding failure between these buildings has been registered in the past five minutes, false otherwise</returns>
         internal static bool HasFailure(ushort sourceBuilding, ushort targetBuilding)
         {
+            // Only entries newer than this are valid.
+            long expiryTick = DateTime.Now.Ticks - Timeout;
+
             // Create BuildingPair.
             BuildingPair thisPair = new BuildingPair { sourceBuilding = sourceBuilding, targetBuilding = targetBuilding };
 
@@ -102,7 +134,7 @@ namespace TransferController
             if (pathFails.TryGetValue(thisPair, out long time))
             {
                 // Yes - check to see if five minutes have passed.
-                if (time + Timeout > DateTime.Now.Ticks)
+                if (time > expiryTick)
                 {
                     // Five minutes haven't passed - block the transfer.
                     return true;
@@ -132,7 +164,7 @@ namespace TransferController
             // Remove all records older than this.
             long expiryTick = DateTime.Now.Ticks - Timeout;
 
-            // Iterate through dictionary looking for records to remove..
+            // Iterate through dictionary looking for records to remove.
             foreach (KeyValuePair<BuildingPair, long> entry in pathFails)
             {
                 if (entry.Key.sourceBuilding == buildingID || entry.Key.targetBuilding == buildingID || entry.Value < expiryTick)
@@ -147,6 +179,33 @@ namespace TransferController
             {
                 pathFails.Remove(record);
             }
+        }
+
+
+        /// <summary>
+        /// Gets a list of all current pathfind failures for the specified building.
+        /// </summary>
+        /// <param name="buildingID">Building ID</param>
+        /// <returns>List of known pathfind fails affecting this building (empty list if none)</returns>
+        internal static List<PathFailData> GetFails(ushort buildingID)
+        {
+            // Iterate through dictionary looking for matching records.
+            List<PathFailData> fails = new List<PathFailData>();
+            foreach (KeyValuePair<BuildingPair, long> entry in pathFails)
+            {
+                if (entry.Key.sourceBuilding == buildingID)
+                {
+                    // Found a record referring to the building - add to list.
+                    fails.Add(new PathFailData(entry.Key.targetBuilding, false));
+                }
+                else if (entry.Key.targetBuilding == buildingID)
+                {
+                    // Found a record referring to the building - add to list.
+                    fails.Add(new PathFailData(entry.Key.sourceBuilding, true));
+                }
+            }
+
+            return fails;
         }
     }
 }

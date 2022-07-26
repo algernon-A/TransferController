@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using ColossalFramework;
+﻿using ColossalFramework;
 using ColossalFramework.UI;
 
 

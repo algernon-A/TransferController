@@ -1,7 +1,7 @@
-﻿using System;
-using UnityEngine;
-using ColossalFramework;
+﻿using ColossalFramework;
 using ColossalFramework.UI;
+using System;
+using UnityEngine;
 
 
 namespace TransferController
@@ -17,7 +17,7 @@ namespace TransferController
         private const float OffersY = 45f;
         private const float GuestVehiclesY = OffersY + OffersPanel.PanelHeight + Margin;
         private const float OwnedVehiclesY = GuestVehiclesY + GuestVehiclesPanel.PanelHeight + Margin;
-        private const float PanelHeight = OwnedVehiclesY + OwnedVehiclesPanel.PanelHeight + Margin;
+        private const float PanelHeight = OwnedVehiclesY + OwnedVehiclesPanel.PanelHeight;
 
 
         // Components.
@@ -25,9 +25,13 @@ namespace TransferController
         private BuildingStatsPanel statsPanel;
         private OwnedVehiclesPanel ownedVehiclesPanel;
         private GuestVehiclesPanel guestVehiclesPanel;
+        private PathFailsPanel pathFailspanel;
 
         // Current selection.
         protected ushort currentBuilding;
+
+        // Panel height without pathfails panel.
+        private float baseHeight;
 
 
         /// <summary>
@@ -74,6 +78,8 @@ namespace TransferController
                 guestVehiclesPanel.relativePosition = new Vector2(0f, GuestVehiclesY);
                 ownedVehiclesPanel = this.AddUIComponent<OwnedVehiclesPanel>();
                 ownedVehiclesPanel.relativePosition = new Vector2(0f, OwnedVehiclesY);
+                pathFailspanel = this.AddUIComponent<PathFailsPanel>();
+                pathFailspanel.relativePosition = new Vector2(0f, OwnedVehiclesY + OwnedVehiclesPanel.PanelHeight + Margin);
             }
             catch (Exception e)
             {
@@ -125,8 +131,26 @@ namespace TransferController
             {
                 // No supported outgoing vehicles - hide vehicle status panel.
                 ownedVehiclesPanel.Hide();
-                this.height = OwnedVehiclesY;
+                this.height = OwnedVehiclesY - Margin;
+            }
+
+            // Record base panel height without pathfinding failures panel.
+            baseHeight = this.height;
+
+            // Check for pathfinding failures.
+            if (PathFindFailure.HasFailure(buildingID))
+            {
+                // Found at least one - show the pathfinding failures panel.
+                pathFailspanel.relativePosition = new Vector2(0f, this.height);
+                this.height += PathFailsPanel.PanelHeight;
+                pathFailspanel.SetTarget(buildingID);
+                pathFailspanel.Show();
+            }
+            else
+            {
+                // No pathfinding failures - hide the pathfinding failures panel.
+                pathFailspanel.Hide();
             }
         }
     }
-}
+};

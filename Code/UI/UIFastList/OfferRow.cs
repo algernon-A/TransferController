@@ -29,7 +29,7 @@ namespace TransferController
 
 
 	/// <summary>
-	/// UI fastlist item for districts.
+	/// UI fastlist item for open offers.
 	/// </summary>
 	public class OfferRow : StatusRow
 	{
