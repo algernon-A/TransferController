@@ -85,10 +85,7 @@ namespace TransferController
                 reserveUniqueCheck.isChecked = WarehouseControl.GetReserveUnique(buildingID);
                 reserveOutsideCheck.isChecked = WarehouseControl.GetReserveOutside(buildingID);
 
-                // Set reserved vehicles slider.
-                reservedVehiclesSlider.value = WarehouseControl.GetReservedVehicles(buildingID);
-
-                // Set vehicle slider maximum.
+                // Set reserved vehicle slider maximum.
                 if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID].Info.m_buildingAI is WarehouseAI warehouseAI)
                 {
                     reservedVehiclesSlider.maxValue = System.Math.Min(warehouseAI.m_truckCount, MaxReservedVehicles);
@@ -98,6 +95,9 @@ namespace TransferController
                     // Shouldn't ever get here, but just in case...
                     reservedVehiclesSlider.maxValue = MaxReservedVehicles;
                 }
+
+                // Set reserved vehicles slider value.
+                reservedVehiclesSlider.value = WarehouseControl.GetReservedVehicles(buildingID);
             }
 
             // Update component visibility.
