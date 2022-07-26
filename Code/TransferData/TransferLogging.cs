@@ -100,14 +100,9 @@ namespace TransferController
             List<MatchData> returnList = new List<MatchData>(log.Length);
 
             // Iterate through log starting at current position and wrapping around.
-            for (uint i = logIndex + 1; i != logIndex; ++i)
+            uint i = logIndex + 1;
+            do
             {
-                // Check for index wrap.
-                if (i >= log.Length)
-                {
-                    i = 0;
-                }
-
                 // Apply filters.
                 LogEntry thisEntry = log[i];
                 bool thisBuildingIn = buildingID == 0 ? thisEntry.incoming : thisEntry.inBuilding == buildingID;
@@ -123,7 +118,18 @@ namespace TransferController
                     // Add entry to list.
                     returnList.Add(new MatchData(buildingID, thisEntry.reason, thisEntry.priorityIn, thisEntry.priorityOut, thisEntry.inExcluded, thisEntry.outExcluded, thisEntry.inBuilding, thisEntry.outBuilding, thisEntry.incomingPos, thisEntry.outgoingPos, thisEntry.status));
                 }
+
+                // Increament i.
+                ++i;
+
+                // Check for index wrap.
+                if (i >= log.Length)
+                {
+                    // Index wrap; reset i.
+                    i = 0;
+                }
             }
+            while (i != logIndex);
 
             return returnList;
         }
