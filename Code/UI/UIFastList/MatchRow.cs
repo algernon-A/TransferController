@@ -16,6 +16,7 @@ namespace TransferController
 		public ushort buildingID, incomingBuildingID, outgoingBuildingID;
 		public Vector3 incomingPos, outgoingPos;
 		public MatchStatus status;
+		public uint timeStamp;
 
 
 		/// <summary>
@@ -31,20 +32,22 @@ namespace TransferController
 		/// <param name="outgoingBuildingID">Incoming building ID</param>
 		/// <param name="incomingPos">Incoming offer position</param>
 		/// <param name="outgoingPos">Incoming offer position</param>
+		/// <param name="timeStamp">Match framecount timetamp</param>
 		/// <param name="status">Match status</param>
-		public MatchData(ushort buildingID, TransferManager.TransferReason reason, byte incomingPriority, byte outgoingPriority, bool incomingExcluded, bool outgoingExcluded, ushort incomingBuildingID, ushort outgoingBuildingID, Vector3 incomingPos, Vector3 outgoingPos, MatchStatus status)
+		public MatchData(ushort buildingID, TransferManager.TransferReason reason, byte incomingPriority, byte outgoingPriority, bool incomingExcluded, bool outgoingExcluded, ushort incomingBuildingID, ushort outgoingBuildingID, Vector3 incomingPos, Vector3 outgoingPos, MatchStatus status, uint timeStamp)
         {
-			this.buildingID = buildingID;
+            this.buildingID = buildingID;
             this.reason = reason;
             this.incomingPriority = incomingPriority;
             this.outgoingPriority = outgoingPriority;
-			this.incomingExcluded = incomingExcluded;
-			this.outgoingExcluded = outgoingExcluded;
-			this.incomingBuildingID = incomingBuildingID;
+            this.incomingExcluded = incomingExcluded;
+            this.outgoingExcluded = outgoingExcluded;
+            this.incomingBuildingID = incomingBuildingID;
             this.outgoingBuildingID = outgoingBuildingID;
-			this.incomingPos = incomingPos;
-			this.outgoingPos = outgoingPos;
-			this.status = status;
+            this.incomingPos = incomingPos;
+            this.outgoingPos = outgoingPos;
+            this.status = status;
+            this.timeStamp = timeStamp;
         }
     }
 
@@ -57,15 +60,17 @@ namespace TransferController
 		// Layout constants.
 		internal const float TargetWidth = 150f;
 		internal const float StatusWidth = 120f;
+		internal const float TimeWidth = 50f;
 		internal const float ThisPriorityX = ReasonX + ReasonWidth + Margin;
 		internal const float OtherPriorityX = ThisPriorityX + PriorityWidth + Margin;
 		internal const float TargetX = OtherPriorityX + PriorityWidth + Margin;
 		internal const float AllowedX = TargetX + TargetWidth + Margin;
-		internal const float RowWidth = AllowedX + StatusWidth + Margin;
+		internal const float TimeX = AllowedX + StatusWidth + Margin;
+		internal const float RowWidth = TimeX + TimeWidth + Margin;
 
 
 		// Components.
-		private UILabel directionLabel, reasonLabel, thisPriorityLabel, otherPriorityLabel, targetLabel, statusLabel;
+		private UILabel directionLabel, reasonLabel, thisPriorityLabel, otherPriorityLabel, targetLabel, statusLabel, timeLabel;
 
 		// Transfer position.
 		private Vector3 transferPos;
@@ -79,7 +84,7 @@ namespace TransferController
 		public override void Display(object data, bool isRowOdd)
 		{
 			/// Perform initial setup for new rows.
-			if (reasonLabel == null)
+			if (directionLabel == null)
 			{
 				isVisible = true;
 				canFocus = true;
@@ -95,7 +100,9 @@ namespace TransferController
 				targetLabel = AddLabel(TargetX, TargetWidth);
 				statusLabel = AddLabel(AllowedX, StatusWidth);
 				statusLabel.textAlignment = UIHorizontalAlignment.Center;
-            }
+				timeLabel = AddLabel(TimeX, TimeWidth);
+				timeLabel.textAlignment = UIHorizontalAlignment.Center;
+			}
 
             // Check for valid data.
             if (data is MatchData thisMatch)
@@ -148,6 +155,7 @@ namespace TransferController
 
 				// Set other text.
 				reasonLabel.text = thisMatch.reason.ToString();
+				timeLabel.text = thisMatch.timeStamp.ToString();
 
 				switch (thisMatch.status)
 				{

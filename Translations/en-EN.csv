@@ -75,6 +75,7 @@
 "TFC_OPT_PAT_TIP","Prevents offers from being matched if there's been a vehicle pathfinding failure between the two buildings in the past five minutes"
 "TFC_OFF_TIT","Open offers"
 "TFC_OFF_LOG","Transfer log"
+"TFC_LOG_TIM","Time"
 "TFC_LOG_MAT","Reason"
 "TFC_LOG_PRI","Priority"
 "TFC_LOG_TAR","Target"

@@ -88,6 +88,8 @@ namespace TransferController
                 UIControls.AddLabel(this, MatchRow.TargetX + Margin, LogListHeaderY, Translations.Translate("TFC_LOG_TAR"), textScale: 0.7f);
                 UILabel statusLabel = UIControls.AddLabel(this, MatchRow.AllowedX + Margin, LogListHeaderY, Translations.Translate("TFC_LOG_STA"), MatchRow.StatusWidth, textScale: 0.7f);
                 statusLabel.textAlignment = UIHorizontalAlignment.Center;
+                UILabel timeLabel = UIControls.AddLabel(this, MatchRow.TimeX + Margin, LogListHeaderY, Translations.Translate("TFC_LOG_TIM"), MatchRow.TimeWidth, textScale: 0.7f);
+                timeLabel.textAlignment = UIHorizontalAlignment.Center;
 
                 // Log list.
                 logList = AddList<MatchRow>(LogListY, ListWidth, ListHeight);

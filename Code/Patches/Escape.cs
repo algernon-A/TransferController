@@ -10,7 +10,7 @@ namespace TransferController
     public static class EscapePatch
     {
         /// <summary>
-        /// Harmony prefix patch to cancel the zoning tool when it's active and the escape key is pressed.
+        /// Harmony prefix patch to cancel the tool when it's active and the escape key is pressed.
         /// </summary>
         /// <returns>True (continue on to game method) if the zoning tool isn't already active, false (pre-empt game method) otherwise</returns>
         public static bool Prefix()

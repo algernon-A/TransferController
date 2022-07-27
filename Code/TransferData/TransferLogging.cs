@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using ColossalFramework;
+using System.Collections.Generic;
+using UnityEngine;
 
 
 namespace TransferController
@@ -31,7 +33,8 @@ namespace TransferController
         public ushort inBuilding, outBuilding;
         public MatchStatus status;
         public bool inExcluded, outExcluded;
-        public UnityEngine.Vector3 incomingPos, outgoingPos;
+        public Vector3 incomingPos, outgoingPos;
+        public uint timeStamp;
     }
 
 
@@ -74,8 +77,9 @@ namespace TransferController
                 inExcluded = inExcluded,
                 outExcluded = outExcluded,
                 incomingPos = inPos,
-                outgoingPos = outPos
-            };
+                outgoingPos = outPos,
+                timeStamp = Singleton<SimulationManager>.instance.m_currentFrameIndex >> 6
+        };
 
             // Reset log index if we've reached the end of the buffer.
             if (logIndex >= log.Length)
@@ -119,7 +123,7 @@ namespace TransferController
                     && ((showIn & thisBuildingIn) | (showOut & !thisBuildingIn)))
                 {
                     // Add entry to list.
-                    returnList.Add(new MatchData(buildingID, thisEntry.reason, thisEntry.priorityIn, thisEntry.priorityOut, thisEntry.inExcluded, thisEntry.outExcluded, thisEntry.inBuilding, thisEntry.outBuilding, thisEntry.incomingPos, thisEntry.outgoingPos, thisEntry.status));
+                    returnList.Add(new MatchData(buildingID, thisEntry.reason, thisEntry.priorityIn, thisEntry.priorityOut, thisEntry.inExcluded, thisEntry.outExcluded, thisEntry.inBuilding, thisEntry.outBuilding, thisEntry.incomingPos, thisEntry.outgoingPos, thisEntry.status, thisEntry.timeStamp));
                 }
 
                 // Increament i.
