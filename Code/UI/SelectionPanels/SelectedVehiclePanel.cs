@@ -62,11 +62,10 @@ namespace TransferController
             // If list is empty, show random item panel (and hide otherwise).
             randomPanel.isVisible = items.Count == 0;
 
-            vehicleList.rowsData = new FastList<object>
-            {
-                m_buffer = items.OrderBy(x => x.name).ToArray(),
-                m_size = items.Count
-            };
+            // Set fastlist items, without changing the display.
+            vehicleList.rowsData.m_buffer = items.OrderBy(x => x.name).ToArray();
+            vehicleList.rowsData.m_size = items.Count;
+            vehicleList.Refresh();
         }
     }
 }

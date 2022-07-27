@@ -3,6 +3,7 @@
 - Add tooltips to match states in the log panel
 - Add timestamps to log entries (simulation timer seconds)
 - Add translations for 'in' and 'out'
+- Stop vehicle selection panel changing postion after a vehicle has been added
 - Fix vehicle slider maximum value check when changing building selection between warehouses with vehicle tab open
 
 

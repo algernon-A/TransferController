@@ -84,11 +84,11 @@ namespace TransferController
         /// </summary>
         internal void RefreshList()
         {
+            // Clear selected index.
+            vehicleList.selectedIndex = -1;
+
             // Repopulate the list.
             PopulateList();
-
-            // (Re)select currently-selected vehicle to ensure list selection matches.
-            vehicleList.FindVehicle(selectedVehicle);
         }
 
 
@@ -232,12 +232,10 @@ namespace TransferController
                 }
             }
 
-            // Set fastlist items.
-            vehicleList.rowsData = new FastList<object>
-            {
-                m_buffer = items.OrderBy(x => x.name).ToArray(),
-                m_size = items.Count
-            };
+            // Set fastlist items, without changing the display.
+            vehicleList.rowsData.m_buffer = items.OrderBy(x => x.name).ToArray();
+            vehicleList.rowsData.m_size = items.Count;
+            vehicleList.Refresh();
         }
     }
 }
