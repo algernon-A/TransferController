@@ -12,7 +12,7 @@ namespace TransferController
     {
         public static string ModName => "Transfer Controller";
 
-        public string Name => ModName + " " + ModUtils.CurrentVersion;
+        public string Name => ModName + " " + AssemblyUtils.CurrentVersion;
         public string Description => Translations.Translate("TFC_DESC");
 
 

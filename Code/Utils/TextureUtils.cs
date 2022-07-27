@@ -187,7 +187,7 @@ namespace TransferController
 		/// <returns>Read-only file stream</returns>
 		private static Stream OpenResourceFile(string fileName)
 		{
-			string path = Path.Combine(ModUtils.GetAssemblyPath(), "Resources");
+			string path = Path.Combine(AssemblyUtils.AssemblyPath, "Resources");
 			return File.OpenRead(Path.Combine(path, fileName));
 		}
 	}

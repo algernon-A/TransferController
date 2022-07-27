@@ -50,7 +50,7 @@ namespace TransferController
             }
 
             // Check for mod conflicts.
-            if (ModUtils.IsModConflict())
+            if (AssemblyUtils.IsModConflict())
             {
                 // Conflict detected.
                 conflictingMod = true;
@@ -65,7 +65,7 @@ namespace TransferController
             if (!isModEnabled)
             {
                 isModEnabled = true;
-                Logging.KeyMessage("v " + ModUtils.CurrentVersion + " loading");
+                Logging.KeyMessage("v " + AssemblyUtils.CurrentVersion + " loading");
             }
         }
 
@@ -105,7 +105,7 @@ namespace TransferController
                 modConflictBox.AddParas(Translations.Translate("ERR_CON0"), Translations.Translate("TFC_ERR_FAT"), Translations.Translate("TFC_ERR_CON0"), Translations.Translate("ERR_CON1"));
 
                 // Add conflicting mod name(s).
-                modConflictBox.AddList(ModUtils.conflictingModNames.ToArray());
+                modConflictBox.AddList(AssemblyUtils.conflictingModNames.ToArray());
 
                 // Closing para.
                 modConflictBox.AddParas(Translations.Translate("TFC_ERR_CON1"));
