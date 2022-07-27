@@ -16,7 +16,7 @@ namespace TransferController
 		public ushort buildingID, incomingBuildingID, outgoingBuildingID;
 		public Vector3 incomingPos, outgoingPos;
 		public MatchStatus status;
-		public uint timeStamp;
+		public float timeStamp;
 
 
 		/// <summary>
@@ -34,7 +34,7 @@ namespace TransferController
 		/// <param name="outgoingPos">Incoming offer position</param>
 		/// <param name="timeStamp">Match framecount timetamp</param>
 		/// <param name="status">Match status</param>
-		public MatchData(ushort buildingID, TransferManager.TransferReason reason, byte incomingPriority, byte outgoingPriority, bool incomingExcluded, bool outgoingExcluded, ushort incomingBuildingID, ushort outgoingBuildingID, Vector3 incomingPos, Vector3 outgoingPos, MatchStatus status, uint timeStamp)
+		public MatchData(ushort buildingID, TransferManager.TransferReason reason, byte incomingPriority, byte outgoingPriority, bool incomingExcluded, bool outgoingExcluded, ushort incomingBuildingID, ushort outgoingBuildingID, Vector3 incomingPos, Vector3 outgoingPos, MatchStatus status, float timeStamp)
         {
             this.buildingID = buildingID;
             this.reason = reason;
@@ -155,7 +155,7 @@ namespace TransferController
 
 				// Set other text.
 				reasonLabel.text = thisMatch.reason.ToString();
-				timeLabel.text = thisMatch.timeStamp.ToString();
+				timeLabel.text = thisMatch.timeStamp.ToString("N0");
 
 				switch (thisMatch.status)
 				{

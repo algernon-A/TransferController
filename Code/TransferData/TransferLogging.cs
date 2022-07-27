@@ -34,7 +34,7 @@ namespace TransferController
         public MatchStatus status;
         public bool inExcluded, outExcluded;
         public Vector3 incomingPos, outgoingPos;
-        public uint timeStamp;
+        public float timeStamp;
     }
 
 
@@ -78,7 +78,7 @@ namespace TransferController
                 outExcluded = outExcluded,
                 incomingPos = inPos,
                 outgoingPos = outPos,
-                timeStamp = Singleton<SimulationManager>.instance.m_currentFrameIndex >> 6
+                timeStamp = Singleton<SimulationManager>.instance.m_simulationTimer2
         };
 
             // Reset log index if we've reached the end of the buffer.
