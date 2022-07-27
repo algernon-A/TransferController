@@ -82,7 +82,7 @@ namespace TransferController
 				buildingID = pathFail.buildingID;
 
 				// Set text.
-				directionLabel.text = Translations.Translate(pathFail.incoming ? "TFC_LOG_IN" : "TFC_LOG_OUT");
+				directionLabel.text = Translations.Translate(pathFail.incoming ? "TFC_LOG_IN" : "TFC_LOG_OU");
 				buildingLabel.text = pathFail.buildingName;
 			}
 			else

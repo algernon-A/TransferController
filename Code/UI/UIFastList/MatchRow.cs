@@ -137,7 +137,7 @@ namespace TransferController
 					transferPos = thisMatch.incomingPos;
 
 					// Set labels.
-					directionLabel.text = Translations.Translate("TFC_LOG_OUT");
+					directionLabel.text = Translations.Translate("TFC_LOG_OU");
 					thisPriorityLabel.text = thisMatch.outgoingPriority.ToString();
 					otherPriorityLabel.text = thisMatch.incomingPriority.ToString();
 					targetLabel.text = thisMatch.incomingBuildingID == 0 ? string.Empty : Singleton<BuildingManager>.instance.GetBuildingName(thisMatch.incomingBuildingID, InstanceID.Empty);

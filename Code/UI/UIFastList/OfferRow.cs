@@ -68,7 +68,7 @@ namespace TransferController
 			if (data is OfferData thisOffer)
 			{
 				// Set text.
-				directionLabel.text = Translations.Translate(thisOffer.incoming ? "TFC_LOG_IN" : "TFC_LOG_OUT");
+				directionLabel.text = Translations.Translate(thisOffer.incoming ? "TFC_LOG_IN" : "TFC_LOG_OU");
 				reasonLabel.text = thisOffer.reason.ToString();
 				priorityLabel.text = thisOffer.priority.ToString();
 			}
