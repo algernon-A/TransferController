@@ -1,6 +1,7 @@
-﻿using HarmonyLib;
+﻿using ColossalFramework;
 using System;
 using System.Collections.Generic;
+using HarmonyLib;
 
 
 namespace TransferController
@@ -70,7 +71,6 @@ namespace TransferController
             {
                 // Create BuildingPair.
                 BuildingPair thisPair = new BuildingPair { sourceBuilding = data.m_sourceBuilding, targetBuilding = data.m_targetBuilding };
-                Logging.Message("vehicle pathfinding failure between buildings ", thisPair.sourceBuilding, " and ", thisPair.targetBuilding);
 
                 // Check if we already have an entry for this building pair.
                 if (pathFails.ContainsKey(thisPair))
@@ -94,13 +94,18 @@ namespace TransferController
         /// <returns>True if a pathfinding failure affecting this building has been registered in the past five minutes, false otherwise</returns>
         internal static bool HasFailure(ushort buildingID)
         {
+            // Local reference.
+            Building[] buildings = Singleton<BuildingManager>.instance.m_buildings.m_buffer;
+
             // Only entries newer than this are valid.
             long expiryTick = DateTime.Now.Ticks - Timeout;
 
             // Iterate through dictionary looking for matching records.
             foreach (KeyValuePair<BuildingPair, long> entry in pathFails)
             {
-                if (entry.Key.sourceBuilding == buildingID | entry.Key.targetBuilding == buildingID)
+                // Exclude outside connections.
+                if ((entry.Key.sourceBuilding == buildingID && !(buildings[entry.Key.targetBuilding].Info.m_buildingAI is OutsideConnectionAI)) |
+                    (entry.Key.targetBuilding == buildingID && !(buildings[entry.Key.targetBuilding].Info.m_buildingAI is OutsideConnectionAI)))
                 {
                     // Found a record referring to the building - check timestamp.
                     if (entry.Value > expiryTick)
@@ -117,7 +122,7 @@ namespace TransferController
 
 
         /// <summary>
-        /// Checks to see if a pathfinding failure has been recorded between the given building pairs within the past 5 minutes.
+        /// Checks to see if a pathfinding failure has been recorded between the given building pairs within the past 5 minutes, excluding outside connections.
         /// </summary>
         /// <param name="sourceBuilding">Source building ID</param>
         /// <param name="targetBuilding">Target building ID</param>
@@ -183,22 +188,26 @@ namespace TransferController
 
 
         /// <summary>
-        /// Gets a list of all current pathfind failures for the specified building.
+        /// Gets a list of all current pathfind failures for the specified building, excluding outside connections.
         /// </summary>
         /// <param name="buildingID">Building ID</param>
         /// <returns>List of known pathfind fails affecting this building (empty list if none)</returns>
         internal static List<PathFailData> GetFails(ushort buildingID)
         {
+            // Local reference.
+            Building[] buildings = Singleton<BuildingManager>.instance.m_buildings.m_buffer;
+
             // Iterate through dictionary looking for matching records.
             List<PathFailData> fails = new List<PathFailData>();
             foreach (KeyValuePair<BuildingPair, long> entry in pathFails)
             {
-                if (entry.Key.sourceBuilding == buildingID)
+                // Exclude outside connections.
+                if (entry.Key.sourceBuilding == buildingID && !(buildings[entry.Key.targetBuilding].Info.m_buildingAI is OutsideConnectionAI))
                 {
                     // Found a record referring to the building - add to list.
                     fails.Add(new PathFailData(entry.Key.targetBuilding, false));
                 }
-                else if (entry.Key.targetBuilding == buildingID)
+                else if (entry.Key.targetBuilding == buildingID && !(buildings[entry.Key.sourceBuilding].Info.m_buildingAI is OutsideConnectionAI))
                 {
                     // Found a record referring to the building - add to list.
                     fails.Add(new PathFailData(entry.Key.sourceBuilding, true));
