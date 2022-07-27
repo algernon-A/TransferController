@@ -115,7 +115,7 @@ namespace TransferController
 					transferPos = thisMatch.outgoingPos;
 
 					// Set labels.
-					directionLabel.text = "In";
+					directionLabel.text = Translations.Translate("TFC_LOG_IN");
 					thisPriorityLabel.text = thisMatch.incomingPriority.ToString();
 					otherPriorityLabel.text = thisMatch.outgoingPriority.ToString();
 					targetLabel.text = thisMatch.outgoingBuildingID == 0 ? string.Empty : Singleton<BuildingManager>.instance.GetBuildingName(thisMatch.outgoingBuildingID, InstanceID.Empty);
@@ -137,7 +137,7 @@ namespace TransferController
 					transferPos = thisMatch.incomingPos;
 
 					// Set labels.
-					directionLabel.text = "Out";
+					directionLabel.text = Translations.Translate("TFC_LOG_OUT");
 					thisPriorityLabel.text = thisMatch.outgoingPriority.ToString();
 					otherPriorityLabel.text = thisMatch.incomingPriority.ToString();
 					targetLabel.text = thisMatch.incomingBuildingID == 0 ? string.Empty : Singleton<BuildingManager>.instance.GetBuildingName(thisMatch.incomingBuildingID, InstanceID.Empty);
