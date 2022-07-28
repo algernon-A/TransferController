@@ -129,7 +129,7 @@ namespace TransferController
                 return false;
             }
 
-            // Check for record type (incoming/outoging) and reason match between buffer and target.
+            // Check for record type (incoming/outoging) match between buffer and target.
             for (int i = 0; i < length; ++i)
             {
                 if (transferBuffer[i].isIncoming != copyIncoming[i])
