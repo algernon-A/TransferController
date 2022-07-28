@@ -9,7 +9,7 @@ namespace TransferController
     /// <summary>
     /// Panel to show current building status.
     /// </summary>
-    internal class StatusPanel : UIPanel
+    internal class StatusPanel : UpdatingBuildingPanel
     {
         // Layout constants.
         private const float Margin = 5f;
@@ -26,9 +26,6 @@ namespace TransferController
         private OwnedVehiclesPanel ownedVehiclesPanel;
         private GuestVehiclesPanel guestVehiclesPanel;
         private PathFailsPanel pathFailspanel;
-
-        // Current selection.
-        protected ushort currentBuilding;
 
         // Panel height without pathfails panel.
         private float baseHeight;
@@ -79,7 +76,7 @@ namespace TransferController
                 ownedVehiclesPanel = this.AddUIComponent<OwnedVehiclesPanel>();
                 ownedVehiclesPanel.relativePosition = new Vector2(0f, OwnedVehiclesY);
                 pathFailspanel = this.AddUIComponent<PathFailsPanel>();
-                pathFailspanel.relativePosition = new Vector2(0f, OwnedVehiclesY + OwnedVehiclesPanel.PanelHeight + Margin);
+                pathFailspanel.isVisible = false;
             }
             catch (Exception e)
             {
@@ -92,13 +89,13 @@ namespace TransferController
         /// Sets the target to the selected building.
         /// </summary>
         /// <param name="buildingID">New building ID</param>
-        internal void SetTarget(ushort buildingID)
+        internal override void SetTarget(ushort buildingID)
         {
-            // Set target building.
-            currentBuilding = buildingID;
+            // Update child panels.
             offersPanel.SetTarget(buildingID);
             statsPanel.SetTarget(buildingID);
             guestVehiclesPanel.SetTarget(buildingID);
+            pathFailspanel.SetTarget(buildingID);
 
             // Set vehicle status panel visibility based on building type and vehicle count.
             BuildingAI buildingAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID].Info.m_buildingAI;
@@ -137,20 +134,31 @@ namespace TransferController
             // Record base panel height without pathfinding failures panel.
             baseHeight = this.height;
 
-            // Check for pathfinding failures.
-            if (PathFindFailure.HasFailure(buildingID))
+            // Perform base actions.
+            base.SetTarget(buildingID);
+        }
+
+
+        /// <summary>
+        /// Updates panel content.
+        /// Checks for current path fail status and adusts visibility accordingly.
+        /// </summary>
+        protected override void UpdateContent()
+        {
+            // Check for pathfinding failures relating to the current building.
+            if (PathFindFailure.HasFailure(currentBuilding))
             {
-                // Found at least one - show the pathfinding failures panel.
-                pathFailspanel.relativePosition = new Vector2(0f, this.height);
-                this.height += PathFailsPanel.PanelHeight;
-                pathFailspanel.SetTarget(buildingID);
+                // Found at least one - show the pathfinding failures panel if we're not already doing so.
+                this.height = baseHeight + PathFailsPanel.PanelHeight;
+                pathFailspanel.relativePosition = new Vector2(0f, baseHeight);
                 pathFailspanel.Show();
             }
             else
             {
                 // No pathfinding failures - hide the pathfinding failures panel.
+                this.height = baseHeight;
                 pathFailspanel.Hide();
             }
         }
     }
-};
+}
