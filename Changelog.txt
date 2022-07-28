@@ -2,6 +2,7 @@
 - Add additional 'blocked' match logging statuses (blocked in/blocked out/import blocked/export blocked)
 - Add tooltips to match states in the log panel
 - Add timestamps to log entries (simulation timer seconds)
+- Re-enable copy-paste between different service types
 - Add translations for 'in' and 'out'
 - Stop vehicle selection list changing postion after a vehicle has been added
 - Fix vehicle slider maximum value check when changing building selection between warehouses with vehicle tab open

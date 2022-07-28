@@ -151,7 +151,7 @@ namespace TransferController
                 };
 
                 // Apply pasted data.
-                BuildingControl.UpdateRecord(buildingID, copyIncoming[i], copyReason[i], ref newRecord);
+                BuildingControl.UpdateRecord(buildingID, copyIncoming[i], transferBuffer[i].reason, ref newRecord);
             }
 
             // Paste warehouse info, if applicable.
