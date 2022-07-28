@@ -1,4 +1,6 @@
-﻿- Add recent pathfinding fails list to building status panel
+﻿Version 0.7.3 -
+
+- Add recent pathfinding fails list to building status panel
 - Add additional 'blocked' match logging statuses (blocked in/blocked out/import blocked/export blocked)
 - Add tooltips to match states in the log panel
 - Add timestamps to log entries (simulation timer seconds)
