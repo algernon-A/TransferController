@@ -1,7 +1,10 @@
-﻿using System;
+﻿using AlgernonCommons;
+using AlgernonCommons.Translation;
+using AlgernonCommons.UI;
+using ColossalFramework.UI;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using ColossalFramework.UI;
 
 
 namespace TransferController
@@ -47,48 +50,48 @@ namespace TransferController
                 backgroundSprite = "MenuPanel2";
 
                 // Title label.
-                UILabel titleLabel = UIControls.AddLabel(this, 0f, 10f, Translations.Translate("TFC_OFF_LOG"), PanelWidth, 1.2f);
+                UILabel titleLabel = UILabels.AddLabel(this, 0f, 10f, Translations.Translate("TFC_OFF_LOG"), PanelWidth, 1.2f);
                 titleLabel.textAlignment = UIHorizontalAlignment.Center;
 
                 // Filter checkboxes.
-                blockedCheck = UIControls.LabelledCheckBox(this, FilterColumn1, FilterRow1, Translations.Translate("TFC_LOG_BLK"));
+                blockedCheck = UICheckBoxes.AddLabelledCheckBox(this, FilterColumn1, FilterRow1, Translations.Translate("TFC_LOG_BLK"));
                 blockedCheck.tooltip = Translations.Translate("TFC_LOG_BLK_TIP");
                 blockedCheck.isChecked = true;
                 blockedCheck.eventCheckChanged += (control, isChecked) => UpdateContent();
                 blockedCheck.eventCheckChanged += (control, isChecked) => UpdateContent();
-                pathFailCheck = UIControls.LabelledCheckBox(this, FilterColumn1, FilterRow2, Translations.Translate("TFC_LOG_PFL"));
+                pathFailCheck = UICheckBoxes.AddLabelledCheckBox(this, FilterColumn1, FilterRow2, Translations.Translate("TFC_LOG_PFL"));
                 pathFailCheck.tooltip = Translations.Translate("TFC_LOG_PFL_TIP");
                 pathFailCheck.isChecked = true;
                 pathFailCheck.eventCheckChanged += (control, isChecked) => UpdateContent();
-                noVehicleCheck = UIControls.LabelledCheckBox(this, FilterColumn1, FilterRow3, Translations.Translate("TFC_LOG_NOV"));
+                noVehicleCheck = UICheckBoxes.AddLabelledCheckBox(this, FilterColumn1, FilterRow3, Translations.Translate("TFC_LOG_NOV"));
                 noVehicleCheck.tooltip = Translations.Translate("TFC_LOG_NOV_TIP");
                 noVehicleCheck.isChecked = true;
                 noVehicleCheck.eventCheckChanged += (control, isChecked) => UpdateContent();
-                eligibleCheck = UIControls.LabelledCheckBox(this, FilterColumn2, FilterRow2, Translations.Translate("TFC_LOG_ELI"));
+                eligibleCheck = UICheckBoxes.AddLabelledCheckBox(this, FilterColumn2, FilterRow2, Translations.Translate("TFC_LOG_ELI"));
                 eligibleCheck.tooltip = Translations.Translate("TFC_LOG_ELI_TIP");
                 eligibleCheck.isChecked = false;
                 eligibleCheck.eventCheckChanged += (control, isChecked) => UpdateContent();
-                selectedCheck = UIControls.LabelledCheckBox(this, FilterColumn2, FilterRow3, Translations.Translate("TFC_LOG_SEL"));
+                selectedCheck = UICheckBoxes.AddLabelledCheckBox(this, FilterColumn2, FilterRow3, Translations.Translate("TFC_LOG_SEL"));
                 selectedCheck.tooltip = Translations.Translate("TFC_LOG_SEL_TIP");
                 selectedCheck.isChecked = true;
                 selectedCheck.eventCheckChanged += (control, isChecked) => UpdateContent();
-                inCheck = UIControls.LabelledCheckBox(this, FilterColumn3, FilterRow2, Translations.Translate("TFC_LOG_INC"));
+                inCheck = UICheckBoxes.AddLabelledCheckBox(this, FilterColumn3, FilterRow2, Translations.Translate("TFC_LOG_INC"));
                 inCheck.tooltip = Translations.Translate("TFC_LOG_INC_TIP");
                 inCheck.isChecked = true;
                 inCheck.eventCheckChanged += (control, isChecked) => UpdateContent();
-                outCheck = UIControls.LabelledCheckBox(this, FilterColumn3, FilterRow3, Translations.Translate("TFC_LOG_OUT"));
+                outCheck = UICheckBoxes.AddLabelledCheckBox(this, FilterColumn3, FilterRow3, Translations.Translate("TFC_LOG_OUT"));
                 outCheck.tooltip = Translations.Translate("TFC_LOG_OUT_TIP");
                 outCheck.isChecked = true;
                 outCheck.eventCheckChanged += (control, isChecked) => UpdateContent();
 
                 // Header labels.
-                UIControls.AddLabel(this, MatchRow.ReasonX + Margin, LogListHeaderY, Translations.Translate("TFC_LOG_MAT"), textScale: 0.7f);
-                UILabel priorityLabel = UIControls.AddLabel(this, MatchRow.PriorityX + Margin, LogListHeaderY, Translations.Translate("TFC_LOG_PRI"), textScale: 0.7f);
+                UILabels.AddLabel(this, MatchRow.ReasonX + Margin, LogListHeaderY, Translations.Translate("TFC_LOG_MAT"), textScale: 0.7f);
+                UILabel priorityLabel = UILabels.AddLabel(this, MatchRow.PriorityX + Margin, LogListHeaderY, Translations.Translate("TFC_LOG_PRI"), textScale: 0.7f);
                 priorityLabel.relativePosition = new Vector2(MatchRow.OtherPriorityX + MatchRow.PriorityWidth - priorityLabel.width, LogListHeaderY);
-                UIControls.AddLabel(this, MatchRow.TargetX + Margin, LogListHeaderY, Translations.Translate("TFC_LOG_TAR"), textScale: 0.7f);
-                UILabel statusLabel = UIControls.AddLabel(this, MatchRow.AllowedX + Margin, LogListHeaderY, Translations.Translate("TFC_LOG_STA"), MatchRow.StatusWidth, textScale: 0.7f);
+                UILabels.AddLabel(this, MatchRow.TargetX + Margin, LogListHeaderY, Translations.Translate("TFC_LOG_TAR"), textScale: 0.7f);
+                UILabel statusLabel = UILabels.AddLabel(this, MatchRow.AllowedX + Margin, LogListHeaderY, Translations.Translate("TFC_LOG_STA"), MatchRow.StatusWidth, textScale: 0.7f);
                 statusLabel.textAlignment = UIHorizontalAlignment.Center;
-                UILabel timeLabel = UIControls.AddLabel(this, MatchRow.TimeX + Margin, LogListHeaderY, Translations.Translate("TFC_LOG_TIM"), MatchRow.TimeWidth, textScale: 0.7f);
+                UILabel timeLabel = UILabels.AddLabel(this, MatchRow.TimeX + Margin, LogListHeaderY, Translations.Translate("TFC_LOG_TIM"), MatchRow.TimeWidth, textScale: 0.7f);
                 timeLabel.textAlignment = UIHorizontalAlignment.Center;
 
                 // Log list.

@@ -1,7 +1,9 @@
-﻿using System.Linq;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using AlgernonCommons.Translation;
+using AlgernonCommons.UI;
 using ColossalFramework.UI;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 
 
@@ -29,7 +31,7 @@ namespace TransferController
 
             // Random sprite.
             UISprite randomSprite = randomPanel.AddUIComponent<UISprite>();
-            randomSprite.atlas = TextureUtils.InGameAtlas;
+            randomSprite.atlas = UITextures.InGameAtlas;
             randomSprite.spriteName = "Random";
 
             // Label.

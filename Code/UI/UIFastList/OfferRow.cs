@@ -1,4 +1,5 @@
-﻿using ColossalFramework.UI;
+﻿using AlgernonCommons.Translation;
+using ColossalFramework.UI;
 
 
 namespace TransferController

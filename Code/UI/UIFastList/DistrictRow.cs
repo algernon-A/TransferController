@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using AlgernonCommons;
 using ColossalFramework;
 using ColossalFramework.UI;
+using UnityEngine;
 
 
 namespace TransferController
@@ -72,10 +73,6 @@ namespace TransferController
 	/// </summary>
 	public class DistrictRow : UIBasicRow
 	{
-		// Layout constants.
-		private const float TextScale = 0.8f;
-		private const float PaddingY = 3f;
-
 		// District name label.
 		private UILabel districtNameLabel;
 

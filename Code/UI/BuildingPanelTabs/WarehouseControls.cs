@@ -1,6 +1,8 @@
-﻿using UnityEngine;
+﻿using AlgernonCommons.UI;
+using AlgernonCommons.Translation;
 using ColossalFramework;
 using ColossalFramework.UI;
+using UnityEngine;
 
 
 namespace TransferController
@@ -51,12 +53,12 @@ namespace TransferController
             this.width = BuildingPanel.PanelWidth;
 
             // Add reserve vehicle checkboxes.
-            reserveCityCheck = UIControls.LabelledCheckBox(this, Margin, Check1Y, Translations.Translate("TFC_WAR_RVI"), tooltip: Translations.Translate("TFC_WAR_RVI_TIP"));
-            reserveCityCheck.tooltipBox = TooltipUtils.TooltipBox;
-            reserveUniqueCheck = UIControls.LabelledCheckBox(this, Margin, Check2Y, Translations.Translate("TFC_WAR_RVU"), tooltip: Translations.Translate("TFC_WAR_RVU_TIP"));
-            reserveUniqueCheck.tooltipBox = TooltipUtils.TooltipBox;
-            reserveOutsideCheck = UIControls.LabelledCheckBox(this, Margin, Check3Y, Translations.Translate("TFC_WAR_RVO"), tooltip: Translations.Translate("TFC_WAR_RVO_TIP"));
-            reserveOutsideCheck.tooltipBox = TooltipUtils.TooltipBox;
+            reserveCityCheck = UICheckBoxes.AddLabelledCheckBox(this, Margin, Check1Y, Translations.Translate("TFC_WAR_RVI"), tooltip: Translations.Translate("TFC_WAR_RVI_TIP"));
+            reserveCityCheck.tooltipBox = UIToolTips.WordWrapToolTip;
+            reserveUniqueCheck = UICheckBoxes.AddLabelledCheckBox(this, Margin, Check2Y, Translations.Translate("TFC_WAR_RVU"), tooltip: Translations.Translate("TFC_WAR_RVU_TIP"));
+            reserveUniqueCheck.tooltipBox = UIToolTips.WordWrapToolTip;
+            reserveOutsideCheck = UICheckBoxes.AddLabelledCheckBox(this, Margin, Check3Y, Translations.Translate("TFC_WAR_RVO"), tooltip: Translations.Translate("TFC_WAR_RVO_TIP"));
+            reserveOutsideCheck.tooltipBox = UIToolTips.WordWrapToolTip;
             reserveUniqueCheck.eventCheckChanged += ReserveUniqueCheckChanged;
             reserveOutsideCheck.eventCheckChanged += ReserveOutsideCheckChanged;
             reserveCityCheck.eventCheckChanged += ReserveCityCheckChanged;
@@ -284,22 +286,22 @@ namespace TransferController
             newSlider.tooltip = Translations.Translate("TFC_WAR_RVC_TIP");
 
             // Title label.
-            UILabel titleLabel = UIControls.AddLabel(newSlider, 0f, LabelY, Translations.Translate("TFC_WAR_RVC") + ": ", textScale: 0.7f);
+            UILabel titleLabel = UILabels.AddLabel(newSlider, 0f, LabelY, Translations.Translate("TFC_WAR_RVC") + ": ", textScale: 0.7f);
 
             // Value label.
-            UILabel valueLabel = UIControls.AddLabel(newSlider, titleLabel.width, LabelY, "0", textScale: 0.7f);
+            UILabel valueLabel = UILabels.AddLabel(newSlider, titleLabel.width, LabelY, "0", textScale: 0.7f);
             newSlider.objectUserData = valueLabel;
 
             // Slider track.
             UISlicedSprite sliderSprite = newSlider.AddUIComponent<UISlicedSprite>();
-            sliderSprite.atlas = TextureUtils.InGameAtlas;
+            sliderSprite.atlas = UITextures.InGameAtlas;
             sliderSprite.spriteName = "BudgetSlider";
             sliderSprite.size = new Vector2(newSlider.width, 9f);
             sliderSprite.relativePosition = new Vector2(0f, 4f);
 
             // Slider thumb.
             UISlicedSprite sliderThumb = newSlider.AddUIComponent<UISlicedSprite>();
-            sliderThumb.atlas = TextureUtils.InGameAtlas;
+            sliderThumb.atlas = UITextures.InGameAtlas;
             sliderThumb.spriteName = "SliderBudget";
             newSlider.thumbObject = sliderThumb;
 

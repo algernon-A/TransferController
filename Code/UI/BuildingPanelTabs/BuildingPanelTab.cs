@@ -1,5 +1,6 @@
-﻿using UnityEngine;
+﻿using AlgernonCommons.Translation;
 using ColossalFramework.UI;
+using UnityEngine;
 
 
 namespace TransferController

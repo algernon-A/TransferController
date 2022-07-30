@@ -1,9 +1,12 @@
-﻿using System;
+﻿using AlgernonCommons;
+using AlgernonCommons.Translation;
+using AlgernonCommons.UI;
+using ColossalFramework;
+using ColossalFramework.UI;
+using System;
 using System.Text;
 using System.Collections.Generic;
 using UnityEngine;
-using ColossalFramework;
-using ColossalFramework.UI;
 
 
 namespace TransferController
@@ -157,11 +160,11 @@ namespace TransferController
                 relativePosition = new Vector2(Mathf.Floor((GetUIView().fixedWidth - PanelWidth) / 2), (GetUIView().fixedHeight - PanelHeight) / 2);
 
                 // Title label.
-                UILabel titleLabel = UIControls.AddLabel(this, 0f, 10f, Translations.Translate("TFC_NAM"), PanelWidth, 1.2f);
+                UILabel titleLabel = UILabels.AddLabel(this, 0f, 10f, Translations.Translate("TFC_NAM"), PanelWidth, 1.2f);
                 titleLabel.textAlignment = UIHorizontalAlignment.Center;
 
                 // Building label.
-                buildingLabel = UIControls.AddLabel(this, 0f, NameLabelY, String.Empty, PanelWidth);
+                buildingLabel = UILabels.AddLabel(this, 0f, NameLabelY, String.Empty, PanelWidth);
                 buildingLabel.textAlignment = UIHorizontalAlignment.Center;
 
                 // Drag handle.
@@ -184,9 +187,9 @@ namespace TransferController
                 };
 
                 // Area labels.
-                areaLabel1 = UIControls.AddLabel(this, 0f, AreaLabel1Y, String.Empty, PanelWidth, 0.9f);
+                areaLabel1 = UILabels.AddLabel(this, 0f, AreaLabel1Y, String.Empty, PanelWidth, 0.9f);
                 areaLabel1.textAlignment = UIHorizontalAlignment.Center;
-                areaLabel2 = UIControls.AddLabel(this, 0f, AreaLabel2Y, String.Empty, PanelWidth, 0.9f);
+                areaLabel2 = UILabels.AddLabel(this, 0f, AreaLabel2Y, String.Empty, PanelWidth, 0.9f);
                 areaLabel2.textAlignment = UIHorizontalAlignment.Center;
 
                 // Zoom to building button.
@@ -194,11 +197,11 @@ namespace TransferController
                 zoomButton.eventClicked += (c, p) => ZoomToBuilding(currentBuilding);
 
                 // Offers button.
-                offersButton = AddIconButton(this, ButtonX, Button1Y, ButtonSize, "TFC_OFF_TIT", TextureUtils.LoadSpriteAtlas("TC-OpenOffers"));
+                offersButton = AddIconButton(this, ButtonX, Button1Y, ButtonSize, "TFC_OFF_TIT", UITextures.LoadSpriteAtlas("TC-OpenOffers"));
                 offersButton.eventClicked += ShowOffers;
 
                 // Log button.
-                logButton = AddIconButton(this, ButtonX, Button2Y, ButtonSize, "TFC_OFF_LOG", TextureUtils.LoadSpriteAtlas("TC-Logs"));
+                logButton = AddIconButton(this, ButtonX, Button2Y, ButtonSize, "TFC_OFF_LOG", UITextures.LoadSpriteAtlas("TC-Logs"));
                 logButton.eventClicked += ShowLog;
 
                 // Tab panel.
@@ -277,7 +280,7 @@ namespace TransferController
             newButton.width = size;
 
             // Appearance.
-            newButton.atlas = TextureUtils.InGameAtlas;
+            newButton.atlas = UITextures.InGameAtlas;
             newButton.normalFgSprite = "LineDetailButtonHovered";
             newButton.focusedFgSprite = "LineDetailButtonFocused";
             newButton.hoveredFgSprite = "LineDetailButton";
@@ -646,7 +649,7 @@ namespace TransferController
 
             // Add status sprite.
             UISprite tabSprite = tabButton.AddUIComponent<UISprite>();
-            tabSprite.atlas = TextureUtils.InGameAtlas;
+            tabSprite.atlas = UITextures.InGameAtlas;
             tabSprite.autoSize = false;
             tabSprite.height = StatusSpriteSize;
             tabSprite.width = StatusSpriteSize;

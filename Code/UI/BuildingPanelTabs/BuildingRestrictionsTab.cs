@@ -1,6 +1,9 @@
-﻿using System;
-using UnityEngine;
+﻿using AlgernonCommons;
+using AlgernonCommons.Translation;
+using AlgernonCommons.UI;
 using ColossalFramework.UI;
+using System;
+using UnityEngine;
 
 
 namespace TransferController
@@ -144,7 +147,7 @@ namespace TransferController
             {
                 // Outside connection checkbox.
                 // Note state is inverted - underlying flag is restrictive, but checkbox is permissive.
-                outsideCheck = UIControls.LabelledCheckBox(parentPanel, CheckMargin, OutsideCheckY, Translations.Translate("TFC_BLD_IMP"), tooltip: Translations.Translate("TFC_BLD_IMP_TIP"));
+                outsideCheck = UICheckBoxes.AddLabelledCheckBox(parentPanel, CheckMargin, OutsideCheckY, Translations.Translate("TFC_BLD_IMP"), tooltip: Translations.Translate("TFC_BLD_IMP_TIP"));
                 outsideCheck.isChecked = !OutsideConnection;
                 outsideCheck.eventCheckChanged += (control, isChecked) =>
                 {
@@ -155,7 +158,7 @@ namespace TransferController
                 };
 
                 // Prefer same district checkbox.
-                preferSameCheck = UIControls.LabelledCheckBox(parentPanel, CheckMargin, PreferCheckY, Translations.Translate("TFC_RES_PLD"), tooltip: Translations.Translate("TFC_RES_PLD_TIP"));
+                preferSameCheck = UICheckBoxes.AddLabelledCheckBox(parentPanel, CheckMargin, PreferCheckY, Translations.Translate("TFC_RES_PLD"), tooltip: Translations.Translate("TFC_RES_PLD_TIP"));
                 preferSameCheck.isChecked = PreferSameDistrict;
                 preferSameCheck.eventCheckChanged += (control, isChecked) =>
                 {
@@ -166,7 +169,7 @@ namespace TransferController
                 };
 
                 // Restrictions enabled checkbox.
-                enabledCheck = UIControls.LabelledCheckBox(parentPanel, CheckMargin, EnabledCheckY, Translations.Translate("TFC_RES_ENA"), tooltip: Translations.Translate("TFC_RES_ENA_TIP"));
+                enabledCheck = UICheckBoxes.AddLabelledCheckBox(parentPanel, CheckMargin, EnabledCheckY, Translations.Translate("TFC_RES_ENA"), tooltip: Translations.Translate("TFC_RES_ENA_TIP"));
                 enabledCheck.isChecked = Enabled;
                 enabledCheck.eventCheckChanged += (control, isChecked) =>
                 {
@@ -181,7 +184,7 @@ namespace TransferController
 
                 // Same district only checkbox.
                 // Note state is inverted - underlying flag is restrictive, but checkbox is permissive.
-                sameDistrictCheck = UIControls.LabelledCheckBox(parentPanel, CheckMargin, SameDistrictCheckY, Translations.Translate("TFC_BLD_SDO"), tooltip: Translations.Translate("TFC_BLD_SDO_TIP"));
+                sameDistrictCheck = UICheckBoxes.AddLabelledCheckBox(parentPanel, CheckMargin, SameDistrictCheckY, Translations.Translate("TFC_BLD_SDO"), tooltip: Translations.Translate("TFC_BLD_SDO_TIP"));
                 sameDistrictCheck.isChecked = !SameDistrict;
                 sameDistrictCheck.eventCheckChanged += (control, isChecked) =>
                 {
@@ -192,12 +195,12 @@ namespace TransferController
                 };
 
                 // 'Add district' button.
-                addDistrictButton = AddIconButton(parentPanel, MidControlX, DistrictListY, ArrowSize, "TFC_DIS_ADD", TextureUtils.LoadSpriteAtlas("TC-ArrowPlus"));
+                addDistrictButton = AddIconButton(parentPanel, MidControlX, DistrictListY, ArrowSize, "TFC_DIS_ADD", UITextures.LoadSpriteAtlas("TC-ArrowPlus"));
                 addDistrictButton.isEnabled = false;
                 addDistrictButton.eventClicked += (control, clickEvent) => AddDistrict(districtSelectionPanel.SelectedDistrict);
 
                 // Remove district button.
-                removeDistrictButton = AddIconButton(parentPanel, MidControlX, DistrictListY + ArrowSize, ArrowSize, "TFC_DIS_SUB", TextureUtils.LoadSpriteAtlas("TC-ArrowMinus"));
+                removeDistrictButton = AddIconButton(parentPanel, MidControlX, DistrictListY + ArrowSize, ArrowSize, "TFC_DIS_SUB", UITextures.LoadSpriteAtlas("TC-ArrowMinus"));
                 removeDistrictButton.isEnabled = false;
                 removeDistrictButton.eventClicked += (control, clickEvent) => RemoveDistrict();
 
@@ -210,13 +213,13 @@ namespace TransferController
                 districtSelectionPanel.relativePosition = new Vector2(RightColumnX, DistrictListY);
 
                 // District selection panel labels.
-                UILabel districtSelectionLabel = UIControls.AddLabel(districtSelectionPanel, 0f, -15f, Translations.Translate("TFC_DIS_AVA"), ColumnWidth, 0.8f);
+                UILabel districtSelectionLabel = UILabels.AddLabel(districtSelectionPanel, 0f, -15f, Translations.Translate("TFC_DIS_AVA"), ColumnWidth, 0.8f);
                 districtSelectionLabel.textAlignment = UIHorizontalAlignment.Center;
-                UILabel buildingDistrictSelectionLabel = UIControls.AddLabel(buildingDistrictSelectionPanel, 0f, -15f, Translations.Translate("TFC_DIS_SEL"), ColumnWidth, 0.8f);
+                UILabel buildingDistrictSelectionLabel = UILabels.AddLabel(buildingDistrictSelectionPanel, 0f, -15f, Translations.Translate("TFC_DIS_SEL"), ColumnWidth, 0.8f);
                 buildingDistrictSelectionLabel.textAlignment = UIHorizontalAlignment.Center;
 
                 // 'Add building' button.
-                addBuildingButton = AddIconButton(parentPanel, BuildingButtonX, BuildingListY, ArrowSize, "TFC_BUI_ADD", TextureUtils.LoadSpriteAtlas("TC-RoundPlus"));
+                addBuildingButton = AddIconButton(parentPanel, BuildingButtonX, BuildingListY, ArrowSize, "TFC_BUI_ADD", UITextures.LoadSpriteAtlas("TC-RoundPlus"));
                 addBuildingButton.eventClicked += (control, clickEvent) =>
                 {
                     // Add building via tool selection.
@@ -225,7 +228,7 @@ namespace TransferController
                 };
                 
                 // Remove building button.
-                removeBuildingButton = AddIconButton(parentPanel, BuildingButtonX, BuildingListY + ArrowSize, ArrowSize, "TFC_BUI_SUB", TextureUtils.LoadSpriteAtlas("TC-RoundMinus"));
+                removeBuildingButton = AddIconButton(parentPanel, BuildingButtonX, BuildingListY + ArrowSize, ArrowSize, "TFC_BUI_SUB", UITextures.LoadSpriteAtlas("TC-RoundMinus"));
                 removeBuildingButton.isEnabled = false;
                 removeBuildingButton.eventClicked += (control, clickEvent) => RemoveBuilding();
 
@@ -235,7 +238,7 @@ namespace TransferController
                 selectedBuildingPanel.relativePosition = new Vector2(Margin, BuildingListY);
 
                 // Building selection panel label.
-                UILabel buildingSelectionLabel = UIControls.AddLabel(selectedBuildingPanel, 0f, -15f, Translations.Translate("TFC_BUI_SEL"), ColumnWidth, 0.8f);
+                UILabel buildingSelectionLabel = UILabels.AddLabel(selectedBuildingPanel, 0f, -15f, Translations.Translate("TFC_BUI_SEL"), ColumnWidth, 0.8f);
                 buildingSelectionLabel.textAlignment = UIHorizontalAlignment.Center;
 
                 // Set initial control states.

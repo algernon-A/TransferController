@@ -1,5 +1,7 @@
-﻿using UnityEngine;
+﻿using AlgernonCommons.UI;
+using AlgernonCommons.Translation;
 using ColossalFramework.UI;
+using UnityEngine;
 
 
 namespace TransferController
@@ -49,12 +51,12 @@ namespace TransferController
             this.width = BuildingPanel.PanelWidth;
 
             // 'Add vehicle' button.
-            addVehicleButton = BuildingPanelTab.AddIconButton(this, BuildingPanelTab.MidControlX, VehicleListY, BuildingPanelTab.ArrowSize, "TFC_VEH_ADD", TextureUtils.LoadSpriteAtlas("TC-ArrowPlus"));
+            addVehicleButton = BuildingPanelTab.AddIconButton(this, BuildingPanelTab.MidControlX, VehicleListY, BuildingPanelTab.ArrowSize, "TFC_VEH_ADD", UITextures.LoadSpriteAtlas("TC-ArrowPlus"));
             addVehicleButton.isEnabled = false;
             addVehicleButton.eventClicked += (control, clickEvent) => AddVehicle(vehicleSelectionPanel.SelectedVehicle);
 
             // Remove vehicle button.
-            removeVehicleButton = BuildingPanelTab.AddIconButton(this, BuildingPanelTab.MidControlX, VehicleListY + BuildingPanelTab.ArrowSize, BuildingPanelTab.ArrowSize, "TFC_VEH_SUB", TextureUtils.LoadSpriteAtlas("TC-ArrowMinus"));
+            removeVehicleButton = BuildingPanelTab.AddIconButton(this, BuildingPanelTab.MidControlX, VehicleListY + BuildingPanelTab.ArrowSize, BuildingPanelTab.ArrowSize, "TFC_VEH_SUB", UITextures.LoadSpriteAtlas("TC-ArrowMinus"));
             removeVehicleButton.isEnabled = false;
             removeVehicleButton.eventClicked += (control, clickEvent) => RemoveVehicle();
 
@@ -67,9 +69,9 @@ namespace TransferController
             vehicleSelectionPanel.relativePosition = new Vector2(BuildingPanelTab.RightColumnX, VehicleListY);
 
             // Vehicle selection panel labels.
-            UILabel vehicleSelectionLabel = UIControls.AddLabel(vehicleSelectionPanel, 0f, -15f, Translations.Translate("TFC_VEH_AVA"), BuildingPanelTab.ColumnWidth, 0.8f);
+            UILabel vehicleSelectionLabel = UILabels.AddLabel(vehicleSelectionPanel, 0f, -15f, Translations.Translate("TFC_VEH_AVA"), BuildingPanelTab.ColumnWidth, 0.8f);
             vehicleSelectionLabel.textAlignment = UIHorizontalAlignment.Center;
-            UILabel buildingDistrictSelectionLabel = UIControls.AddLabel(buildingVehicleSelectionPanel, 0f, -15f, Translations.Translate("TFC_VEH_SEL"), BuildingPanelTab.ColumnWidth, 0.8f);
+            UILabel buildingDistrictSelectionLabel = UILabels.AddLabel(buildingVehicleSelectionPanel, 0f, -15f, Translations.Translate("TFC_VEH_SEL"), BuildingPanelTab.ColumnWidth, 0.8f);
             buildingDistrictSelectionLabel.textAlignment = UIHorizontalAlignment.Center;
         }
 

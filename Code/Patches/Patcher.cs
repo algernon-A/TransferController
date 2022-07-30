@@ -1,6 +1,7 @@
-﻿using System.Reflection;
-using HarmonyLib;
+﻿using AlgernonCommons;
 using CitiesHarmony.API;
+using HarmonyLib;
+using System.Reflection;
 
 
 namespace TransferController
@@ -10,9 +11,6 @@ namespace TransferController
     /// </summary>
     public static class Patcher
     {
-        // Unique harmony identifier.
-        private const string harmonyID = "com.github.algernon-A.csl.tc";
-
         // Flag.
         internal static bool Patched => _patched;
         private static bool _patched = false, _addOffersPatched = false;
@@ -35,7 +33,7 @@ namespace TransferController
                     _useNewAlgorithm = value;
 
                     // Apply patches.
-                    PatchNewAlgorithm(new Harmony(harmonyID), value);
+                    PatchNewAlgorithm(new Harmony(Mod.Instance.HarmonyID), value);
                 }
             }
         }
@@ -55,7 +53,7 @@ namespace TransferController
                     Logging.KeyMessage("deploying Harmony patches");
 
                     // Apply all annotated patches and update flag.
-                    Harmony harmonyInstance = new Harmony(harmonyID);
+                    Harmony harmonyInstance = new Harmony(Mod.Instance.HarmonyID);
                     harmonyInstance.PatchAll();
                     _patched = true;
 
@@ -81,8 +79,8 @@ namespace TransferController
                 Logging.KeyMessage("reverting Harmony patches");
 
                 // Unapply patches, but only with our HarmonyID.
-                Harmony harmonyInstance = new Harmony(harmonyID);
-                harmonyInstance.UnpatchAll(harmonyID);
+                Harmony harmonyInstance = new Harmony(Mod.Instance.HarmonyID);
+                harmonyInstance.UnpatchAll(Mod.Instance.HarmonyID);
                 _patched = false;
             }
         }

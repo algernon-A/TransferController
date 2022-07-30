@@ -1,4 +1,7 @@
-﻿using ColossalFramework;
+﻿using AlgernonCommons;
+using AlgernonCommons.Translation;
+using AlgernonCommons.UI;
+using ColossalFramework;
 using ColossalFramework.UI;
 using System;
 using UnityEngine;
@@ -49,7 +52,7 @@ namespace TransferController
                 height = PanelHeight;
 
                 // Title.
-                UILabel titleLabel = UIControls.AddLabel(this, 0f, 10f, Translations.Translate("TFC_STA_TIT"), PanelWidth, 1.2f);
+                UILabel titleLabel = UILabels.AddLabel(this, 0f, 10f, Translations.Translate("TFC_STA_TIT"), PanelWidth, 1.2f);
                 titleLabel.textAlignment = UIHorizontalAlignment.Center;
 
                 // Close button.

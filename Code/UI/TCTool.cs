@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using AlgernonCommons.Translation;
+using AlgernonCommons.UI;
 using ColossalFramework;
 using ColossalFramework.UI;
+using System.Collections.Generic;
 using UnityEngine;
 using UnifiedUI.Helpers;
 
@@ -45,10 +47,10 @@ namespace TransferController
 			base.Awake();
 
 			// Load cursors.
-			selectCursorOn = TextureUtils.LoadCursor("TC-CursorOn.png");
-			selectCursorOff = TextureUtils.LoadCursor("TC-CursorOff.png");
-			pickCursorOn = TextureUtils.LoadCursor("TC-CursorPickOn.png");
-			pickCursorOff = TextureUtils.LoadCursor("TC-CursorPickOff.png");
+			selectCursorOn = UITextures.LoadCursor("TC-CursorOn.png");
+			selectCursorOff = UITextures.LoadCursor("TC-CursorOff.png");
+			pickCursorOn = UITextures.LoadCursor("TC-CursorPickOn.png");
+			pickCursorOff = UITextures.LoadCursor("TC-CursorPickOff.png");
 			currentCursorOn = selectCursorOn;
 			currentCursorOff = selectCursorOff;
 			m_cursor = currentCursorOff;
@@ -59,7 +61,7 @@ namespace TransferController
 				groupName: null, // default group
 				tooltip: Translations.Translate("TFC_NAM"),
 				tool: this,
-				icon: UUIHelpers.LoadTexture(UUIHelpers.GetFullPath<TransferControllerMod>("Resources", "TC-UUI.png")),
+				icon: UUIHelpers.LoadTexture(UUIHelpers.GetFullPath<Mod>("Resources", "TC-UUI.png")),
 				hotkeys: new UUIHotKeys { ActivationKey = ModSettings.UUIKey });
 		}
 

@@ -1,4 +1,7 @@
-﻿using ColossalFramework.UI;
+﻿using AlgernonCommons;
+using AlgernonCommons.Translation;
+using AlgernonCommons.UI;
+using ColossalFramework.UI;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -34,7 +37,7 @@ namespace TransferController
                 size = new Vector2(PanelWidth, PanelHeight);
 
                 // Title label.
-                UILabel titleLabel = UIControls.AddLabel(this, 0f, Margin, Translations.Translate("TFC_PFF_TIT"), PanelWidth, 1f);
+                UILabel titleLabel = UILabels.AddLabel(this, 0f, Margin, Translations.Translate("TFC_PFF_TIT"), PanelWidth, 1f);
                 titleLabel.textAlignment = UIHorizontalAlignment.Center;
 
                 // Pathfind failure list.

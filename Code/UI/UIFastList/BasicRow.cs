@@ -1,5 +1,6 @@
-﻿using UnityEngine;
+﻿using AlgernonCommons.UI;
 using ColossalFramework.UI;
+using UnityEngine;
 
 
 namespace TransferController
@@ -82,7 +83,7 @@ namespace TransferController
             newLabel.wordWrap = wordWrap;
             newLabel.padding.top = 1;
             newLabel.textScale = textScale;
-            newLabel.font = FontUtils.Regular;
+            newLabel.font = Fonts.Regular;
             newLabel.relativePosition = new Vector2(xPos, 0f);
             return newLabel;
         }

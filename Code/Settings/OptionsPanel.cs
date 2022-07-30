@@ -1,13 +1,16 @@
-﻿using UnityEngine;
+﻿using AlgernonCommons.Keybinding;
+using AlgernonCommons.Translation;
+using AlgernonCommons.UI;
 using ColossalFramework.UI;
+using UnityEngine;
 
 
 namespace TransferController
 {
     /// <summary>
-    /// RON options panel.
+    /// Transfer Controller options panel.
     /// </summary>
-    public class TCOptionsPanel : UIPanel
+    public class OptionsPanel : UIPanel
     {
         // Layout constants.
         private const float Margin = 5f;
@@ -30,13 +33,12 @@ namespace TransferController
             float currentY = Margin;
 
             // Language selection.
-            UIDropDown languageDropDown = UIControls.AddPlainDropDown(this, Translations.Translate("TRN_CHOICE"), Translations.LanguageList, Translations.Index);
+            UIDropDown languageDropDown = UIDropDowns.AddPlainDropDown(this, LeftMargin, currentY, Translations.Translate("TRN_CHOICE"), Translations.LanguageList, Translations.Index);
             languageDropDown.eventSelectedIndexChanged += (control, index) =>
             {
                 Translations.Index = index;
-                OptionsPanelManager.LocaleChanged();
+                OptionsPanelManager<OptionsPanel>.LocaleChanged();
             };
-            languageDropDown.parent.relativePosition = new Vector2(LeftMargin, currentY);
             currentY += languageDropDown.parent.height + GroupMargin;
 
             // Hotkey control.
@@ -45,46 +47,46 @@ namespace TransferController
             currentY += keyMapping.uIPanel.height + GroupMargin;
 
             // New algorithm checkbox.
-            UICheckBox newAlgorithmCheck = UIControls.AddPlainCheckBox(this, LeftMargin, currentY, Translations.Translate("TFC_OPT_NEW"));
+            UICheckBox newAlgorithmCheck = UICheckBoxes.AddPlainCheckBox(this, LeftMargin, currentY, Translations.Translate("TFC_OPT_NEW"));
             newAlgorithmCheck.tooltip = Translations.Translate("TFC_OPT_NEW_TIP");
-            newAlgorithmCheck.tooltipBox = TooltipUtils.TooltipBox;
+            newAlgorithmCheck.tooltipBox = UIToolTips.WordWrapToolTip;
             newAlgorithmCheck.isChecked = Patcher.UseNewAlgorithm;
             newAlgorithmCheck.eventCheckChanged += (control, isChecked) => { Patcher.UseNewAlgorithm = isChecked; distanceSlider.parent.isVisible = !isChecked; };
             currentY += newAlgorithmCheck.height + Margin;
 
             // Distance multiplier slider.
-            distanceSlider = UIControls.AddSliderWithValue(this, Translations.Translate("TFC_OPT_DIS"), 0f, 100f, 1f, OldMatching.distancePercentage, (value) => { OldMatching.distancePercentage = (int)value.RoundToNearest(1f); });
-            distanceSlider.parent.relativePosition = new Vector2(LeftMargin, currentY);
+            distanceSlider = UISliders.AddSliderWithValue(this, LeftMargin, currentY, Translations.Translate("TFC_OPT_DIS"), 0f, 100f, 1f, OldMatching.distancePercentage);
+            distanceSlider.eventValueChanged += (control, value) => OldMatching.distancePercentage = (int)value.RoundToNearest(1f);
             distanceSlider.tooltip = Translations.Translate("TFC_OPT_DIS_TIP");
-            distanceSlider.tooltipBox = TooltipUtils.TooltipBox;
+            distanceSlider.tooltipBox = UIToolTips.WordWrapToolTip;
             distanceSlider.parent.isVisible = !newAlgorithmCheck.isChecked;
             currentY += distanceSlider.parent.height + GroupMargin;
 
             // Warehouse priority slider.
-            UISlider warehouseSlider = UIControls.AddSliderWithValue(this, Translations.Translate("TFC_OPT_WAR"), 0f, 4f, 1f, Matching.WarehousePriority, (value) => { Matching.WarehousePriority = (int)value.RoundToNearest(1f); });
-            warehouseSlider.parent.relativePosition = new Vector2(LeftMargin, currentY);
-            warehouseSlider.tooltip = Translations.Translate("TFC_OPT_WAR_TIP");
-            warehouseSlider.tooltipBox = TooltipUtils.TooltipBox;
+            UISlider warehouseSlider = UISliders.AddSliderWithValue(this, LeftMargin, currentY, Translations.Translate("TFC_OPT_WAR"), 0f, 4f, 1f, Matching.WarehousePriority);
+            warehouseSlider.eventValueChanged += (control, value) => Matching.WarehousePriority = (int)value.RoundToNearest(1f);
+            warehouseSlider.tooltip = Translations.Translate("TFC_OPT_WAR_TIP"); ;
+            warehouseSlider.tooltipBox = UIToolTips.WordWrapToolTip;
             currentY += distanceSlider.parent.height + GroupMargin;
 
             // Outside rail connection priority slider.
-            UISlider railSlider = UIControls.AddSliderWithValue(this, Translations.Translate("TFC_OPT_ORP"), 0f, 4f, 1f, Matching.OutsideRailPriority, (value) => { Matching.OutsideRailPriority = (int)value.RoundToNearest(1f); });
-            railSlider.parent.relativePosition = new Vector2(LeftMargin, currentY);
+            UISlider railSlider = UISliders.AddSliderWithValue(this, LeftMargin, currentY, Translations.Translate("TFC_OPT_ORP"), 0f, 4f, 1f, Matching.OutsideRailPriority);
+            railSlider.eventValueChanged += (control, value) => Matching.OutsideRailPriority = (int)value.RoundToNearest(1f);
             railSlider.tooltip = Translations.Translate("TFC_OPT_ORP_TIP");
-            railSlider.tooltipBox = TooltipUtils.TooltipBox;
+            railSlider.tooltipBox = UIToolTips.WordWrapToolTip;
             currentY += railSlider.parent.height + GroupMargin;
 
             // Outside shipping connection priority slider.
-            UISlider shippingSlider = UIControls.AddSliderWithValue(this, Translations.Translate("TFC_OPT_OSP"), 0f, 4f, 1f, Matching.OutsideShipPriority, (value) => { Matching.OutsideShipPriority = (int)value.RoundToNearest(1f); });
-            shippingSlider.parent.relativePosition = new Vector2(LeftMargin, currentY);
+            UISlider shippingSlider = UISliders.AddSliderWithValue(this, LeftMargin, currentY, Translations.Translate("TFC_OPT_OSP"), 0f, 4f, 1f, Matching.OutsideShipPriority);
+            shippingSlider.eventValueChanged += (control, value) => Matching.OutsideShipPriority = (int)value.RoundToNearest(1f);
             shippingSlider.tooltip = Translations.Translate("TFC_OPT_OSP_TIP");
-            shippingSlider.tooltipBox = TooltipUtils.TooltipBox;
+            shippingSlider.tooltipBox = UIToolTips.WordWrapToolTip;
             currentY += shippingSlider.parent.height + GroupMargin;
 
             // Pathfind failure montioring checkbox.
-            UICheckBox blockPathfindCheck = UIControls.AddPlainCheckBox(this, LeftMargin, currentY, Translations.Translate("TFC_OPT_PAT"));
+            UICheckBox blockPathfindCheck = UICheckBoxes.AddPlainCheckBox(this, LeftMargin, currentY, Translations.Translate("TFC_OPT_PAT"));
             blockPathfindCheck.tooltip = Translations.Translate("TFC_OPT_PAT_TIP");
-            blockPathfindCheck.tooltipBox = TooltipUtils.TooltipBox;
+            blockPathfindCheck.tooltipBox = UIToolTips.WordWrapToolTip;
             blockPathfindCheck.isChecked = PathFindFailure.EnableFailTracking;
             blockPathfindCheck.eventCheckChanged += (control, isChecked) => PathFindFailure.EnableFailTracking = isChecked;
         }

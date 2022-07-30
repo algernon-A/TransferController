@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using AlgernonCommons.Translation;
 using ColossalFramework;
+using System.Collections.Generic;
 
 
 namespace TransferController

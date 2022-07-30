@@ -1,7 +1,9 @@
-﻿using System;
-using UnityEngine;
-using ColossalFramework;
+﻿using AlgernonCommons;
+using AlgernonCommons.Translation;
+using AlgernonCommons.UI;
 using ColossalFramework.UI;
+using System;
+using UnityEngine;
 
 
 namespace TransferController
@@ -126,7 +128,7 @@ namespace TransferController
             UIButton panelButton = infoPanel.component.AddUIComponent<UIButton>();
 
             // Basic button setup.
-            panelButton.atlas = TextureUtils.LoadSprite("TC-UUI");
+            panelButton.atlas = UITextures.LoadSprite("TC-UUI");
             panelButton.size = new Vector2(PanelButtonSize, PanelButtonSize);
             panelButton.normalFgSprite = "normal";
             panelButton.focusedFgSprite = "normal";

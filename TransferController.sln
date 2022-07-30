@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31829.152
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransferController", "TransferController.csproj", "{03F24424-1A13-4C98-BAFF-2C8384F8D235}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TransferController", "TransferController.csproj", "{03F24424-1A13-4C98-BAFF-2C8384F8D235}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "AlgernonCommonsPatchingShared", "..\AlgernonCommonsShared\AlgernonCommonsPatchingShared.shproj", "{25AEF446-6F0D-43A8-BB84-D1306789B68C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,5 +23,9 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EC925459-2593-4799-B832-67FDB777F0D0}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\AlgernonCommonsShared\AlgernonCommonsPatchingShared.projitems*{03f24424-1a13-4c98-baff-2c8384f8d235}*SharedItemsImports = 5
+		..\AlgernonCommonsShared\AlgernonCommonsPatchingShared.projitems*{25aef446-6f0d-43a8-bb84-d1306789b68c}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal

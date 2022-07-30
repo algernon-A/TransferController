@@ -1,4 +1,5 @@
-﻿using ColossalFramework;
+﻿using AlgernonCommons.Translation;
+using ColossalFramework;
 using ColossalFramework.UI;
 
 

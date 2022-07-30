@@ -1,4 +1,6 @@
-﻿using ColossalFramework;
+﻿using AlgernonCommons.Translation;
+using AlgernonCommons.UI;
+using ColossalFramework;
 using ColossalFramework.UI;
 
 
@@ -63,8 +65,8 @@ namespace TransferController
             // Stats labels.
             for (int i = 0; i < (int)StatusIndex.NumLabels; ++i)
             {
-                titleLabels[i] = UIControls.AddLabel(this, Margin, Margin + (i * RowHeight), Translations.Translate(statusTitleKeys[i]), StatLabelWidth, 0.7f);
-                amountLabels[i] = UIControls.AddLabel(titleLabels[i], AmountLabelX, 0f, string.Empty, AmountLabelWidth, 0.7f);
+                titleLabels[i] = UILabels.AddLabel(this, Margin, Margin + (i * RowHeight), Translations.Translate(statusTitleKeys[i]), StatLabelWidth, 0.7f);
+                amountLabels[i] = UILabels.AddLabel(titleLabels[i], AmountLabelX, 0f, string.Empty, AmountLabelWidth, 0.7f);
                 amountLabels[i].textAlignment = UIHorizontalAlignment.Right;
             }
         }

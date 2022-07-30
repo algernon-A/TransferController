@@ -1,5 +1,8 @@
-﻿using ICities;
-using TransferController.MessageBox;
+﻿using AlgernonCommons;
+using AlgernonCommons.Notifications;
+using AlgernonCommons.Translation;
+using AlgernonCommons.UI;
+using ICities;
 
 
 namespace TransferController
@@ -50,7 +53,7 @@ namespace TransferController
             }
 
             // Check for mod conflicts.
-            if (AssemblyUtils.IsModConflict())
+            if (ConflictDetection.IsModConflict())
             {
                 // Conflict detected.
                 conflictingMod = true;
@@ -80,7 +83,7 @@ namespace TransferController
             if (!harmonyLoaded)
             {
                 // Harmony 2 wasn't loaded; display warning notification and exit.
-                ListMessageBox harmonyBox = MessageBoxBase.ShowModal<ListMessageBox>();
+                ListNotification harmonyBox = NotificationBase.ShowNotification<ListNotification>();
 
                 // Key text items.
                 harmonyBox.AddParas(Translations.Translate("ERR_HAR0"), Translations.Translate("TFC_ERR_HAR"), Translations.Translate("TFC_ERR_FAT"), Translations.Translate("ERR_HAR1"));
@@ -99,13 +102,13 @@ namespace TransferController
             if (conflictingMod)
             {
                 // Mod conflict detected - display warning notification and exit.
-                ListMessageBox modConflictBox = MessageBoxBase.ShowModal<ListMessageBox>();
+                ListNotification modConflictBox = NotificationBase.ShowNotification<ListNotification>();
 
                 // Key text items.
                 modConflictBox.AddParas(Translations.Translate("ERR_CON0"), Translations.Translate("TFC_ERR_FAT"), Translations.Translate("TFC_ERR_CON0"), Translations.Translate("ERR_CON1"));
 
                 // Add conflicting mod name(s).
-                modConflictBox.AddList(AssemblyUtils.conflictingModNames.ToArray());
+                modConflictBox.AddList(ConflictDetection.conflictingModNames.ToArray());
 
                 // Closing para.
                 modConflictBox.AddParas(Translations.Translate("TFC_ERR_CON1"));
@@ -121,7 +124,7 @@ namespace TransferController
                 ToolsModifierControl.toolController.gameObject.AddComponent<TCTool>();
 
                 // Set up options panel event handler (need to redo this now that options panel has been reset after loading into game).
-                OptionsPanelManager.OptionsEventHook();
+                OptionsPanelManager<OptionsPanel>.OptionsEventHook();
 
                 // Add building info panel buttons.
                 BuildingPanelManager.AddInfoPanelButtons();
