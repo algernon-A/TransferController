@@ -1,34 +1,43 @@
-﻿using AlgernonCommons;
-using AlgernonCommons.Translation;
-using AlgernonCommons.UI;
-using ColossalFramework;
-using ColossalFramework.UI;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-
-
-using System.Reflection;
+﻿// <copyright file="OffersPanel.cs" company="algernon (K. Algernon A. Sheppard)">
+// Copyright (c) algernon (K. Algernon A. Sheppard). All rights reserved.
+// Licensed under the MIT license. See LICENSE.txt file in the project root for full license information.
+// </copyright>
 
 namespace TransferController
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Reflection;
+    using AlgernonCommons;
+    using AlgernonCommons.Translation;
+    using AlgernonCommons.UI;
+    using ColossalFramework;
+    using ColossalFramework.UI;
+    using UnityEngine;
+
     /// <summary>
     /// Panel to show current building offers.
     /// </summary>
     internal class OffersPanel : StatusPanelSection
     {
-        // Layout constants.
-        internal const float PanelWidth = OfferRow.RowWidth + ScrollBarWidth + Margin + Margin;
-        internal const float PanelHeight = ListY + ListHeight + Margin;
-        private const float ListHeight = StatusRow.RowHeight * 4f;
-
-
-        // Offer list.
-        private readonly UIFastList offersList;
-
+        /// <summary>
+        /// Panel width.
+        /// </summary>
+        internal const float PanelWidth = OfferRow.RowWidth + ScrollbarWidth + Margin + Margin;
 
         /// <summary>
-        /// Constructor - performs initial setup.
+        /// Panel height,
+        /// </summary>
+        internal const float PanelHeight = ListY + ListHeight + Margin;
+
+        // Layout constants - private.
+        private const float ListHeight = StatusRow.RowHeight * 4f;
+
+        // Offer list.
+        private readonly UIList _offersList;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OffersPanel"/> class.
         /// </summary>
         internal OffersPanel()
         {
@@ -47,7 +56,7 @@ namespace TransferController
                 priorityLabel.relativePosition = new Vector2(PanelWidth - priorityLabel.width - Margin, ListHeaderY);
 
                 // Offers list.
-                offersList = AddList<OfferRow>(ListY, width - 10f, ListHeight);
+                _offersList = AddList<OfferRow>(ListY, width - 10f, ListHeight);
             }
             catch (Exception e)
             {
@@ -61,7 +70,7 @@ namespace TransferController
         /// </summary>
         protected override void UpdateContent()
         {
-            List<OfferData> selectedOffers = new List<OfferData>();
+            List<OfferItem> selectedOffers = new List<OfferItem>();
 
             TransferManager tManager = Singleton<TransferManager>.instance;
 
@@ -82,21 +91,23 @@ namespace TransferController
                 if (incomingOffers[i].Building == currentBuilding)
                 {
                     // Add to list.
-                    selectedOffers.Add(new OfferData(thisReason, priority, true));
+                    selectedOffers.Add(new OfferItem(thisReason, priority, true));
                 }
 
                 // Outgoing offers.
                 if (outgoingOffers[i].Building == currentBuilding)
                 {
                     // Add to list.
-                    selectedOffers.Add(new OfferData(thisReason, priority, false));
+                    selectedOffers.Add(new OfferItem(thisReason, priority, false));
                 }
             }
 
             // Set fastlist items, without changing the display.
-            offersList.rowsData.m_buffer = selectedOffers.ToArray();
-            offersList.rowsData.m_size = selectedOffers.Count;
-            offersList.Refresh();
+            _offersList.Data = new FastList<object>()
+            {
+                m_buffer = selectedOffers.ToArray(),
+                m_size = selectedOffers.Count,
+            };
         }
     }
 }

@@ -1,33 +1,43 @@
-﻿using AlgernonCommons;
-using AlgernonCommons.Translation;
-using AlgernonCommons.UI;
-using ColossalFramework.UI;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-
+﻿// <copyright file="PathFailsPanel.cs" company="algernon (K. Algernon A. Sheppard)">
+// Copyright (c) algernon (K. Algernon A. Sheppard). All rights reserved.
+// Licensed under the MIT license. See LICENSE.txt file in the project root for full license information.
+// </copyright>
 
 namespace TransferController
 {
+    using System;
+    using System.Collections.Generic;
+    using AlgernonCommons;
+    using AlgernonCommons.Translation;
+    using AlgernonCommons.UI;
+    using ColossalFramework.UI;
+    using UnityEngine;
+
     /// <summary>
     /// Panel to show pathfinding failures.
     /// </summary>
     internal class PathFailsPanel : StatusPanelSection
     {
-        // Layout constants.
-        internal const float PanelWidth = PathFailRow.RowWidth + ScrollBarWidth + Margin + Margin;
+        /// <summary>
+        /// Panel width.
+        /// </summary>
+        internal const float PanelWidth = PathFailRow.RowWidth + ScrollbarWidth + Margin + Margin;
+
+        /// <summary>
+        /// Panel height.
+        /// </summary>
         internal const float PanelHeight = PathFailListY + ListHeight + Margin;
+
+        // Layout constants - private.
         private const float PathFailListY = ListHeaderY;
         private const float ListHeight = StatusRow.RowHeight * 5f;
         private const float ListWidth = PanelWidth - Margin - Margin;
 
-
         // Panel components.
-        private readonly UIFastList pathfindList;
-
+        private readonly UIList _pathfindList;
 
         /// <summary>
-        /// Constructor - performs initial setup.
+        /// Initializes a new instance of the <see cref="PathFailsPanel"/> class.
         /// </summary>
         internal PathFailsPanel()
         {
@@ -41,7 +51,7 @@ namespace TransferController
                 titleLabel.textAlignment = UIHorizontalAlignment.Center;
 
                 // Pathfind failure list.
-                pathfindList = AddList<PathFailRow>(PathFailListY, ListWidth, ListHeight);
+                _pathfindList = AddList<PathFailRow>(PathFailListY, ListWidth, ListHeight);
 
                 // Populate initial data.
                 UpdateContent();
@@ -52,19 +62,20 @@ namespace TransferController
             }
         }
 
-
         /// <summary>
         /// Updates panel content.
         /// </summary>
         protected override void UpdateContent()
         {
             // Get filtered log list.
-            List<PathFailData> displayList = PathFindFailure.GetFails(currentBuilding);
+            List<PathFailItem> displayList = PathFindFailure.GetFails(currentBuilding);
 
             // Set fastlist items, without changing the display.
-            pathfindList.rowsData.m_buffer = displayList.ToArray();
-            pathfindList.rowsData.m_size = displayList.Count;
-            pathfindList.Refresh();
+            _pathfindList.Data = new FastList<object>
+            {
+                m_buffer = displayList.ToArray(),
+                m_size = displayList.Count,
+            };
         }
     }
 }

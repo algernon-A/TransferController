@@ -1,38 +1,37 @@
-﻿using AlgernonCommons.Translation;
-using AlgernonCommons.UI;
-using ColossalFramework;
-using ColossalFramework.UI;
-
+﻿// <copyright file="StatsPanel.cs" company="algernon (K. Algernon A. Sheppard)">
+// Copyright (c) algernon (K. Algernon A. Sheppard). All rights reserved.
+// Licensed under the MIT license. See LICENSE.txt file in the project root for full license information.
+// </copyright>
 
 namespace TransferController
 {
+    using AlgernonCommons.Translation;
+    using AlgernonCommons.UI;
+    using ColossalFramework;
+    using ColossalFramework.UI;
+
     /// <summary>
     /// Building stats detail panel.
     /// </summary>
     internal class StatsPanel : UIPanel
     {
-        // Layout constants.
+        /// <summary>
+        /// Panel width.
+        /// </summary>
         internal const float PanelWidth = StatLabelX + AmountLabelX + AmountLabelWidth + Margin;
+
+        /// <summary>
+        /// Panel height.
+        /// </summary>
         internal const float PanelHeight = (RowHeight * 6f) + Margin;
+
+        // Layout constants - private.
         private const float Margin = 5f;
         private const float StatLabelX = Margin;
         private const float StatLabelWidth = 150f;
         private const float AmountLabelX = StatLabelWidth + Margin;
         private const float AmountLabelWidth = 100f;
         private const float RowHeight = 15f;
-
-
-        // Status index enum.
-        private enum StatusIndex : int
-        {
-            Garbage = 0,
-            Mail,
-            Crime,
-            Fire,
-            Sick,
-            Dead,
-            NumLabels
-        }
 
         // Status index titles.
         private readonly string[] statusTitleKeys = new string[(int)StatusIndex.NumLabels]
@@ -42,17 +41,15 @@ namespace TransferController
             "TFC_BST_CRI",
             "TFC_BST_FIR",
             "TFC_BST_SIC",
-            "TFC_BST_DEA"
+            "TFC_BST_DEA",
         };
-
 
         // Panel components.
         private UILabel[] titleLabels = new UILabel[(int)StatusIndex.NumLabels];
         private UILabel[] amountLabels = new UILabel[(int)StatusIndex.NumLabels];
 
-
         /// <summary>
-        /// Constructor.
+        /// Initializes a new instance of the <see cref="StatsPanel"/> class.
         /// </summary>
         internal StatsPanel()
         {
@@ -71,10 +68,22 @@ namespace TransferController
             }
         }
 
+        // Status index enum.
+        private enum StatusIndex : int
+        {
+            Garbage = 0,
+            Mail,
+            Crime,
+            Fire,
+            Sick,
+            Dead,
+            NumLabels,
+        }
 
         /// <summary>
-        /// Updates panel content.
+        /// Updates panel content for the given building ID.
         /// </summary>
+        /// <param name="buildingID">Building ID.</param>
         internal void UpdateContent(ushort buildingID)
         {
             // Local reference.
@@ -89,13 +98,12 @@ namespace TransferController
             amountLabels[(int)StatusIndex.Dead].text = CheckCitizens(ref building, Citizen.Flags.Dead).ToString();
         }
 
-
         /// <summary>
         /// Gets the number of citizens in this building with (any of) the specified citizen flags.
         /// </summary>
-        /// <param name="building">Building data record</param>
-        /// <param name="flags">Citizen flags to check</param>
-        /// <returns>Count of citzens in this building matching any of the specified flags</returns>
+        /// <param name="building">Building data record.</param>
+        /// <param name="flags">Citizen flags to check.</param>
+        /// <returns>Count of citzens in this building matching any of the specified flags.</returns>
         private int CheckCitizens(ref Building building, Citizen.Flags flags)
         {
             int citizenCount = 0;
@@ -122,14 +130,13 @@ namespace TransferController
             return citizenCount;
         }
 
-
         /// <summary>
         /// Checks the given citizen to see if they match any of the provided flags.
         /// </summary>
-        /// <param name="citizens">Citizen data buffer instance</param>
-        /// <param name="citizenID">Citizen ID</param>
-        /// <param name="flags"></param>
-        /// <returns>1 if the citizen matches any of the given flags, 0 otherwise</returns>
+        /// <param name="citizens">Citizen data buffer instance.</param>
+        /// <param name="citizenID">Citizen ID.</param>
+        /// <param name="flags">CitizenFlags to match.</param>
+        /// <returns>1 if the citizen matches any of the given flags, 0 otherwise.</returns>
         private int CheckCitizen(Citizen[] citizens, uint citizenID, Citizen.Flags flags)
         {
             // Ensure valid citizen ID.

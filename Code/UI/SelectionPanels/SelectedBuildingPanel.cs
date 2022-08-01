@@ -1,48 +1,31 @@
-﻿using AlgernonCommons;
-using AlgernonCommons.UI;
-using ColossalFramework.UI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-
+﻿// <copyright file="SelectedBuildingPanel.cs" company="algernon (K. Algernon A. Sheppard)">
+// Copyright (c) algernon (K. Algernon A. Sheppard). All rights reserved.
+// Licensed under the MIT license. See LICENSE.txt file in the project root for full license information.
+// </copyright>
 
 namespace TransferController
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using AlgernonCommons;
+    using AlgernonCommons.UI;
+    using ColossalFramework.UI;
+    using UnityEngine;
+
     /// <summary>
     /// Selected building panel.
     /// </summary>
     internal class SelectedBuildingPanel : UIPanel
     {
         // Panel components.
-        protected readonly UIList buildingList;
+        private readonly UIList _buildingList;
 
         // Current selection.
-        private ushort selectedBuilding;
-
-        // Parent reference.
-        internal BuildingRestrictionsTab ParentPanel { get; set; }
-
+        private ushort _selectedBuilding;
 
         /// <summary>
-        /// Currently selected building.
-        /// </summary>
-        internal ushort SelectedBuilding
-        {
-            get => selectedBuilding;
-
-            set
-            {
-                selectedBuilding = value;
-
-                // Refresh parent panel button states.
-                ParentPanel.SelectionUpdated();
-            }
-        }
-
-
-        /// <summary>
-        /// Performs initial setup.
+        /// Initializes a new instance of the <see cref="SelectedBuildingPanel"/> class.
         /// </summary>
         internal SelectedBuildingPanel()
         {
@@ -58,18 +41,15 @@ namespace TransferController
                 height = BuildingRestrictionsTab.ListHeight;
 
                 // District selection list.
-                buildingList = UIList.AddUIList<BuildingRow>(this);
-                buildingList.BackgroundSprite = "UnlockingPanel";
-                buildingList.width = BuildingRestrictionsTab.BuildingColumnWidth;
-                buildingList.height = BuildingRestrictionsTab.ListHeight;
-                //buildingList.canSelect = true;
-                //buildingList.rowHeight = DistrictRow.DefaultRowHeight;
-                //buildingList.autoHideScrollbar = true;
-                buildingList.relativePosition = Vector2.zero;
-                buildingList.Data = new FastList<object>();
-                buildingList.SelectedIndex = -1;
+                _buildingList = UIList.AddUIList<BuildingRow>(this);
+                _buildingList.BackgroundSprite = "UnlockingPanel";
+                _buildingList.width = BuildingRestrictionsTab.BuildingColumnWidth;
+                _buildingList.height = BuildingRestrictionsTab.ListHeight;
+                _buildingList.relativePosition = Vector2.zero;
+                _buildingList.Data = new FastList<object>();
+                _buildingList.SelectedIndex = -1;
 
-                buildingList.EventSelectionChanged += (control, selectedItem) =>
+                _buildingList.EventSelectionChanged += (control, selectedItem) =>
                 {
                     if (selectedItem is BuildingItem buildingItem)
                     {
@@ -80,7 +60,6 @@ namespace TransferController
                         SelectedBuilding = 0;
                     }
                 };
-
             }
             catch (Exception e)
             {
@@ -88,6 +67,26 @@ namespace TransferController
             }
         }
 
+        /// <summary>
+        /// Gets or sets the parent panel reference.
+        /// </summary>
+        internal BuildingRestrictionsTab ParentPanel { get; set; }
+
+        /// <summary>
+        /// Gets or sets the currently selected building.
+        /// </summary>
+        internal ushort SelectedBuilding
+        {
+            get => _selectedBuilding;
+
+            set
+            {
+                _selectedBuilding = value;
+
+                // Refresh parent panel button states.
+                ParentPanel.SelectionUpdated();
+            }
+        }
 
         /// <summary>
         /// Refreshes the list with current information.
@@ -98,9 +97,8 @@ namespace TransferController
             PopulateList();
 
             // (Re)select currently-selected building to ensure list selection matches.
-            buildingList.FindItem<ushort>(selectedBuilding);
+            _buildingList.FindItem<ushort>(_selectedBuilding);
         }
-
 
         /// <summary>
         /// Populates the list.
@@ -113,12 +111,12 @@ namespace TransferController
             // If no building hashset was recovered, clear list and selection and exit.
             if (hashSet == null)
             {
-                buildingList.Data = new FastList<object>
+                _buildingList.Data = new FastList<object>
                 {
                     m_buffer = new DistrictItem[0],
-                    m_size = 0
+                    m_size = 0,
                 };
-                buildingList.SelectedIndex = -1;
+                _buildingList.SelectedIndex = -1;
                 return;
             }
 
@@ -130,7 +128,8 @@ namespace TransferController
                 items[i++] = new BuildingItem((ushort)id);
             }
 
-            buildingList.Data = new FastList<object>
+            // Set display list items, without changing the display.
+            _buildingList.Data = new FastList<object>
             {
                 m_buffer = items.OrderBy(x => x.Name).ToArray(),
                 m_size = hashSet.Count,

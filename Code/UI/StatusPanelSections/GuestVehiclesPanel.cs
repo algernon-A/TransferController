@@ -1,33 +1,43 @@
-﻿using AlgernonCommons;
-using AlgernonCommons.Translation;
-using AlgernonCommons.UI;
-using ColossalFramework;
-using ColossalFramework.UI;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-
+﻿// <copyright file="GuestVehiclesPanel.cs" company="algernon (K. Algernon A. Sheppard)">
+// Copyright (c) algernon (K. Algernon A. Sheppard). All rights reserved.
+// Licensed under the MIT license. See LICENSE.txt file in the project root for full license information.
+// </copyright>
 
 namespace TransferController
 {
+    using System;
+    using System.Collections.Generic;
+    using AlgernonCommons;
+    using AlgernonCommons.Translation;
+    using AlgernonCommons.UI;
+    using ColossalFramework;
+    using ColossalFramework.UI;
+    using UnityEngine;
+
     /// <summary>
     /// Panel to show building guest vehicles.
     /// </summary>
     internal class GuestVehiclesPanel : StatusPanelSection
     {
-        // Layout constants.
+        /// <summary>
+        /// Panel width.
+        /// </summary>
         internal const float PanelWidth = ListWidth + Margin + Margin;
-        internal const float PanelHeight = ListY + ListHeight + Margin;
-        private const float ListWidth = VehicleStatusRow.RowWidth + ScrollBarWidth;
-        private const float ListHeight = StatusRow.RowHeight * 4f;
-
-
-        // Vehicle list.
-        private readonly UIFastList vehiclesList;
-
 
         /// <summary>
-        /// Constructor - performs initial setup.
+        /// Panel height.
+        /// </summary>
+        internal const float PanelHeight = ListY + ListHeight + Margin;
+
+        // Layout constants - private.
+        private const float ListWidth = VehicleStatusRow.RowWidth + ScrollbarWidth;
+        private const float ListHeight = StatusRow.RowHeight * 4f;
+
+        // Vehicle list.
+        private readonly UIList _vehiclesList;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuestVehiclesPanel"/> class.
         /// </summary>
         internal GuestVehiclesPanel()
         {
@@ -48,14 +58,13 @@ namespace TransferController
                 amountLabel.textAlignment = UIHorizontalAlignment.Right;
 
                 // Vehicle list.
-                vehiclesList = AddList<VehicleStatusRow>(ListY, ListWidth, ListHeight);
+                _vehiclesList = AddList<VehicleStatusRow>(ListY, ListWidth, ListHeight);
             }
             catch (Exception e)
             {
                 Logging.LogException(e, "exception setting up vehicle status panel");
             }
         }
-
 
         /// <summary>
         /// Updates panel content.
@@ -85,9 +94,11 @@ namespace TransferController
             }
 
             // Set fastlist items, without changing the display.
-            vehiclesList.rowsData.m_buffer = guestVehicles.ToArray();
-            vehiclesList.rowsData.m_size = guestVehicles.Count;
-            vehiclesList.Refresh();
+            _vehiclesList.Data = new FastList<object>
+            {
+                m_buffer = guestVehicles.ToArray(),
+                m_size = guestVehicles.Count,
+            };
         }
     }
 }

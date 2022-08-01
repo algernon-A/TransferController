@@ -440,11 +440,11 @@ namespace TransferController
                         {
                             if (incoming)
                             {
-                                TransferLogging.AddEntry(reason, incoming, priority, candidatePriority, offerBuilding, candidateBuilding, MatchStatus.PathFailure, offer.Exclude, candidate.Exclude, offerPosition, candidatePosition);
+                                TransferLogging.AddEntry(reason, incoming, priority, candidatePriority, offerBuilding, candidateBuilding, TransferLogging.MatchStatus.PathFailure, offer.Exclude, candidate.Exclude, offerPosition, candidatePosition);
                             }
                             else
                             {
-                                TransferLogging.AddEntry(reason, incoming, candidatePriority, priority, candidateBuilding, offerBuilding, MatchStatus.PathFailure, candidate.Exclude, offer.Exclude, candidatePosition, offerPosition);
+                                TransferLogging.AddEntry(reason, incoming, candidatePriority, priority, candidateBuilding, offerBuilding, TransferLogging.MatchStatus.PathFailure, candidate.Exclude, offer.Exclude, candidatePosition, offerPosition);
                             }
 
                             continue;
@@ -495,7 +495,7 @@ namespace TransferController
                             // New nearest disance - apply checks.
                             if (incoming)
                             {
-                                if (!ChecksPassed(offerBuilding, candidateBuilding, offerDistrict, candidateDistrict, offerPark, candidatePark, reason, out MatchStatus result))
+                                if (!ChecksPassed(offerBuilding, candidateBuilding, offerDistrict, candidateDistrict, offerPark, candidatePark, reason, out TransferLogging.MatchStatus result))
                                 {
                                     TransferLogging.AddEntry(reason, incoming, priority, candidatePriority, offerBuilding, candidateBuilding, result, offer.Exclude, candidate.Exclude, offerPosition, candidatePosition);
                                     continue;
@@ -504,13 +504,13 @@ namespace TransferController
                                 // If candidate (outgoing) building is a warehouse, check quota.
                                 if (candidate.Exclude && !WarehouseControl.CheckVehicleQuota(candidateBuildingAI, candidateBuilding, ref buildingBuffer[candidateBuilding], reason, offerBuildingAI))
                                 {
-                                    TransferLogging.AddEntry(reason, incoming, priority, candidatePriority, offerBuilding, candidateBuilding, MatchStatus.NoVehicle, offer.Exclude, candidate.Exclude, offerPosition, candidatePosition);
+                                    TransferLogging.AddEntry(reason, incoming, priority, candidatePriority, offerBuilding, candidateBuilding, TransferLogging.MatchStatus.NoVehicle, offer.Exclude, candidate.Exclude, offerPosition, candidatePosition);
                                     continue;
                                 }
                             }
                             else
                             {
-                                if (!ChecksPassed(candidateBuilding, offerBuilding, candidateDistrict, offerDistrict, candidatePark, offerPark, reason, out MatchStatus result))
+                                if (!ChecksPassed(candidateBuilding, offerBuilding, candidateDistrict, offerDistrict, candidatePark, offerPark, reason, out TransferLogging.MatchStatus result))
                                 {
                                     TransferLogging.AddEntry(reason, incoming, candidatePriority, priority, candidateBuilding, offerBuilding, result, candidate.Exclude, offer.Exclude, candidatePosition, offerPosition);
                                     continue;
@@ -519,7 +519,7 @@ namespace TransferController
                                 // Otherwise, if the offer building is a warehouse and is the outgoing party, check quota there.
                                 if (offer.Exclude && !WarehouseControl.CheckVehicleQuota(offerBuildingAI, offerBuilding, ref buildingBuffer[offerBuilding], reason, candidateBuildingAI))
                                 {
-                                    TransferLogging.AddEntry(reason, incoming, candidatePriority, priority, candidateBuilding, offerBuilding, MatchStatus.NoVehicle, candidate.Exclude, offer.Exclude, candidatePosition, offerPosition);
+                                    TransferLogging.AddEntry(reason, incoming, candidatePriority, priority, candidateBuilding, offerBuilding, TransferLogging.MatchStatus.NoVehicle, candidate.Exclude, offer.Exclude, candidatePosition, offerPosition);
                                     continue;
                                 }
                             }
@@ -533,11 +533,11 @@ namespace TransferController
                             // Log eligible match.
                             if (incoming)
                             {
-                                TransferLogging.AddEntry(reason, incoming, priority, candidatePriority, offerBuilding, candidateBuilding, MatchStatus.Eligible, offer.Exclude, candidate.Exclude, offerPosition, candidatePosition);
+                                TransferLogging.AddEntry(reason, incoming, priority, candidatePriority, offerBuilding, candidateBuilding, TransferLogging.MatchStatus.Eligible, offer.Exclude, candidate.Exclude, offerPosition, candidatePosition);
                             }
                             else
                             {
-                                TransferLogging.AddEntry(reason, incoming, candidatePriority, priority, candidateBuilding, offerBuilding, MatchStatus.Eligible, candidate.Exclude, offer.Exclude, candidatePosition, offerPosition);
+                                TransferLogging.AddEntry(reason, incoming, candidatePriority, priority, candidateBuilding, offerBuilding, TransferLogging.MatchStatus.Eligible, candidate.Exclude, offer.Exclude, candidatePosition, offerPosition);
                             }
 
                             // TODO: break if distance is less than minimum.
@@ -564,12 +564,12 @@ namespace TransferController
                 // Start the transfer.
                 if (incoming)
                 {
-                    TransferLogging.AddEntry(reason, incoming, priority, matchedPriority, offerBuilding, matchedBuilding, MatchStatus.Selected, offer.Exclude, matchedOffer.Exclude, offerPosition, matchedOffer.Position);
+                    TransferLogging.AddEntry(reason, incoming, priority, matchedPriority, offerBuilding, matchedBuilding, TransferLogging.MatchStatus.Selected, offer.Exclude, matchedOffer.Exclude, offerPosition, matchedOffer.Position);
                     StartTransfer(Singleton<TransferManager>.instance, reason, matchedOffer, offer, transferAmount);
                 }
                 else
                 {
-                    TransferLogging.AddEntry(reason, incoming, matchedPriority, priority, matchedBuilding, offerBuilding, MatchStatus.Selected, matchedOffer.Exclude, offer.Exclude, matchedOffer.Position, offerPosition);
+                    TransferLogging.AddEntry(reason, incoming, matchedPriority, priority, matchedBuilding, offerBuilding, TransferLogging.MatchStatus.Selected, matchedOffer.Exclude, offer.Exclude, matchedOffer.Position, offerPosition);
                     StartTransfer(Singleton<TransferManager>.instance, reason, offer, matchedOffer, transferAmount);
                 }
 
@@ -627,7 +627,12 @@ namespace TransferController
         [HarmonyReversePatch]
         [HarmonyPatch(typeof(TransferManager), "StartTransfer")]
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public static void StartTransfer(object instance, TransferManager.TransferReason material, TransferManager.TransferOffer offerOut, TransferManager.TransferOffer offerIn, int delta)
+        public static void StartTransfer(
+            object instance,
+            TransferManager.TransferReason material,
+            TransferManager.TransferOffer offerOut,
+            TransferManager.TransferOffer offerIn,
+            int delta)
         {
             Logging.Error("StartTransfer reverse Harmony patch wasn't applied, params: ", instance, material, offerOut, offerIn, delta);
             throw new NotImplementedException("Harmony reverse patch not applied");
@@ -645,7 +650,15 @@ namespace TransferController
         /// <param name="reason">Transfer reason.</param
         /// <param name="result">Matching result check.</param>
         /// <returns>True if the transfer is permitted, false if prohibited.</returns>
-        internal static bool ChecksPassed(ushort incomingBuildingID, ushort outgoingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason reason, out MatchStatus result)
+        internal static bool ChecksPassed(
+            ushort incomingBuildingID,
+            ushort outgoingBuildingID,
+            byte incomingDistrict,
+            byte outgoingDistrict,
+            byte incomingPark,
+            byte outgoingPark,
+            TransferManager.TransferReason reason,
+            out TransferLogging.MatchStatus result)
         {
             // First, check for incoming restrictions.
             if (IncomingChecksPassed(incomingBuildingID, outgoingBuildingID, incomingDistrict, outgoingDistrict, incomingPark, outgoingPark, reason, out result))
@@ -670,7 +683,15 @@ namespace TransferController
         /// <param name="transferReason">Transfer reason.</param>
         /// <param name="result">Matching result check.</param>
         /// <returns>True if the transfer is permitted, false if prohibited.</returns>
-        private static bool IncomingChecksPassed(ushort buildingID, ushort outgoingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason transferReason, out MatchStatus result)
+        private static bool IncomingChecksPassed(
+            ushort buildingID,
+            ushort outgoingBuildingID,
+            byte incomingDistrict,
+            byte outgoingDistrict,
+            byte incomingPark,
+            byte outgoingPark,
+            TransferManager.TransferReason transferReason,
+            out TransferLogging.MatchStatus result)
         {
             // Calculate building record ID.
             uint buildingRecordID = BuildingControl.CalculateEntryKey(buildingID, true, transferReason);
@@ -683,7 +704,7 @@ namespace TransferController
                 if (!BuildingControl.buildingRecords.TryGetValue(buildingRecordID, out buildingRecord))
                 {
                     // No record found, therefore no restrictions.
-                    result = MatchStatus.Eligible;
+                    result = TransferLogging.MatchStatus.Eligible;
                     return true;
                 }
             }
@@ -694,20 +715,20 @@ namespace TransferController
                 if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BlockOutsideConnection) == 0)
                 {
                     // Outside connection permitted.
-                    result = MatchStatus.Eligible;
+                    result = TransferLogging.MatchStatus.Eligible;
                     return true;
                 }
                 else
                 {
                     // Outside connection blocked.
-                    result = MatchStatus.ImportBlocked;
+                    result = TransferLogging.MatchStatus.ImportBlocked;
                     return false;
                 }
             }
             else if ((buildingRecord.flags & (BuildingControl.RestrictionFlags.DistrictEnabled | BuildingControl.RestrictionFlags.BuildingEnabled)) == 0)
             {
                 // If not an outside connection, transfer is permitted if no restrictions are enabled.
-                result = MatchStatus.Eligible;
+                result = TransferLogging.MatchStatus.Eligible;
                 return true;
             }
 
@@ -718,7 +739,7 @@ namespace TransferController
                 if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BlockSameDistrict) == 0 && ((outgoingDistrict != 0 && incomingDistrict == outgoingDistrict) || (outgoingPark != 0 && incomingPark == outgoingPark)))
                 {
                     // Same district match - permitted.
-                    result = MatchStatus.Eligible;
+                    result = TransferLogging.MatchStatus.Eligible;
                     return true;
                 }
 
@@ -728,7 +749,7 @@ namespace TransferController
                     if (buildingRecord.districts.Contains(outgoingDistrict) || buildingRecord.districts.Contains(-outgoingPark))
                     {
                         // Permitted district.
-                        result = MatchStatus.Eligible;
+                        result = TransferLogging.MatchStatus.Eligible;
                         return true;
                     }
                 }
@@ -743,14 +764,14 @@ namespace TransferController
                     if (buildingRecord.buildings.Contains(outgoingBuildingID))
                     {
                         // Permitted building.
-                        result = MatchStatus.Eligible;
+                        result = TransferLogging.MatchStatus.Eligible;
                         return true;
                     }
                 }
             }
 
             // If we got here, we found a record but no permitted match was found; return false.
-            result = MatchStatus.NotPermittedIn;
+            result = TransferLogging.MatchStatus.NotPermittedIn;
             return false;
         }
 
@@ -766,7 +787,15 @@ namespace TransferController
         /// <param name="transferReason">Transfer reason.</param>
         /// <param name="result">Matching result check.</param>
         /// <returns>True if the transfer is permitted, false if prohibited.<./returns>
-        private static bool OutgoingChecksPassed(ushort buildingID, ushort incomingBuildingID, byte incomingDistrict, byte outgoingDistrict, byte incomingPark, byte outgoingPark, TransferManager.TransferReason transferReason, out MatchStatus result)
+        private static bool OutgoingChecksPassed(
+            ushort buildingID,
+            ushort incomingBuildingID,
+            byte incomingDistrict,
+            byte outgoingDistrict,
+            byte incomingPark,
+            byte outgoingPark,
+            TransferManager.TransferReason transferReason,
+            out TransferLogging.MatchStatus result)
         {
             // Calculate building record ID.
             uint buildingRecordID = BuildingControl.CalculateEntryKey(buildingID, false, transferReason);
@@ -781,14 +810,14 @@ namespace TransferController
                     if (!BuildingControl.buildingRecords.TryGetValue(buildingRecordID, out buildingRecord))
                     {
                         // No record found, therefore no restrictions.
-                        result = MatchStatus.Eligible;
+                        result = TransferLogging.MatchStatus.Eligible;
                         return true;
                     }
                 }
                 else
                 {
                     // No relevant reason found, therefore no restrictions.
-                    result = MatchStatus.Eligible;
+                    result = TransferLogging.MatchStatus.Eligible;
                     return true;
                 }
             }
@@ -799,20 +828,20 @@ namespace TransferController
                 if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BlockOutsideConnection) == 0)
                 {
                     // Outside connection permitted.
-                    result = MatchStatus.Eligible;
+                    result = TransferLogging.MatchStatus.Eligible;
                     return true;
                 }
                 else
                 {
                     // Outside connection blocked.
-                    result = MatchStatus.ExportBlocked;
+                    result = TransferLogging.MatchStatus.ExportBlocked;
                     return false;
                 }
             }
             else if ((buildingRecord.flags & (BuildingControl.RestrictionFlags.DistrictEnabled | BuildingControl.RestrictionFlags.BuildingEnabled)) == 0)
             {
                 // If not an outside connection, transfer is permitted if no restrictions are enabled.
-                result = MatchStatus.Eligible;
+                result = TransferLogging.MatchStatus.Eligible;
                 return true;
             }
 
@@ -823,7 +852,7 @@ namespace TransferController
                 if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BlockSameDistrict) == BuildingControl.RestrictionFlags.None && ((incomingDistrict != 0 && incomingDistrict == outgoingDistrict) || (incomingPark != 0 && incomingPark == outgoingPark)))
                 {
                     // Same district match - permitted.
-                    result = MatchStatus.Eligible;
+                    result = TransferLogging.MatchStatus.Eligible;
                     return true;
                 }
 
@@ -833,7 +862,7 @@ namespace TransferController
                     if (buildingRecord.districts.Contains(incomingDistrict) || buildingRecord.districts.Contains(-incomingPark))
                     {
                         // Permitted district.
-                        result = MatchStatus.Eligible;
+                        result = TransferLogging.MatchStatus.Eligible;
                         return true;
                     }
                 }
@@ -848,14 +877,14 @@ namespace TransferController
                     if (buildingRecord.buildings.Contains(incomingBuildingID))
                     {
                         // Permitted building.
-                        result = MatchStatus.Eligible;
+                        result = TransferLogging.MatchStatus.Eligible;
                         return true;
                     }
                 }
             }
 
             // If we got here, we didn't get a record.
-            result = MatchStatus.NotPermittedOut;
+            result = TransferLogging.MatchStatus.NotPermittedOut;
             return false;
         }
 

@@ -1,36 +1,38 @@
-﻿using AlgernonCommons.Translation;
-using AlgernonCommons.UI;
-using ColossalFramework.UI;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-
-
+﻿// <copyright file="SelectedVehiclePanel.cs" company="algernon (K. Algernon A. Sheppard)">
+// Copyright (c) algernon (K. Algernon A. Sheppard). All rights reserved.
+// Licensed under the MIT license. See LICENSE.txt file in the project root for full license information.
+// </copyright>
 
 namespace TransferController
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using AlgernonCommons.Translation;
+    using AlgernonCommons.UI;
+    using ColossalFramework.UI;
+    using UnityEngine;
+
     /// <summary>
     /// Selected vehicle panel.
     /// </summary>
     internal class SelectedVehiclePanel : VehicleSelectionPanel
     {
         // Panel to display when no item is selected.
-        private UIPanel randomPanel;
-
+        private UIPanel _randomPanel;
 
         /// <summary>
-        /// Constructor - create random panel.
+        /// Initializes a new instance of the <see cref="SelectedVehiclePanel"/> class.
         /// </summary>
         internal SelectedVehiclePanel()
         {
             // Panel setup.
-            randomPanel = this.AddUIComponent<UIPanel>();
-            randomPanel.width = this.width;
-            randomPanel.height = this.height;
-            randomPanel.relativePosition = new Vector2(0f, 0f);
+            _randomPanel = this.AddUIComponent<UIPanel>();
+            _randomPanel.width = this.width;
+            _randomPanel.height = this.height;
+            _randomPanel.relativePosition = new Vector2(0f, 0f);
 
             // Random sprite.
-            UISprite randomSprite = randomPanel.AddUIComponent<UISprite>();
+            UISprite randomSprite = _randomPanel.AddUIComponent<UISprite>();
             randomSprite.atlas = UITextures.InGameAtlas;
             randomSprite.spriteName = "Random";
 
@@ -39,12 +41,11 @@ namespace TransferController
             randomLabel.textScale = 0.8f;
             randomLabel.text = Translations.Translate("TFC_VEH_ANY");
 
-            //  Size is 56x33, so offset -8 from left and 3.5 from top to match normal row sizing.
+            // Size is 56x33, so offset -8 from left and 3.5 from top to match normal row sizing.
             randomSprite.size = new Vector2(56f, 33f);
             randomSprite.relativePosition = new Vector2(-8, (40f - randomSprite.height) / 2f);
             randomLabel.relativePosition = new Vector2(48f, (randomSprite.height - randomLabel.height) / 2f);
         }
-
 
         /// <summary>
         /// Populates the list.
@@ -62,12 +63,14 @@ namespace TransferController
             }
 
             // If list is empty, show random item panel (and hide otherwise).
-            randomPanel.isVisible = items.Count == 0;
+            _randomPanel.isVisible = items.Count == 0;
 
-            // Set fastlist items, without changing the display.
-            vehicleList.rowsData.m_buffer = items.OrderBy(x => x.name).ToArray();
-            vehicleList.rowsData.m_size = items.Count;
-            vehicleList.Refresh();
+            // Set display list items, without changing the display.
+            VehicleList.Data = new FastList<object>
+            {
+                m_buffer = items.OrderBy(x => x.Name).ToArray(),
+                m_size = items.Count,
+            };
         }
     }
 }

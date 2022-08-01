@@ -88,7 +88,7 @@ namespace TransferController
         /// <returns>New UIButton</returns>
         internal static UIButton AddIconButton(UIComponent parent, float xPos, float yPos, float size, string tooltipKey, UITextureAtlas atlas)
         {
-            UIButton newButton = parent.AddUIComponent<TCPanelButton>();
+            UIButton newButton = parent.AddUIComponent<BuildingPanel.TCPanelButton>();
 
             // Size and position.
             newButton.relativePosition = new Vector2(xPos, yPos);

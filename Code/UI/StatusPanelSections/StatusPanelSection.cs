@@ -1,24 +1,43 @@
-﻿using AlgernonCommons;
-using ColossalFramework.UI;
-using System;
-using UnityEngine;
-
+﻿// <copyright file="StatusPanelSection.cs" company="algernon (K. Algernon A. Sheppard)">
+// Copyright (c) algernon (K. Algernon A. Sheppard). All rights reserved.
+// Licensed under the MIT license. See LICENSE.txt file in the project root for full license information.
+// </copyright>
 
 namespace TransferController
 {
+    using System;
+    using AlgernonCommons;
+    using AlgernonCommons.UI;
+    using ColossalFramework.UI;
+    using UnityEngine;
+
     /// <summary>
     /// Detail section of building status panel.
     /// </summary>
     internal abstract class StatusPanelSection : UpdatingBuildingPanel
     {
-        // Layout constants.
+        /// <summary>
+        /// Layout margin.
+        /// </summary>
         protected const float Margin = 5f;
-        protected const float ScrollBarWidth = 20f;
+
+        /// <summary>
+        /// Scrollbar width.
+        /// </summary>
+        protected const float ScrollbarWidth = 20f;
+
+        /// <summary>
+        /// List header relative Y-position.
+        /// </summary>
         protected const float ListHeaderY = 25f;
+
+        /// <summary>
+        /// List relative Y-position.
+        /// </summary>
         protected const float ListY = ListHeaderY + 15f;
 
         /// <summary>
-        /// Constructor - performs initial setup.
+        /// Initializes a new instance of the <see cref="StatusPanelSection"/> class.
         /// </summary>
         internal StatusPanelSection()
         {
@@ -36,28 +55,24 @@ namespace TransferController
             }
         }
 
-
         /// <summary>
-        /// Adds a UI fastlist of the given type.
+        /// Adds a UI list of the given row type.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TRow">Row type</typeparam>
         /// <param name="yPos">Relative Y position</param>
         /// <param name="listWidth">List width</param>
         /// <param name="listHeight">List height</param>
         /// <returns>New UIFastList</returns>
-        protected UIFastList AddList<T>(float yPos, float listWidth, float listHeight) where T : UIPanel, IUIFastListRow
+        protected UIList AddList<TRow>(float yPos, float listWidth, float listHeight)
+            where TRow : UIListRow
         {
             // List setup.
-            UIFastList newList = UIFastList.Create<T>(this);
-            newList.backgroundSprite = "UnlockingPanel";
+            UIList newList = UIList.AddUIList<TRow>(this);
+            newList.BackgroundSprite = "UnlockingPanel";
             newList.width = listWidth;
             newList.height = listHeight;
-            newList.canSelect = true;
-            newList.rowHeight = StatusRow.RowHeight;
-            newList.autoHideScrollbar = true;
             newList.relativePosition = new Vector2(Margin, yPos);
-            newList.rowsData = new FastList<object>();
-            newList.selectedIndex = -1;
+            newList.Data = new FastList<object>();
 
             return newList;
         }

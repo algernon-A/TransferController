@@ -1,51 +1,32 @@
-﻿using AlgernonCommons;
-using ColossalFramework;
-using ColossalFramework.UI;
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using UnityEngine;
-
+﻿// <copyright file="VehicleSelectionPanel.cs" company="algernon (K. Algernon A. Sheppard)">
+// Copyright (c) algernon (K. Algernon A. Sheppard). All rights reserved.
+// Licensed under the MIT license. See LICENSE.txt file in the project root for full license information.
+// </copyright>
 
 namespace TransferController
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using AlgernonCommons;
+    using AlgernonCommons.UI;
+    using ColossalFramework;
+    using ColossalFramework.UI;
+    using UnityEngine;
+
     /// <summary>
     /// Vehicle selection panel main class.
     /// </summary>
     internal class VehicleSelectionPanel : UIPanel
     {
-        // Panel components.
-        protected readonly UIVehicleFastList vehicleList;
+        // Vehicle selection list.
+        private readonly UIList _vehicleList;
 
-        // Current selection.
-        protected VehicleInfo selectedVehicle;
-
-
-        /// <summary>
-        /// Parent reference.
-        /// </summary>
-        internal VehicleSelection ParentPanel { get; set; }
-
+        // Currently selected vehicle.
+        private VehicleInfo _selectedVehicle;
 
         /// <summary>
-        /// Currently selected vehicle.
-        /// </summary>
-        internal VehicleInfo SelectedVehicle
-        {
-            get => selectedVehicle;
-
-            set
-            {
-                selectedVehicle = value;
-
-                // Refresh parent panel button states.
-                ParentPanel.SelectionUpdated();
-            }
-        }
-
-
-        /// <summary>
-        /// Performs initial setup.
+        /// Initializes a new instance of the <see cref="VehicleSelectionPanel"/> class.
         /// </summary>
         internal VehicleSelectionPanel()
         {
@@ -61,17 +42,15 @@ namespace TransferController
                 height = VehicleSelection.VehicleListHeight;
 
                 // Vehicle selection list.
-                vehicleList = UIVehicleFastList.Create<VehicleSelectionRow, UIVehicleFastList>(this);
-                vehicleList.backgroundSprite = "UnlockingPanel";
-                vehicleList.width = BuildingVehiclesTab.ColumnWidth;
-                vehicleList.height = VehicleSelection.VehicleListHeight;
-                vehicleList.canSelect = true;
-                vehicleList.rowHeight = VehicleSelectionRow.VehicleRowHeight;
-                vehicleList.autoHideScrollbar = true;
-                vehicleList.relativePosition = Vector2.zero;
-                vehicleList.rowsData = new FastList<object>();
-                vehicleList.selectedIndex = -1;
+                _vehicleList = UIList.AddUIList<VehicleSelectionRow>(this);
+                _vehicleList.BackgroundSprite = "UnlockingPanel";
+                _vehicleList.width = BuildingVehiclesTab.ColumnWidth;
+                _vehicleList.height = VehicleSelection.VehicleListHeight;
+                _vehicleList.RowHeight = VehicleSelectionRow.VehicleRowHeight;
+                _vehicleList.relativePosition = Vector2.zero;
+                _vehicleList.Data = new FastList<object>();
 
+                _vehicleList.EventSelectionChanged += (control, selectedItem) => SelectedVehicle = (selectedItem as VehicleItem)?.Info;
             }
             catch (Exception e)
             {
@@ -79,6 +58,31 @@ namespace TransferController
             }
         }
 
+        /// <summary>
+        /// Gets or sets the parent reference.
+        /// </summary>
+        internal VehicleSelection ParentPanel { get; set; }
+
+        /// <summary>
+        /// Gets or sets the currently selected vehicle.
+        /// </summary>
+        internal VehicleInfo SelectedVehicle
+        {
+            get => _selectedVehicle;
+
+            set
+            {
+                _selectedVehicle = value;
+
+                // Refresh parent panel button states.
+                ParentPanel.SelectionUpdated();
+            }
+        }
+
+        /// <summary>
+        /// Gets the vehicle selection list.
+        /// </summary>
+        protected internal UIList VehicleList => _vehicleList;
 
         /// <summary>
         /// Refreshes the list with current information.
@@ -86,12 +90,11 @@ namespace TransferController
         internal void RefreshList()
         {
             // Clear selected index.
-            vehicleList.selectedIndex = -1;
+            _vehicleList.SelectedIndex = -1;
 
             // Repopulate the list.
             PopulateList();
         }
-
 
         /// <summary>
         /// Populates the list with available vehicles.
@@ -233,10 +236,12 @@ namespace TransferController
                 }
             }
 
-            // Set fastlist items, without changing the display.
-            vehicleList.rowsData.m_buffer = items.OrderBy(x => x.name).ToArray();
-            vehicleList.rowsData.m_size = items.Count;
-            vehicleList.Refresh();
+            // Set display list items, without changing the display.
+            _vehicleList.Data = new FastList<object>
+            {
+                m_buffer = items.OrderBy(x => x.Name).ToArray(),
+                m_size = items.Count,
+            };
         }
     }
 }

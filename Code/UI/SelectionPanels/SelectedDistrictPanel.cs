@@ -24,12 +24,12 @@ namespace TransferController
             // If no district hashset was recovered, clear list and selection and exit.
             if (hashSet == null)
             {
-                districtList.Data = new FastList<object>
+                DistrictList.Data = new FastList<object>
                 {
                     m_buffer = new DistrictItem[0],
                     m_size = 0,
                 };
-                districtList.SelectedIndex = -1;
+                DistrictList.SelectedIndex = -1;
                 return;
             }
 
@@ -44,7 +44,8 @@ namespace TransferController
                 items[i++] = new DistrictItem(id);
             }
 
-            districtList.Data = new FastList<object>
+            // Set display list items, without changing the display.
+            DistrictList.Data = new FastList<object>
             {
                 m_buffer = items.OrderBy(x => x.Name).ToArray(),
                 m_size = hashSet.Count,

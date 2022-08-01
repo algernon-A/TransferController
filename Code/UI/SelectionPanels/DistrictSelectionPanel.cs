@@ -1,55 +1,32 @@
-﻿using AlgernonCommons;
-using AlgernonCommons.UI;
-using ColossalFramework;
-using ColossalFramework.UI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-
+﻿// <copyright file="DistrictSelectionPanel.cs" company="algernon (K. Algernon A. Sheppard)">
+// Copyright (c) algernon (K. Algernon A. Sheppard). All rights reserved.
+// Licensed under the MIT license. See LICENSE.txt file in the project root for full license information.
+// </copyright>
 
 namespace TransferController
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using AlgernonCommons;
+    using AlgernonCommons.UI;
+    using ColossalFramework;
+    using ColossalFramework.UI;
+    using UnityEngine;
+
     /// <summary>
     /// District selection panel main class.
     /// </summary>
     internal class DistrictSelectionPanel : UIPanel
     {
-        // Panel components.
-        protected readonly UIList districtList;
+        // The district selection list.
+        private readonly UIList _districtList;
 
         // Current selection.
-        private int selectedDistrict;
-
-        // Parent reference.
-        internal BuildingRestrictionsTab ParentPanel { get; set; }
-        
-        
-        /// <summary>
-        /// HashSet of currently selected districts for the currently selected building.
-        /// </summary>
-        protected HashSet<int> DistrictSettingsList => BuildingControl.GetDistricts(ParentPanel.CurrentBuilding, ParentPanel.IsIncoming, ParentPanel.TransferReason);
-
+        private int _selectedDistrict;
 
         /// <summary>
-        /// Currently selected district.
-        /// </summary>
-        internal int SelectedDistrict
-        {
-            get => selectedDistrict;
-
-            set
-            {
-                selectedDistrict = value;
-
-                // Refresh parent panel button states.
-                ParentPanel.SelectionUpdated();
-            }
-        }
-
-
-        /// <summary>
-        /// Performs initial setup.
+        /// Initializes a new instance of the <see cref="DistrictSelectionPanel"/> class.
         /// </summary>
         internal DistrictSelectionPanel()
         {
@@ -65,14 +42,21 @@ namespace TransferController
                 height = BuildingRestrictionsTab.ListHeight;
 
                 // District selection list.
-                districtList = UIList.AddUIList<DistrictRow>(this);
-                districtList.BackgroundSprite = "UnlockingPanel";
-                districtList.width = BuildingRestrictionsTab.ColumnWidth;
-                districtList.height = BuildingRestrictionsTab.ListHeight;
-                districtList.relativePosition = Vector2.zero;
-                districtList.Data = new FastList<object>();
-                districtList.SelectedIndex = -1;
+                _districtList = UIList.AddUIList<DistrictRow>(this);
+                _districtList.BackgroundSprite = "UnlockingPanel";
+                _districtList.width = BuildingRestrictionsTab.ColumnWidth;
+                _districtList.height = BuildingRestrictionsTab.ListHeight;
+                _districtList.relativePosition = Vector2.zero;
+                _districtList.Data = new FastList<object>();
+                _districtList.SelectedIndex = -1;
 
+                _districtList.EventSelectionChanged += (c, value) =>
+                {
+                    if (value is DistrictItem districtItem)
+                    {
+                        SelectedDistrict = districtItem.ID;
+                    }
+                };
             }
             catch (Exception e)
             {
@@ -80,6 +64,36 @@ namespace TransferController
             }
         }
 
+        /// <summary>
+        /// Gets or sets the parent panel reference.
+        /// </summary>
+        internal BuildingRestrictionsTab ParentPanel { get; set; }
+
+        /// <summary>
+        /// Gets or sets the currently selected district.
+        /// </summary>
+        internal int SelectedDistrict
+        {
+            get => _selectedDistrict;
+
+            set
+            {
+                _selectedDistrict = value;
+
+                // Refresh parent panel button states.
+                ParentPanel.SelectionUpdated();
+            }
+        }
+
+        /// <summary>
+        /// Gets the district selection list reference.
+        /// </summary>
+        protected internal UIList DistrictList => _districtList;
+
+        /// <summary>
+        /// Gets the HashSet of currently selected districts for the currently selected building.
+        /// </summary>
+        protected internal HashSet<int> DistrictSettingsList => BuildingControl.GetDistricts(ParentPanel.CurrentBuilding, ParentPanel.IsIncoming, ParentPanel.TransferReason);
 
         /// <summary>
         /// Refreshes the list with current information.
@@ -90,9 +104,8 @@ namespace TransferController
             PopulateList();
 
             // (Re)select currently-selected district to ensure list selection matches.
-            districtList.FindItem<int>(selectedDistrict);
+            DistrictList.FindItem<int>(_selectedDistrict);
         }
-
 
         /// <summary>
         /// Populates the list.
@@ -134,8 +147,8 @@ namespace TransferController
                 }
             }
 
-            // Set fastlist items.
-            districtList.Data = new FastList<object>
+            // Set display list items, without changing the display.
+            DistrictList.Data = new FastList<object>
             {
                 m_buffer = districtRecords.OrderBy(x => x.Name).ToArray(),
                 m_size = districtRecords.Count,

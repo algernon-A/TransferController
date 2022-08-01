@@ -1,48 +1,41 @@
-﻿using AlgernonCommons;
-using AlgernonCommons.Translation;
-using AlgernonCommons.UI;
-using ColossalFramework;
-using ColossalFramework.UI;
-using System;
-using System.Text;
-using System.Collections.Generic;
-using UnityEngine;
-
+﻿// <copyright file="BuildingPanel.cs" company="algernon (K. Algernon A. Sheppard)">
+// Copyright (c) algernon (K. Algernon A. Sheppard). All rights reserved.
+// Licensed under the MIT license. See LICENSE.txt file in the project root for full license information.
+// </copyright>
 
 namespace TransferController
 {
-    // Custom button class for persistent state.
-    public class TCPanelButton : UIButton
-    {
-        /// <summary>
-        /// Set to true to ignore any button state changes.
-        /// </summary>
-        public bool ignoreStateChanges = false;
-
-
-        /// <summary>
-        /// Called when the button state is attempted to be changed.
-        /// </summary>
-        /// <param name="value">New button state</param>
-        protected override void OnButtonStateChanged(ButtonState value)
-        {
-            // Don't do anything if we're ignoring state changes.
-            if (!ignoreStateChanges)
-            {
-                base.OnButtonStateChanged(value);
-            }
-        }
-    }
-
+    using System;
+    using System.Collections.Generic;
+    using System.Text;
+    using AlgernonCommons;
+    using AlgernonCommons.Translation;
+    using AlgernonCommons.UI;
+    using ColossalFramework;
+    using ColossalFramework.UI;
+    using UnityEngine;
 
     /// <summary>
     /// Building info panel.
     /// </summary>
     internal class BuildingPanel : UIPanel
     {
-        // Layout constants.
-        protected const float Margin = 5f;
+        /// <summary>
+        /// Maximum number of transfer types supported per building.
+        /// </summary>
+        internal const int MaxTransfers = 4;
+
+        /// <summary>
+        /// Panel width.
+        /// </summary>
         internal const float PanelWidth = BuildingPanelTab.PanelWidth + (Margin * 2f);
+
+        /// <summary>
+        /// Layout margin.
+        /// </summary>
+        protected const float Margin = 5f;
+
+        // Layout constants - private.
         private const float TitleHeight = 40f;
         private const float NameLabelY = TitleHeight + Margin;
         private const float NameLabelHeight = 30f;
@@ -63,84 +56,37 @@ namespace TransferController
         private const float StatusSpriteSize = 13f;
 
         // Maximum number of supported transfers per building.
-        internal const int MaxTransfers = 4;
         private const int NumTabs = MaxTransfers + 1;
         private const int VehicleTab = MaxTransfers;
 
         // Panel components.
-        private readonly UILabel buildingLabel, areaLabel1, areaLabel2;
-        private readonly UIPanel tabPanel;
-        private readonly UITabstrip tabStrip;
-        private readonly TCPanelButton offersButton, logButton;
-
-        // Current selection.
-        private ushort currentBuilding;
-        private BuildingInfo thisBuildingInfo;
+        private readonly UILabel _buildingLabel;
+        private readonly UILabel _areaLabel1;
+        private readonly UILabel _areaLabel2;
+        private readonly UIPanel _tabPanel;
+        private readonly UITabstrip _tabStrip;
+        private readonly TCPanelButton _offersButton;
+        private readonly TCPanelButton _logButton;
 
         // Sub-panels.
-        private readonly TransferStruct[] transfers = new TransferStruct[MaxTransfers];
-        private readonly BuildingPanelTab[] tabs = new BuildingPanelTab[NumTabs];
-        private readonly UIButton[] tabButtons = new UIButton[NumTabs];
-        private readonly UISprite[] tabSprites = new UISprite[NumTabs];
-        private StatusPanel statusPanel;
-        private LogPanel logPanel;
+        private readonly TransferStruct[] _transfers = new TransferStruct[MaxTransfers];
+        private readonly BuildingPanelTab[] _tabs = new BuildingPanelTab[NumTabs];
+        private readonly UIButton[] _tabButtons = new UIButton[NumTabs];
+        private readonly UISprite[] _tabSprites = new UISprite[NumTabs];
+        private StatusPanel _statusPanel;
+        private LogPanel _logPanel;
+
+        // Current selections.
+        private ushort _currentBuilding;
+        private BuildingInfo _thisBuildingInfo;
 
         // Event handling.
-        private bool ignoreTabChange = true, copyProcessing = false, pasteProcessing = false;
-
-
-        // Dictionary getter.
-        public static Dictionary<uint, BuildingControl.BuildingRecord> BuildingRecords => BuildingControl.buildingRecords;
-
+        private bool _ignoreTabChange = true;
+        private bool _copyProcessing = false;
+        private bool _pasteProcessing = false;
 
         /// <summary>
-        /// Current building accessor.
-        /// </summary>
-        internal ushort CurrentBuilding => currentBuilding;
-
-
-        /// <summary>
-        /// Called by Unity every update.
-        /// Used to check for copy/paste keypress.
-        /// </summary>
-        public override void Update()
-        {
-            // Copy key processing - use event flag to avoid repeated triggering.
-            if (ModSettings.keyCopy.IsPressed())
-            {
-                if (!copyProcessing)
-                {
-                    Copy();
-                    copyProcessing = true;
-                }
-            }
-            else
-            {
-                // Key no longer down - resume processing of events.
-                copyProcessing = false;
-            }
-
-            // Paste key processing - use event flag to avoid repeated triggering.
-            if (ModSettings.keyPaste.IsPressed())
-            {
-                if (!pasteProcessing)
-                {
-                    Paste();
-                    pasteProcessing = true;
-                }
-            }
-            else
-            {
-                // Key no longer down - resume processing of events.
-                pasteProcessing = false;
-            }
-
-            base.Update();
-        }
-
-
-        /// <summary>
-        /// Constructor - performs initial setup.
+        /// Initializes a new instance of the <see cref="BuildingPanel"/> class.
         /// </summary>
         internal BuildingPanel()
         {
@@ -164,8 +110,8 @@ namespace TransferController
                 titleLabel.textAlignment = UIHorizontalAlignment.Center;
 
                 // Building label.
-                buildingLabel = UILabels.AddLabel(this, 0f, NameLabelY, String.Empty, PanelWidth);
-                buildingLabel.textAlignment = UIHorizontalAlignment.Center;
+                _buildingLabel = UILabels.AddLabel(this, 0f, NameLabelY, string.Empty, PanelWidth);
+                _buildingLabel.textAlignment = UIHorizontalAlignment.Center;
 
                 // Drag handle.
                 UIDragHandle dragHandle = this.AddUIComponent<UIDragHandle>();
@@ -187,45 +133,45 @@ namespace TransferController
                 };
 
                 // Area labels.
-                areaLabel1 = UILabels.AddLabel(this, 0f, AreaLabel1Y, String.Empty, PanelWidth, 0.9f);
-                areaLabel1.textAlignment = UIHorizontalAlignment.Center;
-                areaLabel2 = UILabels.AddLabel(this, 0f, AreaLabel2Y, String.Empty, PanelWidth, 0.9f);
-                areaLabel2.textAlignment = UIHorizontalAlignment.Center;
+                _areaLabel1 = UILabels.AddLabel(this, 0f, AreaLabel1Y, string.Empty, PanelWidth, 0.9f);
+                _areaLabel1.textAlignment = UIHorizontalAlignment.Center;
+                _areaLabel2 = UILabels.AddLabel(this, 0f, AreaLabel2Y, string.Empty, PanelWidth, 0.9f);
+                _areaLabel2.textAlignment = UIHorizontalAlignment.Center;
 
                 // Zoom to building button.
                 UIButton zoomButton = AddZoomButton(this, Margin, Margin, 30f, "TFC_STA_ZTB");
-                zoomButton.eventClicked += (c, p) => ZoomToBuilding(currentBuilding);
+                zoomButton.eventClicked += (c, p) => ZoomToBuilding(_currentBuilding);
 
                 // Offers button.
-                offersButton = AddIconButton(this, ButtonX, Button1Y, ButtonSize, "TFC_OFF_TIT", UITextures.LoadSpriteAtlas("TC-OpenOffers"));
-                offersButton.eventClicked += ShowOffers;
+                _offersButton = AddIconButton(this, ButtonX, Button1Y, ButtonSize, "TFC_OFF_TIT", UITextures.LoadSpriteAtlas("TC-OpenOffers"));
+                _offersButton.eventClicked += ShowOffers;
 
                 // Log button.
-                logButton = AddIconButton(this, ButtonX, Button2Y, ButtonSize, "TFC_OFF_LOG", UITextures.LoadSpriteAtlas("TC-Logs"));
-                logButton.eventClicked += ShowLog;
+                _logButton = AddIconButton(this, ButtonX, Button2Y, ButtonSize, "TFC_OFF_LOG", UITextures.LoadSpriteAtlas("TC-Logs"));
+                _logButton.eventClicked += ShowLog;
 
                 // Tab panel.
-                tabPanel = this.AddUIComponent<UIPanel>();
-                tabPanel.autoLayout = false;
-                tabPanel.autoSize = false;
-                tabPanel.relativePosition = new Vector2(0f, TabY);
-                tabPanel.width = TabPanelWidth;
-                tabPanel.height = TabPanelHeight;
+                _tabPanel = this.AddUIComponent<UIPanel>();
+                _tabPanel.autoLayout = false;
+                _tabPanel.autoSize = false;
+                _tabPanel.relativePosition = new Vector2(0f, TabY);
+                _tabPanel.width = TabPanelWidth;
+                _tabPanel.height = TabPanelHeight;
 
                 // Tabstrip.
-                tabStrip = tabPanel.AddUIComponent<UITabstrip>();
-                tabStrip.relativePosition = new Vector2(Margin, 0f);
-                tabStrip.width = TabPanelWidth;
-                tabStrip.height = TabPanelHeight;
-                tabStrip.startSelectedIndex = -1;
-                tabStrip.selectedIndex = -1;
+                _tabStrip = _tabPanel.AddUIComponent<UITabstrip>();
+                _tabStrip.relativePosition = new Vector2(Margin, 0f);
+                _tabStrip.width = TabPanelWidth;
+                _tabStrip.height = TabPanelHeight;
+                _tabStrip.startSelectedIndex = -1;
+                _tabStrip.selectedIndex = -1;
 
                 // Tab container (the panels underneath each tab).
-                UITabContainer tabContainer = tabPanel.AddUIComponent<UITabContainer>();
+                UITabContainer tabContainer = _tabPanel.AddUIComponent<UITabContainer>();
                 tabContainer.relativePosition = new Vector2(Margin, TabHeight);
                 tabContainer.width = TabPanelWidth;
                 tabContainer.height = TabContentHeight;
-                tabStrip.tabPages = tabContainer;
+                _tabStrip.tabPages = tabContainer;
 
                 // Add tabs.
                 for (int i = 0; i < NumTabs; ++i)
@@ -233,22 +179,22 @@ namespace TransferController
                     // Last tab is vehicles.
                     if (i == VehicleTab)
                     {
-                        tabs[i] = new BuildingVehiclesTab(AddTextTabWithSprite(tabStrip, Translations.Translate("TFC_TAB_VEH"), i, out tabButtons[i], out tabSprites[i]), tabSprites[i]);
+                        _tabs[i] = new BuildingVehiclesTab(AddTextTabWithSprite(_tabStrip, Translations.Translate("TFC_TAB_VEH"), i, out _tabButtons[i], out _tabSprites[i]), _tabSprites[i]);
                     }
                     else
                     {
                         // Otherwie, just add a building restrictions tab.
-                        tabs[i] = new BuildingRestrictionsTab(AddTextTabWithSprite(tabStrip, String.Empty, i, out tabButtons[i], out tabSprites[i]), tabSprites[i]);
+                        _tabs[i] = new BuildingRestrictionsTab(AddTextTabWithSprite(_tabStrip, string.Empty, i, out _tabButtons[i], out _tabSprites[i]), _tabSprites[i]);
                     }
 
                     // Set tab reference as tabstrip tab user data.
-                    tabStrip.tabs[i].objectUserData = tabs[i];
+                    _tabStrip.tabs[i].objectUserData = _tabs[i];
                 }
 
-                tabStrip.eventSelectedIndexChanged += (UIComponent component, int index) =>
+                _tabStrip.eventSelectedIndexChanged += (UIComponent component, int index) =>
                 {
                     // Don't do anything if ignoring tab index changes.
-                    if (!ignoreTabChange)
+                    if (!_ignoreTabChange)
                     {
                         RecalculateHeight(index);
                     }
@@ -260,16 +206,64 @@ namespace TransferController
             }
         }
 
+        /// <summary>
+        /// Gets the dictionary of building records.
+        /// </summary>
+        public static Dictionary<uint, BuildingControl.BuildingRecord> BuildingRecords => BuildingControl.buildingRecords;
+
+        /// <summary>
+        /// Gets the current building ID.
+        /// </summary>
+        internal ushort CurrentBuilding => _currentBuilding;
+
+        /// <summary>
+        /// Called by Unity every update.
+        /// Used to check for copy/paste keypress.
+        /// </summary>
+        public override void Update()
+        {
+            // Copy key processing - use event flag to avoid repeated triggering.
+            if (ModSettings.keyCopy.IsPressed())
+            {
+                if (!_copyProcessing)
+                {
+                    Copy();
+                    _copyProcessing = true;
+                }
+            }
+            else
+            {
+                // Key no longer down - resume processing of events.
+                _copyProcessing = false;
+            }
+
+            // Paste key processing - use event flag to avoid repeated triggering.
+            if (ModSettings.keyPaste.IsPressed())
+            {
+                if (!_pasteProcessing)
+                {
+                    Paste();
+                    _pasteProcessing = true;
+                }
+            }
+            else
+            {
+                // Key no longer down - resume processing of events.
+                _pasteProcessing = false;
+            }
+
+            base.Update();
+        }
 
         /// <summary>
         /// Adds an zoom icon button.
         /// </summary>
-        /// <param name="parent">Parent UIComponent</param>
-        /// <param name="xPos">Relative X position</param>
-        /// <param name="yPos">Relative Y position</param>
-        /// <param name="size">Button size</param>
-        /// <param name="tooltipKey">Tooltip translation key</param>
-        /// <returns>New UIButton</returns>
+        /// <param name="parent">Parent UIComponent.</param>
+        /// <param name="xPos">Relative X position.</param>
+        /// <param name="yPos">Relative Y position.</param>
+        /// <param name="size">Button size.</param>
+        /// <param name="tooltipKey">Tooltip translation key.</param>
+        /// <returns>New UIButton.</returns>
         internal static UIButton AddZoomButton(UIComponent parent, float xPos, float yPos, float size, string tooltipKey)
         {
             UIButton newButton = parent.AddUIComponent<UIButton>();
@@ -293,10 +287,10 @@ namespace TransferController
             return newButton;
         }
 
-
         /// <summary>
-        /// Zooms to the specified building
+        /// Zooms to the specified building.
         /// </summary>
+        /// <param name="buildingID">Target building ID.</param>
         internal static void ZoomToBuilding(ushort buildingID)
         {
             // Go to target building if available.
@@ -311,27 +305,26 @@ namespace TransferController
             }
         }
 
-
         /// <summary>
         /// Sets/changes the currently selected building.
         /// </summary>
-        /// <param name="buildingID">New building ID</param>
+        /// <param name="buildingID">New building ID.</param>
         internal virtual void SetTarget(ushort buildingID)
         {
             // Suspend tab change event handling.
-            ignoreTabChange = true;
+            _ignoreTabChange = true;
 
             // Local references.
             BuildingManager buildingManager = Singleton<BuildingManager>.instance;
             DistrictManager districtManager = Singleton<DistrictManager>.instance;
 
             // Update selected building ID.
-            currentBuilding = buildingID;
-            thisBuildingInfo = buildingManager.m_buildings.m_buffer[currentBuilding].Info;
+            _currentBuilding = buildingID;
+            _thisBuildingInfo = buildingManager.m_buildings.m_buffer[_currentBuilding].Info;
             TCTool.Instance.CurrentBuilding = buildingID;
 
             // Maximum number of panels.
-            int numPanels = TransferDataUtils.BuildingEligibility(buildingID, thisBuildingInfo, transfers);
+            int numPanels = TransferDataUtils.BuildingEligibility(buildingID, _thisBuildingInfo, _transfers);
             int activeTabs = 0;
             int vehicleReference = -1;
 
@@ -339,17 +332,17 @@ namespace TransferController
             for (int i = 0; i < numPanels; ++i)
             {
                 // Set panel instance properties.
-                tabButtons[i].text = transfers[i].panelTitle;
-                tabButtons[i].Show();
+                _tabButtons[i].text = _transfers[i].panelTitle;
+                _tabButtons[i].Show();
 
-                if (tabs[i] is BuildingRestrictionsTab restrictionsTab)
+                if (_tabs[i] is BuildingRestrictionsTab restrictionsTab)
                 {
-                    restrictionsTab.IsIncoming = transfers[i].isIncoming;
-                    restrictionsTab.TransferReason = transfers[i].reason;
-                    restrictionsTab.CurrentBuilding = currentBuilding;
-                    restrictionsTab.OutsideLabel = transfers[i].outsideText;
-                    restrictionsTab.OutsideTip = transfers[i].outsideTip;
-                    if (transfers[i].spawnsVehicles & vehicleReference < 0)
+                    restrictionsTab.IsIncoming = _transfers[i].isIncoming;
+                    restrictionsTab.TransferReason = _transfers[i].reason;
+                    restrictionsTab.CurrentBuilding = _currentBuilding;
+                    restrictionsTab.OutsideLabel = _transfers[i].outsideText;
+                    restrictionsTab.OutsideTip = _transfers[i].outsideTip;
+                    if (_transfers[i].spawnsVehicles & vehicleReference < 0)
                     {
                         vehicleReference = i;
                     }
@@ -359,58 +352,58 @@ namespace TransferController
             }
 
             // Hide any unused transfer panels.
-            for (int i = numPanels; i < transfers.Length; ++i)
+            for (int i = numPanels; i < _transfers.Length; ++i)
             {
-                tabButtons[i].Hide();
+                _tabButtons[i].Hide();
             }
 
             // Show/hide vehicle tab,
             if (vehicleReference >= 0)
             {
                 ++activeTabs;
-                tabButtons[MaxTransfers].width = TabPanelWidth / activeTabs;
-                tabButtons[MaxTransfers].Show();
+                _tabButtons[MaxTransfers].width = TabPanelWidth / activeTabs;
+                _tabButtons[MaxTransfers].Show();
 
-                tabs[VehicleTab].IsIncoming = transfers[vehicleReference].isIncoming;
-                tabs[VehicleTab].TransferReason = transfers[vehicleReference].reason;
-                tabs[VehicleTab].CurrentBuilding = currentBuilding;
+                _tabs[VehicleTab].IsIncoming = _transfers[vehicleReference].isIncoming;
+                _tabs[VehicleTab].TransferReason = _transfers[vehicleReference].reason;
+                _tabs[VehicleTab].CurrentBuilding = _currentBuilding;
             }
             else
             {
-                tabButtons[VehicleTab].Hide();
+                _tabButtons[VehicleTab].Hide();
             }
 
             // Resize tabs to fit.
             for (int i = 0; i < activeTabs; ++i)
             {
-               tabButtons[i].width = TabPanelWidth / activeTabs;
+               _tabButtons[i].width = TabPanelWidth / activeTabs;
             }
 
             // Are any tabs visible?
             if (activeTabs == 0)
             {
                 // If no tabs are visible, hide the entire tab panel by setting index to -1.
-                tabStrip.selectedIndex = -1;
+                _tabStrip.selectedIndex = -1;
             }
             else
             {
                 // Tabs are visible - if the currently selected tab indx is invalid, reset it to zero.
-                if (tabStrip.selectedIndex < 0 || !tabButtons[tabStrip.selectedIndex].isVisible)
+                if (_tabStrip.selectedIndex < 0 || !_tabButtons[_tabStrip.selectedIndex].isVisible)
                 {
-                    tabStrip.selectedIndex = 0;
+                    _tabStrip.selectedIndex = 0;
 
                     // Set start index to 0 to avoid race condition on initial setup before tabStrip.Start() is called.
-                    tabStrip.startSelectedIndex = 0;
+                    _tabStrip.startSelectedIndex = 0;
                 }
 
                 // If only one tab is visible, hide the tab button.
                 if (activeTabs == 1)
                 {
-                    tabButtons[0].Hide();
+                    _tabButtons[0].Hide();
                 }
 
                 // Ensure tab panel visibility.
-                tabPanel.Show();
+                _tabPanel.Show();
             }
 
             // Resize panel to match content.
@@ -420,20 +413,20 @@ namespace TransferController
             Show();
 
             // Set name.
-            buildingLabel.text = buildingManager.GetBuildingName(currentBuilding, InstanceID.Empty);
+            _buildingLabel.text = buildingManager.GetBuildingName(_currentBuilding, InstanceID.Empty);
 
             // District text.
             StringBuilder districtText = new StringBuilder();
 
             // District area.
-            byte currentDistrict = districtManager.GetDistrict(buildingManager.m_buildings.m_buffer[currentBuilding].m_position);
+            byte currentDistrict = districtManager.GetDistrict(buildingManager.m_buildings.m_buffer[_currentBuilding].m_position);
             if (currentDistrict != 0)
             {
                 districtText.Append(districtManager.GetDistrictName(currentDistrict));
             }
 
             // Park area.
-            byte currentPark = districtManager.GetPark(buildingManager.m_buildings.m_buffer[currentBuilding].m_position);
+            byte currentPark = districtManager.GetPark(buildingManager.m_buildings.m_buffer[_currentBuilding].m_position);
             if (currentPark != 0)
             {
                 // Add comma between district and park names if we have both.
@@ -441,14 +434,15 @@ namespace TransferController
                 {
                     districtText.Append(", ");
                 }
+
                 districtText.Append(districtManager.GetParkName(currentPark));
             }
 
             // If no current district or park, then display no area message.
             if (currentDistrict == 0 && currentPark == 0)
             {
-                areaLabel1.text = Translations.Translate("TFC_BLD_NOD");
-                areaLabel2.Hide();
+                _areaLabel1.text = Translations.Translate("TFC_BLD_NOD");
+                _areaLabel2.Hide();
             }
             else
             {
@@ -456,175 +450,167 @@ namespace TransferController
                 if (currentDistrict != 0)
                 {
                     // District label.
-                    areaLabel1.text = districtManager.GetDistrictName(currentDistrict);
+                    _areaLabel1.text = districtManager.GetDistrictName(currentDistrict);
 
                     // Is there also a park area?
                     if (currentPark != 0)
                     {
                         // Yes - set second label text and show.
-                        areaLabel2.text = districtManager.GetParkName(currentPark);
-                        areaLabel2.Show();
+                        _areaLabel2.text = districtManager.GetParkName(currentPark);
+                        _areaLabel2.Show();
                     }
                     else
                     {
                         // Just the district - hide second area label.
-                        areaLabel2.Hide();
+                        _areaLabel2.Hide();
                     }
                 }
                 else if (currentPark != 0)
                 {
                     // No district, but a park - set first area label text and hide the second label.
-                    areaLabel1.text = districtManager.GetParkName(currentPark);
-                    areaLabel2.Hide();
+                    _areaLabel1.text = districtManager.GetParkName(currentPark);
+                    _areaLabel2.Hide();
                 }
             }
 
             // Update target for status and log panels, if open.
-            statusPanel?.SetTarget(buildingID);
-            logPanel?.SetTarget(buildingID);
+            _statusPanel?.SetTarget(buildingID);
+            _logPanel?.SetTarget(buildingID);
 
             // Resume tab change event handling.
-            ignoreTabChange = false;
+            _ignoreTabChange = false;
         }
-
 
         /// <summary>
         /// Copies the TC settings of the currently selected building.
         /// </summary>
-        internal void Copy() => CopyPaste.Copy(CurrentBuilding, thisBuildingInfo);
-
+        internal void Copy() => CopyPaste.Copy(CurrentBuilding, _thisBuildingInfo);
 
         /// <summary>
         /// Pastes copied TC settings to the currently selected building.
         /// </summary>
         internal void Paste()
         {
-            if (CopyPaste.Paste(CurrentBuilding, thisBuildingInfo))
+            if (CopyPaste.Paste(CurrentBuilding, _thisBuildingInfo))
             {
                 // Update data via reset of target building.
                 SetTarget(CurrentBuilding);
             }
         }
 
-
         /// <summary>
         /// Recalculates the panel height based on the currently selected tab.
         /// </summary>
-        internal void RecalculateHeight() => RecalculateHeight(tabStrip.selectedIndex);
-
+        internal void RecalculateHeight() => RecalculateHeight(_tabStrip.selectedIndex);
 
         /// <summary>
         /// Recalculates the panel height based on the specified tab.
         /// </summary>
-        /// <param name="tabIndex">Tab index</param>
+        /// <param name="tabIndex">Tab index.</param>
         internal void RecalculateHeight(int tabIndex)
         {
             // If the provided tab selection is invalid, hide the tab display entirely.
-            if (tabIndex < 0 || tabIndex >= tabStrip.tabCount)
+            if (tabIndex < 0 || tabIndex >= _tabStrip.tabCount)
             {
-                tabPanel.Hide();
+                _tabPanel.Hide();
                 height = TabY;
             }
-            else if (tabStrip.tabs[tabIndex].objectUserData is BuildingPanelTab tab)
+            else if (_tabStrip.tabs[tabIndex].objectUserData is BuildingPanelTab tab)
             {
                 float contentHeight = tab.ContentHeight;
                 height = contentHeight + TabContentY + Margin;
-                tabStrip.tabPages.height = contentHeight;
-                tabPanel.height = contentHeight;
-                tabStrip.height = contentHeight;
+                _tabStrip.tabPages.height = contentHeight;
+                _tabPanel.height = contentHeight;
+                _tabStrip.height = contentHeight;
             }
         }
-
 
         /// <summary>
         /// Clears button states (after sub-panel is closed).
         /// </summary>
         internal void ResetButtons()
         {
-            offersButton.ignoreStateChanges = false;
-            logButton.ignoreStateChanges = false;
-            offersButton.state = UIButton.ButtonState.Normal;
-            logButton.state = UIButton.ButtonState.Normal;
+            _offersButton.IgnoreStateChanges = false;
+            _logButton.IgnoreStateChanges = false;
+            _offersButton.state = UIButton.ButtonState.Normal;
+            _logButton.state = UIButton.ButtonState.Normal;
         }
-
 
         /// <summary>
         /// Event handler for show offers button.
         /// </summary>
-        /// <param name="component">Calling component (unused)</param>
-        /// <param name="clickEvent">Click event (unused)</param>
+        /// <param name="component">Calling component (unused).</param>
+        /// <param name="clickEvent">Click event (unused).</param>
         private void ShowOffers(UIComponent component, UIMouseEventParameter clickEvent)
         {
             // Close log panel if it's open.
-            if (logPanel != null)
+            if (_logPanel != null)
             {
-                RemoveUIComponent(logPanel);
-                GameObject.Destroy(logPanel);
-                logPanel = null;
+                RemoveUIComponent(_logPanel);
+                GameObject.Destroy(_logPanel);
+                _logPanel = null;
                 ResetButtons();
             }
 
             // Create status panel if it isn't already created.
-            if (statusPanel == null)
+            if (_statusPanel == null)
             {
-                statusPanel = this.AddUIComponent<StatusPanel>();
-                statusPanel.relativePosition = new Vector2(PanelWidth + Margin, 0f);
+                _statusPanel = this.AddUIComponent<StatusPanel>();
+                _statusPanel.relativePosition = new Vector2(PanelWidth + Margin, 0f);
             }
 
             // Set the status panel target building to match the current one.
-            statusPanel.SetTarget(currentBuilding);
+            _statusPanel.SetTarget(_currentBuilding);
 
             // Ensure status panel is visible.
-            statusPanel.Show();
+            _statusPanel.Show();
 
             // Enforce button state while panel is open.
-            offersButton.state = UIButton.ButtonState.Pressed;
-            offersButton.ignoreStateChanges = true;
+            _offersButton.state = UIButton.ButtonState.Pressed;
+            _offersButton.IgnoreStateChanges = true;
         }
-
 
         /// <summary>
         /// Event handler for show log button.
         /// </summary>
-        /// <param name="component">Calling component (unused)</param>
-        /// <param name="clickEvent">Click event (unused)</param>
+        /// <param name="component">Calling component (unused).</param>
+        /// <param name="clickEvent">Click event (unused).</param>
         private void ShowLog(UIComponent component, UIMouseEventParameter clickEvent)
         {
             // Close status panel if it's open.
-            if (statusPanel != null)
+            if (_statusPanel != null)
             {
-                RemoveUIComponent(statusPanel);
-                GameObject.Destroy(statusPanel);
-                statusPanel = null;
+                RemoveUIComponent(_statusPanel);
+                GameObject.Destroy(_statusPanel);
+                _statusPanel = null;
                 ResetButtons();
             }
 
             // Create log panel if it isn't already created.
-            if (logPanel == null)
+            if (_logPanel == null)
             {
-                logPanel = this.AddUIComponent<LogPanel>();
-                logPanel.relativePosition = new Vector2(PanelWidth + Margin, 0f);
+                _logPanel = this.AddUIComponent<LogPanel>();
+                _logPanel.relativePosition = new Vector2(PanelWidth + Margin, 0f);
             }
 
             // Ensure offers panel is visible.
-            logPanel.Show();
+            _logPanel.Show();
 
             // Enforce button state while panel is open.
-            logButton.state = UIButton.ButtonState.Pressed;
-            logButton.ignoreStateChanges = true;
+            _logButton.state = UIButton.ButtonState.Pressed;
+            _logButton.IgnoreStateChanges = true;
         }
-
 
         /// <summary>
         /// Adds a text-based tab with a status sprite to a UI tabstrip.
         /// </summary>
-        /// <param name="tabStrip">UIT tabstrip to add to</param>
-        /// <param name="tabName">Name of this tab</param>
-        /// <param name="tabIndex">Index number of this tab</param>
-        /// <param name="button">Tab button instance reference</param>
-        /// <param name="sprite">Tab status sprite instance reference</param>
-        /// <param name="width">Tab width</param>
-        /// <returns>UIHelper instance for the new tab panel</returns>
+        /// <param name="tabStrip">UIT tabstrip to add to.</param>
+        /// <param name="tabName">Name of this tab.</param>
+        /// <param name="tabIndex">Index number of this tab.</param>
+        /// <param name="button">Tab button instance reference.</param>
+        /// <param name="sprite">Tab status sprite instance reference.</param>
+        /// <param name="width">Tab width.</param>
+        /// <returns>UIHelper instance for the new tab panel.</returns>
         private UIPanel AddTextTabWithSprite(UITabstrip tabStrip, string tabName, int tabIndex, out UIButton button, out UISprite sprite, float width = PanelWidth / 6f)
         {
             // Create tab.
@@ -673,17 +659,16 @@ namespace TransferController
             return rootPanel;
         }
 
-
         /// <summary>
         /// Adds an icon-style button to the specified component at the specified coordinates.
         /// </summary>
-        /// <param name="parent">Parent UIComponent</param>
-        /// <param name="xPos">Relative X position</param>
-        /// <param name="yPos">Relative Y position</param>
-        /// <param name="size">Button size (square)</param>
-        /// <param name="tooltipKey">Tooltip translation key</param>
-        /// <param name="atlas">Icon atlas</param>
-        /// <returns>New UIButton</returns>
+        /// <param name="parent">Parent UIComponent.</param>
+        /// <param name="xPos">Relative X position.</param>
+        /// <param name="yPos">Relative Y position.</param>
+        /// <param name="size">Button size (square).</param>
+        /// <param name="tooltipKey">Tooltip translation key.</param>
+        /// <param name="atlas">Icon atlas.</param>
+        /// <returns>New UIButton.</returns>
         private TCPanelButton AddIconButton(UIComponent parent, float xPos, float yPos, float size, string tooltipKey, UITextureAtlas atlas)
         {
             TCPanelButton newButton = parent.AddUIComponent<TCPanelButton>();
@@ -705,6 +690,30 @@ namespace TransferController
             newButton.tooltip = Translations.Translate(tooltipKey);
 
             return newButton;
+        }
+
+        /// <summary>
+        /// Custom button class for persistent state.
+        /// </summary>
+        public class TCPanelButton : UIButton
+        {
+            /// <summary>
+            /// Gets or sets a value indicating whether state changes should be ignored (true) or responded to (false).
+            /// </summary>
+            public bool IgnoreStateChanges { get; set; }
+
+            /// <summary>
+            /// Called when the button state is attempted to be changed.
+            /// </summary>
+            /// <param name="value">New button state.</param>
+            protected override void OnButtonStateChanged(ButtonState value)
+            {
+                // Don't do anything if we're ignoring state changes.
+                if (!IgnoreStateChanges)
+                {
+                    base.OnButtonStateChanged(value);
+                }
+            }
         }
     }
 }
