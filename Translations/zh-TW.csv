@@ -127,7 +127,7 @@
 "TFC_BST_SIC","Sick"
 "TFC_BST_DEA","Dead"
 "TRN_CHOICE","語言設置"
-"TRN_SYS","使用遊戲預設語言"
+"LANGUAGE_GAME","使用遊戲預設語言"
 "KEY_KEY","Hotkey"
 "KEY_PRS","Press any key"
 "TFC_ERR_FAT","這意味著此模組(Mod)無法運轉，並且已自動禁用。"

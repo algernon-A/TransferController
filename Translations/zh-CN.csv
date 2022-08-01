@@ -127,7 +127,7 @@
 "TFC_BST_SIC","生病"
 "TFC_BST_DEA","死亡"
 "TRN_CHOICE","语言设定"
-"TRN_SYS","使用游戏默认语言"
+"LANGUAGE_GAME","使用游戏默认语言"
 "KEY_KEY","热键"
 "KEY_PRS","请按任意键"
 "TFC_ERR_FAT","这表明模组无法运行"

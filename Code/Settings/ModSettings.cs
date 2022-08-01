@@ -21,7 +21,7 @@ namespace TransferController
 
         // UUI hotkey.
         [XmlIgnore]
-        private static readonly UnsavedInputKey uuiKey = new UnsavedInputKey(name: "Transfer Controller hotkey", keyCode: KeyCode.T, control: true, shift: false, alt: true);
+        internal static readonly UnsavedInputKey uuiKey = new UnsavedInputKey(name: "Transfer Controller hotkey", keyCode: KeyCode.T, control: true, shift: false, alt: true);
 
         [XmlIgnore]
         public static readonly SavedInputKey keyCopy = new SavedInputKey(nameof(keyCopy), SettingsFileName, SavedInputKey.Encode(KeyCode.C, true, false, false), true);

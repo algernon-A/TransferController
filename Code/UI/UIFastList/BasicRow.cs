@@ -83,7 +83,7 @@ namespace TransferController
             newLabel.wordWrap = wordWrap;
             newLabel.padding.top = 1;
             newLabel.textScale = textScale;
-            newLabel.font = Fonts.Regular;
+            newLabel.font = UIFonts.Regular;
             newLabel.relativePosition = new Vector2(xPos, 0f);
             return newLabel;
         }

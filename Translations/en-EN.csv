@@ -127,7 +127,7 @@
 "TFC_BST_SIC","Sick"
 "TFC_BST_DEA","Dead"
 "TRN_CHOICE","Set language"
-"TRN_SYS","Use game language"
+"LANGUAGE_GAME","Use game language"
 "KEY_KEY","Hotkey"
 "KEY_PRS","Press any key"
 "TFC_ERR_FAT","This means that the mod is not able to operate, and has shut down."

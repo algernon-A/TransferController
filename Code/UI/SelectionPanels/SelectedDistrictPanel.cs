@@ -1,16 +1,20 @@
-﻿using System.Linq;
-using System.Collections.Generic;
-
+﻿// <copyright file="SelectedDistrictPanel.cs" company="algernon (K. Algernon A. Sheppard)">
+// Copyright (c) algernon (K. Algernon A. Sheppard). All rights reserved.
+// Licensed under the MIT license. See LICENSE.txt file in the project root for full license information.
+// </copyright>
 
 namespace TransferController
 {
+    using System.Collections.Generic;
+    using System.Linq;
+
     /// <summary>
     /// Selected district panel.
     /// </summary>
     internal class SelectedDistrictPanel : DistrictSelectionPanel
     {
         /// <summary>
-        /// Populates the list.
+        /// Populates the district list.
         /// </summary>
         protected override void PopulateList()
         {
@@ -20,12 +24,12 @@ namespace TransferController
             // If no district hashset was recovered, clear list and selection and exit.
             if (hashSet == null)
             {
-                districtList.rowsData = new FastList<object>
+                districtList.Data = new FastList<object>
                 {
                     m_buffer = new DistrictItem[0],
-                    m_size = 0
+                    m_size = 0,
                 };
-                districtList.selectedIndex = -1;
+                districtList.SelectedIndex = -1;
                 return;
             }
 
@@ -40,10 +44,10 @@ namespace TransferController
                 items[i++] = new DistrictItem(id);
             }
 
-            districtList.rowsData = new FastList<object>
+            districtList.Data = new FastList<object>
             {
-                m_buffer = items.OrderBy(x => x.name).ToArray(),
-                m_size = hashSet.Count
+                m_buffer = items.OrderBy(x => x.Name).ToArray(),
+                m_size = hashSet.Count,
             };
         }
     }

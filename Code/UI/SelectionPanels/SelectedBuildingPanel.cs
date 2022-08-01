@@ -1,4 +1,5 @@
 ﻿using AlgernonCommons;
+using AlgernonCommons.UI;
 using ColossalFramework.UI;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ namespace TransferController
     internal class SelectedBuildingPanel : UIPanel
     {
         // Panel components.
-        protected readonly UIBuildingFastList buildingList;
+        protected readonly UIList buildingList;
 
         // Current selection.
         private ushort selectedBuilding;
@@ -57,16 +58,28 @@ namespace TransferController
                 height = BuildingRestrictionsTab.ListHeight;
 
                 // District selection list.
-                buildingList = UIBuildingFastList.Create<BuildingRow, UIBuildingFastList>(this);
-                buildingList.backgroundSprite = "UnlockingPanel";
+                buildingList = UIList.AddUIList<BuildingRow>(this);
+                buildingList.BackgroundSprite = "UnlockingPanel";
                 buildingList.width = BuildingRestrictionsTab.BuildingColumnWidth;
                 buildingList.height = BuildingRestrictionsTab.ListHeight;
-                buildingList.canSelect = true;
-                buildingList.rowHeight = DistrictRow.DefaultRowHeight;
-                buildingList.autoHideScrollbar = true;
+                //buildingList.canSelect = true;
+                //buildingList.rowHeight = DistrictRow.DefaultRowHeight;
+                //buildingList.autoHideScrollbar = true;
                 buildingList.relativePosition = Vector2.zero;
-                buildingList.rowsData = new FastList<object>();
-                buildingList.selectedIndex = -1;
+                buildingList.Data = new FastList<object>();
+                buildingList.SelectedIndex = -1;
+
+                buildingList.EventSelectionChanged += (control, selectedItem) =>
+                {
+                    if (selectedItem is BuildingItem buildingItem)
+                    {
+                        SelectedBuilding = buildingItem.ID;
+                    }
+                    else
+                    {
+                        SelectedBuilding = 0;
+                    }
+                };
 
             }
             catch (Exception e)
@@ -85,7 +98,7 @@ namespace TransferController
             PopulateList();
 
             // (Re)select currently-selected building to ensure list selection matches.
-            buildingList.FindBuilding(selectedBuilding);
+            buildingList.FindItem<ushort>(selectedBuilding);
         }
 
 
@@ -100,12 +113,12 @@ namespace TransferController
             // If no building hashset was recovered, clear list and selection and exit.
             if (hashSet == null)
             {
-                buildingList.rowsData = new FastList<object>
+                buildingList.Data = new FastList<object>
                 {
                     m_buffer = new DistrictItem[0],
                     m_size = 0
                 };
-                buildingList.selectedIndex = -1;
+                buildingList.SelectedIndex = -1;
                 return;
             }
 
@@ -117,10 +130,10 @@ namespace TransferController
                 items[i++] = new BuildingItem((ushort)id);
             }
 
-            buildingList.rowsData = new FastList<object>
+            buildingList.Data = new FastList<object>
             {
-                m_buffer = items.OrderBy(x => x.name).ToArray(),
-                m_size = hashSet.Count
+                m_buffer = items.OrderBy(x => x.Name).ToArray(),
+                m_size = hashSet.Count,
             };
         }
     }

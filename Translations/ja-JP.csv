@@ -127,7 +127,7 @@
 "TFC_BST_SIC","病人"
 "TFC_BST_DEA","死者"
 "TRN_CHOICE","言語設定"
-"TRN_SYS","ゲームの言語を使用"
+"LANGUAGE_GAME","ゲームの言語を使用"
 "KEY_KEY","ホットキー"
 "KEY_PRS","何かキーを押してください"
 "TFC_ERR_FAT","正常にMODが起動できないため、動作をシャットダウンしました"

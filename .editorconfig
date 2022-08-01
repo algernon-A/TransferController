@@ -1,0 +1,4 @@
+﻿[*.cs]
+
+# SA1308: Variable names should not be prefixed
+dotnet_diagnostic.SA1308.severity = none

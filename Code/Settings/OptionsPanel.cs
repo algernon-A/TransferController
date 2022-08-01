@@ -1,12 +1,16 @@
-﻿using AlgernonCommons.Keybinding;
-using AlgernonCommons.Translation;
-using AlgernonCommons.UI;
-using ColossalFramework.UI;
-using UnityEngine;
-
+﻿// <copyright file="OptionsPanel.cs" company="algernon (K. Algernon A. Sheppard)">
+// Copyright (c) algernon (K. Algernon A. Sheppard). All rights reserved.
+// Licensed under the MIT license. See LICENSE.txt file in the project root for full license information.
+// </copyright>
 
 namespace TransferController
 {
+    using AlgernonCommons.Keybinding;
+    using AlgernonCommons.Translation;
+    using AlgernonCommons.UI;
+    using ColossalFramework.UI;
+    using UnityEngine;
+
     /// <summary>
     /// Transfer Controller options panel.
     /// </summary>
@@ -17,14 +21,13 @@ namespace TransferController
         private const float LeftMargin = 24f;
         private const float GroupMargin = 40f;
 
-
         // Components.
         private UISlider distanceSlider;
 
         /// <summary>
-        /// Performs initial setup for the panel; we don't use Start() as that's not sufficiently reliable (race conditions), and is not needed with the dynamic create/destroy process.
+        /// Initializes a new instance of the <see cref="OptionsPanel"/> class.
         /// </summary>
-        internal void Setup()
+        public OptionsPanel()
         {
             // Manual layout.
             this.autoLayout = false;
@@ -42,16 +45,20 @@ namespace TransferController
             currentY += languageDropDown.parent.height + GroupMargin;
 
             // Hotkey control.
-            OptionsKeymapping keyMapping = languageDropDown.parent.parent.gameObject.AddComponent<OptionsKeymapping>();
-            keyMapping.uIPanel.relativePosition = new Vector2(LeftMargin, currentY);
-            currentY += keyMapping.uIPanel.height + GroupMargin;
+            OptionsKeymapping keyMapping = languageDropDown.parent.parent.gameObject.AddComponent<UUIKeymapping>();
+            keyMapping.Panel.relativePosition = new Vector2(LeftMargin, currentY);
+            currentY += keyMapping.Panel.height + GroupMargin;
 
             // New algorithm checkbox.
             UICheckBox newAlgorithmCheck = UICheckBoxes.AddPlainCheckBox(this, LeftMargin, currentY, Translations.Translate("TFC_OPT_NEW"));
             newAlgorithmCheck.tooltip = Translations.Translate("TFC_OPT_NEW_TIP");
             newAlgorithmCheck.tooltipBox = UIToolTips.WordWrapToolTip;
             newAlgorithmCheck.isChecked = Patcher.UseNewAlgorithm;
-            newAlgorithmCheck.eventCheckChanged += (control, isChecked) => { Patcher.UseNewAlgorithm = isChecked; distanceSlider.parent.isVisible = !isChecked; };
+            newAlgorithmCheck.eventCheckChanged += (control, isChecked) =>
+            {
+                Patcher.UseNewAlgorithm = isChecked;
+                distanceSlider.parent.isVisible = !isChecked;
+            };
             currentY += newAlgorithmCheck.height + Margin;
 
             // Distance multiplier slider.
@@ -65,7 +72,7 @@ namespace TransferController
             // Warehouse priority slider.
             UISlider warehouseSlider = UISliders.AddSliderWithValue(this, LeftMargin, currentY, Translations.Translate("TFC_OPT_WAR"), 0f, 4f, 1f, Matching.WarehousePriority);
             warehouseSlider.eventValueChanged += (control, value) => Matching.WarehousePriority = (int)value.RoundToNearest(1f);
-            warehouseSlider.tooltip = Translations.Translate("TFC_OPT_WAR_TIP"); ;
+            warehouseSlider.tooltip = Translations.Translate("TFC_OPT_WAR_TIP");
             warehouseSlider.tooltipBox = UIToolTips.WordWrapToolTip;
             currentY += distanceSlider.parent.height + GroupMargin;
 

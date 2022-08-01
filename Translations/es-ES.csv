@@ -127,7 +127,7 @@
 "TFC_BST_SIC","Sick"
 "TFC_BST_DEA","Dead"
 "TRN_CHOICE","Elegir idioma"
-"TRN_SYS","Utilizar idioma del juego"
+"LANGUAGE_GAME","Utilizar idioma del juego"
 "KEY_KEY","Tecla de acceso directo"
 "KEY_PRS","Presiona cualquier tecla"
 "TFC_ERR_FAT","Esto significa que el mod no puede funcionar"

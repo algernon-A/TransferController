@@ -1,4 +1,5 @@
 ﻿using AlgernonCommons;
+using AlgernonCommons.UI;
 using ColossalFramework;
 using ColossalFramework.UI;
 using System;
@@ -15,7 +16,7 @@ namespace TransferController
     internal class DistrictSelectionPanel : UIPanel
     {
         // Panel components.
-        protected readonly UIDistrictFastList districtList;
+        protected readonly UIList districtList;
 
         // Current selection.
         private int selectedDistrict;
@@ -64,16 +65,13 @@ namespace TransferController
                 height = BuildingRestrictionsTab.ListHeight;
 
                 // District selection list.
-                districtList = UIDistrictFastList.Create<DistrictRow, UIDistrictFastList>(this);
-                districtList.backgroundSprite = "UnlockingPanel";
+                districtList = UIList.AddUIList<DistrictRow>(this);
+                districtList.BackgroundSprite = "UnlockingPanel";
                 districtList.width = BuildingRestrictionsTab.ColumnWidth;
                 districtList.height = BuildingRestrictionsTab.ListHeight;
-                districtList.canSelect = true;
-                districtList.rowHeight = DistrictRow.DefaultRowHeight;
-                districtList.autoHideScrollbar = true;
                 districtList.relativePosition = Vector2.zero;
-                districtList.rowsData = new FastList<object>();
-                districtList.selectedIndex = -1;
+                districtList.Data = new FastList<object>();
+                districtList.SelectedIndex = -1;
 
             }
             catch (Exception e)
@@ -92,7 +90,7 @@ namespace TransferController
             PopulateList();
 
             // (Re)select currently-selected district to ensure list selection matches.
-            districtList.FindDistrict(selectedDistrict);
+            districtList.FindItem<int>(selectedDistrict);
         }
 
 
@@ -137,10 +135,10 @@ namespace TransferController
             }
 
             // Set fastlist items.
-            districtList.rowsData = new FastList<object>
+            districtList.Data = new FastList<object>
             {
-                m_buffer = districtRecords.OrderBy(x => x.name).ToArray(),
-                m_size = districtRecords.Count
+                m_buffer = districtRecords.OrderBy(x => x.Name).ToArray(),
+                m_size = districtRecords.Count,
             };
         }
     }
