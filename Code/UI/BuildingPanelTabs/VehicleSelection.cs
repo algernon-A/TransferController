@@ -99,8 +99,8 @@ namespace TransferController
         /// <summary>
         /// Sets/changes the currently selected building.
         /// </summary>
-        /// <param name="buildingID">New building ID</param>
-        /// <param name="reason">Transfer reason for this vehicle selection</param>
+        /// <param name="buildingID">New building ID.</param>
+        /// <param name="reason">Transfer reason for this vehicle selection.</param>
         internal void SetTarget(ushort buildingID, TransferManager.TransferReason reason)
         {
             // Ensure valid building.

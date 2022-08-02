@@ -59,10 +59,10 @@ namespace TransferController
         /// Adds a UI list of the given row type.
         /// </summary>
         /// <typeparam name="TRow">Row type.</typeparam>
-        /// <param name="yPos">Relative Y position</param>
-        /// <param name="listWidth">List width</param>
+        /// <param name="yPos">Relative Y position.</param>
+        /// <param name="listWidth">List width.</param>
         /// <param name="listHeight">List height.</param>
-        /// <returns>New UIFastList</returns>
+        /// <returns>New UIFastList.</returns>
         protected UIList AddList<TRow>(float yPos, float listWidth, float listHeight)
             where TRow : UIListRow
         {
