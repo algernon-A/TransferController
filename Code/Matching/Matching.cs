@@ -697,11 +697,11 @@ namespace TransferController
             uint buildingRecordID = BuildingControl.CalculateEntryKey(buildingID, true, transferReason);
 
             // Get building record.
-            if (!BuildingControl.buildingRecords.TryGetValue(buildingRecordID, out BuildingControl.BuildingRecord buildingRecord))
+            if (!BuildingControl.s_buildingRecords.TryGetValue(buildingRecordID, out BuildingControl.BuildingRecord buildingRecord))
             {
                 // No record found; try TransferReason.None wildcard.
                 buildingRecordID = BuildingControl.CalculateEntryKey(buildingID, true, TransferManager.TransferReason.None);
-                if (!BuildingControl.buildingRecords.TryGetValue(buildingRecordID, out buildingRecord))
+                if (!BuildingControl.s_buildingRecords.TryGetValue(buildingRecordID, out buildingRecord))
                 {
                     // No record found, therefore no restrictions.
                     result = TransferLogging.MatchStatus.Eligible;
@@ -712,7 +712,7 @@ namespace TransferController
             // Check outside connection.
             if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[outgoingBuildingID].Info.m_buildingAI is OutsideConnectionAI)
             {
-                if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BlockOutsideConnection) == 0)
+                if ((buildingRecord.Flags & BuildingControl.RestrictionFlags.BlockOutsideConnection) == 0)
                 {
                     // Outside connection permitted.
                     result = TransferLogging.MatchStatus.Eligible;
@@ -725,7 +725,7 @@ namespace TransferController
                     return false;
                 }
             }
-            else if ((buildingRecord.flags & (BuildingControl.RestrictionFlags.DistrictEnabled | BuildingControl.RestrictionFlags.BuildingEnabled)) == 0)
+            else if ((buildingRecord.Flags & (BuildingControl.RestrictionFlags.DistrictEnabled | BuildingControl.RestrictionFlags.BuildingEnabled)) == 0)
             {
                 // If not an outside connection, transfer is permitted if no restrictions are enabled.
                 result = TransferLogging.MatchStatus.Eligible;
@@ -733,10 +733,10 @@ namespace TransferController
             }
 
             // Check district settings.
-            if ((buildingRecord.flags & BuildingControl.RestrictionFlags.DistrictEnabled) != 0)
+            if ((buildingRecord.Flags & BuildingControl.RestrictionFlags.DistrictEnabled) != 0)
             {
                 // Check same-district setting.
-                if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BlockSameDistrict) == 0 && ((outgoingDistrict != 0 && incomingDistrict == outgoingDistrict) || (outgoingPark != 0 && incomingPark == outgoingPark)))
+                if ((buildingRecord.Flags & BuildingControl.RestrictionFlags.BlockSameDistrict) == 0 && ((outgoingDistrict != 0 && incomingDistrict == outgoingDistrict) || (outgoingPark != 0 && incomingPark == outgoingPark)))
                 {
                     // Same district match - permitted.
                     result = TransferLogging.MatchStatus.Eligible;
@@ -744,9 +744,9 @@ namespace TransferController
                 }
 
                 // Check permitted districts.
-                if (buildingRecord.districts != null)
+                if (buildingRecord.Districts != null)
                 {
-                    if (buildingRecord.districts.Contains(outgoingDistrict) || buildingRecord.districts.Contains(-outgoingPark))
+                    if (buildingRecord.Districts.Contains(outgoingDistrict) || buildingRecord.Districts.Contains(-outgoingPark))
                     {
                         // Permitted district.
                         result = TransferLogging.MatchStatus.Eligible;
@@ -756,12 +756,12 @@ namespace TransferController
             }
 
             // Check building settings.
-            if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BuildingEnabled) != 0)
+            if ((buildingRecord.Flags & BuildingControl.RestrictionFlags.BuildingEnabled) != 0)
             {
                 // Check permitted buildings.
-                if (buildingRecord.buildings != null)
+                if (buildingRecord.Buildings != null)
                 {
-                    if (buildingRecord.buildings.Contains(outgoingBuildingID))
+                    if (buildingRecord.Buildings.Contains(outgoingBuildingID))
                     {
                         // Permitted building.
                         result = TransferLogging.MatchStatus.Eligible;
@@ -801,13 +801,13 @@ namespace TransferController
             uint buildingRecordID = BuildingControl.CalculateEntryKey(buildingID, false, transferReason);
 
             // Try to get building record.
-            if (!BuildingControl.buildingRecords.TryGetValue(buildingRecordID, out BuildingControl.BuildingRecord buildingRecord))
+            if (!BuildingControl.s_buildingRecords.TryGetValue(buildingRecordID, out BuildingControl.BuildingRecord buildingRecord))
             {
                 // No record found; if this is a cargo transfer, try none.
                 if (IsCargoReason(transferReason))
                 {
                     buildingRecordID = BuildingControl.CalculateEntryKey(buildingID, false, TransferManager.TransferReason.None);
-                    if (!BuildingControl.buildingRecords.TryGetValue(buildingRecordID, out buildingRecord))
+                    if (!BuildingControl.s_buildingRecords.TryGetValue(buildingRecordID, out buildingRecord))
                     {
                         // No record found, therefore no restrictions.
                         result = TransferLogging.MatchStatus.Eligible;
@@ -825,7 +825,7 @@ namespace TransferController
             // Check outside connection.
             if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[incomingBuildingID].Info.m_buildingAI is OutsideConnectionAI)
             {
-                if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BlockOutsideConnection) == 0)
+                if ((buildingRecord.Flags & BuildingControl.RestrictionFlags.BlockOutsideConnection) == 0)
                 {
                     // Outside connection permitted.
                     result = TransferLogging.MatchStatus.Eligible;
@@ -838,7 +838,7 @@ namespace TransferController
                     return false;
                 }
             }
-            else if ((buildingRecord.flags & (BuildingControl.RestrictionFlags.DistrictEnabled | BuildingControl.RestrictionFlags.BuildingEnabled)) == 0)
+            else if ((buildingRecord.Flags & (BuildingControl.RestrictionFlags.DistrictEnabled | BuildingControl.RestrictionFlags.BuildingEnabled)) == 0)
             {
                 // If not an outside connection, transfer is permitted if no restrictions are enabled.
                 result = TransferLogging.MatchStatus.Eligible;
@@ -846,10 +846,10 @@ namespace TransferController
             }
 
             // Check district settings.
-            if ((buildingRecord.flags & BuildingControl.RestrictionFlags.DistrictEnabled) != 0)
+            if ((buildingRecord.Flags & BuildingControl.RestrictionFlags.DistrictEnabled) != 0)
             {
                 // Check same-district setting.
-                if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BlockSameDistrict) == BuildingControl.RestrictionFlags.None && ((incomingDistrict != 0 && incomingDistrict == outgoingDistrict) || (incomingPark != 0 && incomingPark == outgoingPark)))
+                if ((buildingRecord.Flags & BuildingControl.RestrictionFlags.BlockSameDistrict) == BuildingControl.RestrictionFlags.None && ((incomingDistrict != 0 && incomingDistrict == outgoingDistrict) || (incomingPark != 0 && incomingPark == outgoingPark)))
                 {
                     // Same district match - permitted.
                     result = TransferLogging.MatchStatus.Eligible;
@@ -857,9 +857,9 @@ namespace TransferController
                 }
 
                 // Check permitted districts.
-                if (buildingRecord.districts != null)
+                if (buildingRecord.Districts != null)
                 {
-                    if (buildingRecord.districts.Contains(incomingDistrict) || buildingRecord.districts.Contains(-incomingPark))
+                    if (buildingRecord.Districts.Contains(incomingDistrict) || buildingRecord.Districts.Contains(-incomingPark))
                     {
                         // Permitted district.
                         result = TransferLogging.MatchStatus.Eligible;
@@ -869,12 +869,12 @@ namespace TransferController
             }
 
             // Check building settings.
-            if ((buildingRecord.flags & BuildingControl.RestrictionFlags.BuildingEnabled) != 0)
+            if ((buildingRecord.Flags & BuildingControl.RestrictionFlags.BuildingEnabled) != 0)
             {
                 // Check permitted buildings.
-                if (buildingRecord.buildings != null)
+                if (buildingRecord.Buildings != null)
                 {
-                    if (buildingRecord.buildings.Contains(incomingBuildingID))
+                    if (buildingRecord.Buildings.Contains(incomingBuildingID))
                     {
                         // Permitted building.
                         result = TransferLogging.MatchStatus.Eligible;
@@ -911,10 +911,10 @@ namespace TransferController
             uint buildingRecordID = BuildingControl.CalculateEntryKey(buildingID, incoming, reason);
 
             // Get building record.
-            if (BuildingControl.buildingRecords.TryGetValue(buildingRecordID, out BuildingControl.BuildingRecord buildingRecord))
+            if (BuildingControl.s_buildingRecords.TryGetValue(buildingRecordID, out BuildingControl.BuildingRecord buildingRecord))
             {
                 // Record found - check flag.
-                if ((buildingRecord.flags & BuildingControl.RestrictionFlags.PreferSameDistrict) != 0)
+                if ((buildingRecord.Flags & BuildingControl.RestrictionFlags.PreferSameDistrict) != 0)
                 {
                     // Found matching flag; return 0.1.
                     return 0.1f;

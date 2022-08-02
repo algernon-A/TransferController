@@ -1,13 +1,12 @@
-﻿using AlgernonCommons;
-using ColossalFramework;
-using HarmonyLib;
-using System;
-using System.Runtime.CompilerServices;
-using UnityEngine;
-
-
-namespace TransferController
+﻿namespace TransferController
 {
+    using AlgernonCommons;
+    using ColossalFramework;
+    using HarmonyLib;
+    using System;
+    using System.Runtime.CompilerServices;
+    using UnityEngine;
+
     /// <summary>
     /// Custom offer matching - old version.
     /// </summary>
@@ -17,21 +16,21 @@ namespace TransferController
         // Matching distance multiplier.
         internal static int distancePercentage = 100;
 
-
         /*
-		 * Transfer offer arrays are in blocks of 256, organised by reason, then by priority within each reason (8 prorities): block ID is (reason * 8) + priority.
-		 * [block 0] 0 - 255: TransferReason.Garbage, Priority 0
-		 * [block 1] 256 - 511: TransferReason.Garbage, Priority 1
-		 * [block 2] 512 - 767: TransferReason.Garbage, Priority 2
-		 * etc.
-		 */
+         * Transfer offer arrays are in blocks of 256, organised by reason, then by priority within each reason (8 prorities): block ID is (reason * 8) + priority.
+         * [block 0] 0 - 255: TransferReason.Garbage, Priority 0
+         * [block 1] 256 - 511: TransferReason.Garbage, Priority 1
+         * [block 2] 512 - 767: TransferReason.Garbage, Priority 2
+         * etc.
+         */
 
         /// <summary>
         /// Replacemnet method for TransferManager.MatchOffers.
         /// </summary>
         /// <param name="__instance">TransferManager instance</param>
         /// <param name="material">Material to match</param>
-        public static void MatchOffers(TransferManager __instance,
+        public static void MatchOffers(
+            TransferManager __instance,
             TransferManager.TransferReason material,
             ushort[] m_incomingCount,
             ushort[] m_outgoingCount,
@@ -41,8 +40,8 @@ namespace TransferController
             int[] m_outgoingAmount)
         {
             /*
-			 * Offers are matched in blocks, from highest priority to lowest.
-			 */
+             * Offers are matched in blocks, from highest priority to lowest.
+             */
 
             // Don't do anything if no material to match.
             if (material == TransferManager.TransferReason.None)
@@ -62,7 +61,7 @@ namespace TransferController
             float distanceMultiplier = GetDistanceMultiplier(material);
 
             // num = optimalDistanceSquared (offers within this distance are automatically accepted first go, with no further candidates examined).
-            float optimalDistanceSquared = ((distanceMultiplier == 0f) ? 0f : (0.01f / distanceMultiplier));
+            float optimalDistanceSquared = (distanceMultiplier == 0f) ? 0f : (0.01f / distanceMultiplier);
             // ---- Start code insert
             optimalDistanceSquared *= distancePercentage / 100f;
             // ---- End code insert
@@ -153,16 +152,16 @@ namespace TransferController
                         do
                         {
                             /*
-							 * Matching is done in descending priority order; a lower priority bound is set for lower priorities;
-							 * an offer with priority 0 will only consider matching with priorities 7 down to 2, an offer with priority 1 will only consider priorities 7 down to 1.
-							 * This way lower-priority transfers will have slightly fewer candidates for matching than higher-priority transfers.
-							 */
+                             * Matching is done in descending priority order; a lower priority bound is set for lower priorities;
+                             * an offer with priority 0 will only consider matching with priorities 7 down to 2, an offer with priority 1 will only consider priorities 7 down to 1.
+                             * This way lower-priority transfers will have slightly fewer candidates for matching than higher-priority transfers.
+                             */
 
                             // num9 = lowerPriorityBound
                             int lowerPriorityBound = Mathf.Max(0, 2 - thisPriority);
 
                             // num10 = minPriority (minimum priority to accept)
-                            int minPriority = ((!incomingOfferToMatch.Exclude) ? lowerPriorityBound : Mathf.Max(0, offerBlock - thisPriority));
+                            int minPriority = (!incomingOfferToMatch.Exclude) ? lowerPriorityBound : Mathf.Max(0, offerBlock - thisPriority);
 
                             // num11 = matchedPriority
                             int matchedPriority = -1;
@@ -185,7 +184,7 @@ namespace TransferController
                             for (int otherPriority = thisPriority; otherPriority >= lowerPriorityBound; otherPriority--)
                             {
                                 // num16 = otherBlock
-                                int otherBlock = (int)material * 8 + otherPriority;
+                                int otherBlock = ((int)material * 8) + otherPriority;
 
                                 // num17 = blockCount
                                 int blockCount = m_outgoingCount[otherBlock];
@@ -204,7 +203,7 @@ namespace TransferController
                                 for (int candidateIndex = currentIncomingIndex; candidateIndex < blockCount; candidateIndex++)
                                 {
                                     // transferOffer 2 = outgoingOfferCandidate
-                                    TransferManager.TransferOffer outgoingOfferCandidate = m_outgoingOffers[otherBlock * 256 + candidateIndex];
+                                    TransferManager.TransferOffer outgoingOfferCandidate = m_outgoingOffers[(otherBlock * 256) + candidateIndex];
                                     if (!(incomingOfferToMatch.m_object != outgoingOfferCandidate.m_object) || (outgoingOfferCandidate.Exclude && otherPriority < minPriority))
                                     {
                                         continue;
@@ -261,7 +260,7 @@ namespace TransferController
                                             else
                                             {
                                                 // No - add additional warehouse distance divisor.
-                                                distanceModifier /= (1 + Matching.WarehousePriority);
+                                                distanceModifier /= 1 + Matching.WarehousePriority;
                                             }
                                         }
                                         else if (candidateAI is WarehouseAI outgoingWarehouseAI)
@@ -277,7 +276,7 @@ namespace TransferController
                                             if (!(incomingAI is OutsideConnectionAI))
                                             {
                                                 // No - adjust distance modifier for warehouse priority (this doesn't apply to warehouse-warehouse or warehouse-outside connection transfers).
-                                                distanceModifier /= (1 + Matching.WarehousePriority);
+                                                distanceModifier /= 1 + Matching.WarehousePriority;
                                             }
                                         }
                                         else if (candidateAI is OutsideConnectionAI)
@@ -288,24 +287,24 @@ namespace TransferController
                                                 if (candidateInfo.m_class.m_subService == ItemClass.SubService.PublicTransportTrain)
                                                 {
                                                     otherPriorityPlus += Matching.OutsideRailPriority;
-                                                    distanceModifier /= (1 + Mathf.Pow(Matching.OutsideRailPriority, 2));
+                                                    distanceModifier /= 1 + Mathf.Pow(Matching.OutsideRailPriority, 2);
                                                 }
                                                 else if (candidateInfo.m_class.m_subService == ItemClass.SubService.PublicTransportShip)
                                                 {
                                                     otherPriorityPlus += Matching.OutsideShipPriority;
-                                                    distanceModifier /= (1 + Mathf.Pow(Matching.OutsideShipPriority, 2));
+                                                    distanceModifier /= 1 + Mathf.Pow(Matching.OutsideShipPriority, 2);
                                                 }
                                             }
                                         }
                                         else if (incomingRailBoosted)
                                         {
                                             otherPriorityPlus += Matching.OutsideRailPriority;
-                                            distanceModifier /= (1 + Mathf.Pow(Matching.OutsideRailPriority, 2));
+                                            distanceModifier /= 1 + Mathf.Pow(Matching.OutsideRailPriority, 2);
                                         }
                                         else if (incomingShipBoosted)
                                         {
                                             otherPriorityPlus += Matching.OutsideShipPriority;
-                                            distanceModifier /= (1 + Mathf.Pow(Matching.OutsideShipPriority, 2));
+                                            distanceModifier /= 1 + Mathf.Pow(Matching.OutsideShipPriority, 2);
                                         }
 
                                         // Position of incoming building (source building or vehicle source building)
@@ -317,13 +316,14 @@ namespace TransferController
                                             continue;
                                         }
                                     }
+
                                     // ---- End code insert
 
                                     // num19 = squaredDistance
                                     float squaredDistance = Vector3.SqrMagnitude(outgoingOfferCandidate.Position - incomingPosition);
 
 
-                                    /// ---- Start code replacement (additional if-else).
+                                    // ---- Start code replacement (additional if-else).
                                     if (squaredDistance < closestDistance)
                                     {
                                         matchedPriority = otherPriority;
@@ -367,10 +367,10 @@ namespace TransferController
                             }
 
                             // num21 = outgoingBlock
-                            int outgoingBlock = (int)material * 8 + matchedPriority;
+                            int outgoingBlock = ((int)material * 8) + matchedPriority;
 
                             // transferOffer3 = matchedOutgoingOffer
-                            TransferManager.TransferOffer matchedOutgoingOffer = m_outgoingOffers[outgoingBlock * 256 + matchedIndex];
+                            TransferManager.TransferOffer matchedOutgoingOffer = m_outgoingOffers[(outgoingBlock * 256) + matchedIndex];
 
                             // amount = matchedOutgoingAmount
                             int matchedOutgoingAmount = matchedOutgoingOffer.Amount;
@@ -392,8 +392,8 @@ namespace TransferController
                                 int newOfferCount = m_outgoingCount[outgoingBlock] - 1;
 
                                 m_outgoingCount[outgoingBlock] = (ushort)newOfferCount;
-                                ref TransferManager.TransferOffer reference = ref m_outgoingOffers[outgoingBlock * 256 + matchedIndex];
-                                reference = m_outgoingOffers[outgoingBlock * 256 + newOfferCount];
+                                ref TransferManager.TransferOffer reference = ref m_outgoingOffers[(outgoingBlock * 256) + matchedIndex];
+                                reference = m_outgoingOffers[(outgoingBlock * 256) + newOfferCount];
                                 if (outgoingBlock == offerBlock)
                                 {
                                     outgoingCount = newOfferCount;
@@ -403,7 +403,7 @@ namespace TransferController
                             {
                                 // Matched outgoing offer amount partially used; reduce outstanding amount in offer.
                                 matchedOutgoingOffer.Amount = matchedOutgoingAmount;
-                                m_outgoingOffers[outgoingBlock * 256 + matchedIndex] = matchedOutgoingOffer;
+                                m_outgoingOffers[(outgoingBlock * 256) + matchedIndex] = matchedOutgoingOffer;
                             }
                             incomingOfferToMatch.Amount = incomingOfferAmount;
                         }
@@ -413,14 +413,14 @@ namespace TransferController
                             // Incoming offer amount fully used; remove incoming offer from queue.
                             incomingCount--;
                             m_incomingCount[offerBlock] = (ushort)incomingCount;
-                            ref TransferManager.TransferOffer reference2 = ref m_incomingOffers[offerBlock * 256 + incomingIndex];
-                            reference2 = m_incomingOffers[offerBlock * 256 + incomingCount];
+                            ref TransferManager.TransferOffer reference2 = ref m_incomingOffers[(offerBlock * 256) + incomingIndex];
+                            reference2 = m_incomingOffers[(offerBlock * 256) + incomingCount];
                         }
                         else
                         {
                             // Incoming offer amount not fully used; reduce outstanding amount in offer.
                             incomingOfferToMatch.Amount = incomingOfferAmount;
-                            m_incomingOffers[offerBlock * 256 + incomingIndex] = incomingOfferToMatch;
+                            m_incomingOffers[(offerBlock * 256) + incomingIndex] = incomingOfferToMatch;
                             incomingIndex++;
                         }
                     }
@@ -430,7 +430,7 @@ namespace TransferController
                     }
 
                     // transferOffer4 = outgoingOfferToMatch
-                    TransferManager.TransferOffer outgoingOfferToMatch = m_outgoingOffers[offerBlock * 256 + outgoingIndex];
+                    TransferManager.TransferOffer outgoingOfferToMatch = m_outgoingOffers[(offerBlock * 256) + outgoingIndex];
 
                     // position2 = outgoingPosition
                     Vector3 outgoingPosition = outgoingOfferToMatch.Position;
@@ -491,7 +491,7 @@ namespace TransferController
                         int lowerPriorityBound = Mathf.Max(0, 2 - thisPriority);
 
                         // num26 = lowerPriorityBound (resuing from above)
-                        lowerPriorityBound = ((!outgoingOfferToMatch.Exclude) ? lowerPriorityBound : Mathf.Max(0, 3 - thisPriority));
+                        lowerPriorityBound = (!outgoingOfferToMatch.Exclude) ? lowerPriorityBound : Mathf.Max(0, 3 - thisPriority);
 
                         // num27 = matchedPriority
                         int matchedPriority = -1;
@@ -533,7 +533,7 @@ namespace TransferController
                             for (int candidateIndex = currentOutgoingIndex; candidateIndex < blockCount; candidateIndex++)
                             {
                                 // transferOffer5 = incomingOfferCandidate
-                                TransferManager.TransferOffer incomingOfferCandidate = m_incomingOffers[otherBlock * 256 + candidateIndex];
+                                TransferManager.TransferOffer incomingOfferCandidate = m_incomingOffers[(otherBlock * 256) + candidateIndex];
                                 if (!(outgoingOfferToMatch.m_object != incomingOfferCandidate.m_object) || (incomingOfferCandidate.Exclude && otherPriority < lowerPriorityBound))
                                 {
                                     continue;
@@ -598,7 +598,7 @@ namespace TransferController
                                         else
                                         {
                                             // No - add additional warehouse distance divisor.
-                                            distanceModifier /= (1 + Matching.WarehousePriority);
+                                            distanceModifier /= 1 + Matching.WarehousePriority;
                                         }
                                     }
                                     else if (candidateAI is WarehouseAI)
@@ -607,7 +607,7 @@ namespace TransferController
                                         if (!(outgoingAI is OutsideConnectionAI))
                                         {
                                             // No - adjust distance modifier for warehouse priority (this doesn't apply to warehouse-warehouse or warehouse-outside connection transfers).
-                                            distanceModifier /= (1 + Matching.WarehousePriority);
+                                            distanceModifier /= 1 + Matching.WarehousePriority;
                                         }
                                     }
                                     else if (candidateAI is OutsideConnectionAI)
@@ -618,24 +618,24 @@ namespace TransferController
                                             if (candidateInfo.m_class.m_subService == ItemClass.SubService.PublicTransportTrain)
                                             {
                                                 otherPriorityPlus += Matching.OutsideRailPriority;
-                                                distanceModifier /= (1 + Mathf.Pow(Matching.OutsideRailPriority, 2));
+                                                distanceModifier /= 1 + Mathf.Pow(Matching.OutsideRailPriority, 2);
                                             }
                                             else if (candidateInfo.m_class.m_subService == ItemClass.SubService.PublicTransportShip)
                                             {
                                                 otherPriorityPlus += Matching.OutsideShipPriority;
-                                                distanceModifier /= (1 + Mathf.Pow(Matching.OutsideShipPriority, 2));
+                                                distanceModifier /= 1 + Mathf.Pow(Matching.OutsideShipPriority, 2);
                                             }
                                         }
                                     }
                                     else if (outgoingRailBoosted)
                                     {
                                         otherPriorityPlus += Matching.OutsideRailPriority;
-                                        distanceModifier /= (1 + Mathf.Pow(Matching.OutsideRailPriority, 2));
+                                        distanceModifier /= 1 + Mathf.Pow(Matching.OutsideRailPriority, 2);
                                     }
                                     else if (outgoingShipBoosted)
                                     {
                                         otherPriorityPlus += Matching.OutsideShipPriority;
-                                        distanceModifier /= (1 + Mathf.Pow(Matching.OutsideShipPriority, 2));
+                                        distanceModifier /= 1 + Mathf.Pow(Matching.OutsideShipPriority, 2);
                                     }
 
                                     // Position of incoming building (source building or vehicle source building)
@@ -664,7 +664,7 @@ namespace TransferController
                                 {
                                     // num36 = distanceValue
                                     // See above re num20 for details.
-                                    float distanceValue = (!(distanceMultiplier < 0f)) ? (otherPriorityPlus / (1f + squaredDistance * distanceMultiplier)) : (otherPriorityPlus - otherPriorityPlus / (1f - squaredDistance * distanceMultiplier)) * distanceModifier;
+                                    float distanceValue = (!(distanceMultiplier < 0f)) ? (otherPriorityPlus / (1f + (squaredDistance * distanceMultiplier))) : (otherPriorityPlus - (otherPriorityPlus / (1f - (squaredDistance * distanceMultiplier)))) * distanceModifier;
                                     if (distanceValue > bestDistanceValue)
                                     {
                                         matchedPriority = otherPriority;
@@ -689,10 +689,10 @@ namespace TransferController
                         }
 
                         // num37 = incomingBlock
-                        int incomingBlock = (int)material * 8 + matchedPriority;
+                        int incomingBlock = ((int)material * 8) + matchedPriority;
 
                         // transferOffer6 = matchedIncomingOffer
-                        TransferManager.TransferOffer matchedIncomingOffer = m_incomingOffers[incomingBlock * 256 + matchedIndex];
+                        TransferManager.TransferOffer matchedIncomingOffer = m_incomingOffers[(incomingBlock * 256) + matchedIndex];
 
                         // amount2 = incomingAmount
                         int incomingAmount = matchedIncomingOffer.Amount;
@@ -713,8 +713,8 @@ namespace TransferController
                             // num39 = newOfferCount
                             int newOfferCount = m_incomingCount[incomingBlock] - 1;
                             m_incomingCount[incomingBlock] = (ushort)newOfferCount;
-                            ref TransferManager.TransferOffer reference3 = ref m_incomingOffers[incomingBlock * 256 + matchedIndex];
-                            reference3 = m_incomingOffers[incomingBlock * 256 + newOfferCount];
+                            ref TransferManager.TransferOffer reference3 = ref m_incomingOffers[(incomingBlock * 256) + matchedIndex];
+                            reference3 = m_incomingOffers[(incomingBlock * 256) + newOfferCount];
                             if (incomingBlock == offerBlock)
                             {
                                 incomingCount = newOfferCount;
@@ -724,7 +724,7 @@ namespace TransferController
                         {
                             // Matched incoming offer amount partially used; reduce outstanding amount in offer.
                             matchedIncomingOffer.Amount = incomingAmount;
-                            m_incomingOffers[incomingBlock * 256 + matchedIndex] = matchedIncomingOffer;
+                            m_incomingOffers[(incomingBlock * 256) + matchedIndex] = matchedIncomingOffer;
                         }
                         outgoingOfferToMatch.Amount = outgoingAmount;
                     }
@@ -734,14 +734,14 @@ namespace TransferController
                         // Outgoing offer amount fully used; remove outgoing offer from queue.
                         outgoingCount--;
                         m_outgoingCount[offerBlock] = (ushort)outgoingCount;
-                        ref TransferManager.TransferOffer reference4 = ref m_outgoingOffers[offerBlock * 256 + outgoingIndex];
-                        reference4 = m_outgoingOffers[offerBlock * 256 + outgoingCount];
+                        ref TransferManager.TransferOffer reference4 = ref m_outgoingOffers[(offerBlock * 256) + outgoingIndex];
+                        reference4 = m_outgoingOffers[(offerBlock * 256) + outgoingCount];
                     }
                     else
                     {
                         // Outgoing offer amount not fully used; reduce outstanding amount in offer.
                         outgoingOfferToMatch.Amount = outgoingAmount;
-                        m_outgoingOffers[offerBlock * 256 + outgoingIndex] = outgoingOfferToMatch;
+                        m_outgoingOffers[(offerBlock * 256) + outgoingIndex] = outgoingOfferToMatch;
                         outgoingIndex++;
                     }
                 }

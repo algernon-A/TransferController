@@ -29,9 +29,9 @@ namespace TransferController
         /// </summary>
         protected override InputKey KeySetting
         {
-            get => ModSettings.uuiKey.value;
+            get => ModSettings.ToolKey.value;
 
-            set => ModSettings.uuiKey.value = value;
+            set => ModSettings.ToolKey.value = value;
         }
     }
 }

@@ -209,7 +209,7 @@ namespace TransferController
         /// <summary>
         /// Gets the dictionary of building records.
         /// </summary>
-        public static Dictionary<uint, BuildingControl.BuildingRecord> BuildingRecords => BuildingControl.buildingRecords;
+        public static Dictionary<uint, BuildingControl.BuildingRecord> BuildingRecords => BuildingControl.s_buildingRecords;
 
         /// <summary>
         /// Gets the current building ID.
@@ -223,7 +223,7 @@ namespace TransferController
         public override void Update()
         {
             // Copy key processing - use event flag to avoid repeated triggering.
-            if (ModSettings.keyCopy.IsPressed())
+            if (ModSettings.KeyCopy.IsPressed())
             {
                 if (!_copyProcessing)
                 {
@@ -238,7 +238,7 @@ namespace TransferController
             }
 
             // Paste key processing - use event flag to avoid repeated triggering.
-            if (ModSettings.keyPaste.IsPressed())
+            if (ModSettings.KeyPaste.IsPressed())
             {
                 if (!_pasteProcessing)
                 {

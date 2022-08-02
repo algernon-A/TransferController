@@ -9,6 +9,7 @@ namespace TransferController
     using AlgernonCommons.Patching;
     using AlgernonCommons.Translation;
     using AlgernonCommons.UI;
+    using AlgernonCommons.XML;
     using ColossalFramework.UI;
     using ICities;
 

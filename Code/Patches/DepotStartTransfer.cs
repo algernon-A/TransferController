@@ -1,13 +1,17 @@
-﻿using AlgernonCommons;
-using ColossalFramework;
-using HarmonyLib;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Reflection.Emit;
-
+﻿// <copyright file="DepotStartTransfer.cs" company="algernon (K. Algernon A. Sheppard)">
+// Copyright (c) algernon (K. Algernon A. Sheppard). All rights reserved.
+// Licensed under the MIT license. See LICENSE.txt file in the project root for full license information.
+// </copyright>
 
 namespace TransferController
 {
+    using System.Collections.Generic;
+    using System.Reflection;
+    using System.Reflection.Emit;
+    using AlgernonCommons;
+    using ColossalFramework;
+    using HarmonyLib;
+
     /// <summary>
     /// Harmony transpiler to DepotAI.StartTransfer to implement vehicle selection.
     /// </summary>
@@ -17,8 +21,9 @@ namespace TransferController
         /// <summary>
         /// Harmony transpiler for o DepotAI.GetPrimaryRandomVehicleInfo, replacing existing calls to VehicleManager.GetRandomVehicleInfo with a call to our custom replacement instead.
         /// </summary>
-        /// <param name="instructions">Original ILCode</param>
-        /// <param name="original">Method being transpiled</param>
+        /// <param name="instructions">Original ILCode.</param>
+        /// <param name="original">Method being transpiled.</param>
+        /// <returns>New ILCode.</returns>
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase original)
         {
             Logging.Message("transpiling ", original.DeclaringType, ":", original.Name);
@@ -42,7 +47,7 @@ namespace TransferController
                     // Standard version.
                     if (instruction.Calls(getPrimaryRandomVehicleInfo))
                     {
-                        // Add buildingID and material params to call. 
+                        // Add buildingID and material params to call.
                         yield return new CodeInstruction(OpCodes.Ldarg_1);
                         yield return new CodeInstruction(OpCodes.Ldarg_3);
                         instruction = new CodeInstruction(OpCodes.Call, chooseVehicle);
@@ -55,14 +60,13 @@ namespace TransferController
             }
         }
 
-
         /// <summary>
         /// Chooses a vehicle for a transfer from our custom lists (reverting to game code if no custom list exists for this building and transfer).
         /// </summary>
-        /// <param name="depotAI">DepotAI instance</param>
-        /// <param name="buildingID">Building ID of owning building</param>
-        /// <param name="material">Transfer material</param>
-        /// <returns>Vehicle prefab to spawn</returns>
+        /// <param name="depotAI">DepotAI instance.</param>
+        /// <param name="buildingID">Building ID of owning building.</param>
+        /// <param name="material">Transfer material.</param>
+        /// <returns>Vehicle prefab to spawn.</returns>
         public static VehicleInfo ChooseVehicle(DepotAI depotAI, ushort buildingID, TransferManager.TransferReason material)
         {
             ItemClass depotItemClass = depotAI.m_overrideVehicleClass ?? depotAI.m_transportInfo.m_class;
@@ -73,7 +77,6 @@ namespace TransferController
             {
                 // No custom vehicle selection - mimic game behaviour.
                 return Singleton<VehicleManager>.instance.GetRandomVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer, depotItemClass.m_service, depotItemClass.m_subService, depotItemClass.m_level);
-
             }
 
             // Custom vehicle selection found - randomly choose one.
