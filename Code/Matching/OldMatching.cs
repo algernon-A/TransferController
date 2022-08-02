@@ -1,10 +1,13 @@
-﻿namespace TransferController
+﻿// <copyright file="OldMatching.cs" company="algernon (K. Algernon A. Sheppard)">
+// Based on code by Colossal Order, with modifications by algernon.
+// </copyright>
+namespace TransferController
 {
+    using System;
+    using System.Runtime.CompilerServices;
     using AlgernonCommons;
     using ColossalFramework;
     using HarmonyLib;
-    using System;
-    using System.Runtime.CompilerServices;
     using UnityEngine;
 
     /// <summary>
@@ -13,8 +16,13 @@
     [HarmonyPatch]
     public static class OldMatching
     {
-        // Matching distance multiplier.
-        internal static int distancePercentage = 100;
+        // Distance matching multiplier.
+        private static int s_distancePercentage = 100;
+
+        /// <summary>
+        /// Gets or sets the distance matching percentage multiplier.
+        /// </summary>
+        internal static int DistancePercentage { get => s_distancePercentage; set => s_distancePercentage = value; }
 
         /*
          * Transfer offer arrays are in blocks of 256, organised by reason, then by priority within each reason (8 prorities): block ID is (reason * 8) + priority.
@@ -25,10 +33,17 @@
          */
 
         /// <summary>
-        /// Replacemnet method for TransferManager.MatchOffers.
+        /// Replacement method for TransferManager.MatchOffers.
         /// </summary>
-        /// <param name="__instance">TransferManager instance</param>
-        /// <param name="material">Material to match</param>
+        /// <param name="__instance">TransferManager instance.</param>
+        /// <param name="material">Material to match.</param>
+        /// <param name="m_incomingCount">Incoming offer count for this reason.</param>
+        /// <param name="m_outgoingCount">Ougoing offer count for this reason.</param>
+        /// <param name="m_incomingOffers">Incoming offer buffer.</param>
+        /// <param name="m_outgoingOffers">Outgoiing offer buffer.</param>
+        /// <param name="m_incomingAmount">Imcoming offer amounts.</param>
+        /// <param name="m_outgoingAmount">Outoging offer amounts.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.NamingRules", "SA1313:Parameter names should begin with lower-case letter", Justification = "Harmony")]
         public static void MatchOffers(
             TransferManager __instance,
             TransferManager.TransferReason material,
@@ -50,7 +65,6 @@
             }
 
             // --- Setup for code inserts.
-
             DistrictManager districtManager = Singleton<DistrictManager>.instance;
             Vehicle[] vehicleBuffer = Singleton<VehicleManager>.instance.m_vehicles.m_buffer;
             Building[] buildingBuffer = Singleton<BuildingManager>.instance.m_buildings.m_buffer;
@@ -62,15 +76,17 @@
 
             // num = optimalDistanceSquared (offers within this distance are automatically accepted first go, with no further candidates examined).
             float optimalDistanceSquared = (distanceMultiplier == 0f) ? 0f : (0.01f / distanceMultiplier);
+
             // ---- Start code insert
-            optimalDistanceSquared *= distancePercentage / 100f;
+            optimalDistanceSquared *= s_distancePercentage / 100f;
+
             // ---- End code insert
 
             // num2 = thisPriority
             for (int thisPriority = 7; thisPriority >= 0; thisPriority--)
             {
                 // num3 = offerBlock.
-                int offerBlock = (int)material * 8 + thisPriority;
+                int offerBlock = ((int)material * 8) + thisPriority;
 
                 // num4 = incomingCount
                 int incomingCount = m_incomingCount[offerBlock];
@@ -91,7 +107,7 @@
                     if (incomingIndex < incomingCount)
                     {
                         // transferOffer = incomingOfferToMatch
-                        TransferManager.TransferOffer incomingOfferToMatch = m_incomingOffers[offerBlock * 256 + incomingIndex];
+                        TransferManager.TransferOffer incomingOfferToMatch = m_incomingOffers[(offerBlock * 256) + incomingIndex];
 
                         // postion = incomingPosition
                         Vector3 incomingPosition = incomingOfferToMatch.Position;
@@ -172,10 +188,11 @@
                             // num13 = bestDistanceValue
                             float bestDistanceValue = -1f;
 
-                            /// ---- Start code insert
+                            // ---- Start code insert
                             float closestDistance = float.MaxValue;
                             ushort matchedBuilding = 0;
-                            /// ---- End code insert
+
+                            // ---- End code insert
 
                             // num14 = currentIncomingIndex
                             int currentIncomingIndex = outgoingIndex;
@@ -322,7 +339,6 @@
                                     // num19 = squaredDistance
                                     float squaredDistance = Vector3.SqrMagnitude(outgoingOfferCandidate.Position - incomingPosition);
 
-
                                     // ---- Start code replacement (additional if-else).
                                     if (squaredDistance < closestDistance)
                                     {
@@ -343,7 +359,7 @@
                                         // For other priority 2 and distance 100: 2.1 - 2.1 / (1f - 100^2 * 0.00001) = 1.909091
                                         // This means that distance is more important for higher-level transfers.
                                         // A lower-priority transfer will take priority only if it's much closer, or conversely, a higher-priority offer will take precedence over a greater radius.
-                                        float distanceValue = ((!(distanceMultiplier < 0f)) ? (otherPriorityPlus / (1f + squaredDistance * distanceMultiplier)) : (otherPriorityPlus - otherPriorityPlus / (1f - squaredDistance * distanceMultiplier))) * distanceModifier;
+                                        float distanceValue = ((!(distanceMultiplier < 0f)) ? (otherPriorityPlus / (1f + (squaredDistance * distanceMultiplier))) : (otherPriorityPlus - (otherPriorityPlus / (1f - (squaredDistance * distanceMultiplier))))) * distanceModifier;
                                         if (distanceValue > bestDistanceValue)
                                         {
                                             matchedPriority = otherPriority;
@@ -357,10 +373,13 @@
                                             }
                                         }
                                     }
-                                    /// --- End code replacement (additional if-else)
+
+                                    // --- End code replacement (additional if-else)
                                 }
+
                                 currentIncomingIndex = 0;
                             }
+
                             if (matchedPriority == -1)
                             {
                                 break;
@@ -382,6 +401,7 @@
                                 TransferLogging.AddEntry(material, true, thisPriority, matchedPriority, incomingBuilding, matchedBuilding, TransferLogging.MatchStatus.Selected, incomingOfferToMatch.Exclude, matchedOutgoingOffer.Exclude, incomingOfferToMatch.Position, matchedOutgoingOffer.Position);
                                 Matching.StartTransfer(__instance, material, matchedOutgoingOffer, incomingOfferToMatch, transferAmount);
                             }
+
                             incomingOfferAmount -= transferAmount;
                             matchedOutgoingAmount -= transferAmount;
                             if (matchedOutgoingAmount == 0)
@@ -405,6 +425,7 @@
                                 matchedOutgoingOffer.Amount = matchedOutgoingAmount;
                                 m_outgoingOffers[(outgoingBlock * 256) + matchedIndex] = matchedOutgoingOffer;
                             }
+
                             incomingOfferToMatch.Amount = incomingOfferAmount;
                         }
                         while (incomingOfferAmount != 0);
@@ -424,6 +445,7 @@
                             incomingIndex++;
                         }
                     }
+
                     if (outgoingIndex >= outgoingCount)
                     {
                         continue;
@@ -502,10 +524,11 @@
                         // num29 = bestDistanceValue
                         float bestDistanceValue = -1f;
 
-                        /// ---- Start code insert
+                        // ---- Start code insert
                         float closestDistance = float.MaxValue;
                         ushort matchedBuilding = 0;
-                        /// ---- End code insert
+
+                        // ---- End code insert
 
                         // num30 = currentOutgoingIndex
                         int currentOutgoingIndex = incomingIndex;
@@ -514,7 +537,7 @@
                         for (int otherPriority = thisPriority; otherPriority >= lowerPriorityBound; otherPriority--)
                         {
                             // num32 = otherBlock
-                            int otherBlock = (int)material * 8 + otherPriority;
+                            int otherBlock = ((int)material * 8) + otherPriority;
 
                             // num33 = blockCount
                             int blockCount = m_incomingCount[otherBlock];
@@ -647,13 +670,13 @@
                                         continue;
                                     }
                                 }
-                                // ---- End code insert
 
+                                // ---- End code insert
 
                                 // num35 = squaredDistance
                                 float squaredDistance = Vector3.SqrMagnitude(incomingOfferCandidate.Position - outgoingPosition);
 
-                                /// ---- Start code replacement (additional if-else).
+                                // ---- Start code replacement (additional if-else).
                                 if (squaredDistance < closestDistance)
                                 {
                                     matchedPriority = otherPriority;
@@ -679,10 +702,13 @@
                                         }
                                     }
                                 }
-                                /// --- End code replacement (additional if-else)
+
+                                // --- End code replacement (additional if-else)
                             }
+
                             currentOutgoingIndex = 0;
                         }
+
                         if (matchedPriority == -1)
                         {
                             break;
@@ -704,6 +730,7 @@
                             TransferLogging.AddEntry(material, false, matchedPriority, thisPriority, matchedBuilding, outgoingBuilding, TransferLogging.MatchStatus.Selected, matchedIncomingOffer.Exclude, outgoingOfferToMatch.Exclude, matchedIncomingOffer.Position, outgoingOfferToMatch.Position);
                             Matching.StartTransfer(__instance, material, outgoingOfferToMatch, matchedIncomingOffer, transferAmount);
                         }
+
                         outgoingAmount -= transferAmount;
                         incomingAmount -= transferAmount;
                         if (incomingAmount == 0)
@@ -726,6 +753,7 @@
                             matchedIncomingOffer.Amount = incomingAmount;
                             m_incomingOffers[(incomingBlock * 256) + matchedIndex] = matchedIncomingOffer;
                         }
+
                         outgoingOfferToMatch.Amount = outgoingAmount;
                     }
                     while (outgoingAmount != 0);
@@ -746,25 +774,25 @@
                     }
                 }
             }
+
             for (int k = 0; k < 8; k++)
             {
-                int num40 = (int)material * 8 + k;
+                int num40 = ((int)material * 8) + k;
                 m_incomingCount[num40] = 0;
                 m_outgoingCount[num40] = 0;
             }
+
             m_incomingAmount[(int)material] = 0;
             m_outgoingAmount[(int)material] = 0;
         }
 
-
         /// <summary>
         /// Harmony reverse patch to access private method TransferManager.GetDistanceMultiplier.
         /// </summary>
-        /// <param name="instance">TransferManager instance</param>
-        /// <param name="material">Transfer material</param>
-        /// <returns>Distance multiplier</returns>
+        /// <param name="material">Transfer material.</param>
+        /// <returns>Distance multiplier.</returns>
         [HarmonyReversePatch]
-        [HarmonyPatch((typeof(TransferManager)), "GetDistanceMultiplier")]
+        [HarmonyPatch(typeof(TransferManager), "GetDistanceMultiplier")]
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static float GetDistanceMultiplier(TransferManager.TransferReason material)
         {

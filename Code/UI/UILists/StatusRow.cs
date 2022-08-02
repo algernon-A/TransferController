@@ -14,11 +14,6 @@ namespace TransferController
     public abstract class StatusRow : UIListRow
     {
         /// <summary>
-        /// Row height.
-        /// </summary>
-        public const float RowHeight = 20f;
-
-        /// <summary>
         /// Transfer direction column relative X position.
         /// </summary>
         internal const float DirectionX = Margin;

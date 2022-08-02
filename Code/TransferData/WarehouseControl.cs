@@ -1,96 +1,120 @@
-﻿using AlgernonCommons;
-using HarmonyLib;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Runtime.CompilerServices;
-
+﻿// <copyright file="WarehouseControl.cs" company="algernon (K. Algernon A. Sheppard)">
+// Copyright (c) algernon (K. Algernon A. Sheppard). All rights reserved.
+// Licensed under the MIT license. See LICENSE.txt file in the project root for full license information.
+// </copyright>
 
 namespace TransferController
 {
-    /// <summary>
-    /// Warehouse data flags.
-    /// </summary>
-    public enum WarehouseFlags : ushort
-    {
-        None = 0,
-        ReserveUnique = 0x01,
-        ReserveOutside = 0x02,
-        ReserveCity = 0x04,
-        AllReserveFlags = ReserveUnique | ReserveOutside | ReserveCity
-    }
-
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Runtime.CompilerServices;
+    using AlgernonCommons;
+    using HarmonyLib;
 
     /// <summary>
-    /// Warehouse data record.
+    /// Static class to control additional warehouse functions.
     /// </summary>
-    public struct WarehouseRecord
-    {
-        public WarehouseFlags flags;
-        public byte reserveVehicles;
-        public byte priority;
-    }
-
-
     [HarmonyPatch]
     internal static class WarehouseControl
     {
-        /// Dictionary of warehouse settings.
-        private readonly static Dictionary<uint, WarehouseRecord> warehouseRecords = new Dictionary<uint, WarehouseRecord>();
-
-
-        /// <summary>
-        /// Checks to see if the specified building has a warehouse record.
-        /// </summary>
-        /// <param name="buildingID">Building ID</param>
-        /// <returns>True if a custom record exists, false otherwise</returns>
-        internal static bool HasRecord(ushort buildingID) => warehouseRecords.ContainsKey(buildingID);
-
+        // Dictionary of warehouse settings.
+        private static readonly Dictionary<uint, WarehouseRecord> WarehouseRecords = new Dictionary<uint, WarehouseRecord>();
 
         /// <summary>
-        /// Attempts to retrieve a warehouse record from the dictionary.
+        /// Warehouse data flags.
         /// </summary>
-        /// <param name="buildingID">Warehouse building ID to retrieve</param>
-        /// <param name="warehouseRecord">Warehouse data record</param>
-        /// <returns>True if a record was sucessfully retrieved, false otherwise</returns>
-        internal static bool TryGetRecord(ushort buildingID, out WarehouseRecord warehouseRecord) => warehouseRecords.TryGetValue(buildingID, out warehouseRecord);
+        public enum WarehouseFlags : ushort
+        {
+            /// <summary>
+            /// No flags.
+            /// </summary>
+            None = 0,
 
+            /// <summary>
+            /// Reserve vehicles for unique factories.
+            /// </summary>
+            ReserveUnique = 0x01,
+
+            /// <summary>
+            /// Reserve vehicles for outside connections.
+            /// </summary>
+            ReserveOutside = 0x02,
+
+            /// <summary>
+            /// Reserve vehicles for intra-city delivery only (no outside connections).
+            /// </summary>
+            ReserveCity = 0x04,
+
+            /// <summary>
+            /// All reserve flags set.
+            /// </summary>
+            AllReserveFlags = ReserveUnique | ReserveOutside | ReserveCity,
+        }
 
         /// <summary>
         /// Harmony reverse patch for CommonBuildingAI.CalculateOwnVehicles to access protected method of original instance.
         /// </summary>
-        /// <param name="instance">Object instance</param>
-        /// <param name="citizenID">ID of this citizen (for game method)</param>
-        /// <param name="data">Citizen data (for game method)</param>
+        /// <param name="instance">Object instance.</param>
+        /// <param name="buildingID">Building ID.</param>
+        /// <param name="data">Building data reference.</param>
+        /// <param name="material">Transfer material.</param>
+        /// <param name="count">Vehicle count.</param>
+        /// <param name="cargo">Cargo load.</param>
+        /// <param name="capacity">Cargo capacity.</param>
+        /// <param name="outside">Number of vehicles in use.</param>
+        /// <exception cref="NotImplementedException">Harmony patch not applied.</exception>
         [HarmonyReversePatch]
-        [HarmonyPatch((typeof(CommonBuildingAI)), "CalculateOwnVehicles")]
+        [HarmonyPatch(typeof(CommonBuildingAI), "CalculateOwnVehicles")]
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public static void CalculateOwnVehicles(CommonBuildingAI instance, ushort buildingID, ref Building data, TransferManager.TransferReason material, ref int count, ref int cargo, ref int capacity, ref int outside)
+        public static void CalculateOwnVehicles(
+            CommonBuildingAI instance,
+            ushort buildingID,
+            ref Building data,
+            TransferManager.TransferReason material,
+            ref int count,
+            ref int cargo,
+            ref int capacity,
+            ref int outside)
         {
             string message = "CalculateOwnVehicles reverse Harmony patch wasn't applied";
             Logging.Error(message, instance, buildingID, data, material, count, cargo, capacity, outside);
             throw new NotImplementedException(message);
         }
 
+        /// <summary>
+        /// Checks to see if the specified building has a warehouse record.
+        /// </summary>
+        /// <param name="buildingID">Building ID.</param>
+        /// <returns>True if a custom record exists, false otherwise.</returns>
+        internal static bool HasRecord(ushort buildingID) => WarehouseRecords.ContainsKey(buildingID);
+
+        /// <summary>
+        /// Attempts to retrieve a warehouse record from the dictionary.
+        /// </summary>
+        /// <param name="buildingID">Warehouse building ID to retrieve.</param>
+        /// <param name="warehouseRecord">Warehouse data record.</param>
+        /// <returns>True if a record was sucessfully retrieved, false otherwise.</returns>
+        internal static bool TryGetRecord(ushort buildingID, out WarehouseRecord warehouseRecord) => WarehouseRecords.TryGetValue(buildingID, out warehouseRecord);
 
         /// <summary>
         /// Checks to see if the specified warehouse has available vehicles for dispatch to serve the proposed transfer after allowing for quotas.
         /// </summary>
-        /// <param name="warehouseAI">Warehouse building AI reference</param>
-        /// <param name="warehouseID">Warehouse building ID</param>
-        /// <param name="warehouseData">Warehouse building data record</param>
-        /// <param name="material">Transfer material</param>
-        /// <param name="otherAI">AI reference for the other building in the transfer</param>
-        /// <returns>True if transfer permitted, false otherwise</returns>
+        /// <param name="warehouseAI">Warehouse building AI reference.</param>
+        /// <param name="warehouseID">Warehouse building ID.</param>
+        /// <param name="warehouseData">Warehouse building data record.</param>
+        /// <param name="material">Transfer material.</param>
+        /// <param name="otherAI">AI reference for the other building in the transfer.</param>
+        /// <returns>True if transfer permitted, false otherwise.</returns>
         internal static bool CheckVehicleQuota(BuildingAI warehouseAI, ushort warehouseID, ref Building warehouseData, TransferManager.TransferReason material, BuildingAI otherAI)
         {
             // Check to see if there's an entry for this warehouse.
-            if (warehouseRecords.TryGetValue(warehouseID, out WarehouseRecord warehouseRecord))
+            if (WarehouseRecords.TryGetValue(warehouseID, out WarehouseRecord warehouseRecord))
             {
                 // Entry found - determine if a quota needs to be reserved.
-                if (((warehouseRecord.flags & WarehouseFlags.ReserveUnique) != 0 && !(otherAI is UniqueFactoryAI)) ||
-                    ((warehouseRecord.flags & WarehouseFlags.ReserveOutside) != 0 && !(otherAI is OutsideConnectionAI)) ||
-                    ((warehouseRecord.flags & WarehouseFlags.ReserveCity) != 0) && (otherAI is OutsideConnectionAI))
+                if (((warehouseRecord.Flags & WarehouseFlags.ReserveUnique) != 0 && !(otherAI is UniqueFactoryAI)) ||
+                    ((warehouseRecord.Flags & WarehouseFlags.ReserveOutside) != 0 && !(otherAI is OutsideConnectionAI)) ||
+                    (((warehouseRecord.Flags & WarehouseFlags.ReserveCity) != 0) && (otherAI is OutsideConnectionAI)))
                 {
                     if (warehouseAI is WarehouseAI thisWarehouseAI)
                     {
@@ -114,84 +138,76 @@ namespace TransferController
             return true;
         }
 
-
         /// <summary>
         /// Sets the warehouse to reserve vehicles for unique factories.
         /// </summary>
-        /// <param name="buildingID">Warehouse builidng ID</param>
+        /// <param name="buildingID">Warehouse builidng ID.</param>
         internal static void SetReserveUnique(uint buildingID) => SetReserveFlag(buildingID, WarehouseFlags.ReserveUnique);
-
 
         /// <summary>
         /// Sets the warehouse to reserve vehicles for outside connections.
         /// </summary>
-        /// <param name="buildingID">Warehouse builidng ID</param>
+        /// <param name="buildingID">Warehouse builidng ID.</param>
         internal static void SetReserveOutside(uint buildingID) => SetReserveFlag(buildingID, WarehouseFlags.ReserveOutside);
-
 
         /// <summary>
         /// Sets the warehouse to reserve vehicles for the city.
         /// </summary>
-        /// <param name="buildingID">Warehouse builidng ID</param>
+        /// <param name="buildingID">Warehouse builidng ID.</param>
         internal static void SetReserveCity(uint buildingID) => SetReserveFlag(buildingID, WarehouseFlags.ReserveCity);
-
 
         /// <summary>
         /// Clears the reserved vehicle state for the specified warehouse.
         /// </summary>
-        /// <param name="buildingID">Warehouse builidng ID</param>
+        /// <param name="buildingID">Warehouse builidng ID.</param>
         internal static void ClearReserve(uint buildingID)
         {
             // Don't do anything if there's no current record.
-            if (warehouseRecords.TryGetValue(buildingID, out WarehouseRecord warehouseRecord))
+            if (WarehouseRecords.TryGetValue(buildingID, out WarehouseRecord warehouseRecord))
             {
                 // Calculate updated flags.
-                warehouseRecord.flags &= ~WarehouseFlags.AllReserveFlags;
+                warehouseRecord.Flags &= ~WarehouseFlags.AllReserveFlags;
 
                 // Remove entry if no other data remains.
-                if (warehouseRecord.flags == 0 && warehouseRecord.priority == 0)
+                if (warehouseRecord.Flags == 0 && warehouseRecord.Priority == 0)
                 {
-                    warehouseRecords.Remove(buildingID);
+                    WarehouseRecords.Remove(buildingID);
                 }
                 else
                 {
                     // Some valid data remains; update the record with our changes.
-                    warehouseRecord.reserveVehicles = 0;
-                    warehouseRecords[buildingID] = warehouseRecord;
+                    warehouseRecord.ReserveVehicles = 0;
+                    WarehouseRecords[buildingID] = warehouseRecord;
                 }
             }
         }
 
-
         /// <summary>
         /// Checks if the given warehouse is set to reserve vehicles for unique factories.
         /// </summary>
-        /// <param name="buildingID">Building ID of warehouse to check</param>
-        /// <returns>True if the warehouse is set to reserve vehicles for unique factories, false otherwise</returns>
+        /// <param name="buildingID">Building ID of warehouse to check.</param>
+        /// <returns>True if the warehouse is set to reserve vehicles for unique factories, false otherwise.</returns>
         internal static bool GetReserveUnique(uint buildingID) => GetFlags(buildingID, WarehouseFlags.ReserveUnique);
-
 
         /// <summary>
         /// Checks if the given warehouse is set to reserve vehicles for outside connections.
         /// </summary>
-        /// <param name="buildingID">Building ID of warehouse to check</param>
-        /// <returns>True if the warehouse is set to reserve vehicles for outside connections, false otherwise</returns>
+        /// <param name="buildingID">Building ID of warehouse to check.</param>
+        /// <returns>True if the warehouse is set to reserve vehicles for outside connections, false otherwise.</returns>
         internal static bool GetReserveOutside(uint buildingID) => GetFlags(buildingID, WarehouseFlags.ReserveOutside);
-
 
         /// <summary>
         /// Checks if the given warehouse is set to reserve vehicles for the city.
         /// </summary>
-        /// <param name="buildingID">Building ID of warehouse to check</param>
-        /// <returns>True if the warehouse is set to reserve vehicles for local deliveries, false otherwise</returns>
+        /// <param name="buildingID">Building ID of warehouse to check.</param>
+        /// <returns>True if the warehouse is set to reserve vehicles for local deliveries, false otherwise.</returns>
         internal static bool GetReserveCity(uint buildingID) => GetFlags(buildingID, WarehouseFlags.ReserveCity);
-
 
         /// <summary>
         /// Returns the current reserved vehicle count for the specified warehouse.
         /// </summary>
-        /// <param name="buildingID">Warehouse building ID</param>
-        /// <returns>Number of reserved vehicles</returns>
+        /// <param name="buildingID">Warehouse building ID.</param>
+        /// <returns>Number of reserved vehicles.</returns>
         internal static byte GetReservedVehicles(uint buildingID)
         {
             // Don't do anything if no valid building is set.
@@ -201,10 +217,10 @@ namespace TransferController
             }
 
             // See if we've got an entry for this building.
-            if (buildingID != 0 && warehouseRecords.TryGetValue(buildingID, out WarehouseRecord warehouseRecord))
+            if (buildingID != 0 && WarehouseRecords.TryGetValue(buildingID, out WarehouseRecord warehouseRecord))
             {
                 // Entry found - return same-district flag status.
-                return warehouseRecord.reserveVehicles;
+                return warehouseRecord.ReserveVehicles;
             }
             else
             {
@@ -213,12 +229,11 @@ namespace TransferController
             }
         }
 
-
         /// <summary>
         /// Sets the reserved vehicle count for the specified warehouse.
         /// </summary>
-        /// <param name="buildingID">Warehouse building ID</param>
-        /// <param name="vehicles">Number of vehicles to reserve</param>
+        /// <param name="buildingID">Warehouse building ID.</param>
+        /// <param name="vehicles">Number of vehicles to reserve.</param>
         internal static void SetReservedVehicles(uint buildingID, byte vehicles)
         {
             // Don't do anything if no valid building is set.
@@ -228,7 +243,7 @@ namespace TransferController
             }
 
             // Try to get existing entry.
-            bool hasEntry = warehouseRecords.TryGetValue(buildingID, out WarehouseRecord warehouseRecord);
+            bool hasEntry = WarehouseRecords.TryGetValue(buildingID, out WarehouseRecord warehouseRecord);
 
             // Are we reserving any vehicles?
             if (vehicles != 0)
@@ -237,15 +252,15 @@ namespace TransferController
                 if (hasEntry)
                 {
                     // Add flag to existing entry.
-                    warehouseRecord.reserveVehicles = vehicles;
-                    warehouseRecords[buildingID] = warehouseRecord;
+                    warehouseRecord.ReserveVehicles = vehicles;
+                    WarehouseRecords[buildingID] = warehouseRecord;
                 }
                 else
                 {
                     // No record for building in dictionary - add one.
-                    warehouseRecords.Add(buildingID, new WarehouseRecord
+                    WarehouseRecords.Add(buildingID, new WarehouseRecord
                     {
-                        reserveVehicles = vehicles
+                        ReserveVehicles = vehicles,
                     });
                 }
             }
@@ -253,91 +268,88 @@ namespace TransferController
             {
                 // Setting reserved vehicles to zero and there's an existing entry for this warehouse (just do nothing if no existing entry).
                 // If no other data either, remove entire dictionary entry.
-                if (warehouseRecord.flags == 0 && warehouseRecord.reserveVehicles == 0 && warehouseRecord.priority == 0)
+                if (warehouseRecord.Flags == 0 && warehouseRecord.ReserveVehicles == 0 && warehouseRecord.Priority == 0)
                 {
-                    warehouseRecords.Remove(buildingID);
+                    WarehouseRecords.Remove(buildingID);
                 }
                 else
                 {
                     // Update existing entry.
-                    warehouseRecord.reserveVehicles = vehicles;
-                    warehouseRecords[buildingID] = warehouseRecord;
+                    warehouseRecord.ReserveVehicles = vehicles;
+                    WarehouseRecords[buildingID] = warehouseRecord;
                 }
             }
         }
 
-
         /// <summary>
         /// Updates the record for the given warehouse with the provided warehouse record data.
         /// </summary>
-        /// <param name="buildingID">Warehouse building ID to update</param>
-        /// <param name="recordData">Warehouse ecord data to update to</param>
+        /// <param name="buildingID">Warehouse building ID to update.</param>
+        /// <param name="recordData">Warehouse ecord data to update to.</param>
         internal static void UpdateRecord(ushort buildingID,  WarehouseRecord recordData)
         {
             // Does the provided building record have any flags?
-            bool isEmpty = recordData.flags == 0;
+            bool isEmpty = recordData.Flags == 0;
 
             // Do we already have an entry for this building?
-            if (warehouseRecords.ContainsKey(buildingID))
+            if (WarehouseRecords.ContainsKey(buildingID))
             {
                 // Yes - is the new entry empty?
                 if (isEmpty)
                 {
                     // Yes - remove existing record.
-                    warehouseRecords.Remove(buildingID);
+                    WarehouseRecords.Remove(buildingID);
                 }
                 else
                 {
                     // Not empty replace existing entry with the new one.
-                    warehouseRecords[buildingID] = recordData;
+                    WarehouseRecords[buildingID] = recordData;
                 }
             }
             else if (!isEmpty)
             {
                 // No - create new entry if the provided data wasn't empty.
-                warehouseRecords.Add(buildingID, recordData);
+                WarehouseRecords.Add(buildingID, recordData);
             }
         }
-
 
         /// <summary>
         /// Serializes warehouse data.
         /// </summary>
-        /// <param name="stream">Binary writer instance to serialize to</param>
+        /// <param name="writer">Binary writer instance to serialize to.</param>
         internal static void Serialize(BinaryWriter writer)
         {
             Logging.Message("serializing warehouse data");
 
             // Write length of dictionary.
-            writer.Write(warehouseRecords.Count);
+            writer.Write(WarehouseRecords.Count);
 
             // Serialise each building entry.
-            foreach (KeyValuePair<uint, WarehouseRecord> entry in warehouseRecords)
+            foreach (KeyValuePair<uint, WarehouseRecord> entry in WarehouseRecords)
             {
                 // Local reference.
                 WarehouseRecord warehouseRecord = entry.Value;
 
                 // Serialize key and simple fields.
                 writer.Write(entry.Key);
-                writer.Write((ushort)warehouseRecord.flags);
-                writer.Write(warehouseRecord.reserveVehicles);
-                writer.Write(warehouseRecord.priority);
+                writer.Write((ushort)warehouseRecord.Flags);
+                writer.Write(warehouseRecord.ReserveVehicles);
+                writer.Write(warehouseRecord.Priority);
 
                 Logging.Message("wrote entry ", entry.Key);
             }
         }
 
-
         /// <summary>
         /// Deserializes savegame data.
         /// </summary>
-        /// <param name="stream">Data memory stream to deserialize from</param>
+        /// <param name="reader">Binary reader instance to deserialize from.</param>
         internal static void Deserialize(BinaryReader reader)
         {
             Logging.Message("deserializing warehouse data");
 
             // Clear dictionary.
-            warehouseRecords.Clear();
+            WarehouseRecords.Clear();
 
             // Iterate through each entry read.
             int numEntries = reader.ReadInt32();
@@ -349,24 +361,23 @@ namespace TransferController
                 // Deserialize basic building record fields.
                 WarehouseRecord warehouseRecord = new WarehouseRecord
                 {
-                    flags = (WarehouseFlags)reader.ReadInt16(),
-                    reserveVehicles = reader.ReadByte(),
-                    priority = reader.ReadByte()
+                    Flags = (WarehouseFlags)reader.ReadInt16(),
+                    ReserveVehicles = reader.ReadByte(),
+                    Priority = reader.ReadByte(),
                 };
 
                 // Add completed entry to dictionary.
-                warehouseRecords.Add(key, warehouseRecord);
+                WarehouseRecords.Add(key, warehouseRecord);
                 Logging.Message("read entry ", key);
             }
         }
 
-
         /// <summary>
         /// Sets or clears the specified flags for the given warehouse building.
         /// </summary>
-        /// <param name="buildingID">Building ID</param>
-        /// <param name="status">True to set flags, false to clear</param>
-        /// <param name="flags">Flags to set/clear</param>
+        /// <param name="buildingID">Building ID.</param>
+        /// <param name="status">True to set flags, false to clear.</param>
+        /// <param name="flags">Flags to set/clear.</param>
         private static void SetFlags(uint buildingID, bool status, WarehouseFlags flags)
         {
             // Don't do anything if no valid building is set.
@@ -376,7 +387,7 @@ namespace TransferController
             }
 
             // Try to get existing entry.
-            bool hasEntry = warehouseRecords.TryGetValue(buildingID, out WarehouseRecord warehouseRecord);
+            bool hasEntry = WarehouseRecords.TryGetValue(buildingID, out WarehouseRecord warehouseRecord);
 
             // Setting or clearing?
             if (status)
@@ -385,15 +396,15 @@ namespace TransferController
                 if (hasEntry)
                 {
                     // Add flag to existing entry.
-                    warehouseRecord.flags |= flags;
-                    warehouseRecords[buildingID] = warehouseRecord;
+                    warehouseRecord.Flags |= flags;
+                    WarehouseRecords[buildingID] = warehouseRecord;
                 }
                 else
                 {
                     // No record for building in dictionary - add one.
-                    warehouseRecords.Add(buildingID, new WarehouseRecord
+                    WarehouseRecords.Add(buildingID, new WarehouseRecord
                     {
-                        flags = flags
+                        Flags = flags,
                     });
                 }
             }
@@ -401,29 +412,28 @@ namespace TransferController
             {
                 // Clearing a flag - only bother if we've got an existing entry.
                 // Get updated flags.
-                WarehouseFlags updatedFlags = warehouseRecord.flags & ~flags;
+                WarehouseFlags updatedFlags = warehouseRecord.Flags & ~flags;
 
                 // If no flags remaining, remove entire dictionary entry if there's no other data either.
-                if (updatedFlags == 0 && warehouseRecord.reserveVehicles == 0 && warehouseRecord.priority == 0)
+                if (updatedFlags == 0 && warehouseRecord.ReserveVehicles == 0 && warehouseRecord.Priority == 0)
                 {
-                    warehouseRecords.Remove(buildingID);
+                    WarehouseRecords.Remove(buildingID);
                 }
                 else
                 {
                     // Update existing entry.
-                    warehouseRecord.flags = updatedFlags;
-                    warehouseRecords[buildingID] = warehouseRecord;
+                    warehouseRecord.Flags = updatedFlags;
+                    WarehouseRecords[buildingID] = warehouseRecord;
                 }
             }
         }
 
-
         /// <summary>
         /// Returns the current status of the given flags for the given warehouse building.
         /// </summary>
-        /// <param name="buildingID">ID of building to check</param>
-        /// <param name="flag">Flags to check</param>
-        /// <returns>True if ANY of the specified flags is set, false otherwise</returns>
+        /// <param name="buildingID">ID of building to check.</param>
+        /// <param name="flags">Flags to check.</param>
+        /// <returns>True if ANY of the specified flags is set, false otherwise.</returns>
         private static bool GetFlags(uint buildingID, WarehouseFlags flags)
         {
             // Don't do anything if no valid building is set.
@@ -433,10 +443,10 @@ namespace TransferController
             }
 
             // See if we've got an entry for this building.
-            if (warehouseRecords.TryGetValue(buildingID, out WarehouseRecord warehouseRecord))
+            if (WarehouseRecords.TryGetValue(buildingID, out WarehouseRecord warehouseRecord))
             {
                 // Entry found - return same-district flag status.
-                return (warehouseRecord.flags & flags) != 0;
+                return (warehouseRecord.Flags & flags) != 0;
             }
             else
             {
@@ -445,12 +455,11 @@ namespace TransferController
             }
         }
 
-
         /// <summary>
         /// Enables the given reserved flag for the given building.
         /// </summary>
-        /// <param name="buildingID"></param>
-        /// <param name="flag"></param>
+        /// <param name="buildingID">ID of building to check.</param>
+        /// <param name="flag">Flag to enable.</param>
         private static void SetReserveFlag(uint buildingID, WarehouseFlags flag)
         {
             // Clear all other reserve flags first.
@@ -464,6 +473,27 @@ namespace TransferController
             {
                 SetReservedVehicles(buildingID, 1);
             }
+        }
+
+        /// <summary>
+        /// Warehouse data record.
+        /// </summary>
+        public struct WarehouseRecord
+        {
+            /// <summary>
+            /// Warehouse flags.
+            /// </summary>
+            public WarehouseFlags Flags;
+
+            /// <summary>
+            /// Reserved vehicles count.
+            /// </summary>
+            public byte ReserveVehicles;
+
+            /// <summary>
+            /// Custom warehouse priority.
+            /// </summary>
+            public byte Priority;
         }
     }
 }

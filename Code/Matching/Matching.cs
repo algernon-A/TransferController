@@ -641,13 +641,13 @@ namespace TransferController
         /// <summary>
         /// Checks against district and building filters, both incoming and outgoing.
         /// </summary>
-        /// <param name="incomingBuildingID">Incoming building ID.</param
+        /// <param name="incomingBuildingID">Incoming building ID.</param>
         /// <param name="outgoingBuildingID">Outoging building ID.</param>
         /// <param name="incomingDistrict">District of incoming offer.</param>
         /// <param name="outgoingDistrict">District of outgoing offer.</param>
         /// <param name="incomingPark">Park area of incoming offer.</param>
         /// <param name="outgoingPark">Park area of outgoing offer.</param>
-        /// <param name="reason">Transfer reason.</param
+        /// <param name="reason">Transfer reason.</param>
         /// <param name="result">Matching result check.</param>
         /// <returns>True if the transfer is permitted, false if prohibited.</returns>
         internal static bool ChecksPassed(
@@ -697,11 +697,11 @@ namespace TransferController
             uint buildingRecordID = BuildingControl.CalculateEntryKey(buildingID, true, transferReason);
 
             // Get building record.
-            if (!BuildingControl.s_buildingRecords.TryGetValue(buildingRecordID, out BuildingControl.BuildingRecord buildingRecord))
+            if (!BuildingControl.BuildingRecords.TryGetValue(buildingRecordID, out BuildingControl.BuildingRecord buildingRecord))
             {
                 // No record found; try TransferReason.None wildcard.
                 buildingRecordID = BuildingControl.CalculateEntryKey(buildingID, true, TransferManager.TransferReason.None);
-                if (!BuildingControl.s_buildingRecords.TryGetValue(buildingRecordID, out buildingRecord))
+                if (!BuildingControl.BuildingRecords.TryGetValue(buildingRecordID, out buildingRecord))
                 {
                     // No record found, therefore no restrictions.
                     result = TransferLogging.MatchStatus.Eligible;
@@ -786,7 +786,7 @@ namespace TransferController
         /// <param name="outgoingPark">Park area of outgoing offer.</param>
         /// <param name="transferReason">Transfer reason.</param>
         /// <param name="result">Matching result check.</param>
-        /// <returns>True if the transfer is permitted, false if prohibited.<./returns>
+        /// <returns>True if the transfer is permitted, false if prohibited.</returns>
         private static bool OutgoingChecksPassed(
             ushort buildingID,
             ushort incomingBuildingID,
@@ -801,13 +801,13 @@ namespace TransferController
             uint buildingRecordID = BuildingControl.CalculateEntryKey(buildingID, false, transferReason);
 
             // Try to get building record.
-            if (!BuildingControl.s_buildingRecords.TryGetValue(buildingRecordID, out BuildingControl.BuildingRecord buildingRecord))
+            if (!BuildingControl.BuildingRecords.TryGetValue(buildingRecordID, out BuildingControl.BuildingRecord buildingRecord))
             {
                 // No record found; if this is a cargo transfer, try none.
                 if (IsCargoReason(transferReason))
                 {
                     buildingRecordID = BuildingControl.CalculateEntryKey(buildingID, false, TransferManager.TransferReason.None);
-                    if (!BuildingControl.s_buildingRecords.TryGetValue(buildingRecordID, out buildingRecord))
+                    if (!BuildingControl.BuildingRecords.TryGetValue(buildingRecordID, out buildingRecord))
                     {
                         // No record found, therefore no restrictions.
                         result = TransferLogging.MatchStatus.Eligible;
@@ -892,7 +892,7 @@ namespace TransferController
         /// /// Checks if the given building has an active "prefer same district" setting for the specified TransferReason and returns the appropriate multiplier.
         /// </summary>
         /// <param name="buildingID">Building ID to check.</param>
-        /// <param name="incoming">True if this is an incoming offer, false otherwise.</param
+        /// <param name="incoming">True if this is an incoming offer, false otherwise.</param>
         /// <param name="reason">Transfer reason.</param>
         /// <returns>0.1f if the given building has an active prefer same district setting, 1f otherwise.</returns>
         private static float CheckPreferSameDistrict(ushort buildingID, bool incoming, TransferManager.TransferReason reason)
@@ -911,7 +911,7 @@ namespace TransferController
             uint buildingRecordID = BuildingControl.CalculateEntryKey(buildingID, incoming, reason);
 
             // Get building record.
-            if (BuildingControl.s_buildingRecords.TryGetValue(buildingRecordID, out BuildingControl.BuildingRecord buildingRecord))
+            if (BuildingControl.BuildingRecords.TryGetValue(buildingRecordID, out BuildingControl.BuildingRecord buildingRecord))
             {
                 // Record found - check flag.
                 if ((buildingRecord.Flags & BuildingControl.RestrictionFlags.PreferSameDistrict) != 0)

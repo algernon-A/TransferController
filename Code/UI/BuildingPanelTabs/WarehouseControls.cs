@@ -1,19 +1,26 @@
-﻿using AlgernonCommons.UI;
-using AlgernonCommons.Translation;
-using ColossalFramework;
-using ColossalFramework.UI;
-using UnityEngine;
-
+﻿// <copyright file="WarehouseControls.cs" company="algernon (K. Algernon A. Sheppard)">
+// Copyright (c) algernon (K. Algernon A. Sheppard). All rights reserved.
+// Licensed under the MIT license. See LICENSE.txt file in the project root for full license information.
+// </copyright>
 
 namespace TransferController
 {
+    using AlgernonCommons.Translation;
+    using AlgernonCommons.UI;
+    using ColossalFramework;
+    using ColossalFramework.UI;
+
     /// <summary>
     /// Warehouse vehicle controls.
     /// </summary>
     internal class WarehouseControls : UIPanel
     {
-        // Layout constants.
+        /// <summary>
+        /// Panel height.
+        /// </summary>
         internal const float PanelHeight = SliderY + 45f;
+
+        // Layout constants - private.
         private const float Margin = 5;
         private const float DoubleMargin = Margin + Margin;
         private const float CheckHeight = 25f;
@@ -27,8 +34,10 @@ namespace TransferController
         private const int MaxReservedVehicles = 16;
 
         // Panel components.
-        private readonly UICheckBox reserveUniqueCheck, reserveOutsideCheck, reserveCityCheck;
-        private readonly UISlider reservedVehiclesSlider;
+        private readonly UICheckBox _reserveUniqueCheck;
+        private readonly UICheckBox _reserveOutsideCheck;
+        private readonly UICheckBox _reserveCityCheck;
+        private readonly UISlider _reservedVehiclesSlider;
 
         // References.
         private ushort currentBuilding;
@@ -36,15 +45,8 @@ namespace TransferController
         // Status flag.
         private bool ignoreEvents = false;
 
-
         /// <summary>
-        /// Parent reference.
-        /// </summary>
-        internal BuildingVehiclesTab ParentPanel { get; set; }
-
-
-        /// <summary>
-        /// Constructor.
+        /// Initializes a new instance of the <see cref="WarehouseControls"/> class.
         /// </summary>
         internal WarehouseControls()
         {
@@ -53,25 +55,29 @@ namespace TransferController
             this.width = BuildingPanel.PanelWidth;
 
             // Add reserve vehicle checkboxes.
-            reserveCityCheck = UICheckBoxes.AddLabelledCheckBox(this, Margin, Check1Y, Translations.Translate("TFC_WAR_RVI"), tooltip: Translations.Translate("TFC_WAR_RVI_TIP"));
-            reserveCityCheck.tooltipBox = UIToolTips.WordWrapToolTip;
-            reserveUniqueCheck = UICheckBoxes.AddLabelledCheckBox(this, Margin, Check2Y, Translations.Translate("TFC_WAR_RVU"), tooltip: Translations.Translate("TFC_WAR_RVU_TIP"));
-            reserveUniqueCheck.tooltipBox = UIToolTips.WordWrapToolTip;
-            reserveOutsideCheck = UICheckBoxes.AddLabelledCheckBox(this, Margin, Check3Y, Translations.Translate("TFC_WAR_RVO"), tooltip: Translations.Translate("TFC_WAR_RVO_TIP"));
-            reserveOutsideCheck.tooltipBox = UIToolTips.WordWrapToolTip;
-            reserveUniqueCheck.eventCheckChanged += ReserveUniqueCheckChanged;
-            reserveOutsideCheck.eventCheckChanged += ReserveOutsideCheckChanged;
-            reserveCityCheck.eventCheckChanged += ReserveCityCheckChanged;
+            _reserveCityCheck = UICheckBoxes.AddLabelledCheckBox(this, Margin, Check1Y, Translations.Translate("TFC_WAR_RVI"), tooltip: Translations.Translate("TFC_WAR_RVI_TIP"));
+            _reserveCityCheck.tooltipBox = UIToolTips.WordWrapToolTip;
+            _reserveUniqueCheck = UICheckBoxes.AddLabelledCheckBox(this, Margin, Check2Y, Translations.Translate("TFC_WAR_RVU"), tooltip: Translations.Translate("TFC_WAR_RVU_TIP"));
+            _reserveUniqueCheck.tooltipBox = UIToolTips.WordWrapToolTip;
+            _reserveOutsideCheck = UICheckBoxes.AddLabelledCheckBox(this, Margin, Check3Y, Translations.Translate("TFC_WAR_RVO"), tooltip: Translations.Translate("TFC_WAR_RVO_TIP"));
+            _reserveOutsideCheck.tooltipBox = UIToolTips.WordWrapToolTip;
+            _reserveUniqueCheck.eventCheckChanged += ReserveUniqueCheckChanged;
+            _reserveOutsideCheck.eventCheckChanged += ReserveOutsideCheckChanged;
+            _reserveCityCheck.eventCheckChanged += ReserveCityCheckChanged;
 
             // Reserved vehicles slider.
-            reservedVehiclesSlider = AddVehicleSlider(this, DoubleMargin, SliderY, SliderWidth, WarehouseControl.GetReservedVehicles(currentBuilding));
+            _reservedVehiclesSlider = AddVehicleSlider(this, DoubleMargin, SliderY, SliderWidth, WarehouseControl.GetReservedVehicles(currentBuilding));
         }
 
+        /// <summary>
+        /// Gets or sets the parent instance reference.
+        /// </summary>
+        internal BuildingVehiclesTab ParentPanel { get; set; }
 
         /// <summary>
         /// Sets/changes the currently selected building.
         /// </summary>
-        /// <param name="buildingID">New building ID</param>
+        /// <param name="buildingID">New building ID.</param>
         internal void SetTarget(ushort buildingID)
         {
             // Set checkbox states with event processing suspended.
@@ -83,23 +89,23 @@ namespace TransferController
                 currentBuilding = buildingID;
 
                 // Set checkboxes.
-                reserveCityCheck.isChecked = WarehouseControl.GetReserveCity(buildingID);
-                reserveUniqueCheck.isChecked = WarehouseControl.GetReserveUnique(buildingID);
-                reserveOutsideCheck.isChecked = WarehouseControl.GetReserveOutside(buildingID);
+                _reserveCityCheck.isChecked = WarehouseControl.GetReserveCity(buildingID);
+                _reserveUniqueCheck.isChecked = WarehouseControl.GetReserveUnique(buildingID);
+                _reserveOutsideCheck.isChecked = WarehouseControl.GetReserveOutside(buildingID);
 
                 // Set reserved vehicle slider maximum.
                 if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID].Info.m_buildingAI is WarehouseAI warehouseAI)
                 {
-                    reservedVehiclesSlider.maxValue = System.Math.Min(warehouseAI.m_truckCount, MaxReservedVehicles);
+                    _reservedVehiclesSlider.maxValue = System.Math.Min(warehouseAI.m_truckCount, MaxReservedVehicles);
                 }
                 else
                 {
                     // Shouldn't ever get here, but just in case...
-                    reservedVehiclesSlider.maxValue = MaxReservedVehicles;
+                    _reservedVehiclesSlider.maxValue = MaxReservedVehicles;
                 }
 
                 // Set reserved vehicles slider value.
-                reservedVehiclesSlider.value = WarehouseControl.GetReservedVehicles(buildingID);
+                _reservedVehiclesSlider.value = WarehouseControl.GetReservedVehicles(buildingID);
             }
 
             // Update component visibility.
@@ -109,12 +115,11 @@ namespace TransferController
             ignoreEvents = false;
         }
 
-
         /// <summary>
         /// Reserve vehicles for unique factories checkbox event handler.
         /// </summary>
-        /// <param name="component">Calling component</param>
-        /// <param name="isChecked">New checked status</param>
+        /// <param name="component">Calling component.</param>
+        /// <param name="isChecked">New checked status.</param>
         private void ReserveUniqueCheckChanged(UIComponent component, bool isChecked)
         {
             // Don't do anything if we're ignoring events.
@@ -130,8 +135,8 @@ namespace TransferController
             if (isChecked)
             {
                 // If this is checked, unchek the other checkboxes.
-                reserveOutsideCheck.isChecked = false;
-                reserveCityCheck.isChecked = false;
+                _reserveOutsideCheck.isChecked = false;
+                _reserveCityCheck.isChecked = false;
                 WarehouseControl.SetReserveUnique(currentBuilding);
             }
             else
@@ -146,12 +151,11 @@ namespace TransferController
             ignoreEvents = false;
         }
 
-
         /// <summary>
         /// Reserve vehicles for outside connections checkbox event handler.
         /// </summary>
-        /// <param name="component">Calling component</param>
-        /// <param name="isChecked">New checked status</param>
+        /// <param name="component">Calling component.</param>
+        /// <param name="isChecked">New checked status.</param>
         private void ReserveOutsideCheckChanged(UIComponent component, bool isChecked)
         {
             // Don't do anything if we're ignoring events.
@@ -167,8 +171,8 @@ namespace TransferController
             if (isChecked)
             {
                 // If this is checked, unchek the other checkboxes.
-                reserveUniqueCheck.isChecked = false;
-                reserveCityCheck.isChecked = false;
+                _reserveUniqueCheck.isChecked = false;
+                _reserveCityCheck.isChecked = false;
                 WarehouseControl.SetReserveOutside(currentBuilding);
             }
             else
@@ -183,12 +187,11 @@ namespace TransferController
             ignoreEvents = false;
         }
 
-
         /// <summary>
         /// Reserve vehicles for local service checkbox event handler.
         /// </summary>
-        /// <param name="component">Calling component</param>
-        /// <param name="isChecked">New checked status</param>
+        /// <param name="component">Calling component.</param>
+        /// <param name="isChecked">New checked status.</param>
         private void ReserveCityCheckChanged(UIComponent component, bool isChecked)
         {
             // Don't do anything if we're ignoring events.
@@ -204,8 +207,8 @@ namespace TransferController
             if (isChecked)
             {
                 // If this is checked, unchek the other checkboxes.
-                reserveOutsideCheck.isChecked = false;
-                reserveUniqueCheck.isChecked = false;
+                _reserveOutsideCheck.isChecked = false;
+                _reserveUniqueCheck.isChecked = false;
                 WarehouseControl.SetReserveCity(currentBuilding);
             }
             else
@@ -220,12 +223,11 @@ namespace TransferController
             ignoreEvents = false;
         }
 
-
         /// <summary>
         /// Reserve vehicles slider change event handler.
         /// </summary>
-        /// <param name="component">Calling component</param>
-        /// <param name="value">New value</param>
+        /// <param name="component">Calling component.</param>
+        /// <param name="value">New value.</param>
         private void ReservedVehiclesSliderChanged(UIComponent component, float value)
         {
             // Update value label.
@@ -240,77 +242,49 @@ namespace TransferController
                 return;
             }
 
-            WarehouseControl.SetReservedVehicles(currentBuilding, (byte)(value.RoundToNearest(1f)));
+            WarehouseControl.SetReservedVehicles(currentBuilding, (byte)value.RoundToNearest(1f));
 
             // Update component visibility.
             SetVisibility();
         }
-
 
         /// <summary>
         /// Sets component visibilities based on current status.
         /// </summary>
         private void SetVisibility()
         {
-            reservedVehiclesSlider.isVisible = reserveUniqueCheck.isChecked ||
-                reserveOutsideCheck.isChecked ||
-                reserveCityCheck.isChecked;
+            _reservedVehiclesSlider.isVisible = _reserveUniqueCheck.isChecked ||
+                _reserveOutsideCheck.isChecked ||
+                _reserveCityCheck.isChecked;
 
             // Update tab sprite.
             ParentPanel.SetSprite();
         }
 
-
         /// <summary>
         /// Adds a slider with integer value display to the specified component.
         /// </summary>
-        /// <param name="parent">Parent component</param>
-        /// <param name="xPos">Relative X position</param
-        /// <param name="yPos">Relative Y position</param
-        /// <param name="width">Slider width</param>
-        /// <param name="width">Slider width</param>
-        /// <returns>New UISlider</returns>
+        /// <param name="parent">Parent component.</param>
+        /// <param name="xPos">Relative X position.</param>
+        /// <param name="yPos">Relative Y position.</param>
+        /// <param name="width">Slider width.</param>
+        /// <param name="maxValue">Slider maximum value.</param>
+        /// <returns>New UISlider.</returns>
         private UISlider AddVehicleSlider(UIComponent parent, float xPos, float yPos, float width, float maxValue)
         {
-            const float SliderY = 18f;
             const float LabelY = -13f;
-            const float SliderHeight = 18f;
 
             // Slider control.
-            UISlider newSlider = parent.AddUIComponent<UISlider>();
-            newSlider.size = new Vector2(width, SliderHeight);
-            newSlider.relativePosition = new Vector2(xPos, yPos + SliderY);
+            UISlider newSlider = UISliders.AddBudgetSlider(parent, xPos, yPos, width, maxValue, Translations.Translate("TFC_WAR_RVC_TIP"));
             newSlider.name = name;
 
-            // Tooltip.
-            newSlider.tooltip = Translations.Translate("TFC_WAR_RVC_TIP");
-
-            // Title label.
-            UILabel titleLabel = UILabels.AddLabel(newSlider, 0f, LabelY, Translations.Translate("TFC_WAR_RVC") + ": ", textScale: 0.7f);
-
             // Value label.
+            UILabel titleLabel = UILabels.AddLabel(newSlider, 0f, LabelY, Translations.Translate("TFC_WAR_RVC"), textScale: 0.7f);
             UILabel valueLabel = UILabels.AddLabel(newSlider, titleLabel.width, LabelY, "0", textScale: 0.7f);
             newSlider.objectUserData = valueLabel;
 
-            // Slider track.
-            UISlicedSprite sliderSprite = newSlider.AddUIComponent<UISlicedSprite>();
-            sliderSprite.atlas = UITextures.InGameAtlas;
-            sliderSprite.spriteName = "BudgetSlider";
-            sliderSprite.size = new Vector2(newSlider.width, 9f);
-            sliderSprite.relativePosition = new Vector2(0f, 4f);
-
-            // Slider thumb.
-            UISlicedSprite sliderThumb = newSlider.AddUIComponent<UISlicedSprite>();
-            sliderThumb.atlas = UITextures.InGameAtlas;
-            sliderThumb.spriteName = "SliderBudget";
-            newSlider.thumbObject = sliderThumb;
-
             // Add value changed event handler.
             newSlider.eventValueChanged += ReservedVehiclesSliderChanged;
-
-            // Set initial values.
-            newSlider.stepSize = 1f;
-            newSlider.minValue = 1f;
 
             return newSlider;
         }

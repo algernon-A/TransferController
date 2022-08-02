@@ -15,9 +15,11 @@ namespace TransferController
     /// </summary>
     internal static class BuildingControl
     {
-        // Dictionary of building settings.  Key is building ID as lower 16 bits with transfer reason as upper 8 bits and mask as next upper 8 bits.
+        /// <summary>
+        /// Dictionary of building settings.  Key is building ID as lower 16 bits with transfer reason as upper 8 bits and mask as next upper 8 bits.
+        /// </summary>
+        internal static readonly Dictionary<uint, BuildingRecord> BuildingRecords = new Dictionary<uint, BuildingRecord>();
         private const uint NewOutgoingMask = 0x00800000;
-        internal static Dictionary<uint, BuildingRecord> s_buildingRecords = new Dictionary<uint, BuildingRecord>();
 
         // Flag to indicate loading of an older data version.
         private static bool oldDataVersion = false;
@@ -66,7 +68,7 @@ namespace TransferController
         /// <param name="transferReason">Transfer reason.</param>
         /// <returns>True if a custom record exists, false otherwise.</returns>
         internal static bool HasRecord(ushort buildingID, bool incoming, TransferManager.TransferReason transferReason) =>
-            s_buildingRecords.ContainsKey(CalculateEntryKey(buildingID, incoming, transferReason));
+            BuildingRecords.ContainsKey(CalculateEntryKey(buildingID, incoming, transferReason));
 
         /// <summary>
         /// Calculates the building dictionary key for the given parameters.
@@ -101,10 +103,10 @@ namespace TransferController
             uint buildingRecordID = CalculateEntryKey(buildingID, incoming, transferReason);
 
             // See if we've already got an entry for this building; if not, create one.
-            if (!s_buildingRecords.TryGetValue(buildingRecordID, out BuildingRecord buildingRecord))
+            if (!BuildingRecords.TryGetValue(buildingRecordID, out BuildingRecord buildingRecord))
             {
                 // Init buildingRecord.
-                s_buildingRecords.Add(buildingRecordID, new BuildingRecord
+                BuildingRecords.Add(buildingRecordID, new BuildingRecord
                 {
                     Flags = RestrictionFlags.None,
                     Districts = new HashSet<int> { districtID },
@@ -117,12 +119,12 @@ namespace TransferController
                 if (buildingRecord.Districts == null)
                 {
                     buildingRecord.Districts = new HashSet<int> { districtID };
-                    s_buildingRecords[buildingRecordID] = buildingRecord;
+                    BuildingRecords[buildingRecordID] = buildingRecord;
                 }
                 else
                 {
                     // Existing hasheset - add district.
-                    s_buildingRecords[buildingRecordID].Districts.Add(districtID);
+                    BuildingRecords[buildingRecordID].Districts.Add(districtID);
                 }
             }
         }
@@ -142,7 +144,7 @@ namespace TransferController
             uint buildingRecordID = CalculateEntryKey(buildingID, incoming, transferReason);
 
             // See if we've got an entry for this building.
-            if (s_buildingRecords.TryGetValue(buildingRecordID, out BuildingRecord buildingRecord))
+            if (BuildingRecords.TryGetValue(buildingRecordID, out BuildingRecord buildingRecord))
             {
                 if (buildingRecord.Districts != null)
                 {
@@ -153,7 +155,7 @@ namespace TransferController
                     if (buildingRecord.Districts.Count == 0)
                     {
                         buildingRecord.Districts = null;
-                        s_buildingRecords[buildingRecordID] = buildingRecord;
+                        BuildingRecords[buildingRecordID] = buildingRecord;
                     }
                 }
             }
@@ -172,10 +174,10 @@ namespace TransferController
             uint buildingRecordID = CalculateEntryKey(buildingID, incoming, transferReason);
 
             // See if we've already got an entry for this building; if not, create one.
-            if (!s_buildingRecords.TryGetValue(buildingRecordID, out BuildingRecord buildingRecord))
+            if (!BuildingRecords.TryGetValue(buildingRecordID, out BuildingRecord buildingRecord))
             {
                 // Init buildingRecord.
-                s_buildingRecords.Add(buildingRecordID, new BuildingRecord
+                BuildingRecords.Add(buildingRecordID, new BuildingRecord
                 {
                     Flags = RestrictionFlags.None,
                     Buildings = new HashSet<uint> { newBuilding },
@@ -188,12 +190,12 @@ namespace TransferController
                 if (buildingRecord.Buildings == null)
                 {
                     buildingRecord.Buildings = new HashSet<uint> { newBuilding };
-                    s_buildingRecords[buildingRecordID] = buildingRecord;
+                    BuildingRecords[buildingRecordID] = buildingRecord;
                 }
                 else
                 {
                     // Existing hasheset - add district.
-                    s_buildingRecords[buildingRecordID].Buildings.Add(newBuilding);
+                    BuildingRecords[buildingRecordID].Buildings.Add(newBuilding);
                 }
             }
         }
@@ -211,7 +213,7 @@ namespace TransferController
             uint buildingRecordID = CalculateEntryKey(buildingID, incoming, transferReason);
 
             // See if we've got an entry for this building.
-            if (s_buildingRecords.TryGetValue(buildingRecordID, out BuildingRecord buildingRecord))
+            if (BuildingRecords.TryGetValue(buildingRecordID, out BuildingRecord buildingRecord))
             {
                 if (buildingRecord.Buildings != null)
                 {
@@ -222,7 +224,7 @@ namespace TransferController
                     if (buildingRecord.Buildings.Count == 0)
                     {
                         buildingRecord.Buildings = null;
-                        s_buildingRecords[buildingRecordID] = buildingRecord;
+                        BuildingRecords[buildingRecordID] = buildingRecord;
                     }
                 }
             }
@@ -241,7 +243,7 @@ namespace TransferController
             uint buildingRecordID = CalculateEntryKey(buildingID, incoming, transferReason);
 
             // See if we've got an entry for this building.
-            if (s_buildingRecords.TryGetValue(buildingRecordID, out BuildingRecord buildingRecord))
+            if (BuildingRecords.TryGetValue(buildingRecordID, out BuildingRecord buildingRecord))
             {
                 // Got an entry - return it.
                 return buildingRecord.Districts;
@@ -264,7 +266,7 @@ namespace TransferController
             uint buildingRecordID = CalculateEntryKey(buildingID, incoming, transferReason);
 
             // See if we've got an entry for this building.
-            if (s_buildingRecords.TryGetValue(buildingRecordID, out BuildingRecord buildingRecord))
+            if (BuildingRecords.TryGetValue(buildingRecordID, out BuildingRecord buildingRecord))
             {
                 // Got an entry - return it.
                 return buildingRecord.Buildings;
@@ -355,12 +357,12 @@ namespace TransferController
             GetFlags(buildingID, incoming, transferReason, RestrictionFlags.PreferSameDistrict);
 
         /// <summary>
-        /// Returns the current outdise connection status of the given building record.
+        /// Returns the current outside connection status of the given building record.
         /// </summary>
         /// <param name="buildingID">ID of building to check.</param>
         /// <param name="incoming">True if this is an incoming transfer record, false if outgoing.</param>
         /// <param name="transferReason">Transfer reason.</param>
-        /// <returns>True if building incoming restrictions are enabled, false otherwise.</returns>
+        /// <returns>True if outside connections are restricted, false if permitted.</returns>
         internal static bool GetOutsideConnection(ushort buildingID, bool incoming, TransferManager.TransferReason transferReason) =>
             GetFlags(buildingID, incoming, transferReason, RestrictionFlags.BlockOutsideConnection);
 
@@ -407,24 +409,24 @@ namespace TransferController
             }
 
             // Do we already have an entry for this building?
-            if (s_buildingRecords.ContainsKey(buildingRecordID))
+            if (BuildingRecords.ContainsKey(buildingRecordID))
             {
                 // Yes - is the new entry empty?
                 if (isEmpty)
                 {
                     // Yes - remove existing record.
-                    s_buildingRecords.Remove(buildingRecordID);
+                    BuildingRecords.Remove(buildingRecordID);
                 }
                 else
                 {
                     // Not empty replace existing entry with the new one.
-                    s_buildingRecords[buildingRecordID] = newRecord;
+                    BuildingRecords[buildingRecordID] = newRecord;
                 }
             }
             else if (!isEmpty)
             {
                 // No - create new entry if the provided data wasn't empty.
-                s_buildingRecords.Add(buildingRecordID, newRecord);
+                BuildingRecords.Add(buildingRecordID, newRecord);
             }
         }
 
@@ -439,12 +441,12 @@ namespace TransferController
             {
                 // Remove incomung and outgoiing entries.
                 uint key = (uint)(i << 24) | buildingID;
-                s_buildingRecords.Remove(key);
-                s_buildingRecords.Remove(key | NewOutgoingMask);
+                BuildingRecords.Remove(key);
+                BuildingRecords.Remove(key | NewOutgoingMask);
             }
 
             // Then, iterate through all records and remove this reference from all building lists.
-            foreach (KeyValuePair<uint, BuildingRecord> entry in s_buildingRecords)
+            foreach (KeyValuePair<uint, BuildingRecord> entry in BuildingRecords)
             {
                 if (entry.Value.Buildings != null)
                 {
@@ -462,10 +464,10 @@ namespace TransferController
             Logging.Message("serializing building data");
 
             // Write length of dictionary.
-            writer.Write(s_buildingRecords.Count);
+            writer.Write(BuildingRecords.Count);
 
             // Serialise each building entry.
-            foreach (KeyValuePair<uint, BuildingRecord> entry in s_buildingRecords)
+            foreach (KeyValuePair<uint, BuildingRecord> entry in BuildingRecords)
             {
                 // Local reference.
                 BuildingRecord buildingRecord = entry.Value;
@@ -517,7 +519,7 @@ namespace TransferController
             Building[] buildingBuffer = Singleton<BuildingManager>.instance.m_buildings.m_buffer;
 
             // Clear dictionary.
-            s_buildingRecords.Clear();
+            BuildingRecords.Clear();
 
             // Iterate through each entry read.
             int numEntries = reader.ReadInt32();
@@ -635,9 +637,9 @@ namespace TransferController
                 }
 
                 // Add completed entry to dictionary.
-                if (!s_buildingRecords.ContainsKey(key))
+                if (!BuildingRecords.ContainsKey(key))
                 {
-                    s_buildingRecords.Add(key, buildingRecord);
+                    BuildingRecords.Add(key, buildingRecord);
                     Logging.Message("read entry for building ", buildingID, " incoming ", (key & NewOutgoingMask) == 0, " and reason ", reason);
                 }
                 else
@@ -667,7 +669,7 @@ namespace TransferController
             List<uint> candidateEntries = new List<uint>();
 
             // Iterate through building record dictionary looking for eligible records.
-            foreach (KeyValuePair<uint, BuildingRecord> entry in s_buildingRecords)
+            foreach (KeyValuePair<uint, BuildingRecord> entry in BuildingRecords)
             {
                 // Interested in any records with the 'None' or 'Oil' transfer reasons.
                 TransferManager.TransferReason reason = (TransferManager.TransferReason)((entry.Key & 0xFF000000) >> 24);
@@ -735,12 +737,12 @@ namespace TransferController
                 {
                     // Yes - remove old record and add new replacement.
                     Logging.Message("converting old TransferType.None ", isIncoming ? "incoming" : "outgoing", " record for building ", buildingID, " to new record with transferType ", newReason);
-                    BuildingRecord oldRecord = s_buildingRecords[oldEntry];
-                    s_buildingRecords.Remove(oldEntry);
+                    BuildingRecord oldRecord = BuildingRecords[oldEntry];
+                    BuildingRecords.Remove(oldEntry);
 
                     // Calculate new key and check that it's unique.
                     uint newEntry = CalculateEntryKey(buildingID, isIncoming, newReason);
-                    if (s_buildingRecords.ContainsKey(newEntry))
+                    if (BuildingRecords.ContainsKey(newEntry))
                     {
                         // Duplicate key - log and drop.
                         Logging.Error("duplicate new key for building ", buildingID, "; skipping");
@@ -748,7 +750,7 @@ namespace TransferController
                     else
                     {
                         // Add new entry.
-                        s_buildingRecords.Add(CalculateEntryKey(buildingID, isIncoming, newReason), oldRecord);
+                        BuildingRecords.Add(CalculateEntryKey(buildingID, isIncoming, newReason), oldRecord);
                     }
                 }
                 else
@@ -773,7 +775,7 @@ namespace TransferController
             uint buildingRecordID = CalculateEntryKey(buildingID, incoming, transferReason);
 
             // Try to get existing entry.
-            bool hasEntry = s_buildingRecords.TryGetValue(buildingRecordID, out BuildingRecord buildingRecord);
+            bool hasEntry = BuildingRecords.TryGetValue(buildingRecordID, out BuildingRecord buildingRecord);
 
             // Setting or clearing?
             if (status)
@@ -783,12 +785,12 @@ namespace TransferController
                 {
                     // Add flag to existing entry.
                     buildingRecord.Flags |= flag;
-                    s_buildingRecords[buildingRecordID] = buildingRecord;
+                    BuildingRecords[buildingRecordID] = buildingRecord;
                 }
                 else
                 {
                     // No record for building in dictionary - add one.
-                    s_buildingRecords.Add(buildingRecordID, new BuildingRecord
+                    BuildingRecords.Add(buildingRecordID, new BuildingRecord
                     {
                         Flags = flag,
                     });
@@ -803,13 +805,13 @@ namespace TransferController
                 // If no flags remaining, remove entire dictionary entry.
                 if (updatedFlags == RestrictionFlags.None)
                 {
-                    s_buildingRecords.Remove(buildingRecordID);
+                    BuildingRecords.Remove(buildingRecordID);
                 }
                 else
                 {
                     // Update existing entry.
                     buildingRecord.Flags = updatedFlags;
-                    s_buildingRecords[buildingRecordID] = buildingRecord;
+                    BuildingRecords[buildingRecordID] = buildingRecord;
                 }
             }
         }
@@ -828,7 +830,7 @@ namespace TransferController
             uint buildingRecordID = CalculateEntryKey(buildingID, incoming, transferReason);
 
             // See if we've got an entry for this building.
-            if (s_buildingRecords.TryGetValue(buildingRecordID, out BuildingRecord buildingRecord))
+            if (BuildingRecords.TryGetValue(buildingRecordID, out BuildingRecord buildingRecord))
             {
                 // Entry found - return same-district flag status.
                 return (buildingRecord.Flags & flag) != RestrictionFlags.None;

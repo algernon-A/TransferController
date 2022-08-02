@@ -30,7 +30,7 @@ namespace TransferController
 
         // Layout constants - private.
         private const float PathFailListY = ListHeaderY;
-        private const float ListHeight = StatusRow.RowHeight * 5f;
+        private const float ListHeight = StatusRow.DefaultRowHeight * 5f;
         private const float ListWidth = PanelWidth - Margin - Margin;
 
         // Panel components.
@@ -68,7 +68,7 @@ namespace TransferController
         protected override void UpdateContent()
         {
             // Get filtered log list.
-            List<PathFailItem> displayList = PathFindFailure.GetFails(currentBuilding);
+            List<PathFailItem> displayList = PathFindFailure.GetFails(CurrentBuilding);
 
             // Set fastlist items, without changing the display.
             _pathfindList.Data = new FastList<object>

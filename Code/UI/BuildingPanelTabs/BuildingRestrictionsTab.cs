@@ -1,21 +1,33 @@
-﻿using AlgernonCommons;
-using AlgernonCommons.Translation;
-using AlgernonCommons.UI;
-using ColossalFramework.UI;
-using System;
-using UnityEngine;
-
+﻿// <copyright file="BuildingRestrictionsTab.cs" company="algernon (K. Algernon A. Sheppard)">
+// Copyright (c) algernon (K. Algernon A. Sheppard). All rights reserved.
+// Licensed under the MIT license. See LICENSE.txt file in the project root for full license information.
+// </copyright>
 
 namespace TransferController
 {
+    using System;
+    using AlgernonCommons;
+    using AlgernonCommons.Translation;
+    using AlgernonCommons.UI;
+    using ColossalFramework.UI;
+    using UnityEngine;
+
     /// <summary>
     /// Location restrictions tab for buildings.
     /// </summary>
     internal class BuildingRestrictionsTab : BuildingPanelTab
     {
-        // Layout constants.
+        /// <summary>
+        /// Panel height.
+        /// </summary>
         internal const float PanelHeight = BuildingListY + ListHeight + Margin;
+
+        /// <summary>
+        /// List height.
+        /// </summary>
         internal const float ListHeight = 10f * DistrictRow.DefaultRowHeight;
+
+        // Layout constants - private.
         private const float OutsideCheckY = Margin;
         private const float PreferCheckY = OutsideCheckY + CheckHeight;
         private const float EnabledCheckY = PreferCheckY + CheckHeight;
@@ -26,154 +38,61 @@ namespace TransferController
         private const float BuildingListY = BuildingListTitleY + CheckHeight;
         private const float BuildingButtonX = MidControlX + ColumnWidth;
 
-
         // Panel components.
-        private readonly UICheckBox enabledCheck, preferSameCheck, sameDistrictCheck, outsideCheck;
-        private readonly UIButton addDistrictButton, removeDistrictButton;
-        private DistrictSelectionPanel districtSelectionPanel;
-        private SelectedDistrictPanel buildingDistrictSelectionPanel;
-        private readonly UIButton addBuildingButton, removeBuildingButton;
-        private SelectedBuildingPanel selectedBuildingPanel;
+        private readonly UICheckBox _enabledCheck;
+        private readonly UICheckBox _preferSameCheck;
+        private readonly UICheckBox _sameDistrictCheck;
+        private readonly UICheckBox _outsideCheck;
+        private readonly UIButton _addDistrictButton;
+        private readonly UIButton _addBuildingButton;
+        private readonly UIButton _removeDistrictButton;
+        private readonly UIButton _removeBuildingButton;
+        private DistrictSelectionPanel _districtSelectionPanel;
+        private SelectedDistrictPanel _buildingDistrictSelectionPanel;
+        private SelectedBuildingPanel _selectedBuildingPanel;
 
         // Status flags.
-        private bool disableEvents = false;
-
-
+        private bool _disableEvents = false;
 
         /// <summary>
-        /// Current content height.
+        /// Initializes a new instance of the <see cref="BuildingRestrictionsTab"/> class.
         /// </summary>
-        internal override float ContentHeight => enabledCheck.isChecked ? PanelHeight : DistrictListTitleY;
-
-
-        /// <summary>
-        /// Sets the outside connection checkbox label text.
-        /// </summary>
-        internal string OutsideLabel
-        {
-            set
-            {
-                // Hide checkbox if value is null.
-                if (value == null)
-                {
-                    outsideCheck.Hide();
-                }
-                else
-                {
-                    outsideCheck.text = value;
-
-                    // Ensure visibility.
-                    outsideCheck.Show();
-                }
-            }
-        }
-
-
-        /// <summary>
-        /// Sets the outside connection checkbox tooltip text.
-        /// </summary>
-        internal string OutsideTip { set => outsideCheck.tooltip = value; }
-
-
-        /// <summary>
-        /// Outside connection setting.
-        /// </summary>
-        private bool OutsideConnection
-        {
-            get => BuildingControl.GetOutsideConnection(CurrentBuilding, IsIncoming, TransferReason);
-            
-            set
-            {
-                BuildingControl.SetOutsideConnection(CurrentBuilding, IsIncoming, TransferReason, value);
-                SetSprite();
-            }
-        }
-
-
-        /// <summary>
-        /// Prefer same district setting.
-        /// </summary>
-        private bool PreferSameDistrict
-        {
-            get => BuildingControl.GetPreferSameDistrict(CurrentBuilding, IsIncoming, TransferReason);
-            
-            set
-            {
-                BuildingControl.SetPreferSameDistrict(CurrentBuilding, IsIncoming, TransferReason, value);
-                SetSprite();
-            }
-        }
-
-
-        /// <summary>
-        /// Enabled setting.
-        /// </summary>
-        private bool Enabled
-        {
-            get => BuildingControl.GetDistrictEnabled(CurrentBuilding, IsIncoming, TransferReason) || BuildingControl.GetBuildingEnabled(CurrentBuilding, IsIncoming, TransferReason);
-            
-            set
-            {
-                BuildingControl.SetDistrictEnabled(CurrentBuilding, IsIncoming, TransferReason, value);
-                BuildingControl.SetBuildingEnabled(CurrentBuilding, IsIncoming, TransferReason, value);
-                SetSprite();
-            }
-        }
-
-
-        /// <summary>
-        /// Same district setting.
-        /// </summary>
-        private bool SameDistrict
-        {
-            get => BuildingControl.GetSameDistrict(CurrentBuilding, IsIncoming, TransferReason);
-            
-            set
-            {
-                BuildingControl.SetSameDistrict(CurrentBuilding, IsIncoming, TransferReason, value);
-                SetSprite();
-            }
-        }
-
-
-        /// <summary>
-        /// Constructor - performs initial setup.
-        /// </summary>
-        /// <param name="parentPanel">Containing UI panel</param>
-        /// <param name="tabSprite">Tab status sprite</param>
-        internal BuildingRestrictionsTab(UIPanel parentPanel, UISprite tabSprite) : base(parentPanel, tabSprite)
+        /// <param name="parentPanel">Containing UI panel.</param>
+        /// <param name="tabSprite">Tab status sprite.</param>
+        internal BuildingRestrictionsTab(UIPanel parentPanel, UISprite tabSprite)
+            : base(parentPanel, tabSprite)
         {
             try
             {
                 // Outside connection checkbox.
                 // Note state is inverted - underlying flag is restrictive, but checkbox is permissive.
-                outsideCheck = UICheckBoxes.AddLabelledCheckBox(parentPanel, CheckMargin, OutsideCheckY, Translations.Translate("TFC_BLD_IMP"), tooltip: Translations.Translate("TFC_BLD_IMP_TIP"));
-                outsideCheck.isChecked = !OutsideConnection;
-                outsideCheck.eventCheckChanged += (control, isChecked) =>
+                _outsideCheck = UICheckBoxes.AddLabelledCheckBox(parentPanel, CheckMargin, OutsideCheckY, Translations.Translate("TFC_BLD_IMP"), tooltip: Translations.Translate("TFC_BLD_IMP_TIP"));
+                _outsideCheck.isChecked = !OutsideConnection;
+                _outsideCheck.eventCheckChanged += (control, isChecked) =>
                 {
-                    if (!disableEvents)
+                    if (!_disableEvents)
                     {
                         OutsideConnection = !isChecked;
                     }
                 };
 
                 // Prefer same district checkbox.
-                preferSameCheck = UICheckBoxes.AddLabelledCheckBox(parentPanel, CheckMargin, PreferCheckY, Translations.Translate("TFC_RES_PLD"), tooltip: Translations.Translate("TFC_RES_PLD_TIP"));
-                preferSameCheck.isChecked = PreferSameDistrict;
-                preferSameCheck.eventCheckChanged += (control, isChecked) =>
+                _preferSameCheck = UICheckBoxes.AddLabelledCheckBox(parentPanel, CheckMargin, PreferCheckY, Translations.Translate("TFC_RES_PLD"), tooltip: Translations.Translate("TFC_RES_PLD_TIP"));
+                _preferSameCheck.isChecked = PreferSameDistrict;
+                _preferSameCheck.eventCheckChanged += (control, isChecked) =>
                 {
-                    if (!disableEvents)
+                    if (!_disableEvents)
                     {
                         PreferSameDistrict = isChecked;
                     }
                 };
 
                 // Restrictions enabled checkbox.
-                enabledCheck = UICheckBoxes.AddLabelledCheckBox(parentPanel, CheckMargin, EnabledCheckY, Translations.Translate("TFC_RES_ENA"), tooltip: Translations.Translate("TFC_RES_ENA_TIP"));
-                enabledCheck.isChecked = Enabled;
-                enabledCheck.eventCheckChanged += (control, isChecked) =>
+                _enabledCheck = UICheckBoxes.AddLabelledCheckBox(parentPanel, CheckMargin, EnabledCheckY, Translations.Translate("TFC_RES_ENA"), tooltip: Translations.Translate("TFC_RES_ENA_TIP"));
+                _enabledCheck.isChecked = Enabled;
+                _enabledCheck.eventCheckChanged += (control, isChecked) =>
                 {
-                    if (!disableEvents)
+                    if (!_disableEvents)
                     {
                         Enabled = isChecked;
                     }
@@ -184,61 +103,73 @@ namespace TransferController
 
                 // Same district only checkbox.
                 // Note state is inverted - underlying flag is restrictive, but checkbox is permissive.
-                sameDistrictCheck = UICheckBoxes.AddLabelledCheckBox(parentPanel, CheckMargin, SameDistrictCheckY, Translations.Translate("TFC_BLD_SDO"), tooltip: Translations.Translate("TFC_BLD_SDO_TIP"));
-                sameDistrictCheck.isChecked = !SameDistrict;
-                sameDistrictCheck.eventCheckChanged += (control, isChecked) =>
+                _sameDistrictCheck = UICheckBoxes.AddLabelledCheckBox(parentPanel, CheckMargin, SameDistrictCheckY, Translations.Translate("TFC_BLD_SDO"), tooltip: Translations.Translate("TFC_BLD_SDO_TIP"));
+                _sameDistrictCheck.isChecked = !SameDistrict;
+                _sameDistrictCheck.eventCheckChanged += (control, isChecked) =>
                 {
-                    if (!disableEvents)
+                    if (!_disableEvents)
                     {
                         SameDistrict = !isChecked;
                     }
                 };
 
                 // 'Add district' button.
-                addDistrictButton = AddIconButton(parentPanel, MidControlX, DistrictListY, ArrowSize, "TFC_DIS_ADD", UITextures.LoadSpriteAtlas("TC-ArrowPlus"));
-                addDistrictButton.isEnabled = false;
-                addDistrictButton.eventClicked += (control, clickEvent) => AddDistrict(districtSelectionPanel.SelectedDistrict);
+                _addDistrictButton = UIButtons.AddIconButton(
+                    parentPanel,
+                    MidControlX,
+                    DistrictListY,
+                    ArrowSize,
+                    UITextures.LoadSpriteAtlas("TC-ArrowPlus"),
+                    Translations.Translate("TFC_DIS_ADD"));
+                _addDistrictButton.isEnabled = false;
+                _addDistrictButton.eventClicked += (control, clickEvent) => AddDistrict(_districtSelectionPanel.SelectedDistrict);
 
                 // Remove district button.
-                removeDistrictButton = AddIconButton(parentPanel, MidControlX, DistrictListY + ArrowSize, ArrowSize, "TFC_DIS_SUB", UITextures.LoadSpriteAtlas("TC-ArrowMinus"));
-                removeDistrictButton.isEnabled = false;
-                removeDistrictButton.eventClicked += (control, clickEvent) => RemoveDistrict();
+                _removeDistrictButton = UIButtons.AddIconButton(
+                    parentPanel,
+                    MidControlX,
+                    DistrictListY + ArrowSize,
+                    ArrowSize,
+                    UITextures.LoadSpriteAtlas("TC-ArrowMinus"),
+                    Translations.Translate("TFC_DIS_SUB"));
+                _removeDistrictButton.isEnabled = false;
+                _removeDistrictButton.eventClicked += (control, clickEvent) => RemoveDistrict();
 
                 // District selection panels.
-                buildingDistrictSelectionPanel = parentPanel.AddUIComponent<SelectedDistrictPanel>();
-                buildingDistrictSelectionPanel.relativePosition = new Vector2(Margin, DistrictListY);
-                buildingDistrictSelectionPanel.ParentPanel = this;
-                districtSelectionPanel = parentPanel.AddUIComponent<DistrictSelectionPanel>();
-                districtSelectionPanel.ParentPanel = this;
-                districtSelectionPanel.relativePosition = new Vector2(RightColumnX, DistrictListY);
+                _buildingDistrictSelectionPanel = parentPanel.AddUIComponent<SelectedDistrictPanel>();
+                _buildingDistrictSelectionPanel.relativePosition = new Vector2(Margin, DistrictListY);
+                _buildingDistrictSelectionPanel.ParentPanel = this;
+                _districtSelectionPanel = parentPanel.AddUIComponent<DistrictSelectionPanel>();
+                _districtSelectionPanel.ParentPanel = this;
+                _districtSelectionPanel.relativePosition = new Vector2(RightColumnX, DistrictListY);
 
                 // District selection panel labels.
-                UILabel districtSelectionLabel = UILabels.AddLabel(districtSelectionPanel, 0f, -15f, Translations.Translate("TFC_DIS_AVA"), ColumnWidth, 0.8f);
+                UILabel districtSelectionLabel = UILabels.AddLabel(_districtSelectionPanel, 0f, -15f, Translations.Translate("TFC_DIS_AVA"), ColumnWidth, 0.8f);
                 districtSelectionLabel.textAlignment = UIHorizontalAlignment.Center;
-                UILabel buildingDistrictSelectionLabel = UILabels.AddLabel(buildingDistrictSelectionPanel, 0f, -15f, Translations.Translate("TFC_DIS_SEL"), ColumnWidth, 0.8f);
+                UILabel buildingDistrictSelectionLabel = UILabels.AddLabel(_buildingDistrictSelectionPanel, 0f, -15f, Translations.Translate("TFC_DIS_SEL"), ColumnWidth, 0.8f);
                 buildingDistrictSelectionLabel.textAlignment = UIHorizontalAlignment.Center;
 
                 // 'Add building' button.
-                addBuildingButton = AddIconButton(parentPanel, BuildingButtonX, BuildingListY, ArrowSize, "TFC_BUI_ADD", UITextures.LoadSpriteAtlas("TC-RoundPlus"));
-                addBuildingButton.eventClicked += (control, clickEvent) =>
+                _addBuildingButton = UIButtons.AddIconButton<BuildingPanel.TCPanelButton>(parentPanel, BuildingButtonX, BuildingListY, ArrowSize, UITextures.LoadSpriteAtlas("TC-RoundPlus"), Translations.Translate("TFC_BUI_ADD"));
+                _addBuildingButton.eventClicked += (control, clickEvent) =>
                 {
                     // Add building via tool selection.
                     TCTool.Instance.SetPickMode(this);
                     TCTool.Activate();
                 };
-                
+
                 // Remove building button.
-                removeBuildingButton = AddIconButton(parentPanel, BuildingButtonX, BuildingListY + ArrowSize, ArrowSize, "TFC_BUI_SUB", UITextures.LoadSpriteAtlas("TC-RoundMinus"));
-                removeBuildingButton.isEnabled = false;
-                removeBuildingButton.eventClicked += (control, clickEvent) => RemoveBuilding();
+                _removeBuildingButton = UIButtons.AddIconButton<BuildingPanel.TCPanelButton>(parentPanel, BuildingButtonX, BuildingListY + ArrowSize, ArrowSize, UITextures.LoadSpriteAtlas("TC-RoundMinus"), Translations.Translate("TFC_BUI_SUB"));
+                _removeBuildingButton.isEnabled = false;
+                _removeBuildingButton.eventClicked += (control, clickEvent) => RemoveBuilding();
 
                 // Building selection panel.
-                selectedBuildingPanel = parentPanel.AddUIComponent<SelectedBuildingPanel>();
-                selectedBuildingPanel.ParentPanel = this;
-                selectedBuildingPanel.relativePosition = new Vector2(Margin, BuildingListY);
+                _selectedBuildingPanel = parentPanel.AddUIComponent<SelectedBuildingPanel>();
+                _selectedBuildingPanel.ParentPanel = this;
+                _selectedBuildingPanel.relativePosition = new Vector2(Margin, BuildingListY);
 
                 // Building selection panel label.
-                UILabel buildingSelectionLabel = UILabels.AddLabel(selectedBuildingPanel, 0f, -15f, Translations.Translate("TFC_BUI_SEL"), ColumnWidth, 0.8f);
+                UILabel buildingSelectionLabel = UILabels.AddLabel(_selectedBuildingPanel, 0f, -15f, Translations.Translate("TFC_BUI_SEL"), ColumnWidth, 0.8f);
                 buildingSelectionLabel.textAlignment = UIHorizontalAlignment.Center;
 
                 // Set initial control states.
@@ -250,78 +181,162 @@ namespace TransferController
             }
         }
 
+        /// <summary>
+        /// Gets the current content height.
+        /// </summary>
+        internal override float ContentHeight => _enabledCheck.isChecked ? PanelHeight : DistrictListTitleY;
+
+        /// <summary>
+        /// Sets the outside connection checkbox label text.
+        /// </summary>
+        internal string OutsideLabel
+        {
+            set
+            {
+                // Hide checkbox if value is null.
+                if (value == null)
+                {
+                    _outsideCheck.Hide();
+                }
+                else
+                {
+                    _outsideCheck.text = value;
+
+                    // Ensure visibility.
+                    _outsideCheck.Show();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sets the outside connection checkbox tooltip text.
+        /// </summary>
+        internal string OutsideTip { set => _outsideCheck.tooltip = value; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether outside connections are restricted (true) or permitted (false).
+        /// </summary>
+        private bool OutsideConnection
+        {
+            get => BuildingControl.GetOutsideConnection(CurrentBuilding, IsIncoming, TransferReason);
+
+            set
+            {
+                BuildingControl.SetOutsideConnection(CurrentBuilding, IsIncoming, TransferReason, value);
+                SetSprite();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the prefer same district setting is enabled (true) or disabled (false).
+        /// </summary>
+        private bool PreferSameDistrict
+        {
+            get => BuildingControl.GetPreferSameDistrict(CurrentBuilding, IsIncoming, TransferReason);
+
+            set
+            {
+                BuildingControl.SetPreferSameDistrict(CurrentBuilding, IsIncoming, TransferReason, value);
+                SetSprite();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether location restrictions are enabled (true) or disabled (false).
+        /// </summary>
+        private bool Enabled
+        {
+            get => BuildingControl.GetDistrictEnabled(CurrentBuilding, IsIncoming, TransferReason) || BuildingControl.GetBuildingEnabled(CurrentBuilding, IsIncoming, TransferReason);
+
+            set
+            {
+                BuildingControl.SetDistrictEnabled(CurrentBuilding, IsIncoming, TransferReason, value);
+                BuildingControl.SetBuildingEnabled(CurrentBuilding, IsIncoming, TransferReason, value);
+                SetSprite();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether same district transfers are automatically permitted (false) or not (true).
+        /// </summary>
+        private bool SameDistrict
+        {
+            get => BuildingControl.GetSameDistrict(CurrentBuilding, IsIncoming, TransferReason);
+
+            set
+            {
+                BuildingControl.SetSameDistrict(CurrentBuilding, IsIncoming, TransferReason, value);
+                SetSprite();
+            }
+        }
 
         /// <summary>
         /// Update button states when district selections are updated.
         /// </summary>
         internal void SelectionUpdated()
         {
-            addDistrictButton.isEnabled = districtSelectionPanel.SelectedDistrict != 0;
-            removeDistrictButton.isEnabled = buildingDistrictSelectionPanel.SelectedDistrict != 0;
-            removeBuildingButton.isEnabled = selectedBuildingPanel.SelectedBuilding != 0;
+            _addDistrictButton.isEnabled = _districtSelectionPanel.SelectedDistrict != 0;
+            _removeDistrictButton.isEnabled = _buildingDistrictSelectionPanel.SelectedDistrict != 0;
+            _removeBuildingButton.isEnabled = _selectedBuildingPanel.SelectedBuilding != 0;
         }
-
 
         /// <summary>
         /// Adds a building to the list for this building.
         /// </summary>
-        /// <param name="buildingID">Building ID to add</param>
+        /// <param name="buildingID">Building ID to add.</param>
         internal void AddBuilding(ushort buildingID)
         {
             // Add district to building.
             BuildingControl.AddBuilding(CurrentBuilding, IsIncoming, TransferReason, buildingID);
 
             // Update current selection.
-            selectedBuildingPanel.SelectedBuilding = buildingID;
+            _selectedBuildingPanel.SelectedBuilding = buildingID;
 
             // Update district list.
-            selectedBuildingPanel.RefreshList();
+            _selectedBuildingPanel.RefreshList();
         }
-
 
         /// <summary>
         /// Refreshes the controls with current data.
         /// </summary>
         protected override void Refresh()
         {
-            buildingDistrictSelectionPanel.RefreshList();
-            districtSelectionPanel.RefreshList();
-            selectedBuildingPanel.RefreshList();
+            _buildingDistrictSelectionPanel.RefreshList();
+            _districtSelectionPanel.RefreshList();
+            _selectedBuildingPanel.RefreshList();
 
             // Disable events while we update controls to avoid recursively triggering event handler.
-            disableEvents = true;
-            outsideCheck.isChecked = !OutsideConnection;
-            preferSameCheck.isChecked = PreferSameDistrict;
-            enabledCheck.isChecked = Enabled;
-            sameDistrictCheck.isChecked = !SameDistrict;
-            disableEvents = false;
+            _disableEvents = true;
+            _outsideCheck.isChecked = !OutsideConnection;
+            _preferSameCheck.isChecked = PreferSameDistrict;
+            _enabledCheck.isChecked = Enabled;
+            _sameDistrictCheck.isChecked = !SameDistrict;
+            _disableEvents = false;
 
             // Resize panel.
-            panel.height = ContentHeight;
+            Panel.height = ContentHeight;
 
             // Set tab sprite status.
             SetSprite();
         }
 
-
         /// <summary>
         /// Adds a district to the list for this building.
         /// Should be called as base after district has been updated by child class.
         /// </summary>
-        /// <param name="districtID">District ID to add (negated if park area)</param>
+        /// <param name="districtID">District ID to add (negated if park area).</param>
         private void AddDistrict(int districtID)
         {
             // Add district to building.
             BuildingControl.AddDistrict(CurrentBuilding, IsIncoming, TransferReason, districtID);
 
             // Update current selection.
-            buildingDistrictSelectionPanel.SelectedDistrict = districtID;
+            _buildingDistrictSelectionPanel.SelectedDistrict = districtID;
 
             // Update district lists.
-            buildingDistrictSelectionPanel.RefreshList();
-            districtSelectionPanel.RefreshList();
+            _buildingDistrictSelectionPanel.RefreshList();
+            _districtSelectionPanel.RefreshList();
         }
-
 
         /// <summary>
         /// Removes the currently selected district from the list for this building.
@@ -330,16 +345,15 @@ namespace TransferController
         private void RemoveDistrict()
         {
             // Remove selected district from building.
-            BuildingControl.RemoveDistrict(CurrentBuilding, IsIncoming, TransferReason, buildingDistrictSelectionPanel.SelectedDistrict);
+            BuildingControl.RemoveDistrict(CurrentBuilding, IsIncoming, TransferReason, _buildingDistrictSelectionPanel.SelectedDistrict);
 
             // Clear current selection.
-            buildingDistrictSelectionPanel.SelectedDistrict = 0;
+            _buildingDistrictSelectionPanel.SelectedDistrict = 0;
 
             // Update district lists.
-            buildingDistrictSelectionPanel.RefreshList();
-            districtSelectionPanel.RefreshList();
+            _buildingDistrictSelectionPanel.RefreshList();
+            _districtSelectionPanel.RefreshList();
         }
-
 
         /// <summary>
         /// Removes the currently selected district from the list for this building.
@@ -348,38 +362,36 @@ namespace TransferController
         private void RemoveBuilding()
         {
             // Remove selected district from building.
-            BuildingControl.RemoveBuilding(CurrentBuilding, IsIncoming, TransferReason, selectedBuildingPanel.SelectedBuilding);
+            BuildingControl.RemoveBuilding(CurrentBuilding, IsIncoming, TransferReason, _selectedBuildingPanel.SelectedBuilding);
 
             // Clear current selection.
-            selectedBuildingPanel.SelectedBuilding = 0;
+            _selectedBuildingPanel.SelectedBuilding = 0;
 
             // Update district list.
-            selectedBuildingPanel.RefreshList();
+            _selectedBuildingPanel.RefreshList();
         }
-
 
         /// <summary>
         /// Toggles checkbox states based on 'Enable restrictions' setting.
         /// </summary>
         private void UpdateEnabledStates()
         {
-            sameDistrictCheck.isVisible = enabledCheck.isChecked;
-            addDistrictButton.isVisible = enabledCheck.isChecked;
-            removeDistrictButton.isVisible = enabledCheck.isChecked;
-            districtSelectionPanel.isVisible = enabledCheck.isChecked;
-            buildingDistrictSelectionPanel.isVisible = enabledCheck.isChecked;
-            addBuildingButton.isVisible = enabledCheck.isChecked;
-            removeBuildingButton.isVisible = enabledCheck.isChecked;
-            selectedBuildingPanel.isVisible = enabledCheck.isChecked;
+            _sameDistrictCheck.isVisible = _enabledCheck.isChecked;
+            _addDistrictButton.isVisible = _enabledCheck.isChecked;
+            _removeDistrictButton.isVisible = _enabledCheck.isChecked;
+            _districtSelectionPanel.isVisible = _enabledCheck.isChecked;
+            _buildingDistrictSelectionPanel.isVisible = _enabledCheck.isChecked;
+            _addBuildingButton.isVisible = _enabledCheck.isChecked;
+            _removeBuildingButton.isVisible = _enabledCheck.isChecked;
+            _selectedBuildingPanel.isVisible = _enabledCheck.isChecked;
 
             // Resize parent panel.
             BuildingPanelManager.Panel?.RecalculateHeight();
         }
 
-
         /// <summary>
         /// Sets the tab status sprite to the correct state according to current settings.
         /// </summary>
-        private void SetSprite() => statusSprite.spriteName = BuildingControl.HasRecord(CurrentBuilding, IsIncoming, TransferReason) ? "AchievementCheckedTrue" : "AchievementCheckedFalse";
+        private void SetSprite() => StatusSprite.spriteName = BuildingControl.HasRecord(CurrentBuilding, IsIncoming, TransferReason) ? "AchievementCheckedTrue" : "AchievementCheckedFalse";
     }
 }

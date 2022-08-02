@@ -1,19 +1,24 @@
-﻿using AlgernonCommons;
-using ICities;
-using System.IO;
-
+﻿// <copyright file="Serializer.cs" company="algernon (K. Algernon A. Sheppard)">
+// Copyright (c) algernon (K. Algernon A. Sheppard). All rights reserved.
+// Licensed under the MIT license. See LICENSE.txt file in the project root for full license information.
+// </copyright>
 
 namespace TransferController
 {
+    using System.IO;
+    using AlgernonCommons;
+    using ICities;
+
     /// <summary>
     /// Handles savegame data saving and loading.
     /// </summary>
     public class Serializer : SerializableDataExtensionBase
     {
+        // Current data version.
+        private const int DataVersion = 4;
+
         // Unique data ID.
         private readonly string dataID = "TransferController";
-        public const int DataVersion = 4;
-
 
         /// <summary>
         /// Serializes data to the savegame.
@@ -47,7 +52,6 @@ namespace TransferController
                 }
             }
         }
-
 
         /// <summary>
         /// Deserializes data from a savegame (or initialises new data structures when none available).

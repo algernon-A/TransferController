@@ -33,7 +33,7 @@ namespace TransferController
         /// </summary>
         /// <param name="material">Transfer material.</param>
         /// <param name="offer">Offer to prioritize.</param>
-        /// <param name="warehouseFlags">Building flags to skip warehouse prioritization (e.g. skip prioritization of outgoing offers if warehouse is filling)</param>
+        /// <param name="warehouseFlags">Building flags to skip warehouse prioritization (e.g. skip prioritization of outgoing offers if warehouse is filling).</param>
         private static void PrioritizeOffer(TransferManager.TransferReason material, ref TransferManager.TransferOffer offer, Building.Flags warehouseFlags)
         {
             // Check for valid building.

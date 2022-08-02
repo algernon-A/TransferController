@@ -1,24 +1,53 @@
-﻿using AlgernonCommons;
-using CitiesHarmony.API;
-using HarmonyLib;
-using System.Reflection;
-
+﻿// <copyright file="Patcher.cs" company="algernon (K. Algernon A. Sheppard)">
+// Copyright (c) algernon (K. Algernon A. Sheppard). All rights reserved.
+// Licensed under the MIT license. See LICENSE.txt file in the project root for full license information.
+// </copyright>
 
 namespace TransferController
 {
+    using System.Reflection;
+    using AlgernonCommons;
+    using AlgernonCommons.Patching;
+    using CitiesHarmony.API;
+    using HarmonyLib;
+
     /// <summary>
     /// Class to manage the mod's Harmony patches.
     /// </summary>
-    public static class Patcher
+    public class Patcher : PatcherBase
     {
-        // Flag.
-        internal static bool Patched => _patched;
-        private static bool _patched = false, _addOffersPatched = false;
+        // Flags.
         private static bool _useNewAlgorithm = true;
-
+        private static bool _addOffersPatched = false;
 
         /// <summary>
-        /// Whether or not new or legacy algorithm is in effect.
+        /// Initializes a new instance of the <see cref="Patcher"/> class.
+        /// </summary>
+        /// <param name="harmonyID">This mod's unique Harmony identifier.</param>
+        public Patcher(string harmonyID)
+            : base(harmonyID)
+        {
+        }
+
+        /// <summary>
+        /// Gets the active instance reference.
+        /// </summary>
+        public static new Patcher Instance
+        {
+            get
+            {
+                // Auto-initializing getter.
+                if (s_instance == null)
+                {
+                    s_instance = new Patcher(PatcherMod.Instance.HarmonyID);
+                }
+
+                return s_instance as Patcher;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether new (true) or legacy (false) algorithm is in effect.
         /// </summary>
         internal static bool UseNewAlgorithm
         {
@@ -33,19 +62,18 @@ namespace TransferController
                     _useNewAlgorithm = value;
 
                     // Apply patches.
-                    PatchNewAlgorithm(new Harmony(Mod.Instance.HarmonyID), value);
+                    Instance.PatchNewAlgorithm(value);
                 }
             }
         }
 
-
         /// <summary>
         /// Apply all Harmony patches.
         /// </summary>
-        public static void PatchAll()
+        public override void PatchAll()
         {
             // Don't do anything if already patched.
-            if (!_patched)
+            if (!Patched)
             {
                 // Ensure Harmony is ready before patching.
                 if (HarmonyHelper.IsHarmonyInstalled)
@@ -55,7 +83,7 @@ namespace TransferController
                     // Apply all annotated patches and update flag.
                     Harmony harmonyInstance = new Harmony(Mod.Instance.HarmonyID);
                     harmonyInstance.PatchAll();
-                    _patched = true;
+                    Patched = true;
 
                     // Attempt to pach TransferManager.
                     TransferManagerPatches.Patch(harmonyInstance, UseNewAlgorithm);
@@ -67,31 +95,18 @@ namespace TransferController
             }
         }
 
-
         /// <summary>
-        /// Remove all Harmony patches.
+        /// Applies Harmomny patches for the matching algorithm selection.
         /// </summary>
-        public static void UnpatchAll()
-        {
-            // Only unapply if patches appplied.
-            if (_patched)
-            {
-                Logging.KeyMessage("reverting Harmony patches");
-
-                // Unapply patches, but only with our HarmonyID.
-                Harmony harmonyInstance = new Harmony(Mod.Instance.HarmonyID);
-                harmonyInstance.UnpatchAll(Mod.Instance.HarmonyID);
-                _patched = false;
-            }
-        }
-
+        /// <param name="usingNew">True to apply new algorithm, false to use the legacy algorithm.</param>
+        private void PatchNewAlgorithm(bool usingNew) => PatchNewAlgorithm(new Harmony(HarmonyID), usingNew);
 
         /// <summary>
         /// Applies Harmomny patches for the matching algorithm selection.
         /// </summary>
-        /// <param name="harmonyInstance">Harmony instance</param>
-        /// <param name="usingNew">True to apply new algorithm, false to use the legacy algorithm</param>
-        private static void PatchNewAlgorithm(Harmony harmonyInstance, bool usingNew)
+        /// <param name="harmonyInstance">Harmony instance.</param>
+        /// <param name="usingNew">True to apply new algorithm, false to use the legacy algorithm.</param>
+        private void PatchNewAlgorithm(Harmony harmonyInstance, bool usingNew)
         {
             // Ensure Harmony is ready before patching.
             if (HarmonyHelper.IsHarmonyInstalled)

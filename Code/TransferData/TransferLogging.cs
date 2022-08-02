@@ -75,8 +75,8 @@ namespace TransferController
         /// </summary>
         /// <param name="reason">Transfer reason.</param>
         /// <param name="incoming">True if the offer is incoming, false otherwise.</param>
-        /// <param name="priorityIn">Incoming offer priority.</param
-        /// <param name="priorityOut">Outgoing offer priority.</param
+        /// <param name="priorityIn">Incoming offer priority.</param>
+        /// <param name="priorityOut">Outgoing offer priority.</param>
         /// <param name="inBuilding">Incoming building ID.</param>
         /// <param name="outBuilding">Outgoing building ID.</param>
         /// <param name="status">Match status.</param>

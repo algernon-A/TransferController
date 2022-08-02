@@ -1,23 +1,27 @@
-﻿using AlgernonCommons;
-using ColossalFramework.Math;
-using HarmonyLib;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Reflection.Emit;
-
+﻿// <copyright file="WarehouseStartTransferPatch.cs" company="algernon (K. Algernon A. Sheppard)">
+// Copyright (c) algernon (K. Algernon A. Sheppard). All rights reserved.
+// Licensed under the MIT license. See LICENSE.txt file in the project root for full license information.
+// </copyright>
 
 namespace TransferController
 {
+    using System.Collections.Generic;
+    using System.Reflection;
+    using System.Reflection.Emit;
+    using AlgernonCommons;
+    using ColossalFramework.Math;
+    using HarmonyLib;
+
     /// <summary>
     /// Harmony transpiler to various StartTransfer methods to implement vehicle selection.
     /// </summary>
     [HarmonyPatch]
-    public static class WarehouseStartTransferPatches
+    public static class WarehouseStartTransferPatch
     {
         /// <summary>
         /// Target methods.
         /// </summary>
-        /// <returns>List of methods to transpile</returns>
+        /// <returns>List of methods to transpile.</returns>
         public static IEnumerable<MethodBase> TargetMethods()
         {
             yield return typeof(WarehouseAI).GetMethod(nameof(WarehouseAI.StartTransfer));
@@ -28,15 +32,16 @@ namespace TransferController
         /// <summary>
         /// Harmony transpiler for building StartTransfer methods, replacing existing calls to WarehousAI.GetTransferVehicleService with a call to our custom replacement instead.
         /// </summary>
-        /// <param name="instructions">Original ILCode</param>
-        /// <param name="original">Method being transpiled</param>
+        /// <param name="instructions">Original ILCode.</param>
+        /// <param name="original">Method being transpiled.</param>
+        /// <returns>New ILCode.</returns>
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase original)
         {
             Logging.Message("transpiling ", original.DeclaringType, ":", original.Name);
 
             // Reflection to get original and inserted methods for calls.
             MethodInfo getTransferVehicle = typeof(WarehouseAI).GetMethod(nameof(WarehouseAI.GetTransferVehicleService), BindingFlags.Public | BindingFlags.Static);
-            MethodInfo chooseVehicle = typeof(WarehouseStartTransferPatches).GetMethod(nameof(WarehouseStartTransferPatches.ChooseVehicle));
+            MethodInfo chooseVehicle = typeof(WarehouseStartTransferPatch).GetMethod(nameof(WarehouseStartTransferPatch.ChooseVehicle));
 
             // Instruction enumerator.
             IEnumerator<CodeInstruction> instructionsEnumerator = instructions.GetEnumerator();
@@ -50,7 +55,7 @@ namespace TransferController
                 // If this instruction calls the GetRandomVehicle method, then replace it with a call to our custom method.
                 if (instruction.opcode == OpCodes.Call && instruction.Calls(getTransferVehicle))
                 {
-                    // Add buildingID and material params to call. 
+                    // Add buildingID and material params to call.
                     yield return new CodeInstruction(OpCodes.Ldarg_1);
                     instruction = new CodeInstruction(OpCodes.Call, chooseVehicle);
                     Logging.Message("transpiled");
@@ -61,15 +66,14 @@ namespace TransferController
             }
         }
 
-
         /// <summary>
         /// Chooses a vehicle for a transfer from our custom lists (reverting to game code if no custom list exists for this building and transfer).
         /// </summary>
-        /// <param name="material">Transfer material</param>
-        /// <param name="level">Vehicle level</param>
-        /// <param name="randomizer">Randomizer reference</param>
-        /// <param name="buildingID">Building ID of owning building</param>
-        /// <returns>Vehicle prefab to spawn</returns>
+        /// <param name="material">Transfer material.</param>
+        /// <param name="level">Vehicle level.</param>
+        /// <param name="randomizer">Randomizer reference.</param>
+        /// <param name="buildingID">Building ID of owning building.</param>
+        /// <returns>Vehicle prefab to spawn.</returns>
         public static VehicleInfo ChooseVehicle(TransferManager.TransferReason material, ItemClass.Level level, ref Randomizer randomizer, ushort buildingID)
         {
             // Get any custom vehicle list for this building.

@@ -69,7 +69,7 @@ namespace TransferController
         private readonly TCPanelButton _logButton;
 
         // Sub-panels.
-        private readonly TransferStruct[] _transfers = new TransferStruct[MaxTransfers];
+        private readonly TransferDataUtils.TransferStruct[] _transfers = new TransferDataUtils.TransferStruct[MaxTransfers];
         private readonly BuildingPanelTab[] _tabs = new BuildingPanelTab[NumTabs];
         private readonly UIButton[] _tabButtons = new UIButton[NumTabs];
         private readonly UISprite[] _tabSprites = new UISprite[NumTabs];
@@ -209,7 +209,7 @@ namespace TransferController
         /// <summary>
         /// Gets the dictionary of building records.
         /// </summary>
-        public static Dictionary<uint, BuildingControl.BuildingRecord> BuildingRecords => BuildingControl.s_buildingRecords;
+        public static Dictionary<uint, BuildingControl.BuildingRecord> BuildingRecords => BuildingControl.BuildingRecords;
 
         /// <summary>
         /// Gets the current building ID.
@@ -332,17 +332,17 @@ namespace TransferController
             for (int i = 0; i < numPanels; ++i)
             {
                 // Set panel instance properties.
-                _tabButtons[i].text = _transfers[i].panelTitle;
+                _tabButtons[i].text = _transfers[i].PanelTitle;
                 _tabButtons[i].Show();
 
                 if (_tabs[i] is BuildingRestrictionsTab restrictionsTab)
                 {
-                    restrictionsTab.IsIncoming = _transfers[i].isIncoming;
-                    restrictionsTab.TransferReason = _transfers[i].reason;
+                    restrictionsTab.IsIncoming = _transfers[i].IsIncoming;
+                    restrictionsTab.TransferReason = _transfers[i].Reason;
                     restrictionsTab.CurrentBuilding = _currentBuilding;
-                    restrictionsTab.OutsideLabel = _transfers[i].outsideText;
-                    restrictionsTab.OutsideTip = _transfers[i].outsideTip;
-                    if (_transfers[i].spawnsVehicles & vehicleReference < 0)
+                    restrictionsTab.OutsideLabel = _transfers[i].OutsideText;
+                    restrictionsTab.OutsideTip = _transfers[i].OutsideTip;
+                    if (_transfers[i].SpawnsVehicles & vehicleReference < 0)
                     {
                         vehicleReference = i;
                     }
@@ -364,8 +364,8 @@ namespace TransferController
                 _tabButtons[MaxTransfers].width = TabPanelWidth / activeTabs;
                 _tabButtons[MaxTransfers].Show();
 
-                _tabs[VehicleTab].IsIncoming = _transfers[vehicleReference].isIncoming;
-                _tabs[VehicleTab].TransferReason = _transfers[vehicleReference].reason;
+                _tabs[VehicleTab].IsIncoming = _transfers[vehicleReference].IsIncoming;
+                _tabs[VehicleTab].TransferReason = _transfers[vehicleReference].Reason;
                 _tabs[VehicleTab].CurrentBuilding = _currentBuilding;
             }
             else

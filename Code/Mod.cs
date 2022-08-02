@@ -64,7 +64,7 @@ namespace TransferController
         /// <summary>
         /// Called by the game when the mod options panel is setup.
         /// </summary>
-        /// <param name="helper">UI helper instance</param>
+        /// <param name="helper">UI helper instance.</param>
         public void OnSettingsUI(UIHelperBase helper)
         {
             // Create options panel.
@@ -84,11 +84,11 @@ namespace TransferController
         /// <summary>
         /// Apply Harmony patches.
         /// </summary>
-        protected override void ApplyPatches() => Patcher.PatchAll();
+        protected override void ApplyPatches() => Patcher.Instance.PatchAll();
 
         /// <summary>
         /// Remove Harmony patches.
         /// </summary>
-        protected override void RemovePatches() => Patcher.UnpatchAll();
+        protected override void RemovePatches() => Patcher.Instance.UnpatchAll();
     }
 }

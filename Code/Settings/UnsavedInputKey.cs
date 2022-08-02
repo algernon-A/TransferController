@@ -27,7 +27,7 @@ namespace TransferController
         }
 
         /// <summary>
-        /// Gets or sets the current kay as a Keybinding.
+        /// Gets or sets the current key as a Keybinding.
         /// </summary>
         public Keybinding Keybinding
         {

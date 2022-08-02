@@ -9,7 +9,6 @@ namespace TransferController
     using System.Xml.Serialization;
     using AlgernonCommons.Keybinding;
     using AlgernonCommons.XML;
-    using ColossalFramework;
     using UnityEngine;
 
     /// <summary>
@@ -22,13 +21,13 @@ namespace TransferController
         /// Copy key.
         /// </summary>
         [XmlIgnore]
-        public static readonly SavedInputKey KeyCopy = new SavedInputKey(nameof(KeyCopy), SettingsFileName, SavedInputKey.Encode(KeyCode.C, true, false, false), true);
+        public static readonly Keybinding KeyCopy = new Keybinding(KeyCode.C, true, false, false);
 
         /// <summary>
         /// Paste key.
         /// </summary>
         [XmlIgnore]
-        public static readonly SavedInputKey KeyPaste = new SavedInputKey(nameof(KeyPaste), SettingsFileName, SavedInputKey.Encode(KeyCode.V, true, false, false), true);
+        public static readonly Keybinding KeyPaste = new Keybinding(KeyCode.V, true, false, false);
 
         /// <summary>
         /// UUI key.
@@ -60,10 +59,10 @@ namespace TransferController
         public bool XMLUseNewAlgorithm { get => Patcher.UseNewAlgorithm; set => Patcher.UseNewAlgorithm = value; }
 
         /// <summary>
-        /// Gets or sets the distance matching intensity for the legacy algorithm. 
+        /// Gets or sets the distance matching intensity for the legacy algorithm.
         /// </summary>
         [XmlElement("DistanceMultiplier")]
-        public int XMLDistanceMultiplier { get => OldMatching.distancePercentage; set => OldMatching.distancePercentage = value; }
+        public int XMLDistanceMultiplier { get => OldMatching.DistancePercentage; set => OldMatching.DistancePercentage = value; }
 
         /// <summary>
         /// Gets or sets the global warehouse priority boost.

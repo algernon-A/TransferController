@@ -48,7 +48,6 @@ namespace TransferController
                 _districtList.height = BuildingRestrictionsTab.ListHeight;
                 _districtList.relativePosition = Vector2.zero;
                 _districtList.Data = new FastList<object>();
-                _districtList.SelectedIndex = -1;
 
                 _districtList.EventSelectionChanged += (c, value) =>
                 {

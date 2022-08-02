@@ -15,7 +15,7 @@ namespace TransferController
         /// <summary>
         /// Initializes a new instance of the <see cref="MatchItem"/> class.
         /// </summary>
-        /// <param name="reason">Transfer reason.</param
+        /// <param name="reason">Transfer reason.</param>
         /// <param name="buildingID">Building ID of this building.</param>
         /// <param name="incomingPriority">Incoming offer priority.</param>
         /// <param name="outgoingPriority">Outgoing offer priority.</param>

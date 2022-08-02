@@ -1,28 +1,37 @@
-﻿using AlgernonCommons;
-using AlgernonCommons.Translation;
-using AlgernonCommons.UI;
-using ColossalFramework.UI;
-using System;
-using UnityEngine;
-
+﻿// <copyright file="BuildingStatsPanel.cs" company="algernon (K. Algernon A. Sheppard)">
+// Copyright (c) algernon (K. Algernon A. Sheppard). All rights reserved.
+// Licensed under the MIT license. See LICENSE.txt file in the project root for full license information.
+// </copyright>
 
 namespace TransferController
 {
+    using System;
+    using AlgernonCommons;
+    using AlgernonCommons.Translation;
+    using AlgernonCommons.UI;
+    using ColossalFramework.UI;
+    using UnityEngine;
+
     /// <summary>
     /// Building stats panel.
     /// </summary>
     internal class BuildingStatsPanel : StatusPanelSection
     {
-        // Layout constants.
+        /// <summary>
+        /// Panel width.
+        /// </summary>
         internal const float PanelWidth = Margin + StatsPanel.PanelWidth + Margin;
-        internal const float PanelHeight = OffersPanel.PanelHeight;
-
-
-        // Panel components.
-        StatsPanel statsPanel;
 
         /// <summary>
-        /// Constructor - performs initial setup.
+        /// Panel hieght.
+        /// </summary>
+        internal const float PanelHeight = OffersPanel.PanelHeight;
+
+        // Panel components.
+        private StatsPanel _statsPanel;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BuildingStatsPanel"/> class.
         /// </summary>
         internal BuildingStatsPanel()
         {
@@ -36,10 +45,10 @@ namespace TransferController
                 titleLabel.textAlignment = UIHorizontalAlignment.Center;
 
                 // Stats panel.
-                statsPanel = this.AddUIComponent<StatsPanel>();
+                _statsPanel = this.AddUIComponent<StatsPanel>();
 
                 // Align bottom with bottom of offers panel.
-                statsPanel.relativePosition = new Vector2(Margin, 27f);
+                _statsPanel.relativePosition = new Vector2(Margin, 27f);
             }
             catch (Exception e)
             {
@@ -47,13 +56,12 @@ namespace TransferController
             }
         }
 
-
         /// <summary>
         /// Updates panel content.
         /// </summary>
         protected override void UpdateContent()
         {
-            statsPanel.UpdateContent(currentBuilding);
+            _statsPanel.UpdateContent(CurrentBuilding);
         }
     }
 }

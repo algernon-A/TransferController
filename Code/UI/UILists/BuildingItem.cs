@@ -17,11 +17,6 @@ namespace TransferController
         private string _buildingName = string.Empty;
 
         /// <summary>
-        /// Gets the building's name (empty string if none).
-        /// </summary>
-        public string Name => _buildingName;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="BuildingItem"/> class.
         /// </summary>
         /// <param name="id">Building ID for this item.</param>
@@ -29,6 +24,11 @@ namespace TransferController
         {
             ID = id;
         }
+
+        /// <summary>
+        /// Gets the building's name (empty string if none).
+        /// </summary>
+        public string Name => _buildingName;
 
         /// <summary>
         /// Gets or sets the building ID for this record.

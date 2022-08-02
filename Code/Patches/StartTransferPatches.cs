@@ -1,14 +1,18 @@
-﻿using AlgernonCommons;
-using ColossalFramework.Math;
-using HarmonyLib;
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Reflection.Emit;
-
+﻿// <copyright file="StartTransferPatches.cs" company="algernon (K. Algernon A. Sheppard)">
+// Copyright (c) algernon (K. Algernon A. Sheppard). All rights reserved.
+// Licensed under the MIT license. See LICENSE.txt file in the project root for full license information.
+// </copyright>
 
 namespace TransferController
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Reflection;
+    using System.Reflection.Emit;
+    using AlgernonCommons;
+    using ColossalFramework.Math;
+    using HarmonyLib;
+
     /// <summary>
     /// Harmony transpiler to various StartTransfer methods to implement vehicle selection.
     /// </summary>
@@ -18,7 +22,7 @@ namespace TransferController
         /// <summary>
         /// Target methods.
         /// </summary>
-        /// <returns>List of methods to transpile</returns>
+        /// <returns>List of methods to transpile.</returns>
         public static IEnumerable<MethodBase> TargetMethods()
         {
             yield return typeof(HospitalAI).GetMethod(nameof(HospitalAI.StartTransfer));
@@ -40,8 +44,9 @@ namespace TransferController
         /// <summary>
         /// Harmony transpiler for building StartTransfer methods, replacing existing calls to VehicleManager.GetRandomVehicleInfo with a call to our custom replacement instead.
         /// </summary>
-        /// <param name="instructions">Original ILCode</param>
-        /// <param name="original">Method being transpiled</param>
+        /// <param name="instructions">Original ILCode.</param>
+        /// <param name="original">Method being transpiled.</param>
+        /// <returns>New ILCode.</returns>
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase original)
         {
             Logging.Message("transpiling ", original.DeclaringType, ":", original.Name);
@@ -53,7 +58,7 @@ namespace TransferController
             MethodInfo chooseVehicleType = typeof(StartTransferPatches).GetMethod(nameof(StartTransferPatches.ChooseVehicleType));
 
             // Instruction enumerator.
-            IEnumerator <CodeInstruction> instructionsEnumerator = instructions.GetEnumerator();
+            IEnumerator<CodeInstruction> instructionsEnumerator = instructions.GetEnumerator();
 
             // Iterate through each instruction in original code.
             while (instructionsEnumerator.MoveNext())
@@ -67,16 +72,17 @@ namespace TransferController
                     // Standard version.
                     if (instruction.Calls(getRandomVehicle))
                     {
-                        // Add buildingID and material params to call. 
+                        // Add buildingID and material params to call.
                         yield return new CodeInstruction(OpCodes.Ldarg_1);
                         yield return new CodeInstruction(OpCodes.Ldarg_3);
                         instruction = new CodeInstruction(OpCodes.Call, chooseVehicle);
                         Logging.Message("transpiled");
                     }
+
                     // Overload with additional VehicleType argument.
                     else if (instruction.Calls(getRandomVehicleType))
                     {
-                        // Add buildingID and material params to call. 
+                        // Add buildingID and material params to call.
                         yield return new CodeInstruction(OpCodes.Ldarg_1);
                         yield return new CodeInstruction(OpCodes.Ldarg_3);
                         instruction = new CodeInstruction(OpCodes.Call, chooseVehicleType);
@@ -89,18 +95,17 @@ namespace TransferController
             }
         }
 
-
         /// <summary>
         /// Chooses a vehicle for a transfer from our custom lists (reverting to game code if no custom list exists for this building and transfer).
         /// </summary>
-        /// <param name="vehicleManager">VehicleManager instance</param>
-        /// <param name="r">Randomizer reference</param>
-        /// <param name="service">Vehicle service</param>
-        /// <param name="subService">Vehicle subservice</param>
-        /// <param name="level">Vehicle level</param>
-        /// <param name="buildingID">Building ID of owning building</param>
-        /// <param name="material">Transfer material</param>
-        /// <returns>Vehicle prefab to spawn</returns>
+        /// <param name="vehicleManager">VehicleManager instance.</param>
+        /// <param name="r">Randomizer reference.</param>
+        /// <param name="service">Vehicle service.</param>
+        /// <param name="subService">Vehicle subservice.</param>
+        /// <param name="level">Vehicle level.</param>
+        /// <param name="buildingID">Building ID of owning building.</param>
+        /// <param name="material">Transfer material.</param>
+        /// <returns>Vehicle prefab to spawn.</returns>
         public static VehicleInfo ChooseVehicle(VehicleManager vehicleManager, ref Randomizer r, ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level, ushort buildingID, TransferManager.TransferReason material)
         {
             // Get any custom vehicle list for this build
@@ -118,19 +123,19 @@ namespace TransferController
             }
         }
 
-
         /// <summary>
         /// Chooses a vehicle for a transfer from our custom lists (reverting to game code if no custom list exists for this building and transfer).
         /// Special version with additional VehicleType argument.
         /// </summary>
-        /// <param name="vehicleManager">VehicleManager instance</param>
-        /// <param name="r">Randomizer reference</param>
-        /// <param name="service">Vehicle service</param>
-        /// <param name="subService">Vehicle subservice</param>
-        /// <param name="level">Vehicle level</param>
-        /// <param name="buildingID">Building ID of owning building</param>
-        /// <param name="material">Transfer material</param>
-        /// <returns>Vehicle prefab to spawn</returns>
+        /// <param name="vehicleManager">VehicleManager instance.</param>
+        /// <param name="r">Randomizer reference.</param>
+        /// <param name="service">Vehicle service.</param>
+        /// <param name="subService">Vehicle subservice.</param>
+        /// <param name="level">Vehicle level.</param>
+        /// <param name="type">Vehicle type.</param>
+        /// <param name="buildingID">Building ID of owning building.</param>
+        /// <param name="material">Transfer material.</param>
+        /// <returns>Vehicle prefab to spawn.</returns>
         public static VehicleInfo ChooseVehicleType(VehicleManager vehicleManager, ref Randomizer r, ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level, VehicleInfo.VehicleType type, ushort buildingID, TransferManager.TransferReason material)
         {
             // Get any custom vehicle list for this build

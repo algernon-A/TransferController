@@ -20,7 +20,7 @@ namespace TransferController
         /// <summary>
         /// Initializes a new instance of the <see cref="PathFailItem"/> class.
         /// </summary>
-        /// <param name="buildingID">Building ID.</param
+        /// <param name="buildingID">Building ID.</param>
         /// <param name="incoming">True if the failure was from incoming to outgoing, false otherwise.</param>
         public PathFailItem(ushort buildingID, bool incoming)
         {

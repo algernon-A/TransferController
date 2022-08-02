@@ -19,14 +19,13 @@ namespace TransferController
         private static int s_bufferSize;
         private static BuildingControl.BuildingRecord[] s_copyBuffer = new BuildingControl.BuildingRecord[BuildingPanel.MaxTransfers];
         private static bool[] s_copyIncoming = new bool[BuildingPanel.MaxTransfers];
-        private static TransferManager.TransferReason[] s_copyReason = new TransferManager.TransferReason[BuildingPanel.MaxTransfers];
 
         // Copy buffer - warehouse extensions.
         private static bool s_isWarehouse = false;
-        private static WarehouseRecord s_warehouseRecord;
+        private static WarehouseControl.WarehouseRecord s_warehouseRecord;
 
         // Prevent heap allocations every time we copy.
-        private static TransferStruct[] transferBuffer = new TransferStruct[BuildingPanel.MaxTransfers];
+        private static TransferDataUtils.TransferStruct[] transferBuffer = new TransferDataUtils.TransferStruct[BuildingPanel.MaxTransfers];
 
         /// <summary>
         /// Copies TC data from the given building to the copy buffer.
@@ -61,14 +60,13 @@ namespace TransferController
                 for (int i = 0; i < length; ++i)
                 {
                     // Calculate building record ID.
-                    uint buildingRecordID = BuildingControl.CalculateEntryKey(buildingID, transferBuffer[i].isIncoming, transferBuffer[i].reason);
+                    uint buildingRecordID = BuildingControl.CalculateEntryKey(buildingID, transferBuffer[i].IsIncoming, transferBuffer[i].Reason);
 
                     // Set data.
-                    s_copyIncoming[i] = transferBuffer[i].isIncoming;
-                    s_copyReason[i] = transferBuffer[i].reason;
+                    s_copyIncoming[i] = transferBuffer[i].IsIncoming;
 
                     // Try to get valid entry, outputting to the copy buffer.
-                    if (BuildingControl.s_buildingRecords.TryGetValue(buildingRecordID, out s_copyBuffer[i]))
+                    if (BuildingControl.BuildingRecords.TryGetValue(buildingRecordID, out s_copyBuffer[i]))
                     {
                         // Copy district and building buffers to new HashSets, otherwise the old ones will be shared.
                         if (s_copyBuffer[i].Districts != null)
@@ -96,15 +94,15 @@ namespace TransferController
         /// Attempts to paste TC data from the copy buffer to the given building.
         /// </summary>
         /// <param name="buildingID">Source building ID.</param>
+        /// <returns>True if the paste was successful, false otherwise.</returns>
         internal static bool Paste(ushort buildingID) => Paste(buildingID, Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID].Info);
-
 
         /// <summary>
         /// Attempts to paste TC data from the copy buffer to the given building.
         /// </summary>
-        /// <param name="buildingID">Source building ID</param>
-        /// <param name="buildingInfo">Source building info</param>
-        /// <returns>True if copy was successful, false otherwise</returns>
+        /// <param name="buildingID">Source building ID.</param>
+        /// <param name="buildingInfo">Source building info.</param>
+        /// <returns>True if copy was successful, false otherwise.</returns>
         internal static bool Paste(ushort buildingID, BuildingInfo buildingInfo)
         {
             // Don't do anything if there's no active copy data.
@@ -135,7 +133,7 @@ namespace TransferController
             // Check for record type (incoming/outoging) match between buffer and target.
             for (int i = 0; i < length; ++i)
             {
-                if (transferBuffer[i].isIncoming != s_copyIncoming[i])
+                if (transferBuffer[i].IsIncoming != s_copyIncoming[i])
                 {
                     Logging.Message("copy-paste direction mismatch");
                     return false;
@@ -154,7 +152,7 @@ namespace TransferController
                 };
 
                 // Apply pasted data.
-                BuildingControl.UpdateRecord(buildingID, s_copyIncoming[i], transferBuffer[i].reason, ref newRecord);
+                BuildingControl.UpdateRecord(buildingID, s_copyIncoming[i], transferBuffer[i].Reason, ref newRecord);
             }
 
             // Paste warehouse info, if applicable.

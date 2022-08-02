@@ -1,10 +1,14 @@
-﻿using AlgernonCommons;
-using System.Collections.Generic;
-using System.IO;
-
+﻿// <copyright file="VehicleControl.cs" company="algernon (K. Algernon A. Sheppard)">
+// Copyright (c) algernon (K. Algernon A. Sheppard). All rights reserved.
+// Licensed under the MIT license. See LICENSE.txt file in the project root for full license information.
+// </copyright>
 
 namespace TransferController
 {
+    using System.Collections.Generic;
+    using System.IO;
+    using AlgernonCommons;
+
     /// <summary>
     /// Static class to control building vehicles.
     /// </summary>
@@ -14,22 +18,20 @@ namespace TransferController
         // Key is packed ((byte)transfertype << 24) | (ushort)buildingID.
         private static Dictionary<uint, List<VehicleInfo>> vehicles = new Dictionary<uint, List<VehicleInfo>>();
 
-
         /// <summary>
         /// Checks to see if the specified building has a custom vehicle selection.
         /// </summary>
-        /// <param name="buildingID">Building ID</param>
-        /// <param name="transferReason">Transfer reason</param>
-        /// <returns>True if a custom record exists, false otherwise</returns>
+        /// <param name="buildingID">Building ID.</param>
+        /// <param name="transferReason">Transfer reason.</param>
+        /// <returns>True if a custom record exists, false otherwise.</returns>
         internal static bool HasRecord(ushort buildingID, TransferManager.TransferReason transferReason) => vehicles.ContainsKey(BuildKey(buildingID, transferReason));
-
 
         /// <summary>
         /// Returns the list of selected vehicles for the given building, transfer direction, and material.
         /// </summary>
-        /// <param name="buildingID">Building ID</param>
-        /// <param name="material">Transfer material</param>
-        /// <returns>List of selected vehicles (null if none)</returns>
+        /// <param name="buildingID">Building ID.</param>
+        /// <param name="material">Transfer material.</param>
+        /// <returns>List of selected vehicles (null if none).</returns>
         internal static List<VehicleInfo> GetVehicles(ushort buildingID, TransferManager.TransferReason material)
         {
             // Validity check.
@@ -54,13 +56,12 @@ namespace TransferController
             return null;
         }
 
-
         /// <summary>
-        /// Adds a vehicle the list of selected vehicles for the given building, transfer direction, and material
+        /// Adds a vehicle the list of selected vehicles for the given building, transfer direction, and material.
         /// </summary>
-        /// <param name="buildingID">Building ID</param>
-        /// <param name="material">Transfer material</param>
-        /// <param name="vehicle">Vehicle prefab to add</param>
+        /// <param name="buildingID">Building ID.</param>
+        /// <param name="material">Transfer material.</param>
+        /// <param name="vehicle">Vehicle prefab to add.</param>
         internal static void AddVehicle(ushort buildingID, TransferManager.TransferReason material, VehicleInfo vehicle)
         {
             // Safety checks.
@@ -87,13 +88,12 @@ namespace TransferController
             }
         }
 
-
         /// <summary>
-        /// Removes a vehicle from list of selected vehicles for the given building, transfer direction, and material
+        /// Removes a vehicle from list of selected vehicles for the given building, transfer direction, and material.
         /// </summary>
-        /// <param name="buildingID">Building ID</param>
-        /// <param name="material">Transfer material</param>
-        /// <param name="vehicle">Vehicle prefab to remove</param>
+        /// <param name="buildingID">Building ID.</param>
+        /// <param name="material">Transfer material.</param>
+        /// <param name="vehicle">Vehicle prefab to remove.</param>
         internal static void RemoveVehicle(ushort buildingID, TransferManager.TransferReason material, VehicleInfo vehicle)
         {
             // Safety checks.
@@ -118,11 +118,10 @@ namespace TransferController
             }
         }
 
-
         /// <summary>
         /// Removes all references to a given building from the vehicle dictionary.
         /// </summary>
-        /// <param name="buildingID">BuildingID to remove</param>
+        /// <param name="buildingID">BuildingID to remove.</param>
         internal static void ReleaseBuilding(ushort buildingID)
         {
             // Iterate through each key in dictionary, finding any entries corresponding to the given building ID.
@@ -142,11 +141,10 @@ namespace TransferController
             }
         }
 
-
         /// <summary>
         /// Serializes vehicle selection data.
         /// </summary>
-        /// <param name="stream">Binary writer instance to serialize to</param>
+        /// <param name="writer">Binary writer instance to serialize to.</param>
         internal static void Serialize(BinaryWriter writer)
         {
             Logging.Message("serializing vehicle data");
@@ -174,11 +172,10 @@ namespace TransferController
             }
         }
 
-
         /// <summary>
         /// Deserializes vehicle selection data.
         /// </summary>
-        /// <param name="stream">Data memory stream to deserialize from</param>
+        /// <param name="reader">Binary reader instance to deserialize from.</param>
         internal static void Deserialize(BinaryReader reader)
         {
             Logging.Message("deserializing vehicle data");
@@ -230,13 +227,12 @@ namespace TransferController
             }
         }
 
-
         /// <summary>
         /// Builds the vehicle dictionary key from the provided parametes.
         /// </summary>
-        /// <param name="buildingID">Building ID</param>
-        /// <param name="material">Transfer material</param>
-        /// <returns>Vehicle dictionary key</returns>
-        private static uint BuildKey(ushort buildingID, TransferManager.TransferReason material) => ((uint)material <<24) | buildingID;
+        /// <param name="buildingID">Building ID.</param>
+        /// <param name="material">Transfer material.</param>
+        /// <returns>Vehicle dictionary key.</returns>
+        private static uint BuildKey(ushort buildingID, TransferManager.TransferReason material) => ((uint)material << 24) | buildingID;
     }
 }

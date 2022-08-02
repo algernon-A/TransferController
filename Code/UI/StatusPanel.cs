@@ -1,14 +1,18 @@
-﻿using AlgernonCommons;
-using AlgernonCommons.Translation;
-using AlgernonCommons.UI;
-using ColossalFramework;
-using ColossalFramework.UI;
-using System;
-using UnityEngine;
-
+﻿// <copyright file="StatusPanel.cs" company="algernon (K. Algernon A. Sheppard)">
+// Copyright (c) algernon (K. Algernon A. Sheppard). All rights reserved.
+// Licensed under the MIT license. See LICENSE.txt file in the project root for full license information.
+// </copyright>
 
 namespace TransferController
 {
+    using System;
+    using AlgernonCommons;
+    using AlgernonCommons.Translation;
+    using AlgernonCommons.UI;
+    using ColossalFramework;
+    using ColossalFramework.UI;
+    using UnityEngine;
+
     /// <summary>
     /// Panel to show current building status.
     /// </summary>
@@ -22,20 +26,18 @@ namespace TransferController
         private const float OwnedVehiclesY = GuestVehiclesY + GuestVehiclesPanel.PanelHeight + Margin;
         private const float PanelHeight = OwnedVehiclesY + OwnedVehiclesPanel.PanelHeight;
 
-
         // Components.
-        private OffersPanel offersPanel;
-        private BuildingStatsPanel statsPanel;
-        private OwnedVehiclesPanel ownedVehiclesPanel;
-        private GuestVehiclesPanel guestVehiclesPanel;
-        private PathFailsPanel pathFailspanel;
+        private OffersPanel _offersPanel;
+        private BuildingStatsPanel _statsPanel;
+        private OwnedVehiclesPanel _ownedVehiclesPanel;
+        private GuestVehiclesPanel _guestVehiclesPanel;
+        private PathFailsPanel _pathFailspanel;
 
         // Panel height without pathfails panel.
-        private float baseHeight;
-
+        private float _baseHeight;
 
         /// <summary>
-        /// Constructor - performs initial setup.
+        /// Initializes a new instance of the <see cref="StatusPanel"/> class.
         /// </summary>
         internal StatusPanel()
         {
@@ -70,16 +72,16 @@ namespace TransferController
                 };
 
                 // Status panels.
-                offersPanel = this.AddUIComponent<OffersPanel>();
-                offersPanel.relativePosition = new Vector2(0f, OffersY);
-                statsPanel = this.AddUIComponent<BuildingStatsPanel>();
-                statsPanel.relativePosition = new Vector2(PanelWidth - BuildingStatsPanel.PanelWidth, OffersY);
-                guestVehiclesPanel = this.AddUIComponent<GuestVehiclesPanel>();
-                guestVehiclesPanel.relativePosition = new Vector2(0f, GuestVehiclesY);
-                ownedVehiclesPanel = this.AddUIComponent<OwnedVehiclesPanel>();
-                ownedVehiclesPanel.relativePosition = new Vector2(0f, OwnedVehiclesY);
-                pathFailspanel = this.AddUIComponent<PathFailsPanel>();
-                pathFailspanel.isVisible = false;
+                _offersPanel = this.AddUIComponent<OffersPanel>();
+                _offersPanel.relativePosition = new Vector2(0f, OffersY);
+                _statsPanel = this.AddUIComponent<BuildingStatsPanel>();
+                _statsPanel.relativePosition = new Vector2(PanelWidth - BuildingStatsPanel.PanelWidth, OffersY);
+                _guestVehiclesPanel = this.AddUIComponent<GuestVehiclesPanel>();
+                _guestVehiclesPanel.relativePosition = new Vector2(0f, GuestVehiclesY);
+                _ownedVehiclesPanel = this.AddUIComponent<OwnedVehiclesPanel>();
+                _ownedVehiclesPanel.relativePosition = new Vector2(0f, OwnedVehiclesY);
+                _pathFailspanel = this.AddUIComponent<PathFailsPanel>();
+                _pathFailspanel.isVisible = false;
             }
             catch (Exception e)
             {
@@ -87,18 +89,17 @@ namespace TransferController
             }
         }
 
-
         /// <summary>
         /// Sets the target to the selected building.
         /// </summary>
-        /// <param name="buildingID">New building ID</param>
+        /// <param name="buildingID">New building ID.</param>
         internal override void SetTarget(ushort buildingID)
         {
             // Update child panels.
-            offersPanel.SetTarget(buildingID);
-            statsPanel.SetTarget(buildingID);
-            guestVehiclesPanel.SetTarget(buildingID);
-            pathFailspanel.SetTarget(buildingID);
+            _offersPanel.SetTarget(buildingID);
+            _statsPanel.SetTarget(buildingID);
+            _guestVehiclesPanel.SetTarget(buildingID);
+            _pathFailspanel.SetTarget(buildingID);
 
             // Set vehicle status panel visibility based on building type and vehicle count.
             BuildingAI buildingAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID].Info.m_buildingAI;
@@ -119,28 +120,26 @@ namespace TransferController
                 (buildingAI is HelicopterDepotAI heliAI && heliAI.m_helicopterCount > 0) ||
                 (buildingAI is SnowDumpAI snowDumpAI && snowDumpAI.m_snowTruckCount > 0) ||
                 (buildingAI is DisasterResponseBuildingAI disasterAI && disasterAI.m_vehicleCount > 0) ||
-                buildingAI.GetType().Name.Equals("PrisonCopterPoliceStationAI")
-                )
+                buildingAI.GetType().Name.Equals("PrisonCopterPoliceStationAI"))
             {
                 // Has outgoing vehicles - show vehicle status panel.
                 this.height = PanelHeight;
-                ownedVehiclesPanel.SetTarget(buildingID);
-                ownedVehiclesPanel.Show();
+                _ownedVehiclesPanel.SetTarget(buildingID);
+                _ownedVehiclesPanel.Show();
             }
             else
             {
                 // No supported outgoing vehicles - hide vehicle status panel.
-                ownedVehiclesPanel.Hide();
+                _ownedVehiclesPanel.Hide();
                 this.height = OwnedVehiclesY - Margin;
             }
 
             // Record base panel height without pathfinding failures panel.
-            baseHeight = this.height;
+            _baseHeight = this.height;
 
             // Perform base actions.
             base.SetTarget(buildingID);
         }
-
 
         /// <summary>
         /// Updates panel content.
@@ -149,18 +148,18 @@ namespace TransferController
         protected override void UpdateContent()
         {
             // Check for pathfinding failures relating to the current building.
-            if (PathFindFailure.HasFailure(currentBuilding))
+            if (PathFindFailure.HasFailure(CurrentBuilding))
             {
                 // Found at least one - show the pathfinding failures panel if we're not already doing so.
-                this.height = baseHeight + PathFailsPanel.PanelHeight;
-                pathFailspanel.relativePosition = new Vector2(0f, baseHeight);
-                pathFailspanel.Show();
+                this.height = _baseHeight + PathFailsPanel.PanelHeight;
+                _pathFailspanel.relativePosition = new Vector2(0f, _baseHeight);
+                _pathFailspanel.Show();
             }
             else
             {
                 // No pathfinding failures - hide the pathfinding failures panel.
-                this.height = baseHeight;
-                pathFailspanel.Hide();
+                this.height = _baseHeight;
+                _pathFailspanel.Hide();
             }
         }
     }

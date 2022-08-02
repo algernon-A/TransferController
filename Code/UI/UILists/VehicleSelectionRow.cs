@@ -32,17 +32,12 @@ namespace TransferController
         /// <summary>
         /// Vehicle prefab.
         /// </summary>
-        protected VehicleInfo m_info;
-
+        private VehicleInfo _info;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="VehicleSelectionRow"/> class.
+        /// Gets the height for this row.
         /// </summary>
-        public VehicleSelectionRow()
-        {
-            height = VehicleRowHeight;
-        }
-
+        public override float RowHeight => VehicleRowHeight;
 
         /// <summary>
         /// Generates and displays a row.
@@ -55,7 +50,7 @@ namespace TransferController
             if (vehicleNameLabel == null)
             {
                 // Add object name label.
-                vehicleNameLabel = AddLabel(VehicleSpriteSize + Margin, parent.width - Margin - Margin, wordWrap: true);
+                vehicleNameLabel = AddLabel(VehicleSpriteSize + Margin, width - Margin - VehicleSpriteSize - Margin, wordWrap: true);
 
                 // Add preview sprite image.
                 vehicleSprite = AddUIComponent<UISprite>();
@@ -67,11 +62,11 @@ namespace TransferController
             // Get building ID and set name label.
             if (data is VehicleItem thisItem)
             {
-                m_info = thisItem.Info;
+                _info = thisItem.Info;
                 vehicleNameLabel.text = thisItem.Name;
 
-                vehicleSprite.atlas = m_info?.m_Atlas;
-                vehicleSprite.spriteName = m_info?.m_Thumbnail;
+                vehicleSprite.atlas = _info?.m_Atlas;
+                vehicleSprite.spriteName = _info?.m_Thumbnail;
             }
             else
             {

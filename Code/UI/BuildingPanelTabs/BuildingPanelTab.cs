@@ -1,114 +1,126 @@
-﻿using AlgernonCommons.Translation;
-using ColossalFramework.UI;
-using UnityEngine;
-
+﻿// <copyright file="BuildingPanelTab.cs" company="algernon (K. Algernon A. Sheppard)">
+// Copyright (c) algernon (K. Algernon A. Sheppard). All rights reserved.
+// Licensed under the MIT license. See LICENSE.txt file in the project root for full license information.
+// </copyright>
 
 namespace TransferController
 {
+    using AlgernonCommons.Translation;
+    using ColossalFramework.UI;
+    using UnityEngine;
+
     /// <summary>
     /// Building panel tab panel.
     /// </summary>
     internal abstract class BuildingPanelTab
     {
-        // Layout constants.
-        protected const float Margin = 5f;
-        protected const float CheckMargin = 20f;
-        protected const float CheckHeight = 20f;
-        protected const float ButtonHeight = 28f;
+        /// <summary>
+        /// Layout column width.
+        /// </summary>
         internal const float ColumnWidth = 210f;
-        internal const float ArrowSize = 32f;
-        internal const float MidControlX = Margin + ColumnWidth + Margin;
-        internal const float RightColumnX = MidControlX + ArrowSize + Margin;
-        internal const float BuildingColumnWidth = ColumnWidth * 2f;
-        internal const float PanelWidth = RightColumnX + ColumnWidth + Margin;
-
-        // Current selection.
-        private ushort currentBuilding;
-
-        // Building panel reference.
-        protected UIPanel panel;
-        protected UISprite statusSprite;
-
 
         /// <summary>
-        /// Current content height.
+        /// Arrow button size.
+        /// </summary>
+        internal const float ArrowSize = 32f;
+
+        /// <summary>
+        /// Midpoint controls relative X position.
+        /// </summary>
+        internal const float MidControlX = Margin + ColumnWidth + Margin;
+
+        /// <summary>
+        /// Right column relative X position.
+        /// </summary>
+        internal const float RightColumnX = MidControlX + ArrowSize + Margin;
+
+        /// <summary>
+        /// Column width.
+        /// </summary>
+        internal const float BuildingColumnWidth = ColumnWidth * 2f;
+
+        /// <summary>
+        /// Panel width.
+        /// </summary>
+        internal const float PanelWidth = RightColumnX + ColumnWidth + Margin;
+
+        /// <summary>
+        /// Layout margin.
+        /// </summary>
+        protected const float Margin = 5f;
+
+        /// <summary>
+        /// Checkbox margin.
+        /// </summary>
+        protected const float CheckMargin = 20f;
+
+        /// <summary>
+        /// Checkbox height.
+        /// </summary>
+        protected const float CheckHeight = 20f;
+
+        /// <summary>
+        /// Button height.
+        /// </summary>
+        protected const float ButtonHeight = 28f;
+
+        // Current selection.
+        private ushort _currentBuilding;
+
+        // UI components.
+        private UIPanel _panel;
+        private UISprite _statusSprite;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BuildingPanelTab"/> class.
+        /// </summary>
+        /// <param name="parentPanel">Parent UI panel.</param>
+        /// <param name="tabSprite">Tab status sprite.</param>
+        internal BuildingPanelTab(UIPanel parentPanel, UISprite tabSprite)
+        {
+            // Set references.
+            _panel = parentPanel;
+            _statusSprite = tabSprite;
+        }
+
+        /// <summary>
+        /// Gets the current content height.
         /// </summary>
         internal abstract float ContentHeight { get; }
 
-
         /// <summary>
-        /// True if this is an incoming transfer, false if outgoing.
+        /// Gets or sets a value indicating whether this is an incoming (true) or outgoing (false) transfer.
         /// </summary>
         internal bool IsIncoming { get; set; }
 
-
         /// <summary>
-        /// Transfer reason.
+        /// Gets or sets the current transfer reason.
         /// </summary>
         internal TransferManager.TransferReason TransferReason { get; set; }
 
-
         /// <summary>
-        /// Currently selected building.
+        /// Gets or sets the currently selected building.
         /// </summary>
         internal ushort CurrentBuilding
         {
-            get => currentBuilding;
+            get => _currentBuilding;
 
             set
             {
-                currentBuilding = value;
+                _currentBuilding = value;
                 Refresh();
             }
         }
 
+        /// <summary>
+        /// Gets the tab's active UI panel.
+        /// </summary>
+        protected UIPanel Panel => _panel;
 
         /// <summary>
-        /// Constructor.
+        /// Gets the tab's status sprite.
         /// </summary>
-        /// <param name="parentPanel">Parent UI panel</param>
-        /// <param name="tabSprite">Tab status sprite</param>
-        internal BuildingPanelTab(UIPanel parentPanel, UISprite tabSprite)
-        {
-            // Set references.
-            panel = parentPanel;
-            statusSprite = tabSprite;
-        }
-
-
-        /// <summary>
-        /// Adds an icon-style button to the specified component at the specified coordinates.
-        /// </summary>
-        /// <param name="parent">Parent UIComponent</param>
-        /// <param name="xPos">Relative X position</param>
-        /// <param name="yPos">Relative Y position</param>
-        /// <param name="size">Button size (square)</param>
-        /// <param name="tooltipKey">Tooltip translation key</param>
-        /// <param name="atlas">Icon atlas</param>
-        /// <returns>New UIButton</returns>
-        internal static UIButton AddIconButton(UIComponent parent, float xPos, float yPos, float size, string tooltipKey, UITextureAtlas atlas)
-        {
-            UIButton newButton = parent.AddUIComponent<BuildingPanel.TCPanelButton>();
-
-            // Size and position.
-            newButton.relativePosition = new Vector2(xPos, yPos);
-            newButton.height = size;
-            newButton.width = size;
-
-            // Appearance.
-            newButton.atlas = atlas;
-            newButton.normalFgSprite = "normal";
-            newButton.focusedFgSprite = "normal";
-            newButton.hoveredFgSprite = "hovered";
-            newButton.disabledFgSprite = "disabled";
-            newButton.pressedFgSprite = "pressed";
-
-            // Tooltip.
-            newButton.tooltip = Translations.Translate(tooltipKey);
-
-            return newButton;
-        }
-
+        protected UISprite StatusSprite => _statusSprite;
 
         /// <summary>
         /// Refreshes the controls with current data.

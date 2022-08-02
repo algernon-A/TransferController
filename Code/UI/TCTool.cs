@@ -19,7 +19,7 @@ namespace TransferController
     public class TCTool : DefaultTool
     {
         // Transfer struct for eligibility checking.
-        private readonly TransferStruct[] _transfers = new TransferStruct[4];
+        private readonly TransferDataUtils.TransferStruct[] _transfers = new TransferDataUtils.TransferStruct[4];
 
         // Cursor textures.
         private CursorInfo _selectCursorOn;
@@ -212,7 +212,7 @@ namespace TransferController
             {
                 // If not in building picker mode, highlight all buildings with Transfer Controller settings in magenta.
                 Color magenta = new Color(1f, 0f, 1f, 0.75f);
-                foreach (uint key in BuildingControl.s_buildingRecords.Keys)
+                foreach (uint key in BuildingControl.BuildingRecords.Keys)
                 {
                     // Apply overlay.
                     ushort buildingID = (ushort)(key & 0x0000FFFF);

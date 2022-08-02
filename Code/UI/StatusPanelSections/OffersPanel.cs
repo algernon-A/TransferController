@@ -26,12 +26,12 @@ namespace TransferController
         internal const float PanelWidth = OfferRow.RowWidth + ScrollbarWidth + Margin + Margin;
 
         /// <summary>
-        /// Panel height,
+        /// Panel height.
         /// </summary>
         internal const float PanelHeight = ListY + ListHeight + Margin;
 
         // Layout constants - private.
-        private const float ListHeight = StatusRow.RowHeight * 4f;
+        private const float ListHeight = StatusRow.DefaultRowHeight * 4f;
 
         // Offer list.
         private readonly UIList _offersList;
@@ -64,7 +64,6 @@ namespace TransferController
             }
         }
 
-
         /// <summary>
         /// Updates panel content.
         /// </summary>
@@ -85,17 +84,17 @@ namespace TransferController
             {
                 // Calculate reason and priority blocks.
                 TransferManager.TransferReason thisReason = (TransferManager.TransferReason)((i & 0xFFFFF800) >> 11);
-                byte priority =(byte)((i & 0x0700) >> 8);
+                byte priority = (byte)((i & 0x0700) >> 8);
 
                 // Incoming offers.
-                if (incomingOffers[i].Building == currentBuilding)
+                if (incomingOffers[i].Building == CurrentBuilding)
                 {
                     // Add to list.
                     selectedOffers.Add(new OfferItem(thisReason, priority, true));
                 }
 
                 // Outgoing offers.
-                if (outgoingOffers[i].Building == currentBuilding)
+                if (outgoingOffers[i].Building == CurrentBuilding)
                 {
                     // Add to list.
                     selectedOffers.Add(new OfferItem(thisReason, priority, false));

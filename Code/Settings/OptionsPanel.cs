@@ -62,29 +62,29 @@ namespace TransferController
             currentY += newAlgorithmCheck.height + Margin;
 
             // Distance multiplier slider.
-            distanceSlider = UISliders.AddSliderWithValue(this, LeftMargin, currentY, Translations.Translate("TFC_OPT_DIS"), 0f, 100f, 1f, OldMatching.distancePercentage);
-            distanceSlider.eventValueChanged += (control, value) => OldMatching.distancePercentage = (int)value.RoundToNearest(1f);
+            distanceSlider = UISliders.AddPlainSliderWithValue(this, LeftMargin, currentY, Translations.Translate("TFC_OPT_DIS"), 0f, 100f, 1f, OldMatching.DistancePercentage);
+            distanceSlider.eventValueChanged += (control, value) => OldMatching.DistancePercentage = (int)value.RoundToNearest(1f);
             distanceSlider.tooltip = Translations.Translate("TFC_OPT_DIS_TIP");
             distanceSlider.tooltipBox = UIToolTips.WordWrapToolTip;
             distanceSlider.parent.isVisible = !newAlgorithmCheck.isChecked;
             currentY += distanceSlider.parent.height + GroupMargin;
 
             // Warehouse priority slider.
-            UISlider warehouseSlider = UISliders.AddSliderWithValue(this, LeftMargin, currentY, Translations.Translate("TFC_OPT_WAR"), 0f, 4f, 1f, Matching.WarehousePriority);
+            UISlider warehouseSlider = UISliders.AddPlainSliderWithValue(this, LeftMargin, currentY, Translations.Translate("TFC_OPT_WAR"), 0f, 4f, 1f, Matching.WarehousePriority);
             warehouseSlider.eventValueChanged += (control, value) => Matching.WarehousePriority = (int)value.RoundToNearest(1f);
             warehouseSlider.tooltip = Translations.Translate("TFC_OPT_WAR_TIP");
             warehouseSlider.tooltipBox = UIToolTips.WordWrapToolTip;
             currentY += distanceSlider.parent.height + GroupMargin;
 
             // Outside rail connection priority slider.
-            UISlider railSlider = UISliders.AddSliderWithValue(this, LeftMargin, currentY, Translations.Translate("TFC_OPT_ORP"), 0f, 4f, 1f, Matching.OutsideRailPriority);
+            UISlider railSlider = UISliders.AddPlainSliderWithValue(this, LeftMargin, currentY, Translations.Translate("TFC_OPT_ORP"), 0f, 4f, 1f, Matching.OutsideRailPriority);
             railSlider.eventValueChanged += (control, value) => Matching.OutsideRailPriority = (int)value.RoundToNearest(1f);
             railSlider.tooltip = Translations.Translate("TFC_OPT_ORP_TIP");
             railSlider.tooltipBox = UIToolTips.WordWrapToolTip;
             currentY += railSlider.parent.height + GroupMargin;
 
             // Outside shipping connection priority slider.
-            UISlider shippingSlider = UISliders.AddSliderWithValue(this, LeftMargin, currentY, Translations.Translate("TFC_OPT_OSP"), 0f, 4f, 1f, Matching.OutsideShipPriority);
+            UISlider shippingSlider = UISliders.AddPlainSliderWithValue(this, LeftMargin, currentY, Translations.Translate("TFC_OPT_OSP"), 0f, 4f, 1f, Matching.OutsideShipPriority);
             shippingSlider.eventValueChanged += (control, value) => Matching.OutsideShipPriority = (int)value.RoundToNearest(1f);
             shippingSlider.tooltip = Translations.Translate("TFC_OPT_OSP_TIP");
             shippingSlider.tooltipBox = UIToolTips.WordWrapToolTip;

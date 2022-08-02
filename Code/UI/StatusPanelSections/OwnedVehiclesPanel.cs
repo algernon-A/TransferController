@@ -31,11 +31,10 @@ namespace TransferController
 
         // Layout constants - private.
         private const float ListWidth = VehicleStatusRow.RowWidth + ScrollbarWidth;
-        private const float ListHeight = StatusRow.RowHeight * 6f;
+        private const float ListHeight = StatusRow.DefaultRowHeight * 6f;
 
         // Vehicle list.
         private readonly UIList _vehiclesList;
-
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OwnedVehiclesPanel"/> class.
@@ -75,7 +74,7 @@ namespace TransferController
             // Local references.
             Building[] buildingBuffer = Singleton<BuildingManager>.instance.m_buildings.m_buffer;
             Vehicle[] vehicleBuffer = Singleton<VehicleManager>.instance.m_vehicles.m_buffer;
-            ref Building building = ref buildingBuffer[currentBuilding];
+            ref Building building = ref buildingBuffer[CurrentBuilding];
 
             // List of owned vehicles
             List<VehicleStatusItem> ownedVehicles = new List<VehicleStatusItem>();

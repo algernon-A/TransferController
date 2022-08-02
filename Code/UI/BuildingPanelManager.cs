@@ -1,45 +1,53 @@
-﻿using AlgernonCommons;
-using AlgernonCommons.Translation;
-using AlgernonCommons.UI;
-using ColossalFramework.UI;
-using System;
-using UnityEngine;
-
+﻿// <copyright file="BuildingPanelManager.cs" company="algernon (K. Algernon A. Sheppard)">
+// Copyright (c) algernon (K. Algernon A. Sheppard). All rights reserved.
+// Licensed under the MIT license. See LICENSE.txt file in the project root for full license information.
+// </copyright>
 
 namespace TransferController
 {
+    using System;
+    using AlgernonCommons;
+    using AlgernonCommons.Translation;
+    using AlgernonCommons.UI;
+    using ColossalFramework.UI;
+    using UnityEngine;
+
     /// <summary>
     /// Static class to manage the mod's building info panel.
     /// </summary>
     internal static class BuildingPanelManager
     {
         // Instance references.
-        private static GameObject uiGameObject;
-        private static BuildingPanel panel;
-        internal static BuildingPanel Panel => panel;
+        private static GameObject s_gameObject;
+        private static BuildingPanel s_panel;
 
+        // InfoPanel buttons.
+        private static UIButton s_privateBuildingButton;
+        private static UIButton s_playerBuildingButton;
 
-        // Components.
-        private static UIButton privateBuildingButton, playerBuildingButton;
-
+        /// <summary>
+        /// Gets the active panel instance.
+        /// </summary>
+        internal static BuildingPanel Panel => s_panel;
 
         /// <summary>
         /// Creates the panel object in-game and displays it.
         /// </summary>
-        /// <param name="parent">Parent component</param>
-        internal static void Create<T>() where T : BuildingPanel
+        /// <typeparam name="TPanel">Panel type.</typeparam>
+        internal static void Create<TPanel>()
+            where TPanel : BuildingPanel
         {
             try
             {
                 // If no instance already set, create one.
-                if (uiGameObject == null)
+                if (s_gameObject == null)
                 {
                     // Give it a unique name for easy finding with ModTools.
-                    uiGameObject = new GameObject("TCBuildingInfoPanel");
-                    uiGameObject.transform.parent = UIView.GetAView().transform;
+                    s_gameObject = new GameObject("TCBuildingInfoPanel");
+                    s_gameObject.transform.parent = UIView.GetAView().transform;
 
                     // Add panel and set parent transform.
-                    panel = uiGameObject.AddComponent<T>();
+                    s_panel = s_gameObject.AddComponent<TPanel>();
 
                     // Show panel.
                     Panel.Show();
@@ -51,7 +59,6 @@ namespace TransferController
             }
         }
 
-
         /// <summary>
         /// Closes the panel by destroying the object (removing any ongoing UI overhead).
         /// </summary>
@@ -61,18 +68,17 @@ namespace TransferController
             TCTool.Instance.ClearPickMode();
             TCTool.Instance.CurrentBuilding = 0;
 
-            GameObject.Destroy(panel);
-            GameObject.Destroy(uiGameObject);
+            GameObject.Destroy(s_panel);
+            GameObject.Destroy(s_gameObject);
 
-            panel = null;
-            uiGameObject = null;
+            s_panel = null;
+            s_gameObject = null;
         }
-
 
         /// <summary>
         /// Sets the target to the selected building, creating the panel if necessary.
         /// </summary>
-        /// <param name="buildingID">New building ID</param>
+        /// <param name="buildingID">New building ID.</param>
         internal static void SetTarget(ushort buildingID)
         {
             // If no existing panel, create it.
@@ -85,7 +91,6 @@ namespace TransferController
             Panel.SetTarget(buildingID);
         }
 
-
         /// <summary>
         /// Adds the building buttons to game building info panels.
         /// </summary>
@@ -93,8 +98,8 @@ namespace TransferController
         {
             try
             {
-                privateBuildingButton = AddInfoPanelButton(UIView.library.Get<ZonedBuildingWorldInfoPanel>(typeof(ZonedBuildingWorldInfoPanel).Name), -97f);
-                playerBuildingButton = AddInfoPanelButton(UIView.library.Get<CityServiceWorldInfoPanel>(typeof(CityServiceWorldInfoPanel).Name), -72f);
+                s_privateBuildingButton = AddInfoPanelButton(UIView.library.Get<ZonedBuildingWorldInfoPanel>(typeof(ZonedBuildingWorldInfoPanel).Name), -97f);
+                s_playerBuildingButton = AddInfoPanelButton(UIView.library.Get<CityServiceWorldInfoPanel>(typeof(CityServiceWorldInfoPanel).Name), -72f);
                 AddInfoPanelButton(UIView.library.Get<WarehouseWorldInfoPanel>(typeof(WarehouseWorldInfoPanel).Name), -5f);
                 AddInfoPanelButton(UIView.library.Get<UniqueFactoryWorldInfoPanel>(typeof(UniqueFactoryWorldInfoPanel).Name), -5f);
             }
@@ -104,24 +109,22 @@ namespace TransferController
             }
         }
 
-
         /// <summary>
         /// Handles button visibility when building info world target building changes.
         /// </summary>
         internal static void TargetChanged()
         {
-            bool isVisible = TransferDataUtils.BuildingEligibility(WorldInfoPanel.GetCurrentInstanceID().Building, new TransferStruct[4]);
-            privateBuildingButton.isVisible = isVisible;
-            playerBuildingButton.isVisible = isVisible;
+            bool isVisible = TransferDataUtils.BuildingEligibility(WorldInfoPanel.GetCurrentInstanceID().Building, new TransferDataUtils.TransferStruct[4]);
+            s_privateBuildingButton.isVisible = isVisible;
+            s_playerBuildingButton.isVisible = isVisible;
         }
-
 
         /// <summary>
         /// Adds a Transfer Controller button to a building info panel to directly access that building's.
         /// </summary>
-        /// <param name="infoPanel">Infopanel to apply the button to</param>
-        /// <param name="offset">Panel y-offset from default position</param>
-        /// <returns></returns>
+        /// <param name="infoPanel">Infopanel to apply the button to.</param>
+        /// <param name="offset">Panel y-offset from default position.</param>
+        /// <returns>New UIButton.</returns>
         private static UIButton AddInfoPanelButton(BuildingWorldInfoPanel infoPanel, float offset)
         {
             const float PanelButtonSize = 24f;
