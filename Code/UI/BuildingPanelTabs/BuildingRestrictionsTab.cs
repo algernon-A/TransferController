@@ -119,7 +119,7 @@ namespace TransferController
                     MidControlX,
                     DistrictListY,
                     ArrowSize,
-                    UITextures.LoadSpriteAtlas("TC-ArrowPlus"),
+                    UITextures.LoadQuadSpriteAtlas("TC-ArrowPlus"),
                     Translations.Translate("TFC_DIS_ADD"));
                 _addDistrictButton.isEnabled = false;
                 _addDistrictButton.eventClicked += (control, clickEvent) => AddDistrict(_districtSelectionPanel.SelectedDistrict);
@@ -130,7 +130,7 @@ namespace TransferController
                     MidControlX,
                     DistrictListY + ArrowSize,
                     ArrowSize,
-                    UITextures.LoadSpriteAtlas("TC-ArrowMinus"),
+                    UITextures.LoadQuadSpriteAtlas("TC-ArrowMinus"),
                     Translations.Translate("TFC_DIS_SUB"));
                 _removeDistrictButton.isEnabled = false;
                 _removeDistrictButton.eventClicked += (control, clickEvent) => RemoveDistrict();
@@ -150,7 +150,7 @@ namespace TransferController
                 buildingDistrictSelectionLabel.textAlignment = UIHorizontalAlignment.Center;
 
                 // 'Add building' button.
-                _addBuildingButton = UIButtons.AddIconButton<BuildingPanel.TCPanelButton>(parentPanel, BuildingButtonX, BuildingListY, ArrowSize, UITextures.LoadSpriteAtlas("TC-RoundPlus"), Translations.Translate("TFC_BUI_ADD"));
+                _addBuildingButton = UIButtons.AddIconButton<BuildingPanel.TCPanelButton>(parentPanel, BuildingButtonX, BuildingListY, ArrowSize, UITextures.LoadQuadSpriteAtlas("TC-RoundPlus"), Translations.Translate("TFC_BUI_ADD"));
                 _addBuildingButton.eventClicked += (control, clickEvent) =>
                 {
                     // Add building via tool selection.
@@ -159,7 +159,7 @@ namespace TransferController
                 };
 
                 // Remove building button.
-                _removeBuildingButton = UIButtons.AddIconButton<BuildingPanel.TCPanelButton>(parentPanel, BuildingButtonX, BuildingListY + ArrowSize, ArrowSize, UITextures.LoadSpriteAtlas("TC-RoundMinus"), Translations.Translate("TFC_BUI_SUB"));
+                _removeBuildingButton = UIButtons.AddIconButton<BuildingPanel.TCPanelButton>(parentPanel, BuildingButtonX, BuildingListY + ArrowSize, ArrowSize, UITextures.LoadQuadSpriteAtlas("TC-RoundMinus"), Translations.Translate("TFC_BUI_SUB"));
                 _removeBuildingButton.isEnabled = false;
                 _removeBuildingButton.eventClicked += (control, clickEvent) => RemoveBuilding();
 

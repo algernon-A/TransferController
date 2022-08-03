@@ -50,7 +50,7 @@ namespace TransferController
                 BuildingPanelTab.MidControlX,
                 VehicleListY,
                 BuildingPanelTab.ArrowSize,
-                UITextures.LoadSpriteAtlas("TC-ArrowPlus"),
+                UITextures.LoadQuadSpriteAtlas("TC-ArrowPlus"),
                 Translations.Translate("TFC_VEH_ADD"));
             _addVehicleButton.isEnabled = false;
             _addVehicleButton.eventClicked += (control, clickEvent) => AddVehicle(_vehicleSelectionPanel.SelectedVehicle);
@@ -61,7 +61,7 @@ namespace TransferController
                 BuildingPanelTab.MidControlX,
                 VehicleListY + BuildingPanelTab.ArrowSize,
                 BuildingPanelTab.ArrowSize,
-                UITextures.LoadSpriteAtlas("TC-ArrowMinus"),
+                UITextures.LoadQuadSpriteAtlas("TC-ArrowMinus"),
                 Translations.Translate("TFC_VEH_SUB"));
             _removeVehicleButton.isEnabled = false;
             _removeVehicleButton.eventClicked += (control, clickEvent) => RemoveVehicle();

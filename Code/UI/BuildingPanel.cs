@@ -143,11 +143,11 @@ namespace TransferController
                 zoomButton.eventClicked += (c, p) => ZoomToBuilding(_currentBuilding);
 
                 // Offers button.
-                _offersButton = AddIconButton(this, ButtonX, Button1Y, ButtonSize, "TFC_OFF_TIT", UITextures.LoadSpriteAtlas("TC-OpenOffers"));
+                _offersButton = AddIconButton(this, ButtonX, Button1Y, ButtonSize, "TFC_OFF_TIT", UITextures.LoadQuadSpriteAtlas("TC-OpenOffers"));
                 _offersButton.eventClicked += ShowOffers;
 
                 // Log button.
-                _logButton = AddIconButton(this, ButtonX, Button2Y, ButtonSize, "TFC_OFF_LOG", UITextures.LoadSpriteAtlas("TC-Logs"));
+                _logButton = AddIconButton(this, ButtonX, Button2Y, ButtonSize, "TFC_OFF_LOG", UITextures.LoadQuadSpriteAtlas("TC-Logs"));
                 _logButton.eventClicked += ShowLog;
 
                 // Tab panel.

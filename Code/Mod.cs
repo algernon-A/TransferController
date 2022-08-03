@@ -9,7 +9,6 @@ namespace TransferController
     using AlgernonCommons.Patching;
     using AlgernonCommons.Translation;
     using AlgernonCommons.UI;
-    using AlgernonCommons.XML;
     using ColossalFramework.UI;
     using ICities;
 
@@ -18,6 +17,7 @@ namespace TransferController
     /// </summary>
     public class Mod : PatcherMod, IUserMod
     {
+        // Mod name.
         private static readonly string ModName = "Transfer Controller";
 
         /// <summary>
