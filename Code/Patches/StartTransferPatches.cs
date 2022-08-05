@@ -72,8 +72,11 @@ namespace TransferController
                     // Standard version.
                     if (instruction.Calls(getRandomVehicle))
                     {
-                        // Add buildingID and material params to call.
-                        yield return new CodeInstruction(OpCodes.Ldarg_1);
+                        // Get any labels attached to original instruction.
+                        List<Label> labels = instruction.labels;
+
+                        // Add buildingID and material params to call, restoring any original labels against the insert start.
+                        yield return new CodeInstruction(OpCodes.Ldarg_1) { labels = labels };
                         yield return new CodeInstruction(OpCodes.Ldarg_3);
                         instruction = new CodeInstruction(OpCodes.Call, chooseVehicle);
                         Logging.Message("transpiled");
