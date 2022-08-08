@@ -81,7 +81,7 @@ namespace TransferController
                     Logging.KeyMessage("deploying Harmony patches");
 
                     // Apply all annotated patches and update flag.
-                    Harmony harmonyInstance = new Harmony(Mod.Instance.HarmonyID);
+                    Harmony harmonyInstance = new Harmony(HarmonyID);
                     harmonyInstance.PatchAll();
                     Patched = true;
 

@@ -132,7 +132,7 @@
 "KEY_PRS","Druk op een toets"
 "TFC_ERR_FAT","Dit betekent dat de mod niet werkt"
 "TFC_ERR_HAR","Transfer Controller kon de vereiste Harmony patches niet voltooien."
-"MES_CLS","Sluit"
+"NOTE_CLOSE","Sluit"
 "ERR_HAR0","Harmony patchfout"
 "ERR_HAR1","Mogelijke oorzaken van dit probleem zijn:"
 "ERR_HAR2","De benodigde Harmony 2 mod afhankelijkheid is niet geïnstalleerd"

@@ -132,7 +132,7 @@
 "KEY_PRS","何かキーを押してください"
 "TFC_ERR_FAT","正常にMODが起動できないため、動作をシャットダウンしました"
 "TFC_ERR_HAR","Transfer Controllerは、必要なHarmony2 MODのパッチ動作を完了できません"
-"MES_CLS","閉じる"
+"NOTE_CLOSE","閉じる"
 "ERR_HAR0","Harmony2 MODでエラーが発生しました"
 "ERR_HAR1","エラーが起きる原因として、考えられるのは以下の通りです"
 "ERR_HAR2","依存関係にある、必要なHarmony2 MODがインストールされていません"

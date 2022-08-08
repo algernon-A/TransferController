@@ -132,7 +132,7 @@
 "KEY_PRS","Appuyez sur n'importe quelle touche"
 "TFC_ERR_FAT","Cela signifie que le mod n'est pas en mesure de fonctionner"
 "TFC_ERR_HAR","Contrôleur des Transferts n'a pas été en mesure d'effectuer les correctifs du mod -librairie- 'Harmony' requis."
-"MES_CLS","Fermer"
+"NOTE_CLOSE","Fermer"
 "ERR_HAR0","Erreur de patching d'Harmony"
 "ERR_HAR1","Les causes possibles de ce problème comprennent :"
 "ERR_HAR2","La dépendance requise du mod Harmony 2 n'a pas été installée"

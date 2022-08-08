@@ -132,7 +132,7 @@
 "KEY_PRS","Drücke eine Taste"
 "TFC_ERR_FAT","Dies bedeutet, dass der Mod nicht funktioniert"
 "TFC_ERR_HAR","Transfer Controller konnte seine benötigten Harmony Patches nicht anwenden."
-"MES_CLS","Schließen"
+"NOTE_CLOSE","Schließen"
 "ERR_HAR0","Harmony Patching-Fehler"
 "ERR_HAR1","Mögliche Ursachen für dieses Problem sind:"
 "ERR_HAR2","Die benötigte Mod Harmony 2 ist nicht installiert"

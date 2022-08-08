@@ -132,7 +132,7 @@
 "KEY_PRS","Press any key"
 "TFC_ERR_FAT","這意味著此模組(Mod)無法運轉，並且已自動禁用。"
 "TFC_ERR_HAR","“運輸分配控制器 (Transfer Controller)” 無法獲得所需的 “Harmony” 支援庫。"
-"MES_CLS","關閉"
+"NOTE_CLOSE","關閉"
 "ERR_HAR0","“Harmony” 支援庫錯誤。"
 "ERR_HAR1","導致此問題有可能包括的原因："
 "ERR_HAR2","“Harmony 2” 支援庫模組(Mod)沒有訂閱。"
