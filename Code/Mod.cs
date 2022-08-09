@@ -5,7 +5,6 @@
 
 namespace TransferController
 {
-    using AlgernonCommons;
     using AlgernonCommons.Patching;
     using AlgernonCommons.Translation;
     using AlgernonCommons.UI;
@@ -17,23 +16,15 @@ namespace TransferController
     /// </summary>
     public class Mod : PatcherMod, IUserMod
     {
-        // Mod name.
-        private static readonly string ModName = "Transfer Controller";
-
         /// <summary>
-        /// Gets the mod's name for logging purposes.
+        /// Gets the mod's base display name (name only).
         /// </summary>
-        public override string LogName => ModName;
+        public override string BaseName => "Transfer Controller";
 
         /// <summary>
         /// Gets the mod's unique Harmony identfier.
         /// </summary>
         public override string HarmonyID => "com.github.algernon-A.csl.tc";
-
-        /// <summary>
-        /// Gets the mod's display name.
-        /// </summary>
-        public override string Name => ModName + ' ' + AssemblyUtils.TrimmedCurrentVersion;
 
         /// <summary>
         /// Gets the mod's description for display in the content manager.
