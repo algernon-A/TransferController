@@ -129,7 +129,7 @@
 "TRN_CHOICE","Set language"
 "LANGUAGE_GAME","Use game language"
 "KEY_KEY","Hotkey"
-"KEY_PRS","Press any key"
+"PRESS_ANY_KEY","Press any key"
 "TFC_ERR_FAT","This means that the mod is not able to operate, and has shut down."
 "TFC_ERR_HAR","Transfer Controller was unable to complete its required Harmony patches."
 "NOTE_CLOSE","Close"

@@ -368,7 +368,7 @@ namespace TransferController
             base.OnToolLateUpdate();
 
             // Force the info mode to none.
-            ToolBase.ForceInfoMode(InfoManager.InfoMode.None, InfoManager.SubInfoMode.None);
+            ForceInfoMode(InfoManager.InfoMode.None, InfoManager.SubInfoMode.None);
         }
 
         /// <summary>

@@ -17,8 +17,8 @@ namespace TransferController
     public class Patcher : PatcherBase
     {
         // Flags.
-        private static bool _useNewAlgorithm = true;
-        private static bool _addOffersPatched = false;
+        private static bool s_useNewAlgorithm = true;
+        private static bool s_addOffersPatched = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Patcher"/> class.
@@ -51,15 +51,15 @@ namespace TransferController
         /// </summary>
         internal static bool UseNewAlgorithm
         {
-            get => _useNewAlgorithm;
+            get => s_useNewAlgorithm;
 
             set
             {
                 // Don't do anything if already in effect.
-                if (value != _useNewAlgorithm)
+                if (value != s_useNewAlgorithm)
                 {
                     // Update value.
-                    _useNewAlgorithm = value;
+                    s_useNewAlgorithm = value;
 
                     // Apply patches.
                     Instance.PatchNewAlgorithm(value);
@@ -124,25 +124,25 @@ namespace TransferController
                 if (usingNew)
                 {
                     // Applying new algorithm: unpatch legacy patches if they're appied.
-                    if (_addOffersPatched)
+                    if (s_addOffersPatched)
                     {
                         Logging.Message("unapplying MatchOffers prefixes");
 
                         harmonyInstance.Unpatch(matchIncomingTarget, matchIncomingPatch);
                         harmonyInstance.Unpatch(matchOutgoingTarget, matchOutgoingPatch);
-                        _addOffersPatched = false;
+                        s_addOffersPatched = false;
                     }
                 }
                 else
                 {
                     // Applying legacy algorithm: patch legacy patches if we haven't aready.
-                    if (!_addOffersPatched)
+                    if (!s_addOffersPatched)
                     {
                         Logging.Message("applying MatchOffers prefixes");
 
                         harmonyInstance.Patch(matchIncomingTarget, prefix: new HarmonyMethod(matchIncomingPatch));
                         harmonyInstance.Patch(matchOutgoingTarget, prefix: new HarmonyMethod(matchOutgoingPatch));
-                        _addOffersPatched = true;
+                        s_addOffersPatched = true;
                     }
                 }
             }

@@ -17,7 +17,7 @@
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="UnifiedUILib" Version="2.2.9" />
+		<PackageReference Include="UnifiedUILib" Version="2.2.12" />
 		<Reference Include="Assembly-CSharp" />
 		<Reference Include="ColossalManaged" />
 		<Reference Include="ICities" />
