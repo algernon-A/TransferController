@@ -31,7 +31,7 @@ namespace TransferController
         internal const float PanelHeight = ListY + ListHeight + Margin;
 
         // Layout constants - private.
-        private const float ListHeight = StatusRow.DefaultRowHeight * 4f;
+        private const float ListHeight = UIList.DefaultRowHeight * 4f;
 
         // Offer list.
         private readonly UIList _offersList;

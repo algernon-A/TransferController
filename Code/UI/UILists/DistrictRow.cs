@@ -13,6 +13,11 @@ namespace TransferController
     /// </summary>
     public class DistrictRow : UIListRow
     {
+        /// <summary>
+        /// Default row height.
+        /// </summary>
+        internal const float DefaultRowHeight = UIList.DefaultRowHeight;
+
         // District name label.
         private UILabel _districtNameLabel;
 

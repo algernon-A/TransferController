@@ -41,7 +41,7 @@ namespace TransferController
                 height = VehicleSelection.VehicleListHeight;
 
                 // Vehicle selection list.
-                _vehicleList = UIList.AddUIList<VehicleSelectionRow>(this, 0f, 0f, BuildingVehiclesTab.ColumnWidth, VehicleSelection.VehicleListHeight);
+                _vehicleList = UIList.AddUIList<VehicleSelectionRow>(this, 0f, 0f, BuildingVehiclesTab.ColumnWidth, VehicleSelection.VehicleListHeight, VehicleSelectionRow.VehicleRowHeight);
                 _vehicleList.EventSelectionChanged += (control, selectedItem) => SelectedVehicle = (selectedItem as VehicleItem)?.Info;
             }
             catch (Exception e)

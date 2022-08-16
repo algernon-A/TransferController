@@ -27,7 +27,7 @@ namespace TransferController
         private const float FilterRow1 = FilterY;
         private const float FilterRow2 = FilterRow1 + FilterRowHeight;
         private const float FilterRow3 = FilterRow2 + FilterRowHeight;
-        private const float ListHeight = StatusRow.DefaultRowHeight * 20f;
+        private const float ListHeight = UIList.DefaultRowHeight * 20f;
         private const float LogListHeaderY = FilterRow3 + FilterRowHeight;
         private const float LogListY = LogListHeaderY + 15f;
         private const float PanelHeight = LogListY + ListHeight + Margin;

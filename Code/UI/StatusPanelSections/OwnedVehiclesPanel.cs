@@ -31,7 +31,7 @@ namespace TransferController
 
         // Layout constants - private.
         private const float ListWidth = VehicleStatusRow.RowWidth + ScrollbarWidth;
-        private const float ListHeight = StatusRow.DefaultRowHeight * 6f;
+        private const float ListHeight = UIList.DefaultRowHeight * 6f;
 
         // Vehicle list.
         private readonly UIList _vehiclesList;
