@@ -102,7 +102,7 @@ namespace TransferController
                 timeLabel.textAlignment = UIHorizontalAlignment.Center;
 
                 // Log list.
-                _logList = AddList<MatchRow>(LogListY, ListWidth, ListHeight);
+                _logList = UIList.AddUIList<MatchRow>(this, Margin, LogListY, ListWidth, ListHeight);
 
                 // Populate initial data.
                 UpdateContent();

@@ -41,14 +41,7 @@ namespace TransferController
                 height = BuildingRestrictionsTab.ListHeight;
 
                 // District selection list.
-                _buildingList = UIList.AddUIList<BuildingRow>(this);
-                _buildingList.BackgroundSprite = "UnlockingPanel";
-                _buildingList.width = BuildingRestrictionsTab.BuildingColumnWidth;
-                _buildingList.height = BuildingRestrictionsTab.ListHeight;
-                _buildingList.relativePosition = Vector2.zero;
-                _buildingList.Data = new FastList<object>();
-                _buildingList.SelectedIndex = -1;
-
+                _buildingList = UIList.AddUIList<BuildingRow>(this, 0f, 0f, BuildingRestrictionsTab.BuildingColumnWidth, BuildingRestrictionsTab.ListHeight);
                 _buildingList.EventSelectionChanged += (control, selectedItem) =>
                 {
                     if (selectedItem is BuildingItem buildingItem)

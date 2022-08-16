@@ -20,7 +20,6 @@ namespace TransferController
         public const float VehicleRowHeight = 40f;
 
         // Layout constants - private.
-        private const float TextScale = 0.8f;
         private const float VehicleSpriteSize = 40f;
 
         // Vehicle name label.

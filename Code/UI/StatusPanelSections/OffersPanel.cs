@@ -56,7 +56,7 @@ namespace TransferController
                 priorityLabel.relativePosition = new Vector2(PanelWidth - priorityLabel.width - Margin, ListHeaderY);
 
                 // Offers list.
-                _offersList = AddList<OfferRow>(ListY, width - 10f, ListHeight);
+                _offersList = UIList.AddUIList<OfferRow>(this, Margin, ListY, width - 10f, ListHeight);
             }
             catch (Exception e)
             {

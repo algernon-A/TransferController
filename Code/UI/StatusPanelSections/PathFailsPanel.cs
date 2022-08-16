@@ -51,7 +51,7 @@ namespace TransferController
                 titleLabel.textAlignment = UIHorizontalAlignment.Center;
 
                 // Pathfind failure list.
-                _pathfindList = AddList<PathFailRow>(PathFailListY, ListWidth, ListHeight);
+                _pathfindList = UIList.AddUIList<PathFailRow>(this, Margin, PathFailListY, ListWidth, ListHeight);
 
                 // Populate initial data.
                 UpdateContent();

@@ -7,9 +7,6 @@ namespace TransferController
 {
     using System;
     using AlgernonCommons;
-    using AlgernonCommons.UI;
-    using ColossalFramework.UI;
-    using UnityEngine;
 
     /// <summary>
     /// Detail section of building status panel.
@@ -53,28 +50,6 @@ namespace TransferController
             {
                 Logging.LogException(e, "exception setting up status panel section");
             }
-        }
-
-        /// <summary>
-        /// Adds a UI list of the given row type.
-        /// </summary>
-        /// <typeparam name="TRow">Row type.</typeparam>
-        /// <param name="yPos">Relative Y position.</param>
-        /// <param name="listWidth">List width.</param>
-        /// <param name="listHeight">List height.</param>
-        /// <returns>New UIFastList.</returns>
-        protected UIList AddList<TRow>(float yPos, float listWidth, float listHeight)
-            where TRow : UIListRow
-        {
-            // List setup.
-            UIList newList = UIList.AddUIList<TRow>(this);
-            newList.BackgroundSprite = "UnlockingPanel";
-            newList.width = listWidth;
-            newList.height = listHeight;
-            newList.relativePosition = new Vector2(Margin, yPos);
-            newList.Data = new FastList<object>();
-
-            return newList;
         }
     }
 }

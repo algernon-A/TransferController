@@ -12,7 +12,6 @@ namespace TransferController
     using AlgernonCommons.UI;
     using ColossalFramework;
     using ColossalFramework.UI;
-    using UnityEngine;
 
     /// <summary>
     /// Vehicle selection panel main class.
@@ -42,14 +41,7 @@ namespace TransferController
                 height = VehicleSelection.VehicleListHeight;
 
                 // Vehicle selection list.
-                _vehicleList = UIList.AddUIList<VehicleSelectionRow>(this);
-                _vehicleList.BackgroundSprite = "UnlockingPanel";
-                _vehicleList.width = BuildingVehiclesTab.ColumnWidth;
-                _vehicleList.height = VehicleSelection.VehicleListHeight;
-                _vehicleList.RowHeight = VehicleSelectionRow.VehicleRowHeight;
-                _vehicleList.relativePosition = Vector2.zero;
-                _vehicleList.Data = new FastList<object>();
-
+                _vehicleList = UIList.AddUIList<VehicleSelectionRow>(this, 0f, 0f, BuildingVehiclesTab.ColumnWidth, VehicleSelection.VehicleListHeight);
                 _vehicleList.EventSelectionChanged += (control, selectedItem) => SelectedVehicle = (selectedItem as VehicleItem)?.Info;
             }
             catch (Exception e)

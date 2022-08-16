@@ -58,7 +58,7 @@ namespace TransferController
                 amountLabel.textAlignment = UIHorizontalAlignment.Right;
 
                 // Vehicle list.
-                _vehiclesList = AddList<VehicleStatusRow>(ListY, ListWidth, ListHeight);
+                _vehiclesList = UIList.AddUIList<VehicleStatusRow>(this, Margin, ListY, ListWidth, ListHeight);
             }
             catch (Exception e)
             {

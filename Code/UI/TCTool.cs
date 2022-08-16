@@ -115,8 +115,8 @@ namespace TransferController
                 m_buildingService = GetService(),
                 m_propService = GetService(),
                 m_treeService = GetService(),
-                m_districtNameOnly = Singleton<InfoManager>.instance.CurrentMode != InfoManager.InfoMode.Districts,
-                m_ignoreTerrain = GetTerrainIgnore(),
+                m_districtNameOnly = true,
+                m_ignoreTerrain = true,
                 m_ignoreNodeFlags = NetNode.Flags.All,
                 m_ignoreSegmentFlags = GetSegmentIgnoreFlags(out input.m_segmentNameOnly),
                 m_ignoreBuildingFlags = Building.Flags.None,
@@ -127,9 +127,9 @@ namespace TransferController
                 m_ignoreCitizenFlags = CitizenInstance.Flags.All,
                 m_ignoreTransportFlags = TransportLine.Flags.All,
                 m_ignoreDistrictFlags = District.Flags.All,
-                m_ignoreParkFlags = GetParkIgnoreFlags(),
+                m_ignoreParkFlags = DistrictPark.Flags.All,
                 m_ignoreDisasterFlags = DisasterData.Flags.All,
-                m_transportTypes = GetTransportTypes(),
+                m_transportTypes = 0,
             };
 
             ToolErrors errors = ToolErrors.None;
