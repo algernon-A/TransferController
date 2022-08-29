@@ -8,6 +8,7 @@ namespace TransferController
     using System.IO;
     using System.Xml.Serialization;
     using AlgernonCommons.Keybinding;
+    using AlgernonCommons.Patching;
     using AlgernonCommons.XML;
     using UnityEngine;
 
@@ -56,7 +57,7 @@ namespace TransferController
         /// Gets or sets a value indicating whether the new matching algorithm should be used (true) or the legacy algorithm (false).
         /// </summary>
         [XmlElement("UseNewAlgorithm")]
-        public bool XMLUseNewAlgorithm { get => Patcher.UseNewAlgorithm; set => Patcher.UseNewAlgorithm = value; }
+        public bool XMLUseNewAlgorithm { get => PatcherManager<Patcher>.Instance.UseNewAlgorithm; set => PatcherManager<Patcher>.Instance.UseNewAlgorithm = value; }
 
         /// <summary>
         /// Gets or sets the distance matching intensity for the legacy algorithm.

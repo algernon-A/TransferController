@@ -17,83 +17,35 @@ namespace TransferController
     public class Patcher : PatcherBase
     {
         // Flags.
-        private static bool s_useNewAlgorithm = true;
-        private static bool s_addOffersPatched = false;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Patcher"/> class.
-        /// </summary>
-        /// <param name="harmonyID">This mod's unique Harmony identifier.</param>
-        public Patcher(string harmonyID)
-            : base(harmonyID)
-        {
-        }
-
-        /// <summary>
-        /// Gets the active instance reference.
-        /// </summary>
-        public static new Patcher Instance
-        {
-            get
-            {
-                // Auto-initializing getter.
-                if (s_instance == null)
-                {
-                    s_instance = new Patcher(PatcherMod.Instance.HarmonyID);
-                }
-
-                return s_instance as Patcher;
-            }
-        }
+        private bool _useNewAlgorithm = true;
+        private bool _addOffersPatched = false;
 
         /// <summary>
         /// Gets or sets a value indicating whether new (true) or legacy (false) algorithm is in effect.
         /// </summary>
-        internal static bool UseNewAlgorithm
+        internal bool UseNewAlgorithm
         {
-            get => s_useNewAlgorithm;
+            get => _useNewAlgorithm;
 
             set
             {
                 // Don't do anything if already in effect.
-                if (value != s_useNewAlgorithm)
+                if (value != _useNewAlgorithm)
                 {
                     // Update value.
-                    s_useNewAlgorithm = value;
+                    _useNewAlgorithm = value;
 
                     // Apply patches.
-                    Instance.PatchNewAlgorithm(value);
+                    PatchNewAlgorithm(value);
                 }
             }
         }
 
         /// <summary>
-        /// Apply all Harmony patches.
+        /// Peforms any additional actions (such as custom patching) after PatchAll is called.
         /// </summary>
-        public override void PatchAll()
-        {
-            // Don't do anything if already patched.
-            if (!Patched)
-            {
-                // Ensure Harmony is ready before patching.
-                if (HarmonyHelper.IsHarmonyInstalled)
-                {
-                    Logging.KeyMessage("deploying Harmony patches");
-
-                    // Apply all annotated patches and update flag.
-                    Harmony harmonyInstance = new Harmony(HarmonyID);
-                    harmonyInstance.PatchAll();
-                    Patched = true;
-
-                    // Attempt to pach TransferManager.
-                    TransferManagerPatches.Patch(harmonyInstance, UseNewAlgorithm);
-                }
-                else
-                {
-                    Logging.Error("Harmony not ready");
-                }
-            }
-        }
+        /// <param name="harmonyInstance">Haromny instance for patching.</param>
+        protected override void OnPatchAll(Harmony harmonyInstance) => TransferManagerPatches.Patch(harmonyInstance, UseNewAlgorithm);
 
         /// <summary>
         /// Applies Harmomny patches for the matching algorithm selection.
@@ -124,25 +76,25 @@ namespace TransferController
                 if (usingNew)
                 {
                     // Applying new algorithm: unpatch legacy patches if they're appied.
-                    if (s_addOffersPatched)
+                    if (_addOffersPatched)
                     {
                         Logging.Message("unapplying MatchOffers prefixes");
 
                         harmonyInstance.Unpatch(matchIncomingTarget, matchIncomingPatch);
                         harmonyInstance.Unpatch(matchOutgoingTarget, matchOutgoingPatch);
-                        s_addOffersPatched = false;
+                        _addOffersPatched = false;
                     }
                 }
                 else
                 {
                     // Applying legacy algorithm: patch legacy patches if we haven't aready.
-                    if (!s_addOffersPatched)
+                    if (!_addOffersPatched)
                     {
                         Logging.Message("applying MatchOffers prefixes");
 
                         harmonyInstance.Patch(matchIncomingTarget, prefix: new HarmonyMethod(matchIncomingPatch));
                         harmonyInstance.Patch(matchOutgoingTarget, prefix: new HarmonyMethod(matchOutgoingPatch));
-                        s_addOffersPatched = true;
+                        _addOffersPatched = true;
                     }
                 }
             }

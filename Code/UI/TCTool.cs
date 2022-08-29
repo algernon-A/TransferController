@@ -261,7 +261,6 @@ namespace TransferController
             // Highlight selected building in red.
             if (_currentBuilding != 0)
             {
-                Color red = new Color(1f, 0f, 0f, 0.75f);
                 BuildingTool.RenderOverlay(cameraInfo, ref buildingBuffer[_currentBuilding], Color.red, Color.red);
                 ++toolManager.m_drawCallData.m_overlayCalls;
             }

@@ -6,6 +6,7 @@
 namespace TransferController
 {
     using AlgernonCommons.Keybinding;
+    using AlgernonCommons.Patching;
     using AlgernonCommons.Translation;
     using AlgernonCommons.UI;
     using ColossalFramework.UI;
@@ -22,7 +23,7 @@ namespace TransferController
         private const float GroupMargin = 40f;
 
         // Components.
-        private UISlider distanceSlider;
+        private readonly UISlider distanceSlider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OptionsPanel"/> class.
@@ -53,10 +54,10 @@ namespace TransferController
             UICheckBox newAlgorithmCheck = UICheckBoxes.AddPlainCheckBox(this, LeftMargin, currentY, Translations.Translate("TFC_OPT_NEW"));
             newAlgorithmCheck.tooltip = Translations.Translate("TFC_OPT_NEW_TIP");
             newAlgorithmCheck.tooltipBox = UIToolTips.WordWrapToolTip;
-            newAlgorithmCheck.isChecked = Patcher.UseNewAlgorithm;
+            newAlgorithmCheck.isChecked = PatcherManager<Patcher>.Instance.UseNewAlgorithm;
             newAlgorithmCheck.eventCheckChanged += (control, isChecked) =>
             {
-                Patcher.UseNewAlgorithm = isChecked;
+                PatcherManager<Patcher>.Instance.UseNewAlgorithm = isChecked;
                 distanceSlider.parent.isVisible = !isChecked;
             };
             currentY += newAlgorithmCheck.height + Margin;
