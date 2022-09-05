@@ -630,7 +630,7 @@ namespace TransferController
                 }
 
                 // Drop any empty entries.
-                if (buildingRecord.Flags == 0 && buildingRecord.Buildings.Count == 0 && buildingRecord.Districts.Count == 0)
+                if (buildingRecord.Flags == 0 && (buildingRecord.Buildings == null || buildingRecord.Buildings.Count == 0) && (buildingRecord.Districts == null || buildingRecord.Districts.Count == 0))
                 {
                     Logging.Message("dropping empty entry for building ", buildingID);
                     continue;

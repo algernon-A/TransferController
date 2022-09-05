@@ -1,5 +1,6 @@
 ﻿- Implement AlgernonCommons
 - Update UUI
+- Fix null reference error when loading certain (rare) legacy data combinations
 
 Version 0.7.3 -
 
