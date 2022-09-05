@@ -8,7 +8,6 @@ namespace TransferController
     using System.IO;
     using System.Xml.Serialization;
     using AlgernonCommons.Keybinding;
-    using AlgernonCommons.Patching;
     using AlgernonCommons.XML;
     using UnityEngine;
 
@@ -52,18 +51,6 @@ namespace TransferController
 
             set => UUIKey.Keybinding = value;
         }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the new matching algorithm should be used (true) or the legacy algorithm (false).
-        /// </summary>
-        [XmlElement("UseNewAlgorithm")]
-        public bool XMLUseNewAlgorithm { get => PatcherManager<Patcher>.Instance.UseNewAlgorithm; set => PatcherManager<Patcher>.Instance.UseNewAlgorithm = value; }
-
-        /// <summary>
-        /// Gets or sets the distance matching intensity for the legacy algorithm.
-        /// </summary>
-        [XmlElement("DistanceMultiplier")]
-        public int XMLDistanceMultiplier { get => OldMatching.DistancePercentage; set => OldMatching.DistancePercentage = value; }
 
         /// <summary>
         /// Gets or sets the global warehouse priority boost.

@@ -12,7 +12,7 @@ namespace TransferController
     /// <summary>
     /// Main loading class: the mod runs from here.
     /// </summary>
-    public class Loading : PatcherLoadingBase<OptionsPanel, Patcher>
+    public class Loading : PatcherLoadingBase<OptionsPanel, PatcherBase>
     {
         /// <summary>
         /// Performs any actions upon successful level loading completion.

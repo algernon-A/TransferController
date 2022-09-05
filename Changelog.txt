@@ -1,6 +1,7 @@
-﻿- Implement AlgernonCommons
-- Update UUI
+﻿- Remove legacy matching algorithm
 - Fix null reference error when loading certain (rare) legacy data combinations
+- Implement AlgernonCommons
+- Update UUI
 
 Version 0.7.3 -
 

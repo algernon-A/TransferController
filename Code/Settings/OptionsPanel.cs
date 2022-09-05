@@ -22,9 +22,6 @@ namespace TransferController
         private const float LeftMargin = 24f;
         private const float GroupMargin = 40f;
 
-        // Components.
-        private readonly UISlider distanceSlider;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="OptionsPanel"/> class.
         /// </summary>
@@ -50,32 +47,12 @@ namespace TransferController
             keyMapping.Panel.relativePosition = new Vector2(LeftMargin, currentY);
             currentY += keyMapping.Panel.height + GroupMargin;
 
-            // New algorithm checkbox.
-            UICheckBox newAlgorithmCheck = UICheckBoxes.AddPlainCheckBox(this, LeftMargin, currentY, Translations.Translate("TFC_OPT_NEW"));
-            newAlgorithmCheck.tooltip = Translations.Translate("TFC_OPT_NEW_TIP");
-            newAlgorithmCheck.tooltipBox = UIToolTips.WordWrapToolTip;
-            newAlgorithmCheck.isChecked = PatcherManager<Patcher>.Instance.UseNewAlgorithm;
-            newAlgorithmCheck.eventCheckChanged += (control, isChecked) =>
-            {
-                PatcherManager<Patcher>.Instance.UseNewAlgorithm = isChecked;
-                distanceSlider.parent.isVisible = !isChecked;
-            };
-            currentY += newAlgorithmCheck.height + Margin;
-
-            // Distance multiplier slider.
-            distanceSlider = UISliders.AddPlainSliderWithValue(this, LeftMargin, currentY, Translations.Translate("TFC_OPT_DIS"), 0f, 100f, 1f, OldMatching.DistancePercentage);
-            distanceSlider.eventValueChanged += (control, value) => OldMatching.DistancePercentage = (int)value.RoundToNearest(1f);
-            distanceSlider.tooltip = Translations.Translate("TFC_OPT_DIS_TIP");
-            distanceSlider.tooltipBox = UIToolTips.WordWrapToolTip;
-            distanceSlider.parent.isVisible = !newAlgorithmCheck.isChecked;
-            currentY += distanceSlider.parent.height + GroupMargin;
-
             // Warehouse priority slider.
             UISlider warehouseSlider = UISliders.AddPlainSliderWithValue(this, LeftMargin, currentY, Translations.Translate("TFC_OPT_WAR"), 0f, 4f, 1f, Matching.WarehousePriority);
             warehouseSlider.eventValueChanged += (control, value) => Matching.WarehousePriority = (int)value.RoundToNearest(1f);
             warehouseSlider.tooltip = Translations.Translate("TFC_OPT_WAR_TIP");
             warehouseSlider.tooltipBox = UIToolTips.WordWrapToolTip;
-            currentY += distanceSlider.parent.height + GroupMargin;
+            currentY += warehouseSlider.parent.height + GroupMargin;
 
             // Outside rail connection priority slider.
             UISlider railSlider = UISliders.AddPlainSliderWithValue(this, LeftMargin, currentY, Translations.Translate("TFC_OPT_ORP"), 0f, 4f, 1f, Matching.OutsideRailPriority);

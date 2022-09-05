@@ -12,7 +12,7 @@ namespace TransferController
     /// <summary>
     /// The base mod class for instantiation by the game.
     /// </summary>
-    public class Mod : PatcherMod<OptionsPanel, Patcher>, IUserMod
+    public class Mod : PatcherMod<OptionsPanel, PatcherBase>, IUserMod
     {
         /// <summary>
         /// Gets the mod's base display name (name only).
