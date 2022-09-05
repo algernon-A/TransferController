@@ -18,7 +18,7 @@ namespace TransferController
         /// <summary>
         /// Panel height.
         /// </summary>
-        internal const float PanelHeight = SliderY + 45f;
+        internal const float PanelHeight = SliderY + 25f;
 
         // Layout constants - private.
         private const float Margin = 5;
@@ -27,7 +27,7 @@ namespace TransferController
         private const float Check1Y = Margin;
         private const float Check2Y = Check1Y + CheckHeight;
         private const float Check3Y = Check2Y + CheckHeight;
-        private const float SliderY = Check3Y + CheckHeight;
+        private const float SliderY = Check3Y + CheckHeight + 20f;
         private const float SliderWidth = BuildingPanel.PanelWidth - DoubleMargin - DoubleMargin;
 
         // Default vehicle slider maximum.
@@ -280,7 +280,7 @@ namespace TransferController
 
             // Value label.
             UILabel titleLabel = UILabels.AddLabel(newSlider, 0f, LabelY, Translations.Translate("TFC_WAR_RVC"), textScale: 0.7f);
-            UILabel valueLabel = UILabels.AddLabel(newSlider, titleLabel.width, LabelY, "0", textScale: 0.7f);
+            UILabel valueLabel = UILabels.AddLabel(newSlider, width - 20f, LabelY, "0", textScale: 0.7f);
             newSlider.objectUserData = valueLabel;
 
             // Add value changed event handler.
