@@ -1,7 +1,10 @@
-﻿- Remove legacy matching algorithm
+﻿Version 0.7.4 -
+
+- Remove legacy matching algorithm
 - Fix null reference error when loading certain (rare) legacy data combinations
 - Implement AlgernonCommons
 - Update UUI
+- Adjust reserved vehicles slider layout
 
 Version 0.7.3 -
 
