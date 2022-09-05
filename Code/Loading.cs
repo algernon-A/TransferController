@@ -5,15 +5,29 @@
 
 namespace TransferController
 {
+    using System.Collections.Generic;
     using AlgernonCommons.Patching;
+    using AlgernonCommons.Translation;
     using AlgernonCommons.UI;
     using ICities;
 
     /// <summary>
     /// Main loading class: the mod runs from here.
     /// </summary>
-    public class Loading : PatcherLoadingBase<OptionsPanel, PatcherBase>
+    public sealed class Loading : PatcherLoadingBase<OptionsPanel, PatcherBase>
     {
+        /// <summary>
+        /// Gets any text for a trailing confict notification paragraph (e.g. "These mods must be removed before this mod can operate").
+        /// </summary>
+        protected override string ConflictRemovedText => Translations.Translate("TFC_ERR_CON1");
+
+        /// <summary>
+        /// Checks for any mod conflicts.
+        /// Called as part of checking prior to executing any OnCreated actions.
+        /// </summary>
+        /// <returns>A list of conflicting mod names (null or empty if none).</returns>
+        protected override List<string> CheckModConflicts() => ConflictDetection.CheckConflictingMods();
+
         /// <summary>
         /// Performs any actions upon successful level loading completion.
         /// </summary>
