@@ -105,7 +105,7 @@ namespace TransferController
                 WarehouseControl.HasRecord(CurrentBuilding) ||
                 (HasSecondVehicleType &&
                     (VehicleControl.HasRecord(CurrentBuilding, TransferManager.TransferReason.None) ||
-                    VehicleControl.HasRecord(CurrentBuilding, (TransferManager.TransferReason)125)));
+                    VehicleControl.HasRecord(CurrentBuilding, (TransferManager.TransferReason)128)));
 
             StatusSprite.spriteName = hasRecord ? "AchievementCheckedTrue" : "AchievementCheckedFalse";
         }
@@ -138,10 +138,10 @@ namespace TransferController
             // Activate secondary vehicle selection if the primary reason is mail.
             if (HasSecondVehicleType)
             {
-                // Secondary transfer reason is 125 (if Prison Helicopter big police station), or otherwise 'none'.
+                // Secondary transfer reason is 128 (if Prison Helicopter big police station), or otherwise 'none'.
                 _secondaryVehicleSelection.SetTarget(
                     CurrentBuilding,
-                    TransferReason == TransferManager.TransferReason.Crime ? (TransferManager.TransferReason)125 : TransferManager.TransferReason.None);
+                    TransferReason == TransferManager.TransferReason.Crime ? (TransferManager.TransferReason)128 : TransferManager.TransferReason.None);
                 _secondaryVehicleSelection.Show();
             }
             else

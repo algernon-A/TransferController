@@ -58,6 +58,22 @@ namespace TransferController
                     {
                         // Deathcare.
                         transfers[0].Reason = TransferManager.TransferReason.Dead;
+                        transfers[0].PanelTitle = Translations.Translate("TFC_GEN_SER");
+                        transfers[0].OutsideText = null;
+                        transfers[0].IsIncoming = true;
+                        transfers[0].SpawnsVehicles = true;
+                        transfers[1].Reason = TransferManager.TransferReason.DeadMove;
+                        transfers[1].PanelTitle = Translations.Translate("TFC_CEM_IDM");
+                        transfers[1].OutsideText = null;
+                        transfers[1].IsIncoming = true;
+                        transfers[1].SpawnsVehicles = false;
+                        transfers[2].Reason = TransferManager.TransferReason.DeadMove;
+                        transfers[2].PanelTitle = Translations.Translate("TFC_CEM_ODM");
+                        transfers[2].OutsideText = null;
+                        transfers[2].IsIncoming = false;
+                        transfers[2].SpawnsVehicles = true;
+
+                        return 3;
                     }
                     else
                     {
@@ -171,7 +187,7 @@ namespace TransferController
                             transfers[1].PanelTitle = Translations.Translate("TFC_POL_PHI");
                             transfers[1].OutsideText = null;
                             transfers[1].IsIncoming = true;
-                            transfers[1].Reason = (TransferManager.TransferReason)126;
+                            transfers[1].Reason = (TransferManager.TransferReason)129;
                             transfers[1].SpawnsVehicles = true;
                             return 2;
                         }
@@ -188,6 +204,13 @@ namespace TransferController
                             transfers[0].IsIncoming = true;
                             transfers[0].Reason = TransferManager.TransferReason.CriminalMove;
                             transfers[0].SpawnsVehicles = true;
+
+                            // Prisoner transfer to prison (collected by prison helicopter).
+                            transfers[1].PanelTitle = Translations.Translate("TFC_POL_PMO");
+                            transfers[1].OutsideText = null;
+                            transfers[1].IsIncoming = false;
+                            transfers[1].Reason = (TransferManager.TransferReason)130;
+                            transfers[1].SpawnsVehicles = false;
                             return 1;
                         }
                         else
@@ -217,7 +240,7 @@ namespace TransferController
                                     transfers[2].PanelTitle = Translations.Translate("TFC_POL_PTO");
                                     transfers[2].OutsideText = null;
                                     transfers[2].IsIncoming = false;
-                                    transfers[2].Reason = (TransferManager.TransferReason)125;
+                                    transfers[2].Reason = (TransferManager.TransferReason)128;
                                     transfers[2].SpawnsVehicles = false;
                                     return 3;
                                 }
@@ -229,14 +252,14 @@ namespace TransferController
                                     transfers[2].PanelTitle = Translations.Translate("TFC_POL_PHO");
                                     transfers[2].OutsideText = null;
                                     transfers[2].IsIncoming = false;
-                                    transfers[2].Reason = (TransferManager.TransferReason)126;
+                                    transfers[2].Reason = (TransferManager.TransferReason)129;
                                     transfers[2].SpawnsVehicles = false;
 
                                     // Collect prisoners from smaller stations by sending a prison van.
                                     transfers[3].PanelTitle = Translations.Translate("TFC_POL_PMI");
                                     transfers[3].OutsideText = null;
                                     transfers[3].IsIncoming = true;
-                                    transfers[3].Reason = (TransferManager.TransferReason)125;
+                                    transfers[3].Reason = (TransferManager.TransferReason)128;
                                     transfers[3].SpawnsVehicles = true;
                                     return 4;
                                 }
@@ -451,8 +474,42 @@ namespace TransferController
                             return 2;
                         }
 
-                        // Waste Transfer Facility and Landfill Site.
-                        else if (buildingInfo.GetClassLevel() == ItemClass.Level.Level3 || (buildingInfo.GetClassLevel() == ItemClass.Level.Level1 && landfillAI.m_electricityProduction == 0))
+                        // Landfill Site.
+                        else if (buildingInfo.GetClassLevel() == ItemClass.Level.Level1 && landfillAI.m_electricityProduction == 0)
+                        {
+                            // Garbage collection.
+                            transfers[0].PanelTitle = Translations.Translate("TFC_GAR_ICO");
+                            transfers[0].OutsideText = null;
+                            transfers[0].IsIncoming = true;
+                            transfers[0].Reason = TransferManager.TransferReason.Garbage;
+                            transfers[0].SpawnsVehicles = true;
+
+                            // Garbage Emptying from another facility.
+                            transfers[1].PanelTitle = Translations.Translate("TFC_GAR_ITM");
+                            transfers[1].OutsideText = null;
+                            transfers[1].IsIncoming = true;
+                            transfers[1].Reason = TransferManager.TransferReason.GarbageMove;
+                            transfers[1].SpawnsVehicles = false;
+
+                            // Garbage Emptying to another facility.
+                            transfers[2].PanelTitle = Translations.Translate("TFC_GAR_OTM");
+                            transfers[2].OutsideText = null;
+                            transfers[2].IsIncoming = false;
+                            transfers[2].Reason = TransferManager.TransferReason.GarbageMove;
+                            transfers[2].SpawnsVehicles = true;
+
+                            // Garbage Transfer for processing in a Waste Processing Complex.
+                            transfers[2].PanelTitle = Translations.Translate("TFC_GAR_OTF");
+                            transfers[2].OutsideText = null;
+                            transfers[2].IsIncoming = false;
+                            transfers[2].Reason = TransferManager.TransferReason.GarbageTransfer;
+                            transfers[2].SpawnsVehicles = false;
+
+                            return 4;
+                        }
+
+                        // Waste Transfer Facility.
+                        else if (buildingInfo.GetClassLevel() == ItemClass.Level.Level3)
                         {
                             // Garbage collection.
                             transfers[0].PanelTitle = Translations.Translate("TFC_GAR_ICO");

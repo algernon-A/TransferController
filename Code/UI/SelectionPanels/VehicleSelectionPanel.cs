@@ -187,9 +187,14 @@ namespace TransferController
                 // Special treatement for post offices - post vans have level 2, others level 5.
                 buildingLevel = ParentPanel.TransferReason == TransferManager.TransferReason.Mail ? ItemClass.Level.Level2 : ItemClass.Level.Level5;
             }
-            else if (ParentPanel.TransferReason == (TransferManager.TransferReason)125)
+            else if (ParentPanel.TransferReason == (TransferManager.TransferReason)128)
             {
                 // Prison helicopter mod big police station sends prison vans.
+                buildingLevel = ItemClass.Level.Level4;
+            }
+            else if (ParentPanel.TransferReason == (TransferManager.TransferReason)129)
+            {
+                // Prison helicopter mod police helicopter depot sends prison helicopters.
                 buildingLevel = ItemClass.Level.Level4;
             }
 
