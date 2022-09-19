@@ -588,6 +588,21 @@ namespace TransferController
                     // Undefined service.
                     return 0;
 
+                case ItemClass.Service.Monument:
+                    // Gas stations can import fuel.
+                    if (buildingInfo.m_buildingAI.GetType().Name.Equals("GasStationAI"))
+                    {
+                        transfers[0].PanelTitle = Translations.Translate("TFC_PWR_INC");
+                        transfers[0].OutsideText = Translations.Translate("TFC_BLD_IMP");
+                        transfers[0].OutsideTip = Translations.Translate("TFC_BLD_IMP_TIP");
+                        transfers[0].IsIncoming = true;
+                        transfers[0].Reason = TransferManager.TransferReason.Petrol;
+                        transfers[0].SpawnsVehicles = false;
+                        return 1;
+                    }
+
+                    return 0;
+
                 default:
                     // If not explicitly supported, then it's not supported.
                     return 0;
