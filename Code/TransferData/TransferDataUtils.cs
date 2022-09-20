@@ -205,12 +205,18 @@ namespace TransferController
                             transfers[0].Reason = TransferManager.TransferReason.CriminalMove;
                             transfers[0].SpawnsVehicles = true;
 
-                            // Prisoner transfer to prison (collected by prison helicopter).
-                            transfers[1].PanelTitle = Translations.Translate("TFC_POL_PMO");
-                            transfers[1].OutsideText = null;
-                            transfers[1].IsIncoming = false;
-                            transfers[1].Reason = (TransferManager.TransferReason)122;
-                            transfers[1].SpawnsVehicles = false;
+                            // Prison Helicopter Mod.
+                            if (buildingInfo.m_buildingAI.GetType().Name.Equals("PrisonCopterPoliceStationAI"))
+                            {
+                                // Prisoner transfer to prison (collected by prison helicopter).
+                                transfers[1].PanelTitle = Translations.Translate("TFC_POL_PMO");
+                                transfers[1].OutsideText = null;
+                                transfers[1].IsIncoming = false;
+                                transfers[1].Reason = (TransferManager.TransferReason)122;
+                                transfers[1].SpawnsVehicles = false;
+                                return 2;
+                            }
+
                             return 1;
                         }
                         else
@@ -382,7 +388,7 @@ namespace TransferController
                             // Post offices send unsorted mail via their trucks.
                             transfers[1].PanelTitle = Translations.Translate("TFC_MAI_OUN");
                             transfers[1].OutsideText = Translations.Translate("TFC_BLD_EXP");
-                            transfers[0].IsIncoming = false;
+                            transfers[1].IsIncoming = false;
                             transfers[1].Reason = TransferManager.TransferReason.UnsortedMail;
                             transfers[1].SpawnsVehicles = true;
 
@@ -499,11 +505,11 @@ namespace TransferController
                             transfers[2].SpawnsVehicles = true;
 
                             // Garbage Transfer for processing in a Waste Processing Complex.
-                            transfers[2].PanelTitle = Translations.Translate("TFC_GAR_OTF");
-                            transfers[2].OutsideText = null;
-                            transfers[2].IsIncoming = false;
-                            transfers[2].Reason = TransferManager.TransferReason.GarbageTransfer;
-                            transfers[2].SpawnsVehicles = false;
+                            transfers[3].PanelTitle = Translations.Translate("TFC_GAR_OTF");
+                            transfers[3].OutsideText = null;
+                            transfers[3].IsIncoming = false;
+                            transfers[3].Reason = TransferManager.TransferReason.GarbageTransfer;
+                            transfers[3].SpawnsVehicles = false;
 
                             return 4;
                         }
@@ -589,8 +595,10 @@ namespace TransferController
                     return 0;
 
                 case ItemClass.Service.Monument:
+                    Building.Flags flags = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID].m_flags;
+
                     // Gas stations can import fuel.
-                    if (buildingInfo.m_buildingAI.GetType().Name.Equals("GasStationAI"))
+                    if ((flags & Building.Flags.Incoming) == Building.Flags.None)
                     {
                         transfers[0].PanelTitle = Translations.Translate("TFC_PWR_INC");
                         transfers[0].OutsideText = Translations.Translate("TFC_BLD_IMP");
