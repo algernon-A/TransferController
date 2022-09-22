@@ -602,6 +602,21 @@ namespace TransferController
                         return 2;
                     }
 
+                case ItemClass.Service.Monument:
+                    Building.Flags flags = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID].m_flags;
+
+                    // Gas stations can import fuel - WIP working on fix for that mod
+                    if ((flags & Building.Flags.Incoming) == Building.Flags.None)
+                    {
+                        transfers[0].PanelTitle = Translations.Translate("TFC_PWR_INC");
+                        transfers[0].OutsideText = Translations.Translate("TFC_BLD_IMP");
+                        transfers[0].OutsideTip = Translations.Translate("TFC_BLD_IMP_TIP");
+                        transfers[0].IsIncoming = true;
+                        transfers[0].Reason = TransferManager.TransferReason.Petrol;
+                        transfers[0].SpawnsVehicles = false;
+                        return 1;
+                    }
+
                     // Undefined service.
                     return 0;
 
