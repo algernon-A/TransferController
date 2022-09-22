@@ -1,4 +1,4 @@
-﻿9// <copyright file="TransferDataUtils.cs" company="algernon (K. Algernon A. Sheppard)">
+﻿// <copyright file="TransferDataUtils.cs" company="algernon (K. Algernon A. Sheppard)">
 // Copyright (c) algernon (K. Algernon A. Sheppard). All rights reserved.
 // Licensed under the MIT license. See LICENSE.txt file in the project root for full license information.
 // </copyright>
@@ -470,8 +470,42 @@ namespace TransferController
                             return 2;
                         }
 
-                        // Waste Transfer Facility and Landfill Site.
-                        else if (buildingInfo.GetClassLevel() == ItemClass.Level.Level3 || (buildingInfo.GetClassLevel() == ItemClass.Level.Level1 && landfillAI.m_electricityProduction == 0))
+                        // Landfill Site.
+                        else if (buildingInfo.GetClassLevel() == ItemClass.Level.Level1 && landfillAI.m_electricityProduction == 0)
+                        {
+                            // Garbage collection.
+                            transfers[0].PanelTitle = Translations.Translate("TFC_GAR_ICO");
+                            transfers[0].OutsideText = null;
+                            transfers[0].IsIncoming = true;
+                            transfers[0].Reason = TransferManager.TransferReason.Garbage;
+                            transfers[0].SpawnsVehicles = true;
+
+                            // Garbage Transfer for processing in a Waste Processing Complex.
+                            transfers[1].PanelTitle = Translations.Translate("TFC_GAR_OTF");
+                            transfers[1].OutsideText = null;
+                            transfers[1].IsIncoming = false;
+                            transfers[1].Reason = TransferManager.TransferReason.GarbageTransfer;
+                            transfers[1].SpawnsVehicles = false;
+
+                            // Garbage move (emptying landfills) in.
+                            transfers[2].PanelTitle = Translations.Translate("TFC_GAR_IGM");
+                            transfers[2].OutsideText = null;
+                            transfers[2].IsIncoming = true;
+                            transfers[2].Reason = TransferManager.TransferReason.GarbageMove;
+                            transfers[2].SpawnsVehicles = false;
+
+                            // Garbage move (emptying landfills) out.
+                            transfers[3].PanelTitle = Translations.Translate("TFC_GAR_OGM");
+                            transfers[3].OutsideText = null;
+                            transfers[3].IsIncoming = false;
+                            transfers[3].Reason = TransferManager.TransferReason.GarbageMove;
+                            transfers[3].SpawnsVehicles = true;
+
+                            return 4;
+                        }
+
+                        // Waste Transfer Facility.
+                        else if (buildingInfo.GetClassLevel() == ItemClass.Level.Level3 && landfillAI.m_electricityProduction == 0)
                         {
                             // Garbage collection.
                             transfers[0].PanelTitle = Translations.Translate("TFC_GAR_ICO");
