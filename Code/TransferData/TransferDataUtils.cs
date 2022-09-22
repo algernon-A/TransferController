@@ -1,4 +1,4 @@
-﻿// <copyright file="TransferDataUtils.cs" company="algernon (K. Algernon A. Sheppard)">
+﻿9// <copyright file="TransferDataUtils.cs" company="algernon (K. Algernon A. Sheppard)">
 // Copyright (c) algernon (K. Algernon A. Sheppard). All rights reserved.
 // Licensed under the MIT license. See LICENSE.txt file in the project root for full license information.
 // </copyright>
@@ -359,7 +359,7 @@ namespace TransferController
                             // Post offices send unsorted mail via their trucks.
                             transfers[1].PanelTitle = Translations.Translate("TFC_MAI_OUN");
                             transfers[1].OutsideText = Translations.Translate("TFC_BLD_EXP");
-                            transfers[0].IsIncoming = false;
+                            transfers[1].IsIncoming = false;
                             transfers[1].Reason = TransferManager.TransferReason.UnsortedMail;
                             transfers[1].SpawnsVehicles = true;
 

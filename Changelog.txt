@@ -1,4 +1,7 @@
-﻿Version 0.7.4 -
+﻿- Fix bug with post office transfer setup.
+
+
+Version 0.7.4 -
 
 - Remove legacy matching algorithm
 - Fix null reference error when loading certain (rare) legacy data combinations
