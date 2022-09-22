@@ -65,13 +65,13 @@ namespace TransferController
 
                         // Cemetary transfers.
                         transfers[1].Reason = TransferManager.TransferReason.DeadMove;
-                        transfers[1].PanelTitle = Translations.Translate("TFC_DEA_IDM");
+                        transfers[1].PanelTitle = Translations.Translate("TFC_TFR_INC");
                         transfers[1].OutsideText = null;
                         transfers[1].IsIncoming = true;
                         transfers[1].SpawnsVehicles = false;
 
                         transfers[2].Reason = TransferManager.TransferReason.DeadMove;
-                        transfers[2].PanelTitle = Translations.Translate("TFC_DEA_ODM");
+                        transfers[2].PanelTitle = Translations.Translate("TFC_TFR_OUT");
                         transfers[2].OutsideText = null;
                         transfers[2].IsIncoming = false;
                         transfers[2].SpawnsVehicles = true;
@@ -488,14 +488,14 @@ namespace TransferController
                             transfers[1].SpawnsVehicles = false;
 
                             // Garbage move (emptying landfills) in.
-                            transfers[2].PanelTitle = Translations.Translate("TFC_GAR_IGM");
+                            transfers[2].PanelTitle = Translations.Translate("TFC_TFR_INC");
                             transfers[2].OutsideText = null;
                             transfers[2].IsIncoming = true;
                             transfers[2].Reason = TransferManager.TransferReason.GarbageMove;
                             transfers[2].SpawnsVehicles = false;
 
                             // Garbage move (emptying landfills) out.
-                            transfers[3].PanelTitle = Translations.Translate("TFC_GAR_OGM");
+                            transfers[3].PanelTitle = Translations.Translate("TFC_TFR_OUT");
                             transfers[3].OutsideText = null;
                             transfers[3].IsIncoming = false;
                             transfers[3].Reason = TransferManager.TransferReason.GarbageMove;
