@@ -446,7 +446,14 @@ namespace TransferController
                             transfers[0].Reason = TransferManager.TransferReason.Garbage;
                             transfers[0].SpawnsVehicles = true;
 
-                            return 1;
+                            // Garbage move (emptying landfills) in.
+                            transfers[1].PanelTitle = Translations.Translate("TFC_TFR_INC");
+                            transfers[1].OutsideText = null;
+                            transfers[1].IsIncoming = true;
+                            transfers[1].Reason = TransferManager.TransferReason.GarbageMove;
+                            transfers[1].SpawnsVehicles = false;
+
+                            return 2;
                         }
 
                         // Recycling Center.
@@ -467,7 +474,14 @@ namespace TransferController
                             transfers[1].Reason = TransferManager.TransferReason.None;
                             transfers[1].SpawnsVehicles = false;
 
-                            return 2;
+                            // Garbage move (emptying landfills) in.
+                            transfers[2].PanelTitle = Translations.Translate("TFC_TFR_INC");
+                            transfers[2].OutsideText = null;
+                            transfers[2].IsIncoming = true;
+                            transfers[2].Reason = TransferManager.TransferReason.GarbageMove;
+                            transfers[2].SpawnsVehicles = false;
+
+                            return 3;
                         }
 
                         // Landfill Site.
@@ -521,7 +535,14 @@ namespace TransferController
                             transfers[1].Reason = TransferManager.TransferReason.GarbageTransfer;
                             transfers[1].SpawnsVehicles = false;
 
-                            return 2;
+                            // Garbage move (emptying landfills) in.
+                            transfers[2].PanelTitle = Translations.Translate("TFC_TFR_INC");
+                            transfers[2].OutsideText = null;
+                            transfers[2].IsIncoming = true;
+                            transfers[2].Reason = TransferManager.TransferReason.GarbageMove;
+                            transfers[2].SpawnsVehicles = false;
+
+                            return 3;
                         }
 
                         // Waste Processing Complex.
