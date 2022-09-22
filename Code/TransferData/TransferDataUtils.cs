@@ -58,6 +58,25 @@ namespace TransferController
                     {
                         // Deathcare.
                         transfers[0].Reason = TransferManager.TransferReason.Dead;
+                        transfers[0].PanelTitle = Translations.Translate("TFC_GEN_SER");
+                        transfers[0].OutsideText = null;
+                        transfers[0].IsIncoming = true;
+                        transfers[0].SpawnsVehicles = true;
+
+                        // Cemetary transfers.
+                        transfers[1].Reason = TransferManager.TransferReason.DeadMove;
+                        transfers[1].PanelTitle = Translations.Translate("TFC_DEA_IDM");
+                        transfers[1].OutsideText = null;
+                        transfers[1].IsIncoming = true;
+                        transfers[1].SpawnsVehicles = false;
+
+                        transfers[2].Reason = TransferManager.TransferReason.DeadMove;
+                        transfers[2].PanelTitle = Translations.Translate("TFC_DEA_ODM");
+                        transfers[2].OutsideText = null;
+                        transfers[2].IsIncoming = false;
+                        transfers[2].SpawnsVehicles = true;
+
+                        return 3;
                     }
                     else
                     {

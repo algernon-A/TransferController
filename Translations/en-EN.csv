@@ -52,6 +52,8 @@
 "TFC_FIS_CFO","Goods out"
 "TFC_PWR_INC","Purchasing fuel"
 "TFC_OIL_INC","Oil supply"
+"TFC_DEA_IDM","Transfers from other deathcare facilities."
+"TFC_DEA_ODM","Transfers to other deathcare facilities."
 "TFC_SHT_INC","Buying goods"
 "TFC_WAR_RVU","Reserve vehicles for unique factories"
 "TFC_WAR_RVU_TIP","Selecting this will reserve a portion of this building's delivery vehicles to only service unique factories"

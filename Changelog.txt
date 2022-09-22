@@ -1,4 +1,5 @@
 ﻿- Fix bug with post office transfer setup.
+- Add support for deathcare transfers.
 
 
 Version 0.7.4 -
