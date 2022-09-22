@@ -134,8 +134,8 @@ namespace TransferController
                 case TransferManager.TransferReason.SnowMove:
                 case TransferManager.TransferReason.FloodWater:
                 case TransferManager.TransferReason.Taxi:
-                case (TransferManager.TransferReason)125:
-                case (TransferManager.TransferReason)126:
+                case (TransferManager.TransferReason)125: // real gas station mod
+                case (TransferManager.TransferReason)126: // real gas station mod
                     return true;
 
                 default:
