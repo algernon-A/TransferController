@@ -196,7 +196,7 @@ namespace TransferController
                             transfers[1].PanelTitle = Translations.Translate("TFC_POL_PHI");
                             transfers[1].OutsideText = null;
                             transfers[1].IsIncoming = true;
-                            transfers[1].Reason = (TransferManager.TransferReason)126;
+                            transfers[1].Reason = (TransferManager.TransferReason)121;
                             transfers[1].SpawnsVehicles = true;
                             return 2;
                         }
@@ -213,6 +213,19 @@ namespace TransferController
                             transfers[0].IsIncoming = true;
                             transfers[0].Reason = TransferManager.TransferReason.CriminalMove;
                             transfers[0].SpawnsVehicles = true;
+
+                            // Prison Helicopter Mod.
+                            if (buildingInfo.m_buildingAI.GetType().Name.Equals("PrisonCopterPoliceStationAI"))
+                            {
+                                // Prisoner transfer to prison (collected by prison helicopter).
+                                transfers[1].PanelTitle = Translations.Translate("TFC_POL_PHO");
+                                transfers[1].OutsideText = null;
+                                transfers[1].IsIncoming = false;
+                                transfers[1].Reason = (TransferManager.TransferReason)122;
+                                transfers[1].SpawnsVehicles = false;
+                                return 2;
+                            }
+
                             return 1;
                         }
                         else
@@ -242,7 +255,7 @@ namespace TransferController
                                     transfers[2].PanelTitle = Translations.Translate("TFC_POL_PTO");
                                     transfers[2].OutsideText = null;
                                     transfers[2].IsIncoming = false;
-                                    transfers[2].Reason = (TransferManager.TransferReason)125;
+                                    transfers[2].Reason = (TransferManager.TransferReason)120;
                                     transfers[2].SpawnsVehicles = false;
                                     return 3;
                                 }
@@ -254,14 +267,14 @@ namespace TransferController
                                     transfers[2].PanelTitle = Translations.Translate("TFC_POL_PHO");
                                     transfers[2].OutsideText = null;
                                     transfers[2].IsIncoming = false;
-                                    transfers[2].Reason = (TransferManager.TransferReason)126;
+                                    transfers[2].Reason = (TransferManager.TransferReason)121;
                                     transfers[2].SpawnsVehicles = false;
 
                                     // Collect prisoners from smaller stations by sending a prison van.
                                     transfers[3].PanelTitle = Translations.Translate("TFC_POL_PMI");
                                     transfers[3].OutsideText = null;
                                     transfers[3].IsIncoming = true;
-                                    transfers[3].Reason = (TransferManager.TransferReason)125;
+                                    transfers[3].Reason = (TransferManager.TransferReason)120;
                                     transfers[3].SpawnsVehicles = true;
                                     return 4;
                                 }

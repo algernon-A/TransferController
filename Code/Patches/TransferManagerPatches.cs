@@ -134,8 +134,9 @@ namespace TransferController
                 case TransferManager.TransferReason.SnowMove:
                 case TransferManager.TransferReason.FloodWater:
                 case TransferManager.TransferReason.Taxi:
-                case (TransferManager.TransferReason)125:
-                case (TransferManager.TransferReason)126:
+                case (TransferManager.TransferReason)120: // prison helicopter mod
+                case (TransferManager.TransferReason)121: // prison helicopter mod
+                case (TransferManager.TransferReason)122: // prison helicopter mod
                     return true;
 
                 default:
