@@ -54,7 +54,7 @@ namespace TransferController
                     {
                         transfers[0].Reason = TransferManager.TransferReason.Sick2;
                     }
-                    else if (buildingInfo.m_buildingAI is CemeteryAI)
+                    else if (buildingInfo.m_buildingAI is CemeteryAI cemeteryAI)
                     {
                         // Deathcare.
                         transfers[0].Reason = TransferManager.TransferReason.Dead;
@@ -70,13 +70,19 @@ namespace TransferController
                         transfers[1].IsIncoming = true;
                         transfers[1].SpawnsVehicles = false;
 
-                        transfers[2].Reason = TransferManager.TransferReason.DeadMove;
-                        transfers[2].PanelTitle = Translations.Translate("TFC_TFR_OUT");
-                        transfers[2].OutsideText = null;
-                        transfers[2].IsIncoming = false;
-                        transfers[2].SpawnsVehicles = true;
+                        // Outgoing transfers - cemetaries only.
+                        if (cemeteryAI.m_graveCount > 0)
+                        {
+                            transfers[2].Reason = TransferManager.TransferReason.DeadMove;
+                            transfers[2].PanelTitle = Translations.Translate("TFC_TFR_OUT");
+                            transfers[2].OutsideText = null;
+                            transfers[2].IsIncoming = false;
+                            transfers[2].SpawnsVehicles = true;
 
-                        return 3;
+                            return 3;
+                        }
+
+                        return 2;
                     }
                     else
                     {
