@@ -1,6 +1,9 @@
-﻿- Fix bug with post office transfer setup.
-- Add support for deathcare transfers.
-- Add support for landfill emptying.
+﻿Verion 0.7.5 -
+
+- Fix bug with post office transfer setup
+- Add support for deathcare transfers
+- Add support for landfill emptying
+- Supprt updated Prison Helicopter transfer codes
 
 
 Version 0.7.4 -
