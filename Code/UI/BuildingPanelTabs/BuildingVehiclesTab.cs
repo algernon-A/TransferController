@@ -99,7 +99,7 @@ namespace TransferController
 
                 // Check for Prison Helicopter police helicopter depots - these send police helicopters and prison helicopters.
                 // Police helicopter depots are marked by the 'downgrading' flag being clear.
-                if (thisBuilding.Info.m_buildingAI is HelicopterDepotAI && (thisBuilding.m_flags & Building.Flags.Downgrading) == Building.Flags.None)
+                if (thisBuilding.Info.m_buildingAI is HelicopterDepotAI && thisBuilding.Info.GetService() == ItemClass.Service.PoliceDepartment && (thisBuilding.m_flags & Building.Flags.Downgrading) == Building.Flags.None)
                 {
                     return true;
                 }
