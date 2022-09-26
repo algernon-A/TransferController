@@ -83,7 +83,7 @@ namespace TransferController
         {
             get
             {
-                // Post offices have secondary vehile type.
+                // Post offices have secondary vehicle type.
                 if (TransferReason == TransferManager.TransferReason.Mail)
                 {
                     return true;
@@ -92,7 +92,19 @@ namespace TransferController
                 // Check for Prison Helicopter big (central) police stations - these send police cars and prison vans.
                 // Big stations are marked by the 'downgrading' flag being clear.
                 ref Building thisBuilding = ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[CurrentBuilding];
-                return thisBuilding.Info.m_buildingAI.GetType().Name.Equals("PrisonCopterPoliceStationAI") && (thisBuilding.m_flags & Building.Flags.Downgrading) == Building.Flags.None;
+                if (thisBuilding.Info.m_buildingAI.GetType().Name.Equals("PrisonCopterPoliceStationAI") && (thisBuilding.m_flags & Building.Flags.Downgrading) == Building.Flags.None)
+                {
+                    return true;
+                }
+
+                // Check for Prison Helicopter police helicopter depots - these send police helicopters and prison helicopters.
+                // Police helicopter depots are marked by the 'downgrading' flag being clear.
+                if (thisBuilding.Info.m_buildingAI is HelicopterDepotAI && (thisBuilding.m_flags & Building.Flags.Downgrading) == Building.Flags.None)
+                {
+                    return true;
+                }
+
+                return false;
             }
         }
 
@@ -135,13 +147,26 @@ namespace TransferController
             // Set vehicle selection.
             _vehicleSelection.SetTarget(CurrentBuilding, TransferReason);
 
-            // Activate secondary vehicle selection if the primary reason is mail.
+            // Activate secondary vehicle selection if required.
             if (HasSecondVehicleType)
             {
-                // Secondary transfer reason is 125 (if Prison Helicopter big police station), or otherwise 'none'.
-                _secondaryVehicleSelection.SetTarget(
-                    CurrentBuilding,
-                    TransferReason == TransferManager.TransferReason.Crime ? (TransferManager.TransferReason)125 : TransferManager.TransferReason.None);
+                TransferReason = TransferManager.TransferReason.None;
+
+                // Check for Prison Helicopter big (central) police stations - these send police cars and prison vans.
+                // Big stations are marked by the 'downgrading' flag being clear.
+                if (building.Info.m_buildingAI.GetType().Name.Equals("PrisonCopterPoliceStationAI") && (building.m_flags & Building.Flags.Downgrading) == Building.Flags.None)
+                {
+                    TransferReason = (TransferManager.TransferReason)120;
+                }
+
+                // Check for Prison Helicopter police helicopter depots - these send police helicopters and prison helicopters.
+                // Police helicopter depots are marked by the 'downgrading' flag being clear.
+                else if (building.Info.m_buildingAI is HelicopterDepotAI && (building.m_flags & Building.Flags.Downgrading) == Building.Flags.None)
+                {
+                    TransferReason = (TransferManager.TransferReason)121;
+                }
+
+                _secondaryVehicleSelection.SetTarget(CurrentBuilding, TransferReason);
                 _secondaryVehicleSelection.Show();
             }
             else
