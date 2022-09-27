@@ -21,9 +21,9 @@ namespace TransferController
         private const float SecondaryHeight = VehicleListY + VehicleSelection.PanelHeight + 20f;
 
         // Panel components.
-        private VehicleSelection _vehicleSelection;
-        private VehicleSelection _secondaryVehicleSelection;
-        private WarehouseControls _warehouseControls;
+        private readonly VehicleSelection _vehicleSelection;
+        private readonly VehicleSelection _secondaryVehicleSelection;
+        private readonly WarehouseControls _warehouseControls;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BuildingVehiclesTab"/> class.
@@ -96,13 +96,13 @@ namespace TransferController
                 {
                     return true;
                 }
-
+                /*
                 // Check for Prison Helicopter police helicopter depots - these send police helicopters and prison helicopters.
                 // Police helicopter depots are marked by the 'downgrading' flag being clear.
                 if (thisBuilding.Info.m_buildingAI is HelicopterDepotAI && thisBuilding.Info.GetService() == ItemClass.Service.PoliceDepartment && (thisBuilding.m_flags & Building.Flags.Downgrading) == Building.Flags.None)
                 {
                     return true;
-                }
+                }*/
 
                 return false;
             }
