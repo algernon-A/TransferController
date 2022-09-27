@@ -92,7 +92,7 @@ namespace TransferController
                 // Check for Prison Helicopter big (central) police stations - these send police cars and prison vans.
                 // Big stations are marked by the 'downgrading' flag being clear.
                 ref Building thisBuilding = ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[CurrentBuilding];
-                if (thisBuilding.Info.m_buildingAI.GetType().Name.Equals("PrisonCopterPoliceStationAI") && (thisBuilding.m_flags & Building.Flags.Downgrading) == Building.Flags.None)
+                if (thisBuilding.Info.m_buildingAI.GetType().Name.Equals("PrisonCopterPoliceStationAI") && (thisBuilding.m_flags & Building.Flags.Downgrading) == Building.Flags.None && thisBuilding.Info.m_class.m_level < ItemClass.Level.Level4)
                 {
                     return true;
                 }
@@ -117,7 +117,8 @@ namespace TransferController
                 WarehouseControl.HasRecord(CurrentBuilding) ||
                 (HasSecondVehicleType &&
                     (VehicleControl.HasRecord(CurrentBuilding, TransferManager.TransferReason.None) ||
-                    VehicleControl.HasRecord(CurrentBuilding, (TransferManager.TransferReason)125)));
+                    VehicleControl.HasRecord(CurrentBuilding, (TransferManager.TransferReason)120) ||
+                    VehicleControl.HasRecord(CurrentBuilding, (TransferManager.TransferReason)121)));
 
             StatusSprite.spriteName = hasRecord ? "AchievementCheckedTrue" : "AchievementCheckedFalse";
         }
