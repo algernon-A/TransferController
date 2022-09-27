@@ -39,6 +39,12 @@ namespace TransferController
             {
                 yield return prisonHeliAI;
             }
+
+            MethodInfo heliDepotAI = Type.GetType("PrisonHelicopter.HarmonyPatches.HelicopterDepotAIPatch,PrisonHelicopter", false)?.GetMethod("StartTransfer");
+            if (heliDepotAI != null)
+            {
+                yield return heliDepotAI;
+            }
         }
 
         /// <summary>
