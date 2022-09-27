@@ -190,6 +190,7 @@ namespace TransferController
                         transfers[0].Reason = TransferManager.TransferReason.Crime;
                         transfers[0].SpawnsVehicles = true;
 
+                        /*
                         // Prison Helicopter Mod.
                         if ((buildingFlags & Building.Flags.Downgrading) == Building.Flags.None)
                         {
@@ -199,7 +200,7 @@ namespace TransferController
                             transfers[1].Reason = (TransferManager.TransferReason)121;
                             transfers[1].SpawnsVehicles = true;
                             return 2;
-                        }
+                        }*/
 
                         return 1;
                     }
@@ -251,7 +252,7 @@ namespace TransferController
                                 // Small (local) police station
                                 if ((buildingFlags & Building.Flags.Downgrading) != Building.Flags.None)
                                 {
-                                    // Send prisoners to bigg police station (collected by prison van sent from big station).
+                                    // Send prisoners to big police station (collected by prison van sent from big station).
                                     transfers[2].PanelTitle = Translations.Translate("TFC_POL_PTO");
                                     transfers[2].OutsideText = null;
                                     transfers[2].IsIncoming = false;
