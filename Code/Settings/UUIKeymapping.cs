@@ -27,7 +27,7 @@ namespace TransferController
         /// <summary>
         /// Gets or sets the mod's UUI key.
         /// </summary>
-        protected override InputKey KeySetting
+        public override InputKey KeySetting
         {
             get => ModSettings.ToolKey.value;
 
