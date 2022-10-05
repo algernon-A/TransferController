@@ -190,9 +190,8 @@ namespace TransferController
                         transfers[0].Reason = TransferManager.TransferReason.Crime;
                         transfers[0].SpawnsVehicles = true;
 
-                        /*
                         // Prison Helicopter Mod.
-                        if ((buildingFlags & Building.Flags.Downgrading) == Building.Flags.None)
+                        if ((buildingFlags & Building.Flags.Downgrading) != 0)
                         {
                             transfers[1].PanelTitle = Translations.Translate("TFC_POL_PHI");
                             transfers[1].OutsideText = null;
@@ -200,7 +199,7 @@ namespace TransferController
                             transfers[1].Reason = (TransferManager.TransferReason)121;
                             transfers[1].SpawnsVehicles = true;
                             return 2;
-                        }*/
+                        }
 
                         return 1;
                     }

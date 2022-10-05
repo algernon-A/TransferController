@@ -32,8 +32,8 @@ namespace TransferController
         // Panel components.
         private readonly UIButton _addVehicleButton;
         private readonly UIButton _removeVehicleButton;
-        private VehicleSelectionPanel _vehicleSelectionPanel;
-        private SelectedVehiclePanel _buildingVehicleSelectionPanel;
+        private readonly VehicleSelectionPanel _vehicleSelectionPanel;
+        private readonly SelectedVehiclePanel _buildingVehicleSelectionPanel;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VehicleSelection"/> class.

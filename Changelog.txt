@@ -1,4 +1,7 @@
-﻿Version 0.7.5 -
+﻿- Implement Prison Helicopter Mod depot transfer control and vehicle selection
+
+
+Version 0.7.5 -
 
 - Fix bug with post office transfer setup
 - Add support for deathcare transfers
