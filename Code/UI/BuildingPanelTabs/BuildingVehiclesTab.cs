@@ -92,7 +92,7 @@ namespace TransferController
                 // Check for Prison Helicopter big (central) police stations - these send police cars and prison vans.
                 // Big stations are marked by the 'downgrading' flag being clear.
                 ref Building thisBuilding = ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[CurrentBuilding];
-                if (thisBuilding.Info.m_buildingAI.GetType().Name.Equals("PrisonCopterPoliceStationAI") && (thisBuilding.m_flags & Building.Flags.Downgrading) == Building.Flags.None && thisBuilding.Info.m_class.m_level < ItemClass.Level.Level4)
+                if (thisBuilding.Info.m_buildingAI.GetType().Name.Equals("PrisonCopterPoliceStationAI") && (thisBuilding.m_flags & Building.Flags.Downgrading) != 0 && thisBuilding.Info.m_class.m_level < ItemClass.Level.Level4)
                 {
                     return true;
                 }
@@ -155,14 +155,14 @@ namespace TransferController
 
                 // Check for Prison Helicopter big (central) police stations - these send police cars and prison vans.
                 // Big stations are marked by the 'downgrading' flag being clear.
-                if (building.Info.m_buildingAI.GetType().Name.Equals("PrisonCopterPoliceStationAI") && (building.m_flags & Building.Flags.Downgrading) == Building.Flags.None)
+                if (building.Info.m_buildingAI.GetType().Name.Equals("PrisonCopterPoliceStationAI") && (building.m_flags & Building.Flags.Downgrading) != 0)
                 {
                     TransferReason = (TransferManager.TransferReason)120;
                 }
 
                 // Check for Prison Helicopter police helicopter depots - these send police helicopters and prison helicopters.
                 // Police helicopter depots are marked by the 'downgrading' flag being clear.
-                else if (building.Info.m_buildingAI is HelicopterDepotAI && (building.m_flags & Building.Flags.Downgrading) == Building.Flags.None)
+                else if (building.Info.m_buildingAI is HelicopterDepotAI && (building.m_flags & Building.Flags.Downgrading) != 0)
                 {
                     TransferReason = (TransferManager.TransferReason)121;
                 }
