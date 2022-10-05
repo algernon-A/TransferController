@@ -1,4 +1,6 @@
-﻿- Implement Prison Helicopter Mod depot transfer control and vehicle selection
+﻿Version 0.7.6 -
+
+- Implement Prison Helicopter Mod depot transfer control and vehicle selection
 
 
 Version 0.7.5 -
