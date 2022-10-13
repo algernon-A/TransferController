@@ -8,7 +8,6 @@ namespace TransferController
     using System.Collections.Generic;
     using AlgernonCommons.Patching;
     using AlgernonCommons.Translation;
-    using AlgernonCommons.UI;
     using ICities;
 
     /// <summary>
@@ -38,9 +37,6 @@ namespace TransferController
 
             // Initialise select tool.
             ToolsModifierControl.toolController.gameObject.AddComponent<TCTool>();
-
-            // Set up options panel event handler (need to redo this now that options panel has been reset after loading into game).
-            OptionsPanelManager<OptionsPanel>.OptionsEventHook();
 
             // Add building info panel buttons.
             BuildingPanelManager.AddInfoPanelButtons();
