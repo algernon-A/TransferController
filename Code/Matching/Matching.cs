@@ -379,6 +379,19 @@ namespace TransferController
                             continue;
                         }
 
+                        // If within park area with deliveries, skip offers not
+                        // also within the same park area.
+                        // Do not let name `isLocalPark` fool you, this is not a
+                        // boolean - it is a park ID. It is set in
+                        // AddIncomingOffer or AddOutgoingOffer for buildings within
+                        // pedestrian zones that handle deliveries connected to
+                        // a pedestrian road, or in zones with the force deliveries
+                        // policy.
+                        if (offer.m_isLocalPark != candidate.m_isLocalPark)
+                        {
+                            continue;
+                        }
+
                         // Defaults.
                         Vector3 candidatePosition = candidate.Position;
                         ushort candidateBuilding = candidate.Building;
@@ -486,6 +499,14 @@ namespace TransferController
 
                             // Candidate building modifier.
                             distanceModifier *= CheckPreferSameDistrict(candidateBuilding, !incoming, reason);
+                        }
+
+                        // This is a park delivery. Distance is not a consideration
+                        // for intra-park deliveries since they happen
+                        // instantaneously without using a vehicle.
+                        if (offer.m_isLocalPark == candidate.m_isLocalPark)
+                        {
+                            distanceModifier = 0;
                         }
 
                         // Calculate distance between positions - use original offer positions, not owning building positions.
