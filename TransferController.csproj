@@ -51,7 +51,7 @@
 			<CSAppDataDir Condition="! Exists ('$(CSAppDataDir)')">$(HOME)/Library/Application Support/Colossal Order/Cities_Skylines</CSAppDataDir>
 			<DeployDir>$(CSAppDataDir)/Addons/Mods/$(SolutionName)/</DeployDir>
 		</PropertyGroup>
-		<Message Importance="High" Text="Deploying Mod to $(DeployDir)"/>
+		<Message Importance="High" Text="Deploying Mod to $(DeployDir)" />
 		<Copy SourceFiles="$(TargetPath)" DestinationFolder="$(DeployDir)" />
 		<Copy SourceFiles="$(TargetDir)/CitiesHarmony.API.dll" DestinationFolder="$(DeployDir)" />
 		<Copy SourceFiles="$(TargetDir)/UnifiedUILib.dll" DestinationFolder="$(DeployDir)" />
