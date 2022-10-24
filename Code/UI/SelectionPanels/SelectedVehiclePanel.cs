@@ -18,7 +18,7 @@ namespace TransferController
     internal class SelectedVehiclePanel : VehicleSelectionPanel
     {
         // Panel to display when no item is selected.
-        private UIPanel _randomPanel;
+        private readonly UIPanel _randomPanel;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SelectedVehiclePanel"/> class.

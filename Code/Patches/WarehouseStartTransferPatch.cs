@@ -15,7 +15,6 @@ namespace TransferController
     /// <summary>
     /// Harmony transpiler to various StartTransfer methods to implement vehicle selection.
     /// </summary>
-    [HarmonyPatch]
     public static class WarehouseStartTransferPatch
     {
         /// <summary>

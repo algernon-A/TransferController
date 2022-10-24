@@ -1,4 +1,9 @@
-﻿Version 0.7.6 -
+﻿- Deactivate vehicle selection when Vehicle Selector mod is present
+- Exclude intra-park transfers from matching calculations (thanks Alex Zielenski!)
+- Update AlgernonCommons
+
+
+Version 0.7.6 -
 
 - Implement Prison Helicopter Mod depot transfer control and vehicle selection
 

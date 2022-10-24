@@ -41,8 +41,8 @@ namespace TransferController
         internal VehicleSelection()
         {
             // Set size.
-            this.height = PanelHeight;
-            this.width = BuildingPanel.PanelWidth;
+            height = PanelHeight;
+            width = BuildingPanel.PanelWidth - (Margin * 2f);
 
             // 'Add vehicle' button.
             _addVehicleButton = UIButtons.AddIconButton(
@@ -79,6 +79,16 @@ namespace TransferController
             vehicleSelectionLabel.textAlignment = UIHorizontalAlignment.Center;
             UILabel buildingDistrictSelectionLabel = UILabels.AddLabel(_buildingVehicleSelectionPanel, 0f, -15f, Translations.Translate("TFC_VEH_SEL"), BuildingPanelTab.ColumnWidth, 0.8f);
             buildingDistrictSelectionLabel.textAlignment = UIHorizontalAlignment.Center;
+
+            // Hide controls if Vehicle Selector is present.
+            if (Loading.VehicleSelectorInstalled)
+            {
+                _addVehicleButton.Hide();
+                _removeVehicleButton.Hide();
+                _buildingVehicleSelectionPanel.Hide();
+                _vehicleSelectionPanel.Hide();
+                UILabels.AddLabel(this, 0f, 0f, Translations.Translate("NO_VEHICLE_SELECT"), width);
+            }
         }
 
         /// <summary>

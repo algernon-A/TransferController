@@ -128,6 +128,7 @@
 "TFC_BST_FIR","Fire"
 "TFC_BST_SIC","Sick"
 "TFC_BST_DEA","Dead"
+"NO_VEHICLE_SELECT","The vehicle selection functions of this mod have been moved to the new Vehicle Selector mod.  Subscribe to the Vehicle Selector mod on the Steam Workshop to continue using your existing vehicle selections and to add new ones."
 "TRN_CHOICE","Set language"
 "LANGUAGE_GAME","Use game language"
 "KEY_KEY","Hotkey"

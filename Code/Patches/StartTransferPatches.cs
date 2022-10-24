@@ -16,7 +16,6 @@ namespace TransferController
     /// <summary>
     /// Harmony transpiler to various StartTransfer methods to implement vehicle selection.
     /// </summary>
-    [HarmonyPatch]
     public static class StartTransferPatches
     {
         /// <summary>
@@ -32,6 +31,8 @@ namespace TransferController
             yield return typeof(PostOfficeAI).GetMethod(nameof(PostOfficeAI.StartTransfer));
             yield return typeof(LandfillSiteAI).GetMethod(nameof(LandfillSiteAI.StartTransfer));
             yield return typeof(FireStationAI).GetMethod(nameof(FireStationAI.StartTransfer));
+            yield return typeof(DisasterResponseBuildingAI).GetMethod(nameof(DisasterResponseBuildingAI.StartTransfer));
+            yield return typeof(IndustrialBuildingAI).GetMethod(nameof(IndustrialBuildingAI.StartTransfer));
 
             // Prison helicopter mod, if avaialble.
             MethodInfo prisonHeliAI = Type.GetType("PrisonHelicopter.AI.PrisonCopterPoliceStationAI,PrisonHelicopter", false)?.GetMethod("StartTransfer");
