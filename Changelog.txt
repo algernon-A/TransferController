@@ -1,4 +1,6 @@
-﻿- Deactivate vehicle selection when Vehicle Selector mod is present
+﻿Version 0.7.7 -
+
+- Deactivate vehicle selection when Vehicle Selector mod is present
 - Exclude intra-park transfers from matching calculations (thanks Alex Zielenski!)
 - Update AlgernonCommons
 
