@@ -47,6 +47,8 @@
 "TFC_GAR_ITF","ゴミの回収"
 "TFC_GAR_OTF","ゴミの搬出"
 "TFC_GAR_ORR","回収した資源の販売"
+"TFC_TFR_INC","搬入"
+"TFC_TFR_OUT","搬出"
 "TFC_FIS_MKO","魚介類の配送"
 "TFC_FIS_MKI","魚介類の配送"
 "TFC_FIS_CFO","商品の搬出"
@@ -126,6 +128,7 @@
 "TFC_BST_FIR","火災"
 "TFC_BST_SIC","病人"
 "TFC_BST_DEA","死者"
+"NO_VEHICLE_SELECT","このMODの車両選択機能は、 新しいVehicle Selector MODに移管しました。 既存の車両選択を引き続き使用・新たな車両を追加する場合は、 ワークショップでVehicle Selector MODをサブスクして下さい。"
 "TRN_CHOICE","言語設定"
 "LANGUAGE_GAME","ゲームの言語を使用"
 "KEY_KEY","ホットキー"
@@ -140,4 +143,5 @@
 "CONFLICTING_MODS","競合するMOD:"
 "CONFLICT_DETECTED","Transfer Controllerは、少なくとも1つ以上のMODと競合を検出しました"
 "TFC_ERR_CON1","Transfer Controllerを動作させるには、これらのMODを削除してください"
-"HARMONY_MOD_CONFLICT","Another mod may be trying to apply a conflicting Harmony patch"
+"HARMONY_MOD_CONFLICT","競合する他のMODが、Harmony2のパッチを重複して適用しようとしています。
+"
