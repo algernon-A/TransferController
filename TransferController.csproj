@@ -7,7 +7,7 @@
 		<Authors>algernon</Authors>
 		<Copyright>Copyright © 2021-22 algernon</Copyright>
 		<Product>$(Title)</Product>
-		<Version>0.7.7</Version>
+		<Version>0.7.7.1</Version>
 
 		<!-- Cross-platform managed DLL path guessing functionality -->
 		<SteamPath>$(MSBuildProgramFiles32)/Steam</SteamPath>

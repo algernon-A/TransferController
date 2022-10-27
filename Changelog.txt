@@ -1,4 +1,9 @@
-﻿Version 0.7.7 -
+﻿Version 0.7.7.1 hotfix -
+
+- Fix bug in PR #32 m_isLocalPark distance nullification check
+
+
+Version 0.7.7 -
 
 - Deactivate vehicle selection when Vehicle Selector mod is present
 - Exclude intra-park transfers from matching calculations (thanks Alex Zielenski!)

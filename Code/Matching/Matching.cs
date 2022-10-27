@@ -504,7 +504,7 @@ namespace TransferController
                         // This is a park delivery. Distance is not a consideration
                         // for intra-park deliveries since they happen
                         // instantaneously without using a vehicle.
-                        if (offer.m_isLocalPark == candidate.m_isLocalPark)
+                        if (offer.m_isLocalPark != 0 & offer.m_isLocalPark == candidate.m_isLocalPark)
                         {
                             distanceModifier = 0;
                         }
