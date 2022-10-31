@@ -15,7 +15,6 @@ namespace TransferController
     /// <summary>
     /// Harmony transpiler to DepotAI.StartTransfer to implement vehicle selection.
     /// </summary>
-    [HarmonyPatch(typeof(DepotAI), nameof(DepotAI.StartTransfer))]
     public static class DepotStartTransfer
     {
         /// <summary>

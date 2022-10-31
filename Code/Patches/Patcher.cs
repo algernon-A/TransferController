@@ -34,6 +34,9 @@ namespace TransferController
             {
                 harmony.Patch(targetMethod, transpiler: new HarmonyMethod(warehouseStartTransferTranspiler));
             }
+
+            // Patch depots.
+            harmony.Patch(AccessTools.Method(typeof(DepotAI), nameof(DepotAI.StartTransfer)), transpiler: new HarmonyMethod(AccessTools.Method(typeof(DepotStartTransfer), nameof(DepotStartTransfer.Transpiler))));
         }
     }
 }
