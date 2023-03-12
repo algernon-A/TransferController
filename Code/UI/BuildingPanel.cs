@@ -85,6 +85,8 @@ namespace TransferController
         private bool _copyProcessing = false;
         private bool _pasteProcessing = false;
 
+        public static Vector2 PanelPosition { get; set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="BuildingPanel"/> class.
         /// </summary>
@@ -199,6 +201,8 @@ namespace TransferController
                         RecalculateHeight(index);
                     }
                 };
+                SetPosition();
+                eventPositionChanged += (c, v) => PanelPosition = relativePosition;
             }
             catch (Exception e)
             {
@@ -206,6 +210,17 @@ namespace TransferController
             }
         }
 
+        private void SetPosition() {
+            if (PanelPosition == Vector2.zero) {
+                Vector2 vector = GetUIView().GetScreenResolution();
+                var x = (vector.x - PanelWidth) / 2;
+                var y = (vector.y - PanelHeight) / 2;
+                PanelPosition = relativePosition = new Vector3(x, y);
+            } else {
+                relativePosition = PanelPosition;
+            }
+        }
+        
         /// <summary>
         /// Gets the dictionary of building records.
         /// </summary>
